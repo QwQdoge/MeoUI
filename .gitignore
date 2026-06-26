@@ -1,0 +1,47 @@
+# CMake / build output
+build/
+out/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.ninja
+.ninja_*
+compile_commands.json
+
+# Qt generated files
+.qt/
+*.qmlc
+*.jsc
+*.moc
+moc_*.cpp
+qrc_*.cpp
+*.qrc.depends
+*.qmltypes
+*.qmljs
+
+# Compiled artifacts
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+
+# IDE / local state
+.qtcreator/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Logs and OS files
+*.log
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
