@@ -1,0 +1,25 @@
+pkgname=meoui-qml
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Material Design 3 QML component library"
+arch=('x86_64' 'aarch64')
+url="https://github.com/QwQdoge/MeoUI"
+license=('MIT')
+depends=('qt6-declarative')
+makedepends=('cmake' 'ninja' 'qt6-tools')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/QwQdoge/MeoUI/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cmake -B build -S "MeoUI-$pkgver" \
+        -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DMEOUI_BUILD_SHOWCASE=OFF
+
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,8 @@
+* text=auto
+
+*.sh text eol=lf
+PKGBUILD text eol=lf
+.SRCINFO text eol=lf
+*.qml text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf

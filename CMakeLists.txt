@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
+set(MEOUI_INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt6/qml" CACHE PATH "Qt 6 QML module install directory")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml)
 
@@ -125,6 +126,20 @@ install(TARGETS meoui_module
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES
+    qmldir
+    MeoTheme.qml
+    DESTINATION "${MEOUI_INSTALL_QMLDIR}/MeoUI"
+)
+
+install(DIRECTORY
+    components
+    patterns
+    widgets
+    DESTINATION "${MEOUI_INSTALL_QMLDIR}/MeoUI"
+    FILES_MATCHING PATTERN "*.qml"
 )
 
 # 新增 Demo 展示程序可执行目标

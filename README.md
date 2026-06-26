@@ -24,7 +24,7 @@ target_link_libraries(your_app PRIVATE meoui_module)
 Then import the module in QML:
 
 ```qml
-import MeoUI
+import MeoUI 1.0
 ```
 
 To build only the library target without the showcase app:
@@ -33,6 +33,58 @@ To build only the library target without the showcase app:
 cmake -S . -B out/build/lib -DMEOUI_BUILD_SHOWCASE=OFF
 cmake --build out/build/lib --target meoui_module
 ```
+
+## System Install
+
+Install the QML module into Qt 6's system import path:
+
+```bash
+cmake -S . -B out/build/lib \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=/usr \
+  -DMEOUI_BUILD_SHOWCASE=OFF
+
+cmake --build out/build/lib
+sudo cmake --install out/build/lib
+```
+
+This installs the module to `/usr/lib/qt6/qml/MeoUI`, so Qt/QML apps can use:
+
+```qml
+import MeoUI 1.0
+```
+
+You can test a system install with:
+
+```bash
+qml6 examples/test-import.qml
+```
+
+If your Qt setup does not include `/usr/lib/qt6/qml` in its default import path:
+
+```bash
+qml6 -I /usr/lib/qt6/qml examples/test-import.qml
+```
+
+## Arch Package
+
+The Arch packaging files live under `packaging/arch`.
+
+Local package test:
+
+```bash
+cd packaging/arch
+makepkg -si
+```
+
+The package name is `meoui-qml`. Once published to AUR, users can install it with:
+
+```bash
+yay -S meoui-qml
+```
+
+The source tarball in `PKGBUILD` expects a GitHub tag named `v1.0.0`.
 
 ## Windows
 
