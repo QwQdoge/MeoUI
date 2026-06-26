@@ -1,5 +1,5 @@
 pkgname=meoui-qml
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="Material Design 3 QML component library"
 arch=('x86_64' 'aarch64')
