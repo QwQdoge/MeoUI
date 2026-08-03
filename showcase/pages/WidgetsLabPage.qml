@@ -2,145 +2,85 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
+import ".."
 
-Flickable {
-    id: page
-    contentWidth: width
-    contentHeight: column.implicitHeight + 48 * MeoTheme.globalScale
-    clip: true
-    boundsBehavior: Flickable.StopAtBounds
-    ScrollBar.vertical: ScrollBar {}
+ShowcaseCategoryPage {
+    categoryId: "search"
 
-    readonly property var navigationItems: [
-        { "label": "Home", "icon": "home" },
-        { "label": "Explore", "icon": "explore" },
-        { "label": "Profile", "icon": "person" }
-    ]
+    // 🌟 1. Account Switcher Widget
+    ShowcaseSection {
+        title: "Account Management Widget"
+        subtitle: "MD3 Expressive Account Switcher widget."
+        width: parent.width
 
-    ColumnLayout {
-        id: column
-        width: page.width - 48 * MeoTheme.globalScale
-        x: 24 * MeoTheme.globalScale
-        y: 24 * MeoTheme.globalScale
-        spacing: 24 * MeoTheme.globalScale
-
-        Text { text: "Widgets lab"; color: MeoTheme.onSurface; font.pixelSize: MeoTheme.headlineLargeEmphasized.size * MeoTheme.globalScale; font.weight: Font.Bold }
-        Text { Layout.fillWidth: true; text: "Large, composed controls with real interaction and representative data."; color: MeoTheme.onSurfaceVariant; font.pixelSize: 16 * MeoTheme.globalScale; wrapMode: Text.WordWrap }
-
-        SectionTitle { text: "Identity & search" }
-        MeoAccountHeader { Layout.fillWidth: true; name: "Meo User"; email: "hello@meoarch.dev" }
-        MeoSearchBar { Layout.fillWidth: true; placeholder: "Search components" }
-        MeoDockedSearchBar { Layout.fillWidth: true; placeholder: "Docked search" }
-        MeoSearchSuggestions {
-            Layout.fillWidth: true
-            highlightText: "meo"
+        MeoAccountSwitcher {
+            Layout.alignment: Text.AlignHCenter
             model: [
-                { "label": "MeoTheme tokens", "icon": "palette" },
-                { "label": "MeoButton usage", "icon": "smart_button" },
-                { "label": "Material expressive", "icon": "auto_awesome" }
+                { name: "Meo Developer", email: "dev@meo.ui", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Meo" },
+                { name: "Design Lead", email: "design@meo.ui", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Design" }
             ]
         }
+    }
 
-        SectionTitle { text: "Adaptive navigation" }
-        MeoNavigationBar { Layout.fillWidth: true; model: page.navigationItems; currentIndex: 0 }
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 320 * MeoTheme.globalScale
-            spacing: 16 * MeoTheme.globalScale
-            MeoNavigationRail { Layout.preferredWidth: 96 * MeoTheme.globalScale; Layout.fillHeight: true; model: page.navigationItems; currentIndex: 1 }
+    // 🌟 2. Page Host Navigation Lifecycle Lab (MeoPageHost)
+    ShowcaseSection {
+        title: "Page Host Lifecycle Lab (MeoPageHost)"
+        subtitle: "Page Host container managing page instance lifecycle, route history, and transition states."
+        width: parent.width
+
+        ColumnLayout {
+            width: parent.width
+            spacing: MeoTheme.space16
+
+            RowLayout {
+                spacing: MeoTheme.space16
+
+                MeoButton {
+                    text: "Load Page Alpha"
+                    type: "tonal"
+                    onClicked: pageHost.sourceComponent = pageAlphaComp
+                }
+
+                MeoButton {
+                    text: "Load Page Beta"
+                    type: "tonal"
+                    onClicked: pageHost.sourceComponent = pageBetaComp
+                }
+            }
+
             Rectangle {
                 Layout.fillWidth: true
-                Layout.fillHeight: true
-                radius: MeoTheme.shapeLarge
+                height: 160 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
                 color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.outlineVariant
+                border.width: 1
+
+                MeoPageHost {
+                    id: pageHost
+                    anchors.fill: parent
+                    anchors.margins: MeoTheme.space16
+                    sourceComponent: pageAlphaComp
+                }
+            }
+
+            Component {
+                id: pageAlphaComp
                 Column {
-                    anchors.centerIn: parent
-                    spacing: 12 * MeoTheme.globalScale
-                    Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Modal navigation drawer"; color: MeoTheme.onSurface; font.pixelSize: 16 * MeoTheme.globalScale }
-                    MeoButton { anchors.horizontalCenter: parent.horizontalCenter; text: "Open drawer"; onClicked: modalDrawer.open() }
+                    spacing: MeoTheme.space8
+                    MeoText { text: "Active Page: Alpha"; typeRole: "title"; typeSize: "medium"; emphasized: true }
+                    MeoText { text: "Page Host maintains memory lifecycle and clean entry/exit transitions."; typeRole: "body"; typeSize: "small" }
+                }
+            }
+
+            Component {
+                id: pageBetaComp
+                Column {
+                    spacing: MeoTheme.space8
+                    MeoText { text: "Active Page: Beta"; typeRole: "title"; typeSize: "medium"; emphasized: true; color: MeoTheme.primary }
+                    MeoText { text: "Swapping page source demonstrates seamless lifecycle management."; typeRole: "body"; typeSize: "small" }
                 }
             }
         }
-
-        SectionTitle { text: "Pickers" }
-        Flow {
-            Layout.fillWidth: true
-            spacing: 16 * MeoTheme.globalScale
-            MeoDatePicker { width: 340 * MeoTheme.globalScale }
-            MeoTimePicker { width: 340 * MeoTheme.globalScale }
-            MeoDateRangePicker { width: 420 * MeoTheme.globalScale }
-        }
-
-        SectionTitle { text: "Media & app bars" }
-        MeoMediaController { Layout.fillWidth: true; title: "Soul Curve"; artist: "MeoUI Sessions"; isPlaying: true }
-        MeoBottomAppBar {
-            Layout.fillWidth: true
-            navigationIcons: ["menu", "search", "favorite"]
-            fab: Component { MeoFAB { icon.name: "add" } }
-        }
-
-        SectionTitle { text: "Sheets" }
-        Flow {
-            Layout.fillWidth: true
-            spacing: 8 * MeoTheme.globalScale
-            MeoButton { text: "Modal bottom sheet"; onClicked: bottomSheet.open() }
-            MeoButton { text: "Modal side sheet"; type: "outlined"; onClicked: sideSheet.open() }
-        }
-        Rectangle {
-            id: standardSheetHost
-            Layout.fillWidth: true
-            implicitHeight: 260 * MeoTheme.globalScale
-            radius: MeoTheme.shapeLarge
-            color: MeoTheme.surfaceContainer
-            clip: true
-            Text { anchors.centerIn: parent; text: "Standard bottom sheet host"; color: MeoTheme.onSurfaceVariant; font.pixelSize: 14 * MeoTheme.globalScale }
-            MeoStandardBottomSheet {
-                id: standardSheet
-                anchors.fill: parent
-                isOpen: false
-                peekHeight: 72 * MeoTheme.globalScale
-                expandedHeight: 210 * MeoTheme.globalScale
-                content: Component {
-                    Column {
-                        padding: 20 * MeoTheme.globalScale
-                        spacing: 12 * MeoTheme.globalScale
-                        Text { text: "Standard bottom sheet"; color: MeoTheme.onSurface; font.pixelSize: 20 * MeoTheme.globalScale; font.weight: Font.DemiBold }
-                        MeoButton { text: standardSheet.isOpen ? "Collapse" : "Expand"; onClicked: standardSheet.isOpen = !standardSheet.isOpen }
-                    }
-                }
-            }
-        }
-    }
-
-    MeoNavigationDrawerModal { id: modalDrawer; model: page.navigationItems; currentIndex: 0; header: Component { MeoAccountHeader { name: "Meo User"; email: "hello@meoarch.dev" } } }
-    MeoBottomSheet {
-        id: bottomSheet
-        content: Component {
-            Column {
-                padding: 24 * MeoTheme.globalScale
-                spacing: 12 * MeoTheme.globalScale
-                Text { text: "Modal bottom sheet"; color: MeoTheme.onSurface; font.pixelSize: 22 * MeoTheme.globalScale }
-                Text { text: "Use it for a focused, temporary task."; color: MeoTheme.onSurfaceVariant; font.pixelSize: 14 * MeoTheme.globalScale }
-            }
-        }
-    }
-    MeoSideSheetModal {
-        id: sideSheet
-        title: "Details"
-        content: Component {
-            Column {
-                padding: 24 * MeoTheme.globalScale
-                spacing: 12 * MeoTheme.globalScale
-                Text { text: "Modal side sheet content"; color: MeoTheme.onSurface; font.pixelSize: 16 * MeoTheme.globalScale }
-                MeoSwitch { label: "Enable option"; checked: true }
-            }
-        }
-    }
-
-    component SectionTitle: Text {
-        Layout.fillWidth: true
-        color: MeoTheme.primary
-        font.pixelSize: 20 * MeoTheme.globalScale
-        font.weight: Font.DemiBold
     }
 }

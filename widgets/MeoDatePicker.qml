@@ -13,21 +13,39 @@ MeoCard {
 
     // 🌟 作用域与主题安全防御
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimary !== 'undefined') ? MeoTheme.onPrimary : "#FFFFFF"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     implicitWidth: 328 * themeGlobalScale
-    implicitHeight: 460 * themeGlobalScale
+    implicitHeight: 520 * themeGlobalScale
+
+    onSelectedDateChanged: {
+        if (dateInput)
+            dateInput.value = control.selectedDate
+    }
 
     Column {
         anchors.fill: parent
         anchors.margins: 12 * control.themeGlobalScale
         spacing: 12 * control.themeGlobalScale
 
+        MeoDateInput {
+            id: dateInput
+            width: parent.width
+            height: 56 * control.themeGlobalScale
+            label: "Date"
+            format: "yyyy-MM-dd"
+            value: control.selectedDate
+            onDateAccepted: function(date) {
+                control.selectedDate = date
+                control.displayDate = date
+            }
+        }
+
         // Header: Month Selection
-        Row {
+        Item {
             width: parent.width
             height: 48 * control.themeGlobalScale
 
@@ -141,4 +159,5 @@ MeoCard {
                d1.getMonth() === d2.getMonth() &&
                d1.getDate() === d2.getDate()
     }
+
 }

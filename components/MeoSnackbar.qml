@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import MeoUI
 
 Popup {
     id: control
@@ -14,6 +15,11 @@ Popup {
     readonly property color themeInverseOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined' && MeoTheme.isDarkMode) ? "#313033" : "#F4F0F4"
     readonly property color themeInversePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? (MeoTheme.isDarkMode ? MeoTheme.primary : "#D0BCFF") : "#D0BCFF"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property int motionEnter: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationDialogEnter
+    readonly property int motionExit: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationDialogExit
+    readonly property int autoDismissDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationExtraLong4 !== 'undefined') ? MeoTheme.motionDurationExtraLong4 * 4 : 4000
+    readonly property var fontBodyMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyMedium !== 'undefined') ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal }
+    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
 
     x: (parent.width - width) / 2
     y: parent.height - height - 24 * themeGlobalScale
@@ -33,13 +39,15 @@ Popup {
         Text {
             text: control.message
             width: parent.width - (control.actionText !== "" ? 80 * control.themeGlobalScale : 0) - 24 * control.themeGlobalScale
-            font.pixelSize: 14 * control.themeGlobalScale
+            font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+            font.weight: control.fontBodyMedium.weight
             color: control.themeInverseOnSurface
             verticalAlignment: Text.AlignVCenter
             wrapMode: Text.WordWrap
         }
 
         MeoButton {
+            id: actionButton
             text: control.actionText
             type: "text"
             visible: text !== ""
@@ -50,27 +58,27 @@ Popup {
             }
             // Overriding button color to MD3 Inverse Primary
             contentItem: Text {
-                text: parent.text
+                text: actionButton.text
                 color: control.themeInversePrimary
-                font.pixelSize: 14 * control.themeGlobalScale
-                font.weight: Font.Medium
+                font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                font.weight: control.fontLabelLarge.weight
             }
         }
     }
 
     Timer {
         id: autoCloseTimer
-        interval: 4000
+        interval: control.autoDismissDuration
         onTriggered: control.close()
     }
 
     onOpened: autoCloseTimer.start()
 
     enter: Transition {
-        NumberAnimation { property: "y"; from: parent.height; to: control.y; duration: 250; easing.type: Easing.OutCubic }
-        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250 }
+        NumberAnimation { property: "y"; from: parent.height; to: control.y; duration: control.motionEnter; easing.bezierCurve: MeoTheme.motionEasingEnter }
+        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.motionEnter }
     }
     exit: Transition {
-        NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 200 }
+        NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: control.motionExit }
     }
 }

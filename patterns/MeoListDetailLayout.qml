@@ -4,18 +4,21 @@ import MeoUI
 
 Item {
     id: control
-    anchors.fill: parent
 
     property Component listComponent: null
     property Component detailComponent: null
     property bool showDetail: false
 
-    // MD3 Adaptive Breakpoints
-    readonly property bool isCompact: width < 600 * themeGlobalScale
-    readonly property bool isMedium: width >= 600 * themeGlobalScale && width < 840 * themeGlobalScale
-    readonly property bool isExpanded: width >= 840 * themeGlobalScale
-
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property bool isCompact: windowMetrics.isCompactWidth || windowMetrics.isMediumWidth
+    readonly property bool isMedium: windowMetrics.isExpandedWidth
+    readonly property bool isExpanded: windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
+
+    MeoWindowMetrics {
+        id: windowMetrics
+        availableWidth: control.width
+        availableHeight: control.height
+    }
 
     readonly property real paneWidth: {
         if (isExpanded) return 400 * themeGlobalScale
@@ -52,6 +55,10 @@ Item {
         visible: control.isCompact
 
         initialItem: control.listComponent
+        pushEnter: Transition { NumberAnimation { property: "x"; from: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; to: 0; duration: MeoTheme.motionDurationPage; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+        pushExit: Transition { NumberAnimation { property: "opacity"; from: 1; to: 0; duration: MeoTheme.motionDurationState } }
+        popEnter: Transition { NumberAnimation { property: "opacity"; from: 0; to: 1; duration: MeoTheme.motionDurationState } }
+        popExit: Transition { NumberAnimation { property: "x"; from: 0; to: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; duration: MeoTheme.motionDurationPage; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate } }
 
         onCurrentItemChanged: {
             // Logic to sync with showDetail if needed

@@ -1,83 +1,99 @@
 import QtQuick
 import MeoUI
+import "MeoMaterialShapes.js" as ShapesEngine
 
 Item {
     id: control
 
-    // 🌟 核心属性
-    property string type: (typeof MeoTheme !== 'undefined' ? MeoTheme.shapeSquircle : "squircle")
+    // 🌟 M3E Expressive 35 Shape API & Semantic Radius Support
+    property string type: "squircle"
     property color color: "transparent"
     property real radius: 12 * themeGlobalScale
+    property color strokeColor: "transparent"
+    property real strokeWidth: 0
+    property real rotationAngle: 0.0
 
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
-    onRadiusChanged: canvas.requestPaint()
-    onTypeChanged: canvas.requestPaint()
-    onColorChanged: canvas.requestPaint()
+    // Debounce repaint to avoid excessive canvas updates when many shapes change
+    Timer {
+        id: repaintTimer
+        interval: 16 // ~60fps
+        repeat: false
+        onTriggered: canvas.requestPaint()
+    }
+    onRadiusChanged: repaintTimer.restart()
+    onTypeChanged: repaintTimer.restart()
+    onColorChanged: repaintTimer.restart()
+    onStrokeColorChanged: repaintTimer.restart()
+    onStrokeWidthChanged: repaintTimer.restart()
+    onRotationAngleChanged: repaintTimer.restart()
 
     Canvas {
         id: canvas
         anchors.fill: parent
+
+        function tracePath(ctx, inset) {
+            var w = Math.max(0, width - inset * 2);
+            var h = Math.max(0, height - inset * 2);
+            var ox = inset;
+            var oy = inset;
+
+            ctx.beginPath();
+
+            if (control.type === "rect" || control.type === "round" || control.type === "squircle") {
+                // Semantic Radius Calculation: min(radius, w/2, h/2)
+                var r = Math.max(0, Math.min(control.radius - inset, Math.min(w, h) / 2));
+                ctx.roundedRect(ox, oy, w, h, r, r);
+            } else if (control.type === "pill") {
+                var pr = Math.min(w, h) / 2;
+                ctx.roundedRect(ox, oy, w, h, pr, pr);
+            } else if (control.type === "circle" || control.type === "Circle") {
+                var cr = Math.min(w, h) / 2;
+                ctx.arc(ox + w / 2, oy + h / 2, cr, 0, 2 * Math.PI);
+            } else {
+                // Render from M3E 35 Normalized Geometry Vector Engine
+                var pts = ShapesEngine.getNormalizedPathPoints(control.type);
+                if (pts && pts.length > 0) {
+                    var cx = ox + w / 2;
+                    var cy = oy + h / 2;
+                    var rad = (control.rotationAngle * Math.PI) / 180;
+
+                    for (var i = 0; i < pts.length; i++) {
+                        // Normalize 0..1 to bounds
+                        var rawX = ox + pts[i].x * w - cx;
+                        var rawY = oy + pts[i].y * h - cy;
+
+                        // Apply Rotation
+                        var rx = cx + rawX * Math.cos(rad) - rawY * Math.sin(rad);
+                        var ry = cy + rawX * Math.sin(rad) + rawY * Math.cos(rad);
+
+                        if (i === 0) ctx.moveTo(rx, ry);
+                        else ctx.lineTo(rx, ry);
+                    }
+                    ctx.closePath();
+                } else {
+                    ctx.roundedRect(ox, oy, w, h, Math.min(w, h) / 2, Math.min(w, h) / 2);
+                }
+            }
+        }
+
         onPaint: {
             var ctx = getContext("2d");
             ctx.reset();
-            ctx.fillStyle = control.color;
-            ctx.beginPath();
 
-            var w = width;
-            var h = height;
-            var r = control.radius;
-
-            if (control.type === "squircle" || control.type === "MeoTheme.shapeSquircle") {
-                // 🌟 MD3 Expressive Squircle (Superellipse approximation)
-                // Using a more accurate squircle approximation for brand-expressive shapes
-                var n = 4; // Power for superellipse (n=4 is a common squircle)
-                var step = Math.PI / 100;
-                for (var angle = 0; angle < 2 * Math.PI; angle += step) {
-                    var x = Math.pow(Math.abs(Math.cos(angle)), 2/n) * (w/2) * Math.sign(Math.cos(angle)) + w/2;
-                    var y = Math.pow(Math.abs(Math.sin(angle)), 2/n) * (h/2) * Math.sign(Math.sin(angle)) + h/2;
-                    if (angle === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-            } else if (control.type === "hexagon") {
-                ctx.moveTo(w * 0.5, 0);
-                ctx.lineTo(w, h * 0.25);
-                ctx.lineTo(w, h * 0.75);
-                ctx.lineTo(w * 0.5, h);
-                ctx.lineTo(0, h * 0.75);
-                ctx.lineTo(0, h * 0.25);
-            } else if (control.type === "octagon") {
-                // 🌟 MD3 Expressive Octagon
-                var s = 0.3; // Proportion of the side
-                ctx.moveTo(w * s, 0);
-                ctx.lineTo(w * (1-s), 0);
-                ctx.lineTo(w, h * s);
-                ctx.lineTo(w, h * (1-s));
-                ctx.lineTo(w * (1-s), h);
-                ctx.lineTo(w * s, h);
-                ctx.lineTo(0, h * (1-s));
-                ctx.lineTo(0, h * s);
-            } else if (control.type === "diamond") {
-                ctx.moveTo(w * 0.5, 0);
-                ctx.lineTo(w, h * 0.5);
-                ctx.lineTo(w * 0.5, h);
-                ctx.lineTo(0, h * 0.5);
-            } else if (control.type === "pentagon") {
-                ctx.moveTo(w * 0.5, 0);
-                ctx.lineTo(w, h * 0.38);
-                ctx.lineTo(w * 0.81, h);
-                ctx.lineTo(w * 0.19, h);
-                ctx.lineTo(0, h * 0.38);
-            } else {
-                // Fallback to rounded rect
-                ctx.roundedRect(0, 0, w, h, r, r);
+            if (control.color !== "transparent" && control.color.a > 0) {
+                ctx.fillStyle = control.color;
+                tracePath(ctx, 0);
+                ctx.fill();
             }
 
-            ctx.closePath();
-            ctx.fill();
+            if (control.strokeColor !== "transparent" && control.strokeWidth > 0 && control.strokeColor.a > 0) {
+                ctx.strokeStyle = control.strokeColor;
+                ctx.lineWidth = control.strokeWidth;
+                tracePath(ctx, control.strokeWidth / 2);
+                ctx.stroke();
+            }
         }
-
-        onWidthChanged: requestPaint()
-        onHeightChanged: requestPaint()
     }
 }

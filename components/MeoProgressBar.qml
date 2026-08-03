@@ -1,124 +1,193 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
+import MeoUI
 
 Control {
     id: control
 
-    // 🌟 核心属性
+    // 🌟 M3 Expressive Progress & Wavy Indicator Suite
     property real value: 0.0 // 0.0 ~ 1.0
     property bool indeterminate: false
     property string type: "linear" // "linear" | "circular"
-    property bool isThick: false // 🌟 MD3 Expressive: Thicker track variant
+    property bool wavy: false // 🌟 MD3 Expressive: Wavy waveform indicator
+    property bool isThick: false
+    property bool vibrant: false
+    property bool showTrack: true
+    property color activeColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
+    property color trackColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeMotionScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionScale !== 'undefined') ? MeoTheme.motionScale : 1.0
+    readonly property bool reduceMotion: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.reduceMotion !== 'undefined') ? MeoTheme.reduceMotion : false
 
-    implicitWidth: type === "linear" ? 240 * themeGlobalScale : 48 * themeGlobalScale
-    implicitHeight: {
-        if (type === "linear") return (isThick ? 8 : 4) * themeGlobalScale;
-        return 48 * themeGlobalScale;
+    // Official Wavy Parameters
+    readonly property real linearWavelength: 40 * themeGlobalScale
+    readonly property real linearAmplitude: reduceMotion ? 0 : 3 * themeGlobalScale
+    readonly property real circularWavelengthTarget: 15 * themeGlobalScale
+    readonly property real circularAmplitude: reduceMotion ? 0 : 2 * themeGlobalScale
+    readonly property real strokeThickness: 4 * themeGlobalScale
+
+    implicitWidth: type === "linear" ? 240 * themeGlobalScale : (wavy ? 48 * themeGlobalScale : 40 * themeGlobalScale)
+    implicitHeight: type === "linear" ? (wavy ? 10 * themeGlobalScale : (isThick ? 8 : 4) * themeGlobalScale) : (wavy ? 48 * themeGlobalScale : 40 * themeGlobalScale)
+
+    // Phase Timer for continuous Wave Motion (1 wavelength per second = 40dp/s)
+    property real wavePhase: 0.0
+    NumberAnimation on wavePhase {
+        running: control.wavy && control.visible && !control.reduceMotion
+        loops: Animation.Infinite
+        from: 0.0
+        to: 1.0
+        duration: Math.round(1000 * control.themeMotionScale)
     }
 
-    // Linear Progress
-    Rectangle {
-        visible: control.type === "linear"
+    // Canvas for Linear / Circular Wavy Progress
+    Canvas {
+        id: wavyCanvas
         anchors.fill: parent
-        color: control.themeSurfaceContainerHighest
+        visible: control.wavy
+        onPaint: {
+            var ctx = getContext("2d");
+            ctx.reset();
+
+            var w = width;
+            var h = height;
+            var stroke = control.strokeThickness;
+            var phase = control.wavePhase;
+
+            if (control.type === "linear") {
+                var centerY = h / 2;
+                var amp = control.linearAmplitude;
+                var wl = control.linearWavelength;
+
+                // Track Line
+                if (control.showTrack) {
+                    ctx.strokeStyle = control.trackColor;
+                    ctx.lineWidth = stroke;
+                    ctx.lineCap = "round";
+                    ctx.beginPath();
+                    ctx.moveTo(0, centerY);
+                    ctx.lineTo(w, centerY);
+                    ctx.stroke();
+                }
+
+                // Active Wavy Line: y(x,t) = centerY + A * sin(2pi * (x/wavelength - phase))
+                var activeW = w * Math.max(0.0, Math.min(1.0, control.indeterminate ? 0.6 : control.value));
+                if (activeW > 0) {
+                    ctx.strokeStyle = control.activeColor;
+                    ctx.lineWidth = stroke;
+                    ctx.lineCap = "round";
+                    ctx.beginPath();
+
+                    for (var x = 0; x <= activeW; x += 2) {
+                        var y = centerY + amp * Math.sin(2 * Math.PI * (x / wl - phase));
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+
+                    // Stop indicator dot (4dp)
+                    ctx.fillStyle = control.activeColor;
+                    ctx.beginPath();
+                    ctx.arc(activeW, centerY, stroke / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            } else {
+                // Circular Wavy: r(theta, t) = R + A * sin(n * theta - 2pi * phase)
+                var R = (Math.min(w, h) - stroke - amp * 2) / 2;
+                var cx = w / 2;
+                var cy = h / 2;
+
+                // Seamless Closed Loop integer wave count n
+                var circumference = 2 * Math.PI * R;
+                var n = Math.max(3, Math.round(circumference / control.circularWavelengthTarget));
+
+                // Track Circle
+                if (control.showTrack) {
+                    ctx.strokeStyle = control.trackColor;
+                    ctx.lineWidth = stroke;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+
+                // Active Wavy Circle
+                var activeAngle = 2 * Math.PI * Math.max(0.0, Math.min(1.0, control.indeterminate ? 0.75 : control.value));
+                if (activeAngle > 0) {
+                    ctx.strokeStyle = control.activeColor;
+                    ctx.lineWidth = stroke;
+                    ctx.lineCap = "round";
+                    ctx.beginPath();
+
+                    var step = Math.PI / 60;
+                    for (var angle = -Math.PI / 2; angle <= -Math.PI / 2 + activeAngle; angle += step) {
+                        var currR = R + amp * Math.sin(n * angle - 2 * Math.PI * phase);
+                        var px = cx + currR * Math.cos(angle);
+                        var py = cy + currR * Math.sin(angle);
+
+                        if (angle === -Math.PI / 2) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    onWavePhaseChanged: if (wavy) wavyCanvas.requestPaint()
+    onValueChanged: if (wavy) wavyCanvas.requestPaint()
+
+    // Classic Standard Linear Progress (Non-wavy)
+    Rectangle {
+        visible: control.type === "linear" && !control.wavy
+        anchors.verticalCenter: parent.verticalCenter
+        width: parent.width
+        height: control.isThick ? 8 * control.themeGlobalScale : 4 * control.themeGlobalScale
+        color: control.showTrack ? control.trackColor : "transparent"
         radius: height / 2
         clip: true
 
         Rectangle {
             id: indicator
+            visible: !control.indeterminate
             height: parent.height
-            width: control.indeterminate ? parent.width * 0.3 : parent.width * control.value
+            x: 0
+            width: parent.width * Math.max(0, Math.min(1, control.value))
             radius: height / 2
-            color: control.themePrimary
-
-            // Indeterminate animation
-            SequentialAnimation on x {
-                running: control.indeterminate && control.visible && control.type === "linear"
-                loops: Animation.Infinite
-                NumberAnimation { from: -indicator.width; to: control.width; duration: 1000; easing.type: Easing.InOutSine }
-            }
+            color: control.activeColor
 
             Behavior on width {
                 enabled: !control.indeterminate
-                NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] }
-            }
-        }
-    }
-
-    // Circular Progress (Advanced MD3 Indeterminate Animation)
-    Canvas {
-        id: canvas
-        visible: control.type === "circular"
-        anchors.fill: parent
-
-        property real startAngle: 0
-        property real endAngle: control.indeterminate ? 0.2 : control.value
-
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.reset();
-
-            var centerX = width / 2;
-            var centerY = height / 2;
-            var strokeWidth = (control.isThick ? 8 : 4) * control.themeGlobalScale;
-            var radius = (width - strokeWidth) / 2;
-
-            if (control.indeterminate) {
-                ctx.beginPath();
-                ctx.strokeStyle = control.themePrimary;
-                ctx.lineWidth = strokeWidth;
-                ctx.lineCap = "round";
-                // MD3 circular indeterminate is a rotating arc that grows and shrinks
-                ctx.arc(centerX, centerY, radius, startAngle * 2 * Math.PI, endAngle * 2 * Math.PI);
-                ctx.stroke();
-            } else {
-                // Background track
-                ctx.beginPath();
-                ctx.strokeStyle = control.themeSurfaceContainerHighest;
-                ctx.lineWidth = strokeWidth;
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.stroke();
-
-                // Progress indicator
-                ctx.beginPath();
-                ctx.strokeStyle = control.themePrimary;
-                ctx.lineWidth = strokeWidth;
-                ctx.lineCap = "round";
-                var eA = Math.max(0.01, control.value) * 2 * Math.PI;
-                ctx.arc(centerX, centerY, radius, -0.5 * Math.PI, eA - 0.5 * Math.PI);
-                ctx.stroke();
+                NumberAnimation {
+                    duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationEffectDefault !== 'undefined') ? MeoTheme.motionDurationEffectDefault : 150
+                    easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                }
             }
         }
 
-        onStartAngleChanged: requestPaint()
-        onEndAngleChanged: requestPaint()
-        onWidthChanged: requestPaint()
-        onHeightChanged: requestPaint()
+        Repeater {
+            model: 2
+            delegate: Rectangle {
+                required property int index
+                visible: control.indeterminate
+                height: parent.height
+                radius: height / 2
+                color: control.activeColor
+                x: -width
+                width: parent.width * (index === 0 ? 0.4 : 0.25)
 
-        // 🌟 MD3 "Advance and Retreat" Animation logic
-        SequentialAnimation {
-            running: control.indeterminate && control.visible && control.type === "circular"
-            loops: Animation.Infinite
-
-            ParallelAnimation {
-                NumberAnimation { target: canvas; property: "startAngle"; from: 0; to: 0.75; duration: 666; easing.type: Easing.InOutSine }
-                NumberAnimation { target: canvas; property: "endAngle"; from: 0.2; to: 0.95; duration: 666; easing.type: Easing.InOutSine }
-                NumberAnimation { target: canvas; property: "rotation"; from: 0; to: 180; duration: 666; easing.type: Easing.Linear }
+                SequentialAnimation on x {
+                    running: control.indeterminate && control.type === "linear" && !control.wavy && control.visible
+                    loops: Animation.Infinite
+                    PauseAnimation { duration: index === 0 ? 0 : 500 }
+                    NumberAnimation {
+                        from: -width
+                        to: parent ? parent.width : 240
+                        duration: Math.round(1200 * control.themeMotionScale)
+                        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasized !== 'undefined') ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]
+                    }
+                }
             }
-            ParallelAnimation {
-                NumberAnimation { target: canvas; property: "startAngle"; from: 0.75; to: 1.5; duration: 666; easing.type: Easing.InOutSine }
-                NumberAnimation { target: canvas; property: "endAngle"; from: 0.95; to: 1.7; duration: 666; easing.type: Easing.InOutSine }
-                NumberAnimation { target: canvas; property: "rotation"; from: 180; to: 360; duration: 666; easing.type: Easing.Linear }
-            }
-
-            // Reset angles to prevent overflow while maintaining rotation continuity
-            ScriptAction { script: { canvas.startAngle %= 1.0; canvas.endAngle %= 1.0; } }
         }
     }
 }

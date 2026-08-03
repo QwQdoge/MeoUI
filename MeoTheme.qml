@@ -4,11 +4,49 @@ import QtQuick
 QtObject {
     id: theme
 
-    // 🌟 全局缩放因子（用于支持高分屏自适应）
+    // 🌟 全局缩放因子（用于支持高分屏自适应与圆角/字体动态调整）
     property real globalScale: 1.0
+    property real cornerScale: 1.0
+    property real scrollSpeedScale: 1.0
 
     // 🌟 主题模式开关
     property bool isDarkMode: false
+    property bool isExpressive: false
+    property bool isBouncy: true
+    property bool reduceMotion: false
+    property bool transparencyEnabled: true
+
+    // Material 3 adaptive window classes, expressed in effective pixels.
+    readonly property real windowBreakpointMedium: 600
+    readonly property real windowBreakpointExpanded: 840
+    readonly property real windowBreakpointLarge: 1200
+    readonly property real windowBreakpointExtraLarge: 1600
+    readonly property real windowHeightBreakpointMedium: 480
+    readonly property real windowHeightBreakpointExpanded: 900
+
+    function windowWidthSizeClass(availableWidth) {
+        const effectiveWidth = Math.max(0, availableWidth) / Math.max(0.1, globalScale)
+        if (effectiveWidth < windowBreakpointMedium) return "compact"
+        if (effectiveWidth < windowBreakpointExpanded) return "medium"
+        if (effectiveWidth < windowBreakpointLarge) return "expanded"
+        if (effectiveWidth < windowBreakpointExtraLarge) return "large"
+        return "extraLarge"
+    }
+
+    function windowHeightSizeClass(availableHeight) {
+        const effectiveHeight = Math.max(0, availableHeight) / Math.max(0.1, globalScale)
+        if (effectiveHeight < windowHeightBreakpointMedium) return "compact"
+        if (effectiveHeight < windowHeightBreakpointExpanded) return "medium"
+        return "expanded"
+    }
+
+    function windowPageMargin(availableWidth) {
+        const sizeClass = windowWidthSizeClass(availableWidth)
+        if (sizeClass === "compact") return 16 * globalScale
+        if (sizeClass === "medium" || sizeClass === "expanded") return 24 * globalScale
+        if (sizeClass === "large") return 32 * globalScale
+        return 40 * globalScale
+    }
 
     // 🎨 MeoArch MD3 fallback color schemes
     // Used role-by-role whenever a dynamic color scheme is unavailable or incomplete.
@@ -35,7 +73,15 @@ QtObject {
         "onSurface": "#323233",
         "surfaceVariant": "#E0DEE6",
         "onSurfaceVariant": "#5E5C66",
-        "outline": "#8E8999"
+        "outline": "#8E8999",
+        "outlineVariant": "#C4C7C5",
+        "surfaceContainerLowest": "#FFFFFF",
+        "surfaceContainerLow": "#F7F2FA",
+        "surfaceContainer": "#F3EDF7",
+        "surfaceContainerHigh": "#ECE6F0",
+        "surfaceContainerHighest": "#E6E1E5",
+        "inverseSurface": "#313033",
+        "onInverseSurface": "#F4F0F4"
     })
 
     readonly property var fallbackDarkColorScheme: ({
@@ -61,7 +107,15 @@ QtObject {
         "onSurface": "#E4E4E6",
         "surfaceVariant": "#5E5C66",
         "onSurfaceVariant": "#DEDBE6",
-        "outline": "#AAA7B3"
+        "outline": "#AAA7B3",
+        "outlineVariant": "#44474F",
+        "surfaceContainerLowest": "#0F0E11",
+        "surfaceContainerLow": "#1D1B20",
+        "surfaceContainer": "#211F26",
+        "surfaceContainerHigh": "#2B2930",
+        "surfaceContainerHighest": "#36343B",
+        "inverseSurface": "#E6E1E5",
+        "onInverseSurface": "#313033"
     })
 
     // 🎨 Dynamic color provider API
@@ -79,8 +133,19 @@ QtObject {
         dynamicColorScheme = ({})
     }
 
-    function colorForRole(role) {
-        const fallbackScheme = isDarkMode ? fallbackDarkColorScheme : fallbackLightColorScheme
+    function colorForRole(role, darkMode, dynamicAvailable, scheme) {
+        const fallbackScheme = darkMode ? fallbackDarkColorScheme : fallbackLightColorScheme
+        if (dynamicAvailable
+                && scheme
+                && typeof scheme[role] !== "undefined"
+                && scheme[role] !== null
+                && scheme[role] !== "") {
+            return scheme[role]
+        }
+        return fallbackScheme[role]
+    }
+
+    function dynamicOrFallback(role) {
         if (dynamicColorsAvailable
                 && dynamicColorScheme
                 && typeof dynamicColorScheme[role] !== "undefined"
@@ -88,44 +153,63 @@ QtObject {
                 && dynamicColorScheme[role] !== "") {
             return dynamicColorScheme[role]
         }
-        return fallbackScheme[role]
+        return isDarkMode ? fallbackDarkColorScheme[role] : fallbackLightColorScheme[role]
     }
 
-    // 🎨 Active MD3 roles; existing components continue using MeoTheme.primary, etc.
-    property color primary: colorForRole("primary")
-    property color onPrimary: colorForRole("onPrimary")
-    property color primaryContainer: colorForRole("primaryContainer")
-    property color onPrimaryContainer: colorForRole("onPrimaryContainer")
+    // 🎨 Active MD3 roles. Content roles use a non-`onXxx` public name because
+    // QML reserves that shape for signal handlers in several compiled paths.
+    property color primary: dynamicColorsAvailable && dynamicColorScheme.primary ? dynamicColorScheme.primary : (isDarkMode ? "#C0B1E6" : "#6750A4")
+    property color contentOnPrimary: dynamicColorsAvailable && dynamicColorScheme.onPrimary ? dynamicColorScheme.onPrimary : (isDarkMode ? "#30254C" : "#FFFFFF")
+    property color primaryContainer: dynamicColorsAvailable && dynamicColorScheme.primaryContainer ? dynamicColorScheme.primaryContainer : (isDarkMode ? "#403266" : "#CBC0E6")
+    property color contentOnPrimaryContainer: dynamicColorsAvailable && dynamicColorScheme.onPrimaryContainer ? dynamicColorScheme.onPrimaryContainer : (isDarkMode ? "#CBC0E6" : "#201933")
 
-    property color secondary: colorForRole("secondary")
-    property color onSecondary: colorForRole("onSecondary")
-    property color secondaryContainer: colorForRole("secondaryContainer")
-    property color onSecondaryContainer: colorForRole("onSecondaryContainer")
+    property color secondary: dynamicColorsAvailable && dynamicColorScheme.secondary ? dynamicColorScheme.secondary : (isDarkMode ? "#D8D2E6" : "#625B71")
+    property color contentOnSecondary: dynamicColorsAvailable && dynamicColorScheme.onSecondary ? dynamicColorScheme.onSecondary : (isDarkMode ? "#433E4C" : "#FFFFFF")
+    property color secondaryContainer: dynamicColorsAvailable && dynamicColorScheme.secondaryContainer ? dynamicColorScheme.secondaryContainer : (isDarkMode ? "#595366" : "#DCD8E6")
+    property color contentOnSecondaryContainer: dynamicColorsAvailable && dynamicColorScheme.onSecondaryContainer ? dynamicColorScheme.onSecondaryContainer : (isDarkMode ? "#DCD8E6" : "#2C2933")
 
-    property color tertiary: colorForRole("tertiary")
-    property color onTertiary: colorForRole("onTertiary")
-    property color tertiaryContainer: colorForRole("tertiaryContainer")
-    property color onTertiaryContainer: colorForRole("onTertiaryContainer")
+    property color tertiary: dynamicColorsAvailable && dynamicColorScheme.tertiary ? dynamicColorScheme.tertiary : (isDarkMode ? "#E6C3CE" : "#7D5260")
+    property color contentOnTertiary: dynamicColorsAvailable && dynamicColorScheme.onTertiary ? dynamicColorScheme.onTertiary : (isDarkMode ? "#4C323B" : "#FFFFFF")
+    property color tertiaryContainer: dynamicColorsAvailable && dynamicColorScheme.tertiaryContainer ? dynamicColorScheme.tertiaryContainer : (isDarkMode ? "#66434F" : "#E6CDD5")
+    property color contentOnTertiaryContainer: dynamicColorsAvailable && dynamicColorScheme.onTertiaryContainer ? dynamicColorScheme.onTertiaryContainer : (isDarkMode ? "#E6CDD5" : "#332227")
 
-    property color error: colorForRole("error")
-    property color onError: colorForRole("onError")
-    property color errorContainer: colorForRole("errorContainer")
-    property color onErrorContainer: colorForRole("onErrorContainer")
+    property color error: dynamicColorsAvailable && dynamicColorScheme.error ? dynamicColorScheme.error : (isDarkMode ? "#E69490" : "#B3261E")
+    property color contentOnError: dynamicColorsAvailable && dynamicColorScheme.onError ? dynamicColorScheme.onError : (isDarkMode ? "#4C100D" : "#FFFFFF")
+    property color errorContainer: dynamicColorsAvailable && dynamicColorScheme.errorContainer ? dynamicColorScheme.errorContainer : (isDarkMode ? "#661511" : "#E6ACA9")
+    property color contentOnErrorContainer: dynamicColorsAvailable && dynamicColorScheme.onErrorContainer ? dynamicColorScheme.onErrorContainer : (isDarkMode ? "#E6ACA9" : "#330B09")
 
-    property color background: colorForRole("background")
-    property color onBackground: colorForRole("onBackground")
-    property color surface: colorForRole("surface")
-    property color onSurface: colorForRole("onSurface")
-    property color surfaceVariant: colorForRole("surfaceVariant")
-    property color onSurfaceVariant: colorForRole("onSurfaceVariant")
-    property color outline: colorForRole("outline")
-    
+    property color background: dynamicColorsAvailable && dynamicColorScheme.background ? dynamicColorScheme.background : (isDarkMode ? "#323233" : "#FCFCFC")
+    property color contentOnBackground: dynamicColorsAvailable && dynamicColorScheme.onBackground ? dynamicColorScheme.onBackground : (isDarkMode ? "#E4E4E6" : "#323233")
+    property color surface: dynamicColorsAvailable && dynamicColorScheme.surface ? dynamicColorScheme.surface : (isDarkMode ? "#323233" : "#FCFCFC")
+    property color contentOnSurface: dynamicColorsAvailable && dynamicColorScheme.onSurface ? dynamicColorScheme.onSurface : (isDarkMode ? "#E4E4E6" : "#323233")
+    property color surfaceVariant: dynamicColorsAvailable && dynamicColorScheme.surfaceVariant ? dynamicColorScheme.surfaceVariant : (isDarkMode ? "#5E5C66" : "#E0DEE6")
+    property color contentOnSurfaceVariant: dynamicColorsAvailable && dynamicColorScheme.onSurfaceVariant ? dynamicColorScheme.onSurfaceVariant : (isDarkMode ? "#DEDBE6" : "#5E5C66")
+    property color outline: dynamicColorsAvailable && dynamicColorScheme.outline ? dynamicColorScheme.outline : (isDarkMode ? "#AAA7B3" : "#8E8999")
+
+    // M3 Content color aliases
+    property color onPrimary: contentOnPrimary
     // M3 Surface Containers
-    property color surfaceContainerLowest: isDarkMode ? "#0F0E11" : "#FFFFFF"
-    property color surfaceContainerLow: isDarkMode ? "#1D1B20" : "#F7F2FA"
-    property color surfaceContainer: isDarkMode ? "#211F26" : "#F3EDF7"
-    property color surfaceContainerHigh: isDarkMode ? "#2B2930" : "#ECE6F0"
-    property color surfaceContainerHighest: isDarkMode ? "#36343B" : "#E6E1E5"
+    property color surfaceContainerLowest: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerLowest ? dynamicColorScheme.surfaceContainerLowest : (isDarkMode ? "#0F0E11" : "#FFFFFF")
+    property color surfaceContainerLow: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerLow ? dynamicColorScheme.surfaceContainerLow : (isDarkMode ? "#1D1B20" : "#F7F2FA")
+    property color surfaceContainer: dynamicColorsAvailable && dynamicColorScheme.surfaceContainer ? dynamicColorScheme.surfaceContainer : (isDarkMode ? "#211F26" : "#F3EDF7")
+    property color surfaceContainerHigh: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerHigh ? dynamicColorScheme.surfaceContainerHigh : (isDarkMode ? "#2B2930" : "#ECE6F0")
+    property color surfaceContainerHighest: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerHighest ? dynamicColorScheme.surfaceContainerHighest : (isDarkMode ? "#36343B" : "#E6E1E5")
+    property color onPrimaryContainer: contentOnPrimaryContainer
+    property color onSecondary: contentOnSecondary
+    property color onSecondaryContainer: contentOnSecondaryContainer
+    property color onTertiary: contentOnTertiary
+    property color onTertiaryContainer: contentOnTertiaryContainer
+    property color onSurface: contentOnSurface
+    property color onSurfaceVariant: contentOnSurfaceVariant
+    property color onError: contentOnError
+    property color onErrorContainer: contentOnErrorContainer
+
+    // Motion duration aliases
+    readonly property int durationShort: motionDurationFast
+    readonly property int durationMedium: motionDurationMedium
+    readonly property int durationLong: motionDurationSlow
+
+
 
     // 🌟 Surface Tint Helper (MD3 Elevation Overlay)
     function surfaceTint(level) {
@@ -135,30 +219,116 @@ QtObject {
     }
 
     // 🌟 Motion Tokens (MD3 Standard)
-    readonly property int motionDurationShort1: 50
-    readonly property int motionDurationShort2: 100
-    readonly property int motionDurationShort3: 150
-    readonly property int motionDurationShort4: 200
-    readonly property int motionDurationMedium1: 250
-    readonly property int motionDurationMedium2: 300
-    readonly property int motionDurationMedium3: 350
-    readonly property int motionDurationMedium4: 400
-    readonly property int motionDurationLong1: 450
-    readonly property int motionDurationLong2: 500
-    readonly property int motionDurationLong3: 550
-    readonly property int motionDurationLong4: 600
+    readonly property int motionDurationShort1: reduceMotion ? 0 : 50
+    readonly property int motionDurationShort2: reduceMotion ? 0 : 100
+    readonly property int motionDurationShort3: reduceMotion ? 0 : 150
+    readonly property int motionDurationShort4: reduceMotion ? 0 : 200
+    readonly property int motionDurationMedium1: reduceMotion ? 0 : 250
+    readonly property int motionDurationMedium2: reduceMotion ? 0 : 300
+    readonly property int motionDurationMedium3: reduceMotion ? 0 : 350
+    readonly property int motionDurationMedium4: reduceMotion ? 0 : 400
+    readonly property int motionDurationLong1: reduceMotion ? 0 : 450
+    readonly property int motionDurationLong2: reduceMotion ? 0 : 500
+    readonly property int motionDurationLong3: reduceMotion ? 0 : 550
+    readonly property int motionDurationLong4: reduceMotion ? 0 : 600
+    readonly property int motionDurationExtraLong1: reduceMotion ? 0 : 700
+    readonly property int motionDurationExtraLong2: reduceMotion ? 0 : 800
+    readonly property int motionDurationExtraLong3: reduceMotion ? 0 : 900
+    readonly property int motionDurationExtraLong4: reduceMotion ? 0 : 1000
+
+    // Material 3 semantic motion aliases for component code.
+    readonly property var motionDurationInstant: motionDurationShort1
+    // Interactive desktop feedback needs to acknowledge a pointer immediately.
+    // Longer values stay reserved for spatial transitions rather than hover/press.
+    readonly property var motionDurationFast: reduceMotion ? 0 : 120
+    readonly property var motionDurationMedium: reduceMotion ? 0 : 220
+    readonly property var motionDurationSlow: reduceMotion ? 0 : 320
+    readonly property var motionDurationRippleExpand: reduceMotion ? 0 : 280
+    readonly property var motionDurationRippleFade: reduceMotion ? 0 : 160
+    readonly property int motionDurationState: reduceMotion ? 0 : 100
+    readonly property int motionDurationSelection: reduceMotion ? 0 : 220
+    readonly property int motionDurationShapeEnter: reduceMotion ? 0 : 140
+    readonly property int motionDurationShapeSettle: reduceMotion ? 0 : 220
+    readonly property int motionDurationDialogEnter: reduceMotion ? 0 : 240
+    readonly property int motionDurationDialogExit: reduceMotion ? 0 : 160
+    readonly property int motionDurationMenuEnter: reduceMotion ? 0 : 160
+    readonly property int motionDurationMenuExit: reduceMotion ? 0 : 120
+    readonly property int motionDurationSheetEnter: reduceMotion ? 0 : 320
+    readonly property int motionDurationSheetExit: reduceMotion ? 0 : 220
+    readonly property int motionDurationPage: reduceMotion ? 0 : 320
 
     readonly property list<real> motionEasingStandard: [0.2, 0, 0, 1]
     readonly property list<real> motionEasingStandardAccelerate: [0.3, 0, 1, 1]
     readonly property list<real> motionEasingStandardDecelerate: [0, 0, 0, 1]
-    readonly property list<real> motionEasingEmphasized: [0.2, 0, 0, 1] // Simplified for Soul Curve compatibility
+    readonly property list<real> motionEasingEmphasized: [0.05, 0.7, 0.1, 1]
     readonly property list<real> motionEasingEmphasizedAccelerate: [0.3, 0, 0.8, 0.15]
     readonly property list<real> motionEasingEmphasizedDecelerate: [0.05, 0.7, 0.1, 1]
+    readonly property list<real> motionEasingEnter: [0, 0, 0, 1]
+    readonly property list<real> motionEasingExit: [1, 0, 1, 1]
 
-    // 🌟 Soul Curve (MD3 Expressive Standard)
-    readonly property list<real> motionEasingSoul: [0.34, 0.8, 0.34, 1.0]
+    // 🌟 M3E Spring Physics Motion Curves (Spatial vs Effect)
+    readonly property list<real> motionEasingSpringBouncy: [0.34, 1.35, 0.64, 1.0] // Controlled Settling Overshoot
+    readonly property list<real> motionEasingSpringStiff: [0.18, 0.89, 0.32, 1.25] // Instant Physical Press Response
+    readonly property list<real> motionEasingSpringSubtle: [0.22, 1.1, 0.36, 1.0]  // Smooth Release Settling
 
-    property color outlineVariant: isDarkMode ? "#44474F" : "#C4C7C5"
+    // Compatibility & Primary M3E Curve
+    readonly property list<real> motionEasingSoul: motionEasingEmphasized
+
+    // 🌟 M3E Motion Scheme Categories
+    // Spatial Motion (Position, Size, Bounds, Shape Morphing)
+    readonly property int motionDurationSpatialFast: reduceMotion ? 0 : Math.round(120 * motionScale)
+    readonly property int motionDurationSpatialDefault: reduceMotion ? 0 : Math.round(220 * motionScale)
+    readonly property int motionDurationSpatialSlow: reduceMotion ? 0 : Math.round(340 * motionScale)
+
+    // Effect Motion (Opacity, Color, State Layer, Scrim - Monotonic without Overshoot)
+    readonly property int motionDurationEffectFast: reduceMotion ? 0 : Math.round(80 * motionScale)
+    readonly property int motionDurationEffectDefault: reduceMotion ? 0 : Math.round(150 * motionScale)
+    readonly property int motionDurationEffectSlow: reduceMotion ? 0 : Math.round(250 * motionScale)
+
+    // 🌟 字体族 Token (Font Family Tokens)
+    property string fontFamily: "Inter, Roboto, Noto Sans SC, sans-serif"
+    property string fontFamilyMonospace: "Roboto Mono, JetBrains Mono, Fira Code, monospace"
+    property string fontFamilyBrand: "Google Sans, Outfit, Roboto, sans-serif"
+
+    // 🌟 字体全局缩放 (Font Scale Token)
+    property real fontScale: 1.0
+
+    // 🌟 动画时间与曲线全局倍率 (Motion Duration & Speed Scale)
+    property real motionScale: 1.0
+
+    // 🌟 图标尺寸 Token (Icon Size Tokens)
+    readonly property real iconSizeXS: 16 * globalScale
+    readonly property real iconSizeS: 18 * globalScale
+    readonly property real iconSizeM: 24 * globalScale
+    readonly property real iconSizeL: 32 * globalScale
+    readonly property real iconSizeXL: 48 * globalScale
+
+    // 🌟 悬浮/阴影 Token (Elevation Tokens)
+    readonly property real elevationLevel0: 0
+    readonly property real elevationLevel1: 1 * globalScale
+    readonly property real elevationLevel2: 3 * globalScale
+    readonly property real elevationLevel3: 6 * globalScale
+    readonly property real elevationLevel4: 8 * globalScale
+    readonly property real elevationLevel5: 12 * globalScale
+
+    // MD3 state-layer opacity tokens.
+    readonly property real stateOpacityHover: 0.10
+    readonly property real stateOpacityFocus: 0.12
+    readonly property real stateOpacityPressed: 0.14
+    readonly property real stateOpacityDragged: 0.16
+
+    // Semantic feedback and surface roles used by products consuming MeoUI.
+    readonly property real disabledContainerOpacity: 0.12
+    readonly property real disabledContentOpacity: 0.38
+    readonly property color scrim: "#000000"
+    readonly property color shadow: "#000000"
+    readonly property color inverseSurface: dynamicOrFallback("inverseSurface")
+    readonly property color contentOnInverseSurface: dynamicOrFallback("onInverseSurface")
+    readonly property color success: isDarkMode ? "#8ED6A0" : "#256D3A"
+    readonly property color successContainer: isDarkMode ? "#164A27" : "#D8F3DC"
+    readonly property color contentOnSuccessContainer: isDarkMode ? "#C1F1CB" : "#123C20"
+
+    property color outlineVariant: dynamicOrFallback("outlineVariant")
 
     // MD3 Fixed Colors (Same in both Light and Dark mode)
     property color primaryFixed: "#EADDFF"
@@ -181,14 +351,15 @@ QtObject {
 
     // 🌟 M3 Shape Scale (MD3 Standard)
     readonly property real shapeNone: 0
-    readonly property real shapeExtraSmall: 4 * globalScale
-    readonly property real shapeSmall: 8 * globalScale
-    readonly property real shapeMedium: 12 * globalScale
-    readonly property real shapeLarge: 16 * globalScale
-    readonly property real shapeLargeIncreased: 20 * globalScale
-    readonly property real shapeExtraLarge: 28 * globalScale
-    readonly property real shapeExtraLargeIncreased: 32 * globalScale
-    readonly property real shapeExtraExtraLarge: 48 * globalScale
+    readonly property real shapeExtraSmall: 4 * globalScale * cornerScale
+    readonly property real shapeSmall: 8 * globalScale * cornerScale
+    readonly property real shapeMedium: 12 * globalScale * cornerScale
+    readonly property real shapeLarge: 16 * globalScale * cornerScale
+    readonly property real shapeLargeIncreased: 20 * globalScale * cornerScale
+    readonly property real shapeExtraLarge: 28 * globalScale * cornerScale
+    readonly property real shapeExtraLargeIncreased: 32 * globalScale * cornerScale
+    readonly property real expressiveShapeCornerRadius: 32 * globalScale * cornerScale
+    readonly property real shapeExtraExtraLarge: 48 * globalScale * cornerScale
     readonly property real shapeFull: 1000 * globalScale // Large value for full rounding
 
     // 🌟 MD3 Expressive Dimension Tokens
@@ -209,6 +380,11 @@ QtObject {
     readonly property real sliderThumbGapExpressive: 6 * globalScale
 
     readonly property real shapeSquareRadius: 4 * globalScale
+
+    // 🌟 Semantic thickness tokens
+    readonly property real strokeWidthThin: 1 * globalScale
+    readonly property real strokeWidthMedium: 2 * globalScale
+    readonly property real strokeWidthThick: 3 * globalScale
 
     // 🌟 MD3 Expressive Shape Library (Conceptual Tokens)
     readonly property string shapeSquircle: "squircle"
@@ -235,6 +411,9 @@ QtObject {
 
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
+    readonly property string typefacePlain: "Roboto"
+    readonly property string typefaceBrand: "Comfortaa"
+    readonly property string typefaceChineseFallback: "Noto Sans SC, Microsoft YaHei, Source Han Sans SC"
 
     // Display
     readonly property var displayLarge: { "size": 57, "weight": Font.Normal, "lineHeight": 64, "letterSpacing": -0.25 }
@@ -286,4 +465,51 @@ QtObject {
     readonly property var labelLargeEmphasized: { "size": 14, "weight": Font.DemiBold, "lineHeight": 20, "letterSpacing": 0.1 }
     readonly property var labelMediumEmphasized: { "size": 12, "weight": Font.DemiBold, "lineHeight": 16, "letterSpacing": 0.5 }
     readonly property var labelSmallEmphasized: { "size": 11, "weight": Font.DemiBold, "lineHeight": 16, "letterSpacing": 0.5 }
+
+    // 🌟 Meo semantic typography tokens.
+    // Use these in pages/components instead of raw pixel sizes.
+    readonly property var titleBig: { "size": 40, "weight": Font.Bold, "lineHeight": 48, "letterSpacing": 0, "family": typefaceBrand }
+    readonly property var titleMediumUi: { "size": 26, "weight": Font.Bold, "lineHeight": 34, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var titleSmallUi: { "size": 16, "weight": Font.Bold, "lineHeight": 24, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var bodyBig: { "size": 18, "weight": Font.Normal, "lineHeight": 28, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var bodyMediumUi: { "size": 15, "weight": Font.Normal, "lineHeight": 22, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var bodySmallUi: { "size": 14, "weight": Font.Normal, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelBig: { "size": 15, "weight": Font.Medium, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelMediumUi: { "size": 14, "weight": Font.Medium, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelSmallUi: { "size": 12, "weight": Font.Medium, "lineHeight": 16, "letterSpacing": 0, "family": typefacePlain }
+
+    readonly property var titleBigEmphasized: titleBig
+    readonly property var titleMediumUiEmphasized: titleMediumUi
+    readonly property var titleSmallUiEmphasized: titleSmallUi
+    readonly property var bodyBigEmphasized: { "size": 18, "weight": Font.Bold, "lineHeight": 28, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var bodyMediumUiEmphasized: { "size": 15, "weight": Font.Bold, "lineHeight": 22, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var bodySmallUiEmphasized: { "size": 14, "weight": Font.Bold, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelBigEmphasized: { "size": 15, "weight": Font.Bold, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelMediumUiEmphasized: { "size": 14, "weight": Font.Bold, "lineHeight": 20, "letterSpacing": 0, "family": typefacePlain }
+    readonly property var labelSmallUiEmphasized: { "size": 12, "weight": Font.Bold, "lineHeight": 16, "letterSpacing": 0, "family": typefacePlain }
+
+    function typeToken(role, size, emphasized) {
+        const normalizedRole = role || "body"
+        const normalizedSize = size || "medium"
+
+        if (normalizedRole === "title") {
+            if (normalizedSize === "big" || normalizedSize === "large") return emphasized ? titleBigEmphasized : titleBig
+            if (normalizedSize === "small") return emphasized ? titleSmallUiEmphasized : titleSmallUi
+            return emphasized ? titleMediumUiEmphasized : titleMediumUi
+        }
+
+        if (normalizedRole === "body") {
+            if (normalizedSize === "big" || normalizedSize === "large") return emphasized ? bodyBigEmphasized : bodyBig
+            if (normalizedSize === "small") return emphasized ? bodySmallUiEmphasized : bodySmallUi
+            return emphasized ? bodyMediumUiEmphasized : bodyMediumUi
+        }
+
+        if (normalizedRole === "label") {
+            if (normalizedSize === "big" || normalizedSize === "large") return emphasized ? labelBigEmphasized : labelBig
+            if (normalizedSize === "small") return emphasized ? labelSmallUiEmphasized : labelSmallUi
+            return emphasized ? labelMediumUiEmphasized : labelMediumUi
+        }
+
+        return bodyMediumUi
+    }
 }

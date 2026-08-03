@@ -17,11 +17,13 @@ TextArea {
 
     // 🌟 作用域防御
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 150
 
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
     readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
     readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
     readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
@@ -43,6 +45,7 @@ TextArea {
     selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.3)
     selectedTextColor: themeOnSurface
     font.pixelSize: fontBodyLarge.size * themeGlobalScale
+    font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
     font.weight: fontBodyLarge.weight
     selectByMouse: true
     wrapMode: TextArea.Wrap
@@ -92,7 +95,7 @@ TextArea {
             }
             border.width: control.type === "outlined" ? (control.activeFocus ? 2 : 1) : 0
 
-            Behavior on border.color { ColorAnimation { duration: 150 } }
+            Behavior on border.color { ColorAnimation { duration: control.motionFast } }
 
             Rectangle {
                 anchors.bottom: parent.bottom
@@ -101,7 +104,7 @@ TextArea {
                 height: control.activeFocus ? 2 : 1
                 color: parent.border.color
                 visible: control.type === "filled"
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: control.motionFast } }
             }
         }
     }
@@ -123,13 +126,13 @@ TextArea {
             width: labelText.implicitWidth
             height: labelText.implicitHeight
 
-            Behavior on y { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+            Behavior on y { NumberAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
 
             Rectangle {
                 anchors.fill: parent
                 anchors.leftMargin: -4 * control.themeGlobalScale
                 anchors.rightMargin: -4 * control.themeGlobalScale
-                color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.background !== 'undefined') ? MeoTheme.background : (isDarkMode ? "#121212" : "#FFFFFF")
+                color: control.themeSurface
                 visible: control.type === "outlined" && overlayLayer.isCollapsed
             }
 
@@ -144,7 +147,7 @@ TextArea {
                     if (control.activeFocus) return control.themePrimary;
                     return control.themeOnSurfaceVariant;
                 }
-                Behavior on font.pixelSize { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+                Behavior on font.pixelSize { NumberAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
             }
         }
     }

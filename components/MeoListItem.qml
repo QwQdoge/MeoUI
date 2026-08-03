@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import MeoUI
 
 Control {
@@ -20,24 +21,28 @@ Control {
     property color badgeColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
     property Component leadingComponent: null
     property Component trailingComponent: null
-    property var actions: [] // 🌟 New: Multiple trailing actions support (Array of Components)
+    property list<Component> actions
 
     property bool interactive: true
     property bool isSegmented: false // MD3 Expressive: Segmented list style
+    property string roundingStrategy: "all" // "all" | "top" | "bottom" | "middle" | "none"
+    property bool isDense: false // MD3 Expressive: Compact list style
     property bool isEmphasized: false // MD3 Expressive: Use bold typography
     property bool vibrant: false // 🌟 MD3 Expressive: Vibrant selection style
     property bool selected: false
+    readonly property bool pressed: mouseArea.pressed
+    property string shape: "rect" // 🌟 MD3 Expressive: "rect" | "squircle" | "hexagon" | ...
 
     signal clicked()
 
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSecondaryContainer !== 'undefined') ? MeoTheme.onSecondaryContainer : "#1D192B"
+    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
     readonly property color themePrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimaryContainer !== 'undefined') ? MeoTheme.onPrimaryContainer : "#21005D"
+    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     readonly property var fontBodyLarge: {
@@ -52,56 +57,102 @@ Control {
     implicitWidth: 360 * themeGlobalScale
     // MD3 Heights: 1-line (56/72), 2-line (72/88), 3-line (88)
     implicitHeight: {
-        let h = 56;
+        let h = isDense ? 48 : 56;
         if (supportingText !== "") {
-            h = (supportingTextLines > 1 || overline !== "") ? 88 : 72;
+            h = (supportingTextLines > 1 || overline !== "") ? (isDense ? 72 : 88) : (isDense ? 64 : 72);
         }
-        if (leadingImage !== "" && leadingImageSize > 40) h = Math.max(h, leadingImageSize + 16);
+        if (leadingImage !== "" && leadingImageSize > 40) h = Math.max(h, leadingImageSize + (isDense ? 8 : 16));
         if (isSegmented) h += 8;
         return Math.max(h * themeGlobalScale, contentRow.implicitHeight + padding * 2);
     }
 
-    padding: isSegmented ? 12 * themeGlobalScale : 16 * themeGlobalScale
+    padding: {
+        if (isDense) return 8 * themeGlobalScale;
+        return isSegmented ? 12 * themeGlobalScale : 16 * themeGlobalScale;
+    }
     spacing: 16 * themeGlobalScale // Standardized MD3 spacing
+    activeFocusOnTab: interactive
+    Accessible.role: Accessible.ListItem
+    Accessible.name: headline
+    Accessible.description: supportingText
+    Accessible.selected: selected
+    Accessible.focusable: interactive
+    Accessible.onPressAction: if (interactive) control.clicked()
+    Keys.onReturnPressed: if (interactive) control.clicked()
+    Keys.onEnterPressed: if (interactive) control.clicked()
+    Keys.onSpacePressed: if (interactive) control.clicked()
 
-    background: Rectangle {
-        color: {
-            if (!isSegmented || !selected) return "transparent";
-            return vibrant ? themePrimaryContainer : themeSecondaryContainer;
-        }
-        radius: isSegmented ? (typeof MeoTheme !== 'undefined' ? MeoTheme.shapeLarge : 16 * themeGlobalScale) : 0
-
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: isSegmented ? 8 * themeGlobalScale : 0
-        anchors.rightMargin: isSegmented ? 8 * themeGlobalScale : 0
+    background: Item {
+        width: control.width - (control.isSegmented ? 16 * control.themeGlobalScale : 0)
+        height: control.height
+        x: control.isSegmented ? 8 * control.themeGlobalScale : 0
 
         Rectangle {
+            id: shapeBg
             anchors.fill: parent
-            visible: control.interactive
-            radius: parent.radius
-            color: {
-                let overlayColor = (vibrant && selected) ? control.themeOnPrimaryContainer : control.themeOnSurface;
-                if (mouseArea.pressed) return Qt.rgba(overlayColor.r, overlayColor.g, overlayColor.b, 0.12)
-                if (mouseArea.containsMouse) return Qt.rgba(overlayColor.r, overlayColor.g, overlayColor.b, 0.08)
-                return "transparent"
+            radius: {
+                if (!isSegmented) return 0;
+                if (typeof MeoTheme !== 'undefined' && MeoTheme.isExpressive && selected) return MeoTheme.shapeLargeIncreased;
+                return (typeof MeoTheme !== 'undefined' ? MeoTheme.shapeLarge : 16 * themeGlobalScale);
             }
-            Behavior on color { ColorAnimation { duration: 150 } }
+            color: {
+                if (!isSegmented || !selected) return "transparent";
+                if (vibrant && typeof MeoTheme !== 'undefined' && MeoTheme.isExpressive) return themePrimary;
+                return vibrant ? themePrimaryContainer : themeSecondaryContainer;
+            }
+
+            // MD3 Expressive: Rounding strategies for connected items in a group
+            topLeftRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : 0
+            topRightRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : 0
+            bottomLeftRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : 0
+            bottomRightRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : 0
+
+            MeoStateLayer {
+                anchors.fill: parent
+                visible: control.interactive
+                pressed: mouseArea.pressed
+                hovered: mouseArea.containsMouse
+                focused: control.activeFocus
+                pressX: mouseArea.mouseX
+                pressY: mouseArea.mouseY
+                radius: (control.isSegmented && control.roundingStrategy === "all" && control.shape === "rect") ? shapeBg.radius : 0
+                color: {
+                    if (vibrant && selected) return control.themeOnPrimaryContainer;
+                    if (selected) return control.themeOnSecondaryContainer;
+                    return control.themeOnSurface;
+                }
+            }
+
+            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
         }
-        Behavior on color { ColorAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) } }
+
+        // Overlay for complex shapes if using MeoShape (Note: MeoShape doesn't support partial rounding as easily as Rectangle)
+        MeoShape {
+            anchors.fill: parent
+            visible: isSegmented && control.shape !== "rect"
+            type: control.shape
+            radius: shapeBg.radius
+            color: shapeBg.color
+            opacity: selected ? 1.0 : 0.0
+        }
     }
 
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         enabled: control.interactive
-        onClicked: control.clicked()
+        hoverEnabled: true
+        onClicked: {
+            control.forceActiveFocus(Qt.MouseFocusReason)
+            control.clicked()
+        }
     }
 
     contentItem: Row {
         id: contentRow
         spacing: control.spacing
-        width: parent.width
+        width: control.availableWidth
+        height: control.availableHeight
 
         // 🖼️ Leading Visuals Area
         Item {
@@ -123,14 +174,15 @@ Control {
             MeoIcon {
                 anchors.centerIn: parent
                 icon: control.leadingIcon
-                size: 24
+                size: isDense ? 20 : 24
                 color: control.themeOnSurfaceVariant
                 visible: control.leadingIcon !== "" && control.leadingComponent === null && control.leadingImage === ""
             }
 
-            Rectangle {
+            MeoShape {
                 anchors.fill: parent
-                radius: control.leadingImageVariant === "circle" ? width / 2 : 8 * control.themeGlobalScale
+                type: control.leadingImageVariant === "circle" ? "circle" : control.leadingImageVariant
+                radius: 8 * control.themeGlobalScale
                 clip: true
                 visible: control.leadingImage !== ""
                 color: control.themeSecondaryContainer
@@ -152,6 +204,7 @@ Control {
             Text {
                 text: control.overline
                 width: parent.width
+                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
                 font.pixelSize: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelSmall !== 'undefined' ? MeoTheme.labelSmall.size : 11) * control.themeGlobalScale
                 font.weight: Font.Normal
                 color: control.themeOnSurfaceVariant
@@ -163,6 +216,7 @@ Control {
             Text {
                 text: control.headline
                 width: parent.width
+                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
                 font.pixelSize: fontBodyLarge.size * control.themeGlobalScale
                 font.weight: (control.selected && !isSegmented) ? Font.Bold : fontBodyLarge.weight
                 font.letterSpacing: (fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
@@ -180,6 +234,7 @@ Control {
             Text {
                 text: control.supportingText
                 width: parent.width
+                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
                 font.pixelSize: fontBodyMedium.size * control.themeGlobalScale
                 font.weight: fontBodyMedium.weight
                 font.letterSpacing: (fontBodyMedium.letterSpacing || 0) * control.themeGlobalScale

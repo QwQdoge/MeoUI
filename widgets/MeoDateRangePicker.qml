@@ -17,15 +17,24 @@ MeoCard {
 
     // 🌟 作用域与主题安全防御
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimary !== 'undefined') ? MeoTheme.onPrimary : "#FFFFFF"
+    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
     readonly property color themePrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimaryContainer !== 'undefined') ? MeoTheme.onPrimaryContainer : "#21005D"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     implicitWidth: 328 * themeGlobalScale
-    implicitHeight: 520 * themeGlobalScale
+    implicitHeight: 600 * themeGlobalScale
+
+    onStartDateChanged: {
+        if (startInput)
+            startInput.value = control.hasStartDate ? control.startDate : new Date(0)
+    }
+    onEndDateChanged: {
+        if (endInput)
+            endInput.value = control.hasEndDate ? control.endDate : new Date(0)
+    }
 
     Column {
         anchors.fill: parent
@@ -35,8 +44,8 @@ MeoCard {
         // Header: Selection Summary
         Column {
             width: parent.width
-            height: 84 * control.themeGlobalScale
-            spacing: 4 * control.themeGlobalScale
+            height: 144 * control.themeGlobalScale
+            spacing: 8 * control.themeGlobalScale
             padding: 12 * control.themeGlobalScale
 
             Text {
@@ -66,12 +75,41 @@ MeoCard {
                     color: control.hasEndDate ? control.themeOnSurface : control.themeOnSurfaceVariant
                 }
             }
+
+            Row {
+                width: parent.width
+                spacing: 8 * control.themeGlobalScale
+
+                MeoDateInput {
+                    id: startInput
+                    width: (parent.width - parent.spacing) / 2
+                    height: 48 * control.themeGlobalScale
+                    label: "Start"
+                    format: "yyyy-MM-dd"
+                    allowEmpty: true
+                    value: control.hasStartDate ? control.startDate : new Date(0)
+                    onDateAccepted: function(date) { setRangeDate(true, date) }
+                    onCleared: control.startDate = new Date(0)
+                }
+
+                MeoDateInput {
+                    id: endInput
+                    width: (parent.width - parent.spacing) / 2
+                    height: 48 * control.themeGlobalScale
+                    label: "End"
+                    format: "yyyy-MM-dd"
+                    allowEmpty: true
+                    value: control.hasEndDate ? control.endDate : new Date(0)
+                    onDateAccepted: function(date) { setRangeDate(false, date) }
+                    onCleared: control.endDate = new Date(0)
+                }
+            }
         }
 
         MeoDivider {}
 
         // Month Selection
-        Row {
+        Item {
             width: parent.width
             height: 48 * control.themeGlobalScale
 
@@ -240,5 +278,24 @@ MeoCard {
                 control.endDate = date
             }
         }
+    }
+
+    function setRangeDate(isStart, date) {
+        if (isStart) {
+            if (control.hasEndDate && control.endDate.getTime() < date.getTime()) {
+                control.startDate = control.endDate
+                control.endDate = date
+            } else {
+                control.startDate = date
+            }
+        } else {
+            if (control.hasStartDate && date.getTime() < control.startDate.getTime()) {
+                control.endDate = control.startDate
+                control.startDate = date
+            } else {
+                control.endDate = date
+            }
+        }
+        control.displayDate = isStart ? control.startDate : control.endDate
     }
 }

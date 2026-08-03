@@ -45,3 +45,7 @@ qrc_*.cpp
 *.temp
 .DS_Store
 Thumbs.db
+
+# Generated showcase artifacts
+/1200dp
+/showcase/coverage.json

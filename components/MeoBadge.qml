@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import MeoUI
 
 Rectangle {
     id: control
@@ -8,11 +9,12 @@ Rectangle {
     property string text: ""
     property int maxCount: 99
     property bool isDot: false
+    property string shape: "circle" // "circle" | "squircle" | "hexagon" ...
 
     // 🌟 作用域与主题安全防御
     property Item target: null
     readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
-    readonly property color themeOnError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onError !== 'undefined') ? MeoTheme.onError : "#FFFFFF"
+    readonly property color themeOnError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnError !== 'undefined') ? MeoTheme.contentOnError : "#FFFFFF"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     implicitWidth: isDot ? 6 * themeGlobalScale : Math.max(16 * themeGlobalScale, label.implicitWidth + 8 * themeGlobalScale)
@@ -25,7 +27,15 @@ Rectangle {
     y: target ? -height/2 : 0
     onTargetChanged: if (target) parent = target
 
-    Text {
+    MeoShape {
+        anchors.fill: parent
+        type: control.shape
+        radius: control.radius
+        color: control.color
+        visible: control.shape !== "circle"
+    }
+
+    MeoText {
         id: label
         anchors.centerIn: parent
         text: {
@@ -36,8 +46,9 @@ Rectangle {
             return control.text;
         }
         visible: !control.isDot
-        font.pixelSize: 10 * control.themeGlobalScale
-        font.weight: Font.Medium
+        typeRole: "label"
+        typeSize: "small"
+        emphasized: true
         color: control.themeOnError
     }
 }

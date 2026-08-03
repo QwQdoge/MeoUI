@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Rectangle {
@@ -14,8 +13,8 @@ Rectangle {
 
     // 🌟 作用域与主题安全防御
     readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     readonly property var fontTitleLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleLarge !== 'undefined') ? MeoTheme.titleLarge : { "size": 22, "weight": Font.Normal }
@@ -28,16 +27,10 @@ Rectangle {
     // MD3 Standard Side Sheet: 0dp radius or slightly rounded?
     // Usually Standard Side Sheets are not rounded on the edge they attach to.
 
-    // Elevation Shadow
-    layer.enabled: true
-    layer.effect: MultiEffect {
-        shadowEnabled: true
-        shadowBlur: 0.1
-        shadowHorizontalOffset: -1 * control.themeGlobalScale
-        shadowColor: Qt.rgba(0,0,0,0.1)
-    }
+    border.width: 1
+    border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.22)
 
-    Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutCubic } }
+    Behavior on x { NumberAnimation { duration: control.isOpen ? MeoTheme.motionDurationSheetEnter : MeoTheme.motionDurationSheetExit; easing.bezierCurve: control.isOpen ? MeoTheme.motionEasingEmphasizedDecelerate : MeoTheme.motionEasingEmphasizedAccelerate } }
 
     Column {
         anchors.fill: parent

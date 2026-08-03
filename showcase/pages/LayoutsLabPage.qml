@@ -2,118 +2,152 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
+import ".."
 
-ScrollView {
-    id: page
-    contentWidth: availableWidth
+ShowcaseCategoryPage {
+    categoryId: "layouts"
 
-    ColumnLayout {
-        width: page.availableWidth - 48 * MeoTheme.globalScale
-        x: 24 * MeoTheme.globalScale
-        y: 24 * MeoTheme.globalScale
-        spacing: 24 * MeoTheme.globalScale
+    // 🌟 1. Responsive Viewport & Window Metrics Simulator (MeoWindowMetrics)
+    ShowcaseSection {
+        title: "Responsive Viewport & Window Metrics Simulator"
+        subtitle: "Live window width size class inspector (Compact <600dp, Medium 600-840dp, Expanded 840-1200dp, Large >1200dp)."
+        width: parent.width
 
-        Text { text: "Layouts lab"; color: MeoTheme.onSurface; font.pixelSize: MeoTheme.headlineLargeEmphasized.size * MeoTheme.globalScale; font.weight: Font.Bold }
-        Text { Layout.fillWidth: true; text: "Responsive pattern previews. Resize the window to exercise their breakpoints."; color: MeoTheme.onSurfaceVariant; font.pixelSize: 16 * MeoTheme.globalScale; wrapMode: Text.WordWrap }
+        ColumnLayout {
+            width: parent.width
+            spacing: MeoTheme.space16
 
-        SectionTitle { text: "Dashboard layout" }
-        MeoDashboardLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 300 * MeoTheme.globalScale
-            model: [
-                { "title": "Revenue", "value": "$24.8k" },
-                { "title": "Sessions", "value": "18,420" },
-                { "title": "Conversion", "value": "12.4%" }
-            ]
-            delegate: Component {
-                MeoCard {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    implicitHeight: 120 * MeoTheme.globalScale
-                    type: "filled"
-                    Column { anchors.fill: parent; spacing: 8 * MeoTheme.globalScale
-                        Text { text: modelData.title; color: MeoTheme.onSurfaceVariant; font.pixelSize: 14 * MeoTheme.globalScale }
-                        Text { text: modelData.value; color: MeoTheme.onSurface; font.pixelSize: 28 * MeoTheme.globalScale; font.weight: Font.Bold }
-                    }
+            RowLayout {
+                spacing: MeoTheme.space16
+
+                MeoText {
+                    text: "Current Window Size Class:"
+                    typeRole: "title"
+                    typeSize: "small"
+                    emphasized: true
                 }
-            }
-        }
 
-        SectionTitle { text: "Feed layout" }
-        MeoFeedLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 360 * MeoTheme.globalScale
-            model: [
-                { "title": "Design tokens", "body": "A compact token update.", "height": 120 },
-                { "title": "Expressive motion", "body": "Soul Curve makes transitions feel responsive.", "height": 180 },
-                { "title": "Adaptive layout", "body": "Resize to see the pattern react.", "height": 150 },
-                { "title": "Accessible color", "body": "Semantic pairs preserve contrast.", "height": 130 }
-            ]
-            delegate: Component {
-                MeoCard {
-                    required property var modelData
-                    width: parent ? parent.width : 240 * MeoTheme.globalScale
-                    implicitHeight: modelData.height * MeoTheme.globalScale
-                    Column { anchors.fill: parent; spacing: 8 * MeoTheme.globalScale
-                        Text { text: modelData.title; color: MeoTheme.onSurface; font.pixelSize: 18 * MeoTheme.globalScale; font.weight: Font.DemiBold }
-                        Text { width: parent.width; text: modelData.body; color: MeoTheme.onSurfaceVariant; font.pixelSize: 14 * MeoTheme.globalScale; wrapMode: Text.WordWrap }
-                    }
-                }
-            }
-        }
-
-        SectionTitle { text: "List-detail layout" }
-        MeoListDetailLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 320 * MeoTheme.globalScale
-            showDetail: true
-            listComponent: Component {
                 Rectangle {
-                    color: MeoTheme.surfaceContainerLow
-                    Column {
-                        anchors.fill: parent
-                        MeoListHeader { text: "Components" }
-                        MeoListItem { width: parent.width; headline: "MeoButton"; supportingText: "Actions"; leadingIcon: "smart_button" }
-                        MeoListItem { width: parent.width; headline: "MeoCard"; supportingText: "Surfaces"; leadingIcon: "dashboard" }
-                    }
-                }
-            }
-            detailComponent: Component {
-                Rectangle {
-                    color: MeoTheme.surface
-                    Column {
+                    height: 28 * MeoTheme.globalScale
+                    width: 140 * MeoTheme.globalScale
+                    radius: MeoTheme.shapeSmall
+                    color: MeoTheme.primaryContainer
+
+                    MeoText {
                         anchors.centerIn: parent
-                        spacing: 12 * MeoTheme.globalScale
-                        MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "view_sidebar"; size: 48; color: MeoTheme.primary }
-                        Text { text: "Detail pane"; color: MeoTheme.onSurface; font.pixelSize: 24 * MeoTheme.globalScale }
+                        text: windowMetrics.widthSizeClass
+                        typeRole: "label"
+                        typeSize: "medium"
+                        emphasized: true
+                        color: MeoTheme.contentOnPrimaryContainer
                     }
                 }
             }
-        }
 
-        SectionTitle { text: "Settings layout" }
-        MeoSettingsLayout {
-            Layout.fillWidth: true
-            Layout.preferredHeight: 420 * MeoTheme.globalScale
-            title: "Showcase settings"
-            model: [
-                { "sectionTitle": "Appearance", "items": [
-                    { "title": "Dark theme", "subtitle": "Use the dark color scheme", "icon": "dark_mode", "type": "switch", "checked": MeoTheme.isDarkMode },
-                    { "title": "Dynamic color", "subtitle": "Follow the selected palette", "icon": "palette", "type": "chevron" }
-                ]},
-                { "sectionTitle": "About", "items": [
-                    { "title": "MeoUI", "subtitle": "Material Design 3 component library", "icon": "info", "type": "chevron" }
-                ]}
-            ]
+            MeoWindowMetrics {
+                id: windowMetrics
+                availableWidth: parent.width
+                availableHeight: 400 * MeoTheme.globalScale
+            }
         }
-
-        Item { Layout.preferredHeight: 24 * MeoTheme.globalScale }
     }
 
-    component SectionTitle: Text {
-        Layout.fillWidth: true
-        color: MeoTheme.primary
-        font.pixelSize: 20 * MeoTheme.globalScale
-        font.weight: Font.DemiBold
+    // 🌟 2. Internal State Layer Inspector (MeoStateLayer)
+    ShowcaseSection {
+        title: "Internal State Layer Engine (MeoStateLayer)"
+        subtitle: "Visualization of MD3 overlay opacities for hover (8%), focus (10%), pressed (10%), and dragged (16%)."
+        width: parent.width
+
+        RowLayout {
+            width: parent.width
+            spacing: MeoTheme.space16
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 80 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.outlineVariant
+                border.width: 1
+
+                MeoStateLayer {
+                    hovered: true
+                    color: MeoTheme.primary
+                }
+
+                MeoText { anchors.centerIn: parent; text: "Hover State Layer (10%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 80 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.outlineVariant
+                border.width: 1
+
+                MeoStateLayer {
+                    pressed: true
+                    color: MeoTheme.primary
+                }
+
+                MeoText { anchors.centerIn: parent; text: "Pressed State Layer (14%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 80 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.outlineVariant
+                border.width: 1
+
+                MeoStateLayer {
+                    dragged: true
+                    color: MeoTheme.primary
+                }
+
+                MeoText { anchors.centerIn: parent; text: "Dragged State Layer (16%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+            }
+        }
+    }
+
+    // 🌟 3. Experimental & Legacy Components
+    ShowcaseSection {
+        title: "Experimental & Legacy Components"
+        subtitle: "Internal test scripts and legacy components documented for architectural completeness."
+        width: parent.width
+
+        Rectangle {
+            width: parent.width
+            height: 90 * MeoTheme.globalScale
+            radius: MeoTheme.shapeMedium
+            color: MeoTheme.surfaceContainerLow
+            border.color: MeoTheme.outlineVariant
+            border.width: 1
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: MeoTheme.space16
+
+                RowLayout {
+                    MeoText { text: "test-import.qml"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                    Rectangle {
+                        height: 20 * MeoTheme.globalScale
+                        width: 110 * MeoTheme.globalScale
+                        radius: MeoTheme.shapeExtraSmall
+                        color: Qt.rgba(1, 0, 0, 0.12)
+                        MeoText { anchors.centerIn: parent; text: "EXPERIMENTAL"; typeRole: "label"; typeSize: "small"; color: MeoTheme.error }
+                    }
+                }
+
+                MeoText {
+                    text: "Source: examples/test-import.qml | Purpose: Module import validation script."
+                    typeRole: "body"
+                    typeSize: "small"
+                    color: MeoTheme.contentOnSurfaceVariant
+                }
+            }
+        }
     }
 }

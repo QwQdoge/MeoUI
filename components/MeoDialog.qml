@@ -1,26 +1,32 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import MeoUI
 
-Popup {
+MeoMotionPopup {
     id: control
+    presentation: MeoMotionPopup.Dialog
 
     property string title: ""
     property string message: ""
     property string confirmText: "Confirm"
     property string cancelText: "Cancel"
     property string icon: ""
+    property bool showAcceptButton: true
+    property bool showRejectButton: true
 
     signal confirmed()
     signal cancelled()
 
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
     readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHigh !== 'undefined') ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property color themeSecondary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondary !== 'undefined') ? MeoTheme.secondary : "#625B71"
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property int motionEnter: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationShort4 !== 'undefined') ? MeoTheme.motionDurationShort4 : 200
+    readonly property int motionExit: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationShort3 !== 'undefined') ? MeoTheme.motionDurationShort3 : 150
 
     readonly property var fontHeadlineSmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.headlineSmall !== 'undefined') ? MeoTheme.headlineSmall : { "size": 24, "weight": Font.Normal }
     readonly property var fontBodyMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyMedium !== 'undefined') ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal }
@@ -34,7 +40,9 @@ Popup {
 
     background: Rectangle {
         color: control.themeSurfaceContainerHigh
-        radius: 28 * control.themeGlobalScale
+        radius: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeExtraLarge !== 'undefined') ? MeoTheme.shapeExtraLarge : 28 * control.themeGlobalScale
+        layer.enabled: control.visible
+        layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.55; shadowVerticalOffset: 8; shadowColor: Qt.rgba(0, 0, 0, 0.22) }
     }
 
     contentItem: Column {
@@ -73,10 +81,12 @@ Popup {
             width: parent.width - 48 * control.themeGlobalScale
             layoutDirection: Qt.RightToLeft
             spacing: 8 * control.themeGlobalScale
+            visible: control.showAcceptButton || control.showRejectButton
 
             MeoButton {
                 text: control.confirmText
                 type: "text"
+                visible: control.showAcceptButton
                 onClicked: {
                     control.confirmed()
                     control.close()
@@ -86,6 +96,7 @@ Popup {
             MeoButton {
                 text: control.cancelText
                 type: "text"
+                visible: control.showRejectButton
                 onClicked: {
                     control.cancelled()
                     control.close()
@@ -94,12 +105,4 @@ Popup {
         }
     }
 
-    enter: Transition {
-        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 200 }
-        NumberAnimation { property: "scale"; from: 0.9; to: 1.0; duration: 200; easing.type: Easing.OutBack }
-    }
-    exit: Transition {
-        NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150 }
-        NumberAnimation { property: "scale"; from: 1.0; to: 0.9; duration: 150 }
-    }
 }

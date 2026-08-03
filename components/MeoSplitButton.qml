@@ -6,206 +6,196 @@ import MeoUI
 Control {
     id: control
 
-    // 🌟 核心属性
     property string text: ""
     property string icon: ""
-    property string type: "filled" // "filled" | "tonal" | "outlined" | "elevated" | "text"
+    property string type: "tonal" // filled | tonal | outlined | elevated | text
     property bool isEmphasized: false
     property var menuModel: []
-
-    // Size variants matching MD3 Expressive (XS to XL)
-    property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
-
+    property string size: "m"
     signal clicked()
     signal menuOpened()
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-
-    readonly property color textColor: {
-        if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
-        if (type === "filled") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimary !== 'undefined') ? MeoTheme.onPrimary : "#FFFFFF";
-        if (type === "tonal") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSecondaryContainer !== 'undefined') ? MeoTheme.onSecondaryContainer : "#1D192B";
-        return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4";
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnPrimaryContainer: MeoTheme.contentOnPrimaryContainer
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeForeground: !enabled ? MeoTheme.contentOnSurfaceVariant
+                                       : type === "filled" ? themeOnPrimary
+                                       : type === "tonal" ? themeOnPrimaryContainer
+                                       : themePrimary
+    readonly property color themeBackground: {
+        if (!enabled) return MeoTheme.isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12)
+        if (type === "filled") return themePrimary
+        if (type === "tonal") return themePrimaryContainer
+        if (type === "elevated") return themeSurfaceContainerLow
+        return "transparent"
     }
+    readonly property var fontToken: size === "xs" ? MeoTheme.labelSmall
+                                     : size === "s" ? MeoTheme.labelMedium
+                                     : size === "l" ? MeoTheme.titleSmall
+                                     : size === "xl" ? MeoTheme.titleMedium
+                                     : MeoTheme.labelLarge
+    readonly property real groupRadius: height / 2
+    readonly property bool outlined: type === "outlined"
 
-    readonly property color bgColor: {
-        if (!control.enabled) {
-            if (type === "outlined" || type === "text") return "transparent";
-            return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
-        }
-        if (type === "filled") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4";
-        if (type === "tonal") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8";
-        if (type === "elevated") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA";
-        return "transparent";
-    }
-
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontToken: {
-        if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Medium };
-        if (size === "xs") return MeoTheme.labelSmall;
-        if (size === "s") return MeoTheme.labelMedium;
-        if (size === "l") return MeoTheme.titleSmall;
-        if (size === "xl") return MeoTheme.titleMedium;
-        return MeoTheme.labelLarge;
-    }
-
-    implicitHeight: {
-        if (size === "xs") return MeoTheme.buttonHeightXS || 32 * themeGlobalScale;
-        if (size === "s") return MeoTheme.buttonHeightS || 40 * themeGlobalScale;
-        if (size === "l") return MeoTheme.buttonHeightL || 56 * themeGlobalScale;
-        if (size === "xl") return MeoTheme.buttonHeightXL || 72 * themeGlobalScale;
-        return MeoTheme.buttonHeightM || 48 * themeGlobalScale;
-    }
-
-    implicitWidth: mainAction.implicitWidth + menuAction.implicitWidth + 1 * themeGlobalScale
+    implicitHeight: size === "xs" ? MeoTheme.buttonHeightXS
+                  : size === "s" ? MeoTheme.buttonHeightS
+                  : size === "l" ? MeoTheme.buttonHeightL
+                  : size === "xl" ? MeoTheme.buttonHeightXL
+                  : MeoTheme.buttonHeightM
+    implicitWidth: primaryAction.implicitWidth + menuAction.implicitWidth
+    leftPadding: 0
+    rightPadding: 0
+    topPadding: 0
+    bottomPadding: 0
 
     background: Rectangle {
-        radius: control.height / 2
-        color: control.bgColor
-        border.color: {
-            if (control.type !== "outlined") return "transparent";
-            if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
-            return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E";
-        }
-        border.width: control.type === "outlined" ? 1 * themeGlobalScale : 0
+        radius: control.groupRadius
+        color: control.themeBackground
+        border.width: control.outlined ? Math.max(1, control.themeGlobalScale) : 0
+        border.color: control.themeOutline
 
-        // MD3 Elevation for 'elevated' type
         layer.enabled: control.type === "elevated" && control.enabled
         layer.effect: MultiEffect {
             shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: 1 * themeGlobalScale
-            shadowColor: Qt.rgba(0,0,0,0.2)
+            shadowBlur: 0.16
+            shadowVerticalOffset: control.themeGlobalScale
+            shadowOpacity: 0.16
+            shadowColor: Qt.rgba(0, 0, 0, 0.22)
         }
 
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState } }
     }
 
     contentItem: Row {
+        id: splitRow
         spacing: 0
+        clip: true
 
-        // Main Action Area
-        Item {
-            id: mainAction
-            height: control.height
-            implicitWidth: contentRow.implicitWidth + (size === "xs" ? 16 : 24) * control.themeGlobalScale
+        Button {
+            id: primaryAction
+            implicitWidth: primaryContent.implicitWidth + (control.size === "xs" ? 20 : 28) * control.themeGlobalScale
+            implicitHeight: control.implicitHeight
+            leftPadding: 0
+            rightPadding: 0
+            topPadding: 0
+            bottomPadding: 0
+            hoverEnabled: true
 
-            Rectangle {
-                id: mainState
-                anchors.fill: parent
-                radius: parent.height / 2
-                color: "transparent"
-
-                // Mask the right side to keep the split look
+            background: Item {
                 clip: true
-                Rectangle {
+                MeoStateLayer {
                     anchors.fill: parent
-                    anchors.rightMargin: -parent.radius
-                    color: "transparent"
+                    radius: control.groupRadius
+                    pressed: primaryAction.pressed
+                    hovered: primaryAction.hovered
+                    pressX: primaryAction.pressX
+                    pressY: primaryAction.pressY
+                    color: control.themeForeground
+                }
+            }
 
-                    MeoStateLayer {
-                        radius: mainState.radius
-                        pressed: mainMouse.pressed
-                        hovered: mainMouse.containsMouse
-                        color: control.textColor
+            contentItem: Item {
+                Row {
+                    id: primaryContent
+                    anchors.centerIn: parent
+                    spacing: (control.size === "xs" ? 4 : 8) * control.themeGlobalScale
+
+                    MeoIcon {
+                        icon: control.icon
+                        visible: icon.length > 0
+                        size: control.size === "xs" ? 16 * control.themeGlobalScale
+                              : control.size === "xl" ? 24 * control.themeGlobalScale
+                              : 18 * control.themeGlobalScale
+                        color: control.themeForeground
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Text {
+                        text: control.text
+                        font.family: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
+                        font.pixelSize: control.fontToken.size * (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined' ? MeoTheme.fontScale * control.themeGlobalScale : control.themeGlobalScale)
+                        font.weight: control.isEmphasized ? Font.Bold : control.fontToken.weight
+                        color: control.themeForeground
+                        lineHeightMode: Text.FixedHeight
+                        lineHeight: (control.fontToken.lineHeight || 20) * control.themeGlobalScale
+                        verticalAlignment: Text.AlignVCenter
+                        anchors.verticalCenter: parent.verticalCenter
                     }
                 }
             }
 
-            Row {
-                id: contentRow
-                anchors.centerIn: parent
-                spacing: (size === "xs" ? 4 : 8) * control.themeGlobalScale
-
-                MeoIcon {
-                    icon: control.icon
-                    visible: icon !== ""
-                    size: (size === "xs" ? 16 : (size === "xl" ? 24 : 18))
-                    color: control.textColor
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                    text: control.text
-                    font.pixelSize: control.fontToken.size * control.themeGlobalScale
-                    font.weight: control.isEmphasized ? Font.Bold : control.fontToken.weight
-                    color: control.textColor
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-            }
-
-            MouseArea {
-                id: mainMouse
-                anchors.fill: parent
-                onClicked: control.clicked()
-            }
+            onClicked: control.clicked()
         }
 
-        // Vertical Divider
         Rectangle {
-            width: 1 * control.themeGlobalScale
-            height: control.height * 0.6
+            width: Math.max(1, control.themeGlobalScale)
+            height: parent.height - 14 * control.themeGlobalScale
             anchors.verticalCenter: parent.verticalCenter
-            color: control.textColor
-            opacity: 0.2
-            visible: control.type !== "text"
+            color: control.outlined ? control.themeOutline : Qt.rgba(control.themeForeground.r, control.themeForeground.g, control.themeForeground.b, 0.28)
         }
 
-        // Menu Action Area
-        Item {
+        Button {
             id: menuAction
-            height: control.height
-            implicitWidth: (size === "xs" ? 32 : (size === "xl" ? 48 : 40)) * control.themeGlobalScale
+            implicitWidth: (control.size === "xs" ? 36 : control.size === "xl" ? 52 : 44) * control.themeGlobalScale
+            implicitHeight: control.implicitHeight
+            leftPadding: 0
+            rightPadding: 0
+            topPadding: 0
+            bottomPadding: 0
+            hoverEnabled: true
 
-            Rectangle {
-                id: menuState
-                anchors.fill: parent
-                radius: parent.height / 2
-                color: "transparent"
+            background: Item {
                 clip: true
 
-                // Mask the left side
                 Rectangle {
                     anchors.fill: parent
-                    anchors.leftMargin: -parent.radius
-                    color: "transparent"
+                    radius: control.groupRadius
+                    color: menuPopup.opened ? Qt.rgba(control.themeForeground.r, control.themeForeground.g, control.themeForeground.b, 0.16) : "transparent"
+                    Behavior on color { ColorAnimation { duration: 150 } }
+                }
 
-                    MeoStateLayer {
-                        radius: menuState.radius
-                        pressed: menuMouse.pressed
-                        hovered: menuMouse.containsMouse
-                        color: control.textColor
+                MeoStateLayer {
+                    anchors.fill: parent
+                    radius: control.groupRadius
+                    pressed: menuAction.pressed
+                    hovered: menuAction.hovered
+                    pressX: menuAction.pressX
+                    pressY: menuAction.pressY
+                    color: control.themeForeground
+                }
+            }
+
+            contentItem: Item {
+                MeoIcon {
+                    anchors.centerIn: parent
+                    icon: "arrow_drop_down"
+                    size: control.size === "xs" ? 18 * control.themeGlobalScale
+                          : control.size === "xl" ? 28 * control.themeGlobalScale
+                          : 24 * control.themeGlobalScale
+                    color: control.themeForeground
+                    rotation: menuPopup.opened ? 180 : 0
+                    Behavior on rotation {
+                        NumberAnimation {
+                            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialFast !== 'undefined') ? MeoTheme.motionDurationSpatialFast : 150
+                            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]
+                        }
                     }
                 }
             }
 
-            MeoIcon {
-                id: menuIcon
-                anchors.centerIn: parent
-                icon: "arrow_drop_down"
-                size: (size === "xs" ? 18 : (size === "xl" ? 28 : 24))
-                color: control.textColor
-
-                // MD3 Expressive: Rotate icon when menu is open
-                rotation: menuPopup.opened ? 180 : 0
-                Behavior on rotation { NumberAnimation { duration: 200; easing.type: Easing.OutQuad } }
-            }
-
-            MouseArea {
-                id: menuMouse
-                anchors.fill: parent
-                onClicked: {
-                    menuPopup.open()
-                    control.menuOpened()
-                }
+            onClicked: {
+                menuPopup.open()
+                control.menuOpened()
             }
 
             MeoMenu {
                 id: menuPopup
-                y: parent.height + 4 * control.themeGlobalScale
-                x: parent.width - width
+                y: menuAction.height + 4 * control.themeGlobalScale
+                x: menuAction.width - width
                 model: control.menuModel
             }
         }

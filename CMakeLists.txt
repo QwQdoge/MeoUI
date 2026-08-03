@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MeoUI VERSION 1.0.1 LANGUAGES CXX)
+project(MeoUI VERSION 0.3.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
 
@@ -7,21 +7,25 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
-set(MEOUI_INSTALL_QMLDIR "${CMAKE_INSTALL_LIBDIR}/qt6/qml" CACHE PATH "Qt 6 QML module install directory")
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml)
 
 # Use Qt 6's standard :/qt/qml resource prefix for QML modules.
 qt_policy(SET QTP0001 NEW)
+if(QT_KNOWN_POLICY_QTP0004)
+    qt_policy(SET QTP0004 NEW)
+endif()
 
 set_source_files_properties(MeoTheme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
-# 定义 QML 模块
+# MeoUI is a separately loadable runtime module.  Applications must import it
+# through the QML import path instead of embedding a private static copy.  This
+# keeps installer/Desktop UI fixes in one authoritative library.
 qt_add_qml_module(meoui_module
-    STATIC
+    SHARED
     URI "MeoUI"
     VERSION 1.0
-    OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/MeoUI"
+    OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/MeoUI"
     QML_FILES
                 widgets/MeoNavigationBar.qml
         widgets/MeoNavigationDrawerModal.qml
@@ -38,16 +42,33 @@ qt_add_qml_module(meoui_module
         showcase/pages/ExpressivePage.qml
         showcase/pages/DataTablePage.qml
         showcase/pages/ThemePage.qml
+        showcase/pages/SettingsPage.qml
         showcase/pages/ComponentsLabPage.qml
         showcase/pages/WidgetsLabPage.qml
         showcase/pages/LayoutsLabPage.qml
+        showcase/ShowcaseApiTable.qml
+        showcase/ShowcaseCatalog.qml
+        showcase/ShowcaseCategoryPage.qml
+        showcase/ShowcaseComponentHeader.qml
+        showcase/ShowcaseSampleDelegate.qml
+        showcase/ShowcaseSection.qml
+        showcase/ShowcaseSnippet.qml
+        showcase/ShowcaseStateGrid.qml
+        showcase/ShowcaseVariantRow.qml
 MeoTheme.qml
+        MeoWindowMetrics.qml
         components/MeoButton.qml
+        components/MeoIconToggleButton.qml
+        components/MeoChipDropdown.qml
+        components/MeoText.qml
         components/MeoSplitButton.qml
         components/MeoButtonGroup.qml
+        components/MeoLoadingIndicator.qml
         components/MeoFABMenu.qml
         components/MeoDockedToolbar.qml
         components/MeoFloatingToolbar.qml
+        components/MeoStepper.qml
+        components/MeoSwipeToDismiss.qml
         components/MeoSegmentedButtons.qml
         components/MeoTextField.qml
         components/MeoTextArea.qml
@@ -63,6 +84,7 @@ MeoTheme.qml
         components/MeoRadioButton.qml
         components/MeoFAB.qml
         components/MeoCard.qml
+        components/MeoMediaCard.qml
         components/MeoChip.qml
         components/MeoProgressBar.qml
         components/MeoDialog.qml
@@ -74,6 +96,9 @@ MeoTheme.qml
         components/MeoTooltip.qml
         components/MeoSnackbar.qml
         components/MeoStateLayer.qml
+        components/MeoMotionPopup.qml
+        components/MeoMotionSurface.qml
+        components/MeoPageHost.qml
         components/MeoFilterChip.qml
         components/MeoInputChip.qml
         components/MeoPullToRefresh.qml
@@ -95,8 +120,12 @@ MeoTheme.qml
         widgets/MeoNavigationRail.qml
         widgets/MeoNavigationDrawer.qml
         widgets/MeoBottomSheet.qml
+        widgets/MeoActionSheet.qml
+        widgets/MeoToolbar.qml
         widgets/MeoAccountHeader.qml
+        widgets/MeoAccountSwitcher.qml
         widgets/MeoSearchBar.qml
+        widgets/MeoSearchAppBar.qml
         widgets/MeoDockedSearchBar.qml
         widgets/MeoBottomAppBar.qml
         widgets/MeoSearchView.qml
@@ -114,31 +143,67 @@ MeoTheme.qml
         patterns/MeoListDetailLayout.qml
         patterns/MeoSettingsLayout.qml
         patterns/MeoSearchFilterBar.qml
+        patterns/MeoPageLayout.qml
+        patterns/MeoGroupedList.qml
+        patterns/MeoNavigationSuite.qml
+        patterns/MeoSearchHeader.qml
         patterns/MeoExpressiveDialog.qml
+        patterns/MeoSegmentedList.qml
         components/MeoShape.qml
+        components/MeoShapeMorph.qml
+        components/MeoMaterialShapes.js
         showcase/MeoShowcase.qml
+    RESOURCES
+        assets/fonts/MaterialSymbolsRounded.ttf
+        assets/fonts/Comfortaa-Bold.ttf
+        assets/fonts/Roboto-Regular.ttf
+        assets/fonts/Roboto-Medium.ttf
+        assets/fonts/Roboto-Bold.ttf
 )
 
-# 确保链接到 QtQuick
 target_link_libraries(meoui_module PUBLIC Qt6::Core Qt6::Quick Qt6::QuickControls2)
+set_target_properties(meoui_module PROPERTIES
+    OUTPUT_NAME meoui
+    VERSION ${PROJECT_VERSION}
+    SOVERSION 0
+)
 
 install(TARGETS meoui_module
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-install(FILES
-    qmldir
-    MeoTheme.qml
-    DESTINATION "${MEOUI_INSTALL_QMLDIR}/MeoUI"
+install(TARGETS meoui_moduleplugin
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+)
+set_target_properties(meoui_moduleplugin PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN;$ORIGIN/../../..;${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+)
+set_target_properties(meoui_module PROPERTIES
+    BUILD_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN;$ORIGIN/../../..;${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
 )
 
-install(DIRECTORY
-    components
-    patterns
-    widgets
-    DESTINATION "${MEOUI_INSTALL_QMLDIR}/MeoUI"
+install(TARGETS meoui_module
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+    RUNTIME DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/MeoUI/qmldir"
+    "${CMAKE_CURRENT_BINARY_DIR}/MeoUI/meoui_module.qmltypes"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+)
+# Keep source QML beside the plugin for qmllint, IDE tooling, and transparent
+# debugging.  The generated qmldir prefers the compiled qrc payload, so runtime
+# applications still load the versioned shared module.
+install(FILES MeoTheme.qml MeoWindowMetrics.qml
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
+)
+install(DIRECTORY components patterns widgets showcase
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
     FILES_MATCHING PATTERN "*.qml"
 )
 

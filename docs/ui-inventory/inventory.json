@@ -1,0 +1,4479 @@
+[
+  {
+    "name": "MeoTheme",
+    "type": "Component",
+    "file": "MeoTheme.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoWindowMetrics",
+      "MeoAssistChip",
+      "MeoAvatar",
+      "MeoBadge",
+      "MeoBanner",
+      "MeoBreadcrumbs",
+      "MeoButton",
+      "MeoButtonGroup",
+      "MeoCard",
+      "MeoCarousel",
+      "MeoCheckbox",
+      "MeoChip",
+      "MeoChipDropdown",
+      "MeoDataTable",
+      "MeoDateInput",
+      "MeoDialog",
+      "MeoDivider",
+      "MeoDockedToolbar",
+      "MeoExposedDropdown",
+      "MeoFAB",
+      "MeoFABMenu",
+      "MeoFilterChip",
+      "MeoFilterGroup",
+      "MeoFloatingToolbar",
+      "MeoFullScreenDialog",
+      "MeoIcon",
+      "MeoIconButton",
+      "MeoIconToggleButton",
+      "MeoInputChip",
+      "MeoListHeader",
+      "MeoListItem",
+      "MeoLoadingIndicator",
+      "MeoMediaCard",
+      "MeoMenu",
+      "MeoMotionPopup",
+      "MeoMotionSurface",
+      "MeoNavigationDrawerItem",
+      "MeoPageHost",
+      "MeoPageIndicator",
+      "MeoProgressBar",
+      "MeoPullToRefresh",
+      "MeoRadioButton",
+      "MeoRangeSlider",
+      "MeoRichTooltip",
+      "MeoSegmentedButtons",
+      "MeoSelectionGroup",
+      "MeoShape",
+      "MeoShapeMorph",
+      "MeoSkeleton",
+      "MeoSlider",
+      "MeoSnackbar",
+      "MeoSplitButton",
+      "MeoStateLayer",
+      "MeoStepper",
+      "MeoSuggestionChip",
+      "MeoSwipeToDismiss",
+      "MeoSwitch",
+      "MeoTabs",
+      "MeoText",
+      "MeoTextArea",
+      "MeoTextField",
+      "MeoTimeInput",
+      "MeoTooltip",
+      "test-import",
+      "MeoAppLayout",
+      "MeoDashboardLayout",
+      "MeoEmptyState",
+      "MeoExpressiveDialog",
+      "MeoFeedLayout",
+      "MeoGroupedList",
+      "MeoListDetailLayout",
+      "MeoNavigationSuite",
+      "MeoPageLayout",
+      "MeoScaffold",
+      "MeoSearchFilterBar",
+      "MeoSearchHeader",
+      "MeoSegmentedList",
+      "MeoSettingsLayout",
+      "MeoShowcase",
+      "ShowcaseApiTable",
+      "ShowcaseCatalog",
+      "ShowcaseCategoryPage",
+      "ShowcaseComponentHeader",
+      "ShowcaseSampleDelegate",
+      "ShowcaseSection",
+      "ShowcaseSnippet",
+      "ShowcaseStateGrid",
+      "ShowcaseVariantRow",
+      "ComponentsLabPage",
+      "ExpressivePage",
+      "SelectionPage",
+      "MeoAccountHeader",
+      "MeoAccountSwitcher",
+      "MeoActionSheet",
+      "MeoBottomAppBar",
+      "MeoBottomSheet",
+      "MeoDatePicker",
+      "MeoDateRangePicker",
+      "MeoDockedSearchBar",
+      "MeoMediaController",
+      "MeoNavigationBar",
+      "MeoNavigationDrawer",
+      "MeoNavigationDrawerModal",
+      "MeoNavigationRail",
+      "MeoSearchAppBar",
+      "MeoSearchBar",
+      "MeoSearchSuggestions",
+      "MeoSearchView",
+      "MeoSideSheet",
+      "MeoSideSheetModal",
+      "MeoStandardBottomSheet",
+      "MeoTimePicker",
+      "MeoToolbar",
+      "MeoTopAppBar"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoWindowMetrics",
+    "type": "Component",
+    "file": "MeoWindowMetrics.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "MeoDashboardLayout",
+      "MeoFeedLayout",
+      "MeoListDetailLayout",
+      "MeoNavigationSuite",
+      "MeoPageLayout",
+      "MeoScaffold",
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoAssistChip",
+    "type": "Component",
+    "file": "components/MeoAssistChip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "mouseArea",
+      "contentRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoAvatar",
+    "type": "Component",
+    "file": "components/MeoAvatar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoMediaCard",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoAccountSwitcher"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoBadge",
+    "type": "Component",
+    "file": "components/MeoBadge.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoIconButton",
+      "MeoIconToggleButton",
+      "MeoListItem",
+      "MeoNavigationDrawerItem",
+      "MeoTabs",
+      "MeoGroupedList",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoNavigationBar",
+      "MeoNavigationRail"
+    ],
+    "children": [
+      "control",
+      "label"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoBanner",
+    "type": "Component",
+    "file": "components/MeoBanner.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentColumn",
+      "actions"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "text",
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoBreadcrumbs",
+    "type": "Component",
+    "file": "components/MeoBreadcrumbs.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentRow",
+      "stateLayer",
+      "breadcrumbRow",
+      "mouseArea"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoButton",
+    "type": "Component",
+    "file": "components/MeoButton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoBanner",
+      "MeoDialog",
+      "MeoFullScreenDialog",
+      "MeoMediaCard",
+      "MeoRichTooltip",
+      "MeoSnackbar",
+      "test-import",
+      "MeoEmptyState",
+      "MeoExpressiveDialog",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage",
+      "MeoDatePicker"
+    ],
+    "children": [
+      "control",
+      "contentRow"
+    ],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "SequentialAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "filled"
+    ],
+    "responsive": []
+  },
+  {
+    "name": "MeoButtonGroup",
+    "type": "Component",
+    "file": "components/MeoButtonGroup.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "groupSurface",
+      "groupRow",
+      "groupButton",
+      "selectionSurface",
+      "groupButtonContent"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "tonal"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoCard",
+    "type": "Component",
+    "file": "components/MeoCard.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoMediaCard",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage",
+      "MeoDatePicker",
+      "MeoDateRangePicker",
+      "MeoTimePicker"
+    ],
+    "children": [
+      "mouseArea"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "elevated",
+      "elevated"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoCarousel",
+    "type": "Component",
+    "file": "components/MeoCarousel.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "delegateLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "multi-browse"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoCheckbox",
+    "type": "Component",
+    "file": "components/MeoCheckbox.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoDataTable",
+      "MeoSelectionGroup",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "SelectionPage"
+    ],
+    "children": [
+      "mouseArea",
+      "checkboxRect",
+      "checkmarkCanvas",
+      "labelText",
+      "feedbackText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoChip",
+    "type": "Component",
+    "file": "components/MeoChip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoChipDropdown",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage"
+    ],
+    "children": [
+      "mouseArea",
+      "contentRow",
+      "closeMouse"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "SequentialAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "assist",
+      "assist"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoChipDropdown",
+    "type": "Component",
+    "file": "components/MeoChipDropdown.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ExpressivePage"
+    ],
+    "children": [
+      "bgMouseArea",
+      "containerRect",
+      "activeIndicator",
+      "overlayLayer",
+      "labelContainer",
+      "labelText",
+      "helperItem",
+      "helperLabel",
+      "counterLabel"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "filled",
+      "input"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDataTable",
+    "type": "Component",
+    "file": "components/MeoDataTable.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "headerRow",
+      "rowDelegate",
+      "rowMouseArea"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDateInput",
+    "type": "Component",
+    "file": "components/MeoDateInput.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoDatePicker",
+      "MeoDateRangePicker"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDialog",
+    "type": "Component",
+    "file": "components/MeoDialog.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "text",
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDivider",
+    "type": "Component",
+    "file": "components/MeoDivider.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoMenu",
+      "MeoSelectionGroup",
+      "MeoListDetailLayout",
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoDateRangePicker",
+      "MeoNavigationDrawerModal"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDockedToolbar",
+    "type": "Component",
+    "file": "components/MeoDockedToolbar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "actionsRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoExposedDropdown",
+    "type": "Component",
+    "file": "components/MeoExposedDropdown.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "filled"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFAB",
+    "type": "Component",
+    "file": "components/MeoFAB.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoFABMenu",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "fabBackground",
+      "contentRoot",
+      "fabContent",
+      "labelText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "small",
+      "regular"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFABMenu",
+    "type": "Component",
+    "file": "components/MeoFABMenu.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "contentColumn",
+      "itemRow",
+      "labelPill",
+      "labelText",
+      "miniFab",
+      "itemMouse"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFilterChip",
+    "type": "Component",
+    "file": "components/MeoFilterChip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoFilterGroup",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "mouseArea",
+      "contentRow",
+      "checkmarkContainer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFilterGroup",
+    "type": "Component",
+    "file": "components/MeoFilterGroup.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoSearchFilterBar",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFloatingToolbar",
+    "type": "Component",
+    "file": "components/MeoFloatingToolbar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "horizontalLayout",
+      "verticalLayout"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFullScreenDialog",
+    "type": "Component",
+    "file": "components/MeoFullScreenDialog.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "topBar",
+      "closeBtn",
+      "titleText",
+      "actionsRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoIcon",
+    "type": "Component",
+    "file": "components/MeoIcon.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAssistChip",
+      "MeoAvatar",
+      "MeoBanner",
+      "MeoBreadcrumbs",
+      "MeoButton",
+      "MeoButtonGroup",
+      "MeoChip",
+      "MeoChipDropdown",
+      "MeoDataTable",
+      "MeoDialog",
+      "MeoFAB",
+      "MeoFABMenu",
+      "MeoFilterChip",
+      "MeoFullScreenDialog",
+      "MeoIconButton",
+      "MeoIconToggleButton",
+      "MeoInputChip",
+      "MeoListItem",
+      "MeoMediaCard",
+      "MeoMenu",
+      "MeoNavigationDrawerItem",
+      "MeoRichTooltip",
+      "MeoSegmentedButtons",
+      "MeoSplitButton",
+      "MeoStepper",
+      "MeoSwitch",
+      "MeoTabs",
+      "MeoTextField",
+      "MeoAppLayout",
+      "MeoEmptyState",
+      "MeoExpressiveDialog",
+      "MeoGroupedList",
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage",
+      "MeoAccountHeader",
+      "MeoAccountSwitcher",
+      "MeoBottomAppBar",
+      "MeoDateRangePicker",
+      "MeoDockedSearchBar",
+      "MeoMediaController",
+      "MeoNavigationBar",
+      "MeoNavigationRail",
+      "MeoSearchBar",
+      "MeoSearchSuggestions",
+      "MeoSearchView",
+      "MeoSideSheet",
+      "MeoSideSheetModal"
+    ],
+    "children": [
+      "control",
+      "materialSymbols"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoIconButton",
+    "type": "Component",
+    "file": "components/MeoIconButton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoFullScreenDialog",
+      "MeoInputChip",
+      "MeoMediaCard",
+      "MeoTextField",
+      "MeoAppLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoAccountHeader",
+      "MeoAccountSwitcher",
+      "MeoBottomAppBar",
+      "MeoDateRangePicker",
+      "MeoDockedSearchBar",
+      "MeoSearchBar",
+      "MeoSearchSuggestions",
+      "MeoSideSheet",
+      "MeoSideSheetModal"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoIconToggleButton",
+    "type": "Component",
+    "file": "components/MeoIconToggleButton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ExpressivePage"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoInputChip",
+    "type": "Component",
+    "file": "components/MeoInputChip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "mouseArea",
+      "contentRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoListHeader",
+    "type": "Component",
+    "file": "components/MeoListHeader.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoNavigationDrawer"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoListItem",
+    "type": "Component",
+    "file": "components/MeoListItem.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoMenu",
+      "MeoSelectionGroup",
+      "MeoGroupedList",
+      "MeoSegmentedList",
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoActionSheet",
+      "MeoSearchSuggestions"
+    ],
+    "children": [
+      "shapeBg",
+      "mouseArea",
+      "contentRow",
+      "trailingActionsRow"
+    ],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoLoadingIndicator",
+    "type": "Component",
+    "file": "components/MeoLoadingIndicator.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoButton",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "container",
+      "activeArea",
+      "globalRotationAnimation"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "SequentialAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoMaterialShapes",
+    "type": "Component",
+    "file": "components/MeoMaterialShapes.js",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoShape",
+      "MeoShapeMorph"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoMediaCard",
+    "type": "Component",
+    "file": "components/MeoMediaCard.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ComponentsLabPage"
+    ],
+    "children": [
+      "mouseArea",
+      "cardContentContainer",
+      "selectedIndicator",
+      "layoutLoader",
+      "headerItem",
+      "mediaTopContainer",
+      "mediaBottomContainer",
+      "mediaLeftContainer",
+      "horizontalHeaderItem",
+      "mediaRightContainer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "standard",
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoMenu",
+    "type": "Component",
+    "file": "components/MeoMenu.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoChipDropdown",
+      "MeoExposedDropdown",
+      "MeoSplitButton",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoAccountSwitcher"
+    ],
+    "children": [
+      "bgRect",
+      "contentColumn"
+    ],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoMotionPopup",
+    "type": "Component",
+    "file": "components/MeoMotionPopup.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoDialog",
+      "MeoFullScreenDialog",
+      "MeoMenu",
+      "MeoBottomSheet",
+      "MeoSideSheetModal"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoMotionSurface",
+    "type": "Component",
+    "file": "components/MeoMotionSurface.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [],
+    "children": [
+      "control",
+      "contentLayer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoNavigationDrawerItem",
+    "type": "Component",
+    "file": "components/MeoNavigationDrawerItem.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoNavigationDrawer",
+      "MeoNavigationDrawerModal"
+    ],
+    "children": [
+      "groupSurface",
+      "selectedLayer",
+      "mouseArea",
+      "contentRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoPageHost",
+    "type": "Component",
+    "file": "components/MeoPageHost.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [],
+    "children": [
+      "control",
+      "firstLoader",
+      "secondLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoPageIndicator",
+    "type": "Component",
+    "file": "components/MeoPageIndicator.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoCarousel",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoProgressBar",
+    "type": "Component",
+    "file": "components/MeoProgressBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoPullToRefresh",
+      "MeoSlider",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "wavyCanvas",
+      "indicator"
+    ],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "SequentialAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "linear"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoPullToRefresh",
+    "type": "Component",
+    "file": "components/MeoPullToRefresh.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "indicatorCanvas"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "SequentialAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoRadioButton",
+    "type": "Component",
+    "file": "components/MeoRadioButton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoSelectionGroup",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "SelectionPage"
+    ],
+    "children": [
+      "mouseArea",
+      "radioOuter",
+      "labelText",
+      "feedbackText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoRangeSlider",
+    "type": "Component",
+    "file": "components/MeoRangeSlider.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "internalSlider",
+      "trackRect",
+      "firstLabelText",
+      "secondLabelText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoRichTooltip",
+    "type": "Component",
+    "file": "components/MeoRichTooltip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSegmentedButtons",
+    "type": "Component",
+    "file": "components/MeoSegmentedButtons.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "segmentRow",
+      "segmentButton",
+      "selectedSurface"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSelectionGroup",
+    "type": "Component",
+    "file": "components/MeoSelectionGroup.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "checkbox"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoShape",
+    "type": "Component",
+    "file": "components/MeoShape.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAvatar",
+      "MeoBadge",
+      "MeoButton",
+      "MeoCard",
+      "MeoIconButton",
+      "MeoIconToggleButton",
+      "MeoListItem",
+      "MeoLoadingIndicator",
+      "MeoMediaCard",
+      "MeoRichTooltip",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage",
+      "MeoNavigationBar",
+      "MeoNavigationRail"
+    ],
+    "children": [
+      "control",
+      "canvas"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "squircle"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoShapeMorph",
+    "type": "Component",
+    "file": "components/MeoShapeMorph.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoLoadingIndicator"
+    ],
+    "children": [
+      "control",
+      "canvas"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSkeleton",
+    "type": "Component",
+    "file": "components/MeoSkeleton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "base",
+      "shimmer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSlider",
+    "type": "Component",
+    "file": "components/MeoSlider.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "internalSlider",
+      "trackRect",
+      "wavyCanvas",
+      "valueLabel",
+      "labelText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSnackbar",
+    "type": "Component",
+    "file": "components/MeoSnackbar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "actionButton"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSplitButton",
+    "type": "Component",
+    "file": "components/MeoSplitButton.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "splitRow",
+      "primaryAction",
+      "primaryContent",
+      "menuAction"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "tonal"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoStateLayer",
+    "type": "Component",
+    "file": "components/MeoStateLayer.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAssistChip",
+      "MeoButton",
+      "MeoButtonGroup",
+      "MeoCard",
+      "MeoCheckbox",
+      "MeoChip",
+      "MeoDataTable",
+      "MeoFAB",
+      "MeoFABMenu",
+      "MeoFilterChip",
+      "MeoIconButton",
+      "MeoIconToggleButton",
+      "MeoInputChip",
+      "MeoListItem",
+      "MeoMediaCard",
+      "MeoNavigationDrawerItem",
+      "MeoRadioButton",
+      "MeoSegmentedButtons",
+      "MeoSplitButton",
+      "MeoSuggestionChip",
+      "MeoSwitch",
+      "MeoTabs",
+      "MeoGroupedList",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoNavigationBar",
+      "MeoNavigationRail"
+    ],
+    "children": [
+      "control",
+      "pointerTracker",
+      "maskedLayer",
+      "baseLayer",
+      "rippleLayer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoStepper",
+    "type": "Component",
+    "file": "components/MeoStepper.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "container",
+      "indicatorCircle"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSuggestionChip",
+    "type": "Component",
+    "file": "components/MeoSuggestionChip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "mouseArea",
+      "contentRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSwipeToDismiss",
+    "type": "Component",
+    "file": "components/MeoSwipeToDismiss.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "backgroundActions",
+      "contentItem",
+      "contentLoader",
+      "dragArea"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSwitch",
+    "type": "Component",
+    "file": "components/MeoSwitch.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoSettingsLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "SelectionPage"
+    ],
+    "children": [
+      "mouseArea",
+      "switchTrack",
+      "thumb",
+      "labelText",
+      "feedbackText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTabs",
+    "type": "Component",
+    "file": "components/MeoTabs.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentWrapper",
+      "layoutRow",
+      "tabRepeater",
+      "tabItem",
+      "contentCol",
+      "labelText",
+      "mouseArea",
+      "slidingIndicator"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "primary"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoText",
+    "type": "Component",
+    "file": "components/MeoText.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoBadge",
+      "MeoChipDropdown",
+      "MeoDateInput",
+      "MeoExposedDropdown",
+      "MeoMediaCard",
+      "MeoMenu",
+      "MeoTextField",
+      "MeoTimeInput",
+      "MeoGroupedList",
+      "MeoPageLayout",
+      "MeoSegmentedList",
+      "ShowcaseApiTable",
+      "ShowcaseCatalog",
+      "ShowcaseCategoryPage",
+      "ShowcaseComponentHeader",
+      "ShowcaseSampleDelegate",
+      "ShowcaseSnippet",
+      "ShowcaseStateGrid",
+      "ShowcaseVariantRow",
+      "ExpressivePage",
+      "SelectionPage",
+      "MeoAccountSwitcher"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTextArea",
+    "type": "Component",
+    "file": "components/MeoTextArea.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "containerRect",
+      "overlayLayer",
+      "labelText",
+      "counterLabel"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "filled"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTextField",
+    "type": "Component",
+    "file": "components/MeoTextField.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoDateInput",
+      "MeoExposedDropdown",
+      "MeoTimeInput",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "containerRect",
+      "activeIndicator",
+      "leadingRow",
+      "prefixLabel",
+      "trailingRow",
+      "suffixLabel",
+      "overlayLayer",
+      "labelContainer",
+      "labelText",
+      "helperLabel",
+      "counterLabel"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "filled",
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTimeInput",
+    "type": "Component",
+    "file": "components/MeoTimeInput.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTooltip",
+    "type": "Component",
+    "file": "components/MeoTooltip.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "test-import",
+    "type": "Component",
+    "file": "examples/test-import.qml",
+    "status": "EXPERIMENTAL",
+    "public": true,
+    "usedBy": [],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoAppLayout",
+    "type": "Component",
+    "file": "patterns/MeoAppLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoShowcase",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "pageLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "small"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDashboardLayout",
+    "type": "Component",
+    "file": "patterns/MeoDashboardLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoEmptyState",
+    "type": "Component",
+    "file": "patterns/MeoEmptyState.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "mainColumn",
+      "customLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "filled"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoExpressiveDialog",
+    "type": "Component",
+    "file": "patterns/MeoExpressiveDialog.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "filled",
+      "outlined"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoFeedLayout",
+    "type": "Component",
+    "file": "patterns/MeoFeedLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoGroupedList",
+    "type": "Component",
+    "file": "patterns/MeoGroupedList.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage"
+    ],
+    "children": [
+      "control",
+      "rowItem",
+      "groupSurface",
+      "selectedLayer"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoListDetailLayout",
+    "type": "Component",
+    "file": "patterns/MeoListDetailLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoNavigationSuite",
+    "type": "Component",
+    "file": "patterns/MeoNavigationSuite.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoPageLayout",
+    "type": "Component",
+    "file": "patterns/MeoPageLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseCategoryPage",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "rootColumn",
+      "contentShell",
+      "actionsRow",
+      "bodyColumn"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoScaffold",
+    "type": "Component",
+    "file": "patterns/MeoScaffold.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "railLoader",
+      "drawerLoader",
+      "topBarLoader",
+      "contentLoader",
+      "sideSheetLoader",
+      "fabLoader",
+      "bottomBarLoader",
+      "navBarLoader",
+      "snackbarLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchFilterBar",
+    "type": "Component",
+    "file": "patterns/MeoSearchFilterBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "column"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchHeader",
+    "type": "Component",
+    "file": "patterns/MeoSearchHeader.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "actionRow"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSegmentedList",
+    "type": "Component",
+    "file": "patterns/MeoSegmentedList.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [],
+    "children": [
+      "control",
+      "itemsColumn",
+      "itemLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": false,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSettingsLayout",
+    "type": "Component",
+    "file": "patterns/MeoSettingsLayout.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentColumn",
+      "repeater",
+      "sectionColumn",
+      "itemDelegate"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior"
+    ],
+    "shapes": [
+      "emphasized"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoShowcase",
+    "type": "Component",
+    "file": "showcase/MeoShowcase.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseApiTable",
+    "type": "Component",
+    "file": "showcase/ShowcaseApiTable.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [
+      "pill",
+      "content"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseCatalog",
+    "type": "Component",
+    "file": "showcase/ShowcaseCatalog.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseCategoryPage",
+    "type": "Component",
+    "file": "showcase/ShowcaseCategoryPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ButtonsPage",
+      "ComponentsLabPage",
+      "DataTablePage",
+      "DisplayPage",
+      "ExpressivePage",
+      "FeedbackPage",
+      "InputsPage",
+      "LayoutsLabPage",
+      "NavigationPage",
+      "PatternsPage",
+      "SelectionPage",
+      "ThemePage",
+      "WidgetsLabPage"
+    ],
+    "children": [
+      "indexLabel"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseComponentHeader",
+    "type": "Component",
+    "file": "showcase/ShowcaseComponentHeader.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseSection"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseSampleDelegate",
+    "type": "Component",
+    "file": "showcase/ShowcaseSampleDelegate.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [
+      "control",
+      "sampleLoader",
+      "menuButton",
+      "hoverButton",
+      "carouselTile"
+    ],
+    "variants": [
+      "default",
+      "vibrant",
+      "expressive"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "filled",
+      "filled",
+      "filled",
+      "filled",
+      "tonal",
+      "tonal",
+      "tonal",
+      "tonal",
+      "outlined",
+      "outlined",
+      "outlined",
+      "outlined",
+      "elevated",
+      "elevated",
+      "elevated",
+      "elevated",
+      "text",
+      "text",
+      "text",
+      "text",
+      "filled",
+      "outlined",
+      "filled",
+      "outlined",
+      "filled",
+      "outlined",
+      "filled",
+      "outlined",
+      "outlined",
+      "checkbox",
+      "standard",
+      "small",
+      "tonal",
+      "standard",
+      "filled",
+      "primary",
+      "primary",
+      "secondary",
+      "medium",
+      "standard",
+      "small",
+      "standard",
+      "regular",
+      "filled",
+      "emphasized",
+      "tonal",
+      "outlined",
+      "outlined",
+      "filled",
+      "outlined",
+      "outlined",
+      "linear",
+      "circular",
+      "circular",
+      "outlined",
+      "multi-browse",
+      "hero",
+      "uncontained",
+      "standard"
+    ],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseSection",
+    "type": "Component",
+    "file": "showcase/ShowcaseSection.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage",
+      "ComponentsLabPage",
+      "ExpressivePage",
+      "SelectionPage",
+      "WidgetsLabPage"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseSnippet",
+    "type": "Component",
+    "file": "showcase/ShowcaseSnippet.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [
+      "control",
+      "snippetText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseStateGrid",
+    "type": "Component",
+    "file": "showcase/ShowcaseStateGrid.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [
+      "stateLabel"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ShowcaseVariantRow",
+    "type": "Component",
+    "file": "showcase/ShowcaseVariantRow.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "ShowcaseCategoryPage"
+    ],
+    "children": [
+      "titleText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ButtonsPage",
+    "type": "Component",
+    "file": "showcase/pages/ButtonsPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ComponentsLabPage",
+    "type": "Component",
+    "file": "showcase/pages/ComponentsLabPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "filled",
+      "filled",
+      "filled",
+      "elevated",
+      "elevated",
+      "elevated",
+      "outlined",
+      "outlined",
+      "outlined",
+      "elevated",
+      "elevated",
+      "elevated",
+      "filled",
+      "outlined"
+    ],
+    "responsive": []
+  },
+  {
+    "name": "DataTablePage",
+    "type": "Component",
+    "file": "showcase/pages/DataTablePage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "DisplayPage",
+    "type": "Component",
+    "file": "showcase/pages/DisplayPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ExpressivePage",
+    "type": "Component",
+    "file": "showcase/pages/ExpressivePage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "filled",
+      "filled",
+      "filled",
+      "filled",
+      "filled",
+      "squircle",
+      "clover",
+      "star",
+      "heart",
+      "sparkle",
+      "shield",
+      "flower",
+      "bubble",
+      "tag",
+      "pill",
+      "circle",
+      "hexagon",
+      "octagon",
+      "diamond",
+      "pentagon",
+      "elevated",
+      "filled",
+      "outlined",
+      "standard",
+      "filled",
+      "tonal",
+      "outlined",
+      "filled",
+      "outlined"
+    ],
+    "responsive": []
+  },
+  {
+    "name": "FeedbackPage",
+    "type": "Component",
+    "file": "showcase/pages/FeedbackPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "InputsPage",
+    "type": "Component",
+    "file": "showcase/pages/InputsPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "LayoutsLabPage",
+    "type": "Component",
+    "file": "showcase/pages/LayoutsLabPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "NavigationPage",
+    "type": "Component",
+    "file": "showcase/pages/NavigationPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "PatternsPage",
+    "type": "Component",
+    "file": "showcase/pages/PatternsPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "SelectionPage",
+    "type": "Component",
+    "file": "showcase/pages/SelectionPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "ThemePage",
+    "type": "Component",
+    "file": "showcase/pages/ThemePage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "WidgetsLabPage",
+    "type": "Component",
+    "file": "showcase/pages/WidgetsLabPage.qml",
+    "status": "ACTIVE",
+    "public": false,
+    "usedBy": [
+      "MeoShowcase"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": []
+  },
+  {
+    "name": "MeoAccountHeader",
+    "type": "Component",
+    "file": "widgets/MeoAccountHeader.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoAccountSwitcher",
+    "type": "Component",
+    "file": "widgets/MeoAccountSwitcher.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ExpressivePage",
+      "WidgetsLabPage"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoActionSheet",
+    "type": "Component",
+    "file": "widgets/MeoActionSheet.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentColumn"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoBottomAppBar",
+    "type": "Component",
+    "file": "widgets/MeoBottomAppBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "actionsGroupSurface",
+      "navigationRow",
+      "fabSlot",
+      "fabLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoBottomSheet",
+    "type": "Component",
+    "file": "widgets/MeoBottomSheet.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDatePicker",
+    "type": "Component",
+    "file": "widgets/MeoDatePicker.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "elevated",
+      "text",
+      "text"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDateRangePicker",
+    "type": "Component",
+    "file": "widgets/MeoDateRangePicker.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "elevated"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoDockedSearchBar",
+    "type": "Component",
+    "file": "widgets/MeoDockedSearchBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "contentLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoMediaController",
+    "type": "Component",
+    "file": "widgets/MeoMediaController.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "albumArtContainer",
+      "progressSlider",
+      "volumeSlider",
+      "centerButtons",
+      "prevBtn",
+      "playBtn",
+      "nextBtn"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoNavigationBar",
+    "type": "Component",
+    "file": "widgets/MeoNavigationBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "MeoNavigationSuite",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "destination",
+      "hitArea"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoNavigationDrawer",
+    "type": "Component",
+    "file": "widgets/MeoNavigationDrawer.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoNavigationDrawerModal"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoNavigationDrawerModal",
+    "type": "Component",
+    "file": "widgets/MeoNavigationDrawerModal.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoNavigationRail",
+    "type": "Component",
+    "file": "widgets/MeoNavigationRail.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "MeoNavigationSuite",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "topSection",
+      "destination",
+      "wrapper",
+      "mouseArea",
+      "footerLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchAppBar",
+    "type": "Component",
+    "file": "widgets/MeoSearchAppBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchBar",
+    "type": "Component",
+    "file": "widgets/MeoSearchBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoSearchFilterBar",
+      "MeoSearchHeader",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage",
+      "MeoSearchAppBar",
+      "MeoSearchView"
+    ],
+    "children": [
+      "control",
+      "leadingButton",
+      "trailingButton"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "SequentialAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "SequentialAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [
+      "standard",
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchSuggestions",
+    "type": "Component",
+    "file": "widgets/MeoSearchSuggestions.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "MeoSearchView"
+    ],
+    "children": [
+      "contentColumn"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "standard"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSearchView",
+    "type": "Component",
+    "file": "widgets/MeoSearchView.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate",
+      "ExpressivePage"
+    ],
+    "children": [
+      "mainColumn"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "ColorAnimation",
+      "ParallelAnimation",
+      "NumberAnimation",
+      "NumberAnimation",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSideSheet",
+    "type": "Component",
+    "file": "widgets/MeoSideSheet.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "contentLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "NumberAnimation"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoSideSheetModal",
+    "type": "Component",
+    "file": "widgets/MeoSideSheetModal.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "contentLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoStandardBottomSheet",
+    "type": "Component",
+    "file": "widgets/MeoStandardBottomSheet.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "sheetBackground",
+      "handleArea",
+      "contentLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "Behavior"
+    ],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTimePicker",
+    "type": "Component",
+    "file": "widgets/MeoTimePicker.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "hand"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle",
+      "hovered",
+      "pressed",
+      "disabled"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [
+      "elevated"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoToolbar",
+    "type": "Component",
+    "file": "widgets/MeoToolbar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "actionsRow",
+      "titleText"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [],
+    "shapes": [],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  },
+  {
+    "name": "MeoTopAppBar",
+    "type": "Component",
+    "file": "widgets/MeoTopAppBar.qml",
+    "status": "ACTIVE",
+    "public": true,
+    "usedBy": [
+      "MeoAppLayout",
+      "ShowcaseCatalog",
+      "ShowcaseSampleDelegate"
+    ],
+    "children": [
+      "control",
+      "stateLayer",
+      "navIconLoader"
+    ],
+    "variants": [
+      "default"
+    ],
+    "states": [
+      "idle"
+    ],
+    "showcase": true,
+    "animations": [
+      "Behavior",
+      "ColorAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "NumberAnimation",
+      "Behavior",
+      "ColorAnimation"
+    ],
+    "shapes": [
+      "small"
+    ],
+    "responsive": [
+      "themeGlobalScale"
+    ]
+  }
+]

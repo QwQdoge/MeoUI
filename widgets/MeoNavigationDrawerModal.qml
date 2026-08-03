@@ -42,12 +42,25 @@ Popup {
         }
     }
 
-    // Enter/Exit Animations
+    // Windows/WinUI-style directional motion. Motion is disabled centrally for
+    // users that request reduced motion.
     enter: Transition {
-        NumberAnimation { property: "x"; from: -control.width; to: 0; duration: 250; easing.type: Easing.OutCubic }
+        NumberAnimation {
+            property: "x"
+            from: -control.width
+            to: 0
+            duration: MeoTheme.motionDurationSheetEnter
+            easing.bezierCurve: MeoTheme.motionEasingEnter
+        }
     }
     exit: Transition {
-        NumberAnimation { property: "x"; from: 0; to: -control.width; duration: 200; easing.type: Easing.InCubic }
+        NumberAnimation {
+            property: "x"
+            from: 0
+            to: -control.width
+            duration: MeoTheme.motionDurationSheetExit
+            easing.bezierCurve: MeoTheme.motionEasingExit
+        }
     }
 
     Column {
@@ -60,11 +73,15 @@ Popup {
             visible: control.header !== null
         }
 
-        MeoDivider {
+        Item {
             width: parent.width
+            height: 17 * control.themeGlobalScale
             visible: control.header !== null
-            topPadding: 8 * control.themeGlobalScale
-            bottomPadding: 8 * control.themeGlobalScale
+
+            MeoDivider {
+                width: parent.width
+                anchors.verticalCenter: parent.verticalCenter
+            }
         }
 
         Repeater {
@@ -75,7 +92,7 @@ Popup {
                 label: modelData.label
                 badgeText: modelData.badgeText || (modelData.badgeCount !== undefined ? modelData.badgeCount.toString() : "")
                 badgeDot: modelData.badgeDot || false
-                isSelected: control.currentIndex === index
+                selected: control.currentIndex === index
                 onClicked: {
                     control.clicked(index)
                 }

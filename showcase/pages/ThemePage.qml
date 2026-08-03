@@ -2,295 +2,246 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
+import ".."
 
-pragma ComponentBehavior: Bound
+ShowcaseCategoryPage {
+    id: themePage
+    categoryId: "foundations"
 
-Flickable {
-    id: page
+    // 🌟 1. Dynamic Theme Tokens Tuner (Sliders & Switches)
+    ShowcaseSection {
+        title: "Dynamic Theme Tokens & Corner Radius Tuner (主题与圆角参数调整)"
+        subtitle: "Drag sliders to dynamically adjust corner radius scale (0.2x–2.5x), font scale, global UI scale, and dark mode in real time."
+        width: parent.width
 
-    readonly property bool isDarkMode: MeoTheme.isDarkMode
-    readonly property real themeGlobalScale: MeoTheme.globalScale
-    readonly property var oceanScheme: ({
-        "primary": "#006A6A", "onPrimary": "#FFFFFF",
-        "primaryContainer": "#9CF1F0", "onPrimaryContainer": "#002020",
-        "secondary": "#4A6363", "onSecondary": "#FFFFFF",
-        "secondaryContainer": "#CCE8E7", "onSecondaryContainer": "#051F1F",
-        "tertiary": "#4B607C", "onTertiary": "#FFFFFF",
-        "tertiaryContainer": "#D3E4FF", "onTertiaryContainer": "#041C35"
-    })
-    readonly property var sunsetScheme: ({
-        "primary": "#8C4A60", "onPrimary": "#FFFFFF",
-        "primaryContainer": "#FFD9E2", "onPrimaryContainer": "#3A071D",
-        "secondary": "#74565F", "onSecondary": "#FFFFFF",
-        "secondaryContainer": "#FFD9E2", "onSecondaryContainer": "#2B151C",
-        "tertiary": "#7C5635", "onTertiary": "#FFFFFF",
-        "tertiaryContainer": "#FFDCC1", "onTertiaryContainer": "#2D1600"
-    })
-
-    contentWidth: width
-    contentHeight: contentColumn.implicitHeight + 48 * themeGlobalScale
-    clip: true
-    boundsBehavior: Flickable.StopAtBounds
-
-    ScrollBar.vertical: ScrollBar {}
-
-    ColumnLayout {
-        id: contentColumn
-        width: page.width - 48 * page.themeGlobalScale
-        x: 24 * page.themeGlobalScale
-        y: 24 * page.themeGlobalScale
-        spacing: 24 * page.themeGlobalScale
-
-        // 🔤 Theme introduction
         ColumnLayout {
-            Layout.fillWidth: true
-            spacing: 4 * page.themeGlobalScale
+            width: parent.width
+            spacing: MeoTheme.space16
 
-            Text {
-                text: "MeoTheme"
-                color: MeoTheme.onSurface
-                font.pixelSize: MeoTheme.headlineLargeEmphasized.size * page.themeGlobalScale
-                font.weight: MeoTheme.headlineLargeEmphasized.weight
-            }
-            Text {
+            // Dark Mode & Expressive Toggles
+            RowLayout {
+                spacing: MeoTheme.space24
                 Layout.fillWidth: true
-                text: "Live MD3 design tokens — color, type, shape, scale and motion in one place."
-                color: MeoTheme.onSurfaceVariant
-                font.pixelSize: MeoTheme.bodyLarge.size * page.themeGlobalScale
-                font.weight: MeoTheme.bodyLarge.weight
-                wrapMode: Text.WordWrap
+
+                MeoSwitch {
+                    label: "Dark Mode (深色模式)"
+                    checked: MeoTheme.isDarkMode
+                    onToggled: (val) => { MeoTheme.isDarkMode = val }
+                }
+
+                MeoSwitch {
+                    label: "Expressive Motion (M3E 表达性微动效)"
+                    checked: MeoTheme.isExpressive
+                    onToggled: (val) => { MeoTheme.isExpressive = val }
+                }
+
+                MeoSwitch {
+                    label: "Reduced Motion (减弱动画)"
+                    checked: MeoTheme.reduceMotion
+                    onToggled: (val) => { MeoTheme.reduceMotion = val }
+                }
             }
-        }
 
-        // 🎨 Live theme controls
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: controlsColumn.implicitHeight + 32 * page.themeGlobalScale
-            radius: MeoTheme.shapeExtraLarge
-            color: MeoTheme.surfaceContainerLow
+            // Sliders Row 1: Corner Radius Scale & Global Scale
+            RowLayout {
+                spacing: MeoTheme.space24
+                Layout.fillWidth: true
 
-            Behavior on color {
-                ColorAnimation { duration: 150; easing.bezierCurve: [0.34, 0.8, 0.34, 1.0] }
-            }
-
-            ColumnLayout {
-                id: controlsColumn
-                anchors.fill: parent
-                anchors.margins: 16 * page.themeGlobalScale
-                spacing: 16 * page.themeGlobalScale
-
-                RowLayout {
+                // Corner Radius Scale
+                ColumnLayout {
+                    spacing: MeoTheme.space8
                     Layout.fillWidth: true
-                    spacing: 12 * page.themeGlobalScale
 
-                    ColumnLayout {
+                    RowLayout {
+                        MeoText { text: "Corner Radius Scale (圆角倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: Math.round(MeoTheme.cornerScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
+                    }
+
+                    Slider {
                         Layout.fillWidth: true
-                        spacing: 2 * page.themeGlobalScale
-                        Text {
-                            text: "Appearance"
-                            color: MeoTheme.onSurface
-                            font.pixelSize: MeoTheme.titleMedium.size * page.themeGlobalScale
-                            font.weight: MeoTheme.titleMedium.weight
-                        }
-                        Text {
-                            text: page.isDarkMode ? "Dark theme" : "Light theme"
-                            color: MeoTheme.onSurfaceVariant
-                            font.pixelSize: MeoTheme.bodyMedium.size * page.themeGlobalScale
-                        }
-                    }
-                    MeoSwitch {
-                        checked: page.isDarkMode
-                        icon: "dark_mode"
-                        uncheckedIcon: "light_mode"
-                        onToggled: (checked) => { MeoTheme.isDarkMode = checked }
+                        from: 0.2
+                        to: 2.5
+                        value: MeoTheme.cornerScale
+                        onValueChanged: { MeoTheme.cornerScale = value }
                     }
                 }
 
-                MeoDivider { Layout.fillWidth: true }
-
-                Text {
-                    text: "Color source"
-                    color: MeoTheme.onSurface
-                    font.pixelSize: MeoTheme.titleMedium.size * page.themeGlobalScale
-                    font.weight: MeoTheme.titleMedium.weight
-                }
-                Flow {
+                // Global Scale
+                ColumnLayout {
+                    spacing: MeoTheme.space8
                     Layout.fillWidth: true
-                    spacing: 8 * page.themeGlobalScale
 
-                    MeoButton {
-                        text: "Meo fallback"
-                        type: MeoTheme.dynamicColorsAvailable ? "outlined" : "filled"
-                        icon.name: "palette"
-                        onClicked: MeoTheme.clearDynamicColorScheme()
+                    RowLayout {
+                        MeoText { text: "Global UI Scale (全局界面缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: Math.round(MeoTheme.globalScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
-                    MeoButton {
-                        text: "Ocean"
-                        type: MeoTheme.dynamicColorsAvailable && MeoTheme.primary.toString().toUpperCase() === "#006A6A" ? "filled" : "outlined"
-                        icon.name: "water"
-                        onClicked: MeoTheme.applyDynamicColorScheme(page.oceanScheme)
-                    }
-                    MeoButton {
-                        text: "Sunset"
-                        type: MeoTheme.dynamicColorsAvailable && MeoTheme.primary.toString().toUpperCase() === "#8C4A60" ? "filled" : "outlined"
-                        icon.name: "wb_twilight"
-                        onClicked: MeoTheme.applyDynamicColorScheme(page.sunsetScheme)
+
+                    Slider {
+                        Layout.fillWidth: true
+                        from: 0.8
+                        to: 1.5
+                        value: MeoTheme.globalScale
+                        onValueChanged: { MeoTheme.globalScale = value }
                     }
                 }
+            }
 
-                Text {
-                    text: "Interface scale  ·  " + Math.round(page.themeGlobalScale * 100) + "%"
-                    color: MeoTheme.onSurface
-                    font.pixelSize: MeoTheme.titleMedium.size * page.themeGlobalScale
-                    font.weight: MeoTheme.titleMedium.weight
-                }
-                MeoSlider {
+            // Sliders Row 2: Font Scale & Motion Scale
+            RowLayout {
+                spacing: MeoTheme.space24
+                Layout.fillWidth: true
+
+                // Font Scale
+                ColumnLayout {
+                    spacing: MeoTheme.space8
                     Layout.fillWidth: true
-                    from: 80
-                    to: 130
-                    value: page.themeGlobalScale * 100
-                    discrete: true
-                    stepSize: 5
-                    onMoved: (value) => { MeoTheme.globalScale = value / 100 }
+
+                    RowLayout {
+                        MeoText { text: "Font Size Scale (字号缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: Math.round(MeoTheme.fontScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
+                    }
+
+                    Slider {
+                        Layout.fillWidth: true
+                        from: 0.8
+                        to: 1.4
+                        value: MeoTheme.fontScale
+                        onValueChanged: { MeoTheme.fontScale = value }
+                    }
+                }
+
+                // Motion Duration Scale
+                ColumnLayout {
+                    spacing: MeoTheme.space8
+                    Layout.fillWidth: true
+
+                    RowLayout {
+                        MeoText { text: "Motion Speed Scale (动画时长倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: Math.round(MeoTheme.motionScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
+                    }
+
+                    Slider {
+                        Layout.fillWidth: true
+                        from: 0.5
+                        to: 2.0
+                        value: MeoTheme.motionScale
+                        onValueChanged: { MeoTheme.motionScale = value }
+                    }
+                }
+            }
+
+            // Reset Button
+            MeoButton {
+                text: "Reset Tokens to Default (重置默认参数)"
+                type: "tonal"
+                icon.name: "refresh"
+                onClicked: {
+                    MeoTheme.cornerScale = 1.0
+                    MeoTheme.globalScale = 1.0
+                    MeoTheme.fontScale = 1.0
+                    MeoTheme.motionScale = 1.0
+                    MeoTheme.isDarkMode = false
+                    MeoTheme.reduceMotion = false
                 }
             }
         }
+    }
 
-        // 🎨 MD3 semantic color roles
-        SectionTitle { title: "Semantic color roles"; subtitle: "Each pair keeps content readable on its container." }
+    // 🌟 2. Live Components Reaction Test Ground (真实组件动态生效预览)
+    ShowcaseSection {
+        title: "Live Component Corner & Scale Preview (实时组件圆角与尺寸联动)"
+        subtitle: "Components automatically update their corner radii, padding, scale, and colors as tokens change above."
+        width: parent.width
+
         Flow {
-            Layout.fillWidth: true
-            spacing: 12 * page.themeGlobalScale
+            width: parent.width
+            spacing: MeoTheme.space16
 
-            ColorRole { roleName: "Primary"; containerColor: MeoTheme.primary; contentColor: MeoTheme.onPrimary }
-            ColorRole { roleName: "Primary container"; containerColor: MeoTheme.primaryContainer; contentColor: MeoTheme.onPrimaryContainer }
-            ColorRole { roleName: "Secondary"; containerColor: MeoTheme.secondary; contentColor: MeoTheme.onSecondary }
-            ColorRole { roleName: "Secondary container"; containerColor: MeoTheme.secondaryContainer; contentColor: MeoTheme.onSecondaryContainer }
-            ColorRole { roleName: "Tertiary"; containerColor: MeoTheme.tertiary; contentColor: MeoTheme.onTertiary }
-            ColorRole { roleName: "Tertiary container"; containerColor: MeoTheme.tertiaryContainer; contentColor: MeoTheme.onTertiaryContainer }
-            ColorRole { roleName: "Error"; containerColor: MeoTheme.error; contentColor: MeoTheme.onError }
-            ColorRole { roleName: "Error container"; containerColor: MeoTheme.errorContainer; contentColor: MeoTheme.onErrorContainer }
-        }
+            MeoButton {
+                text: "Filled Button"
+                type: "filled"
+                size: "m"
+            }
 
-        // 🔤 MD3 type scale
-        SectionTitle { title: "Typography"; subtitle: "Standard and emphasized roles share the same responsive scale." }
-        Rectangle {
-            Layout.fillWidth: true
-            implicitHeight: typeColumn.implicitHeight + 32 * page.themeGlobalScale
-            radius: MeoTheme.shapeLarge
-            color: MeoTheme.surfaceContainer
+            MeoButton {
+                text: "Tonal Button"
+                type: "tonal"
+                size: "m"
+            }
 
-            ColumnLayout {
-                id: typeColumn
-                anchors.fill: parent
-                anchors.margins: 16 * page.themeGlobalScale
-                spacing: 10 * page.themeGlobalScale
+            MeoButton {
+                text: "Outlined Button"
+                type: "outlined"
+                size: "m"
+            }
 
-                TypeSample { sampleText: "Display small"; token: MeoTheme.displaySmall }
-                TypeSample { sampleText: "Headline medium"; token: MeoTheme.headlineMedium }
-                TypeSample { sampleText: "Title large emphasized"; token: MeoTheme.titleLargeEmphasized }
-                TypeSample { sampleText: "Body large — designed to stay comfortable at every scale."; token: MeoTheme.bodyLarge }
-                TypeSample { sampleText: "LABEL MEDIUM"; token: MeoTheme.labelMedium }
+            MeoChip {
+                label: "Filter Chip"
+                icon: "filter_list"
+                selected: true
+            }
+
+            MeoTextField {
+                placeholder: "Live TextField..."
+                width: 220 * MeoTheme.globalScale
+            }
+
+            MeoCard {
+                width: 240 * MeoTheme.globalScale
+                height: 90 * MeoTheme.globalScale
+                type: "elevated"
+                interactive: true
+                bouncy: true
+
+                Column {
+                    anchors.centerIn: parent
+                    spacing: MeoTheme.space4
+                    MeoText { text: "Dynamic Shape Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                    MeoText { text: "Radius: " + Math.round(MeoTheme.shapeLarge) + "px"; typeRole: "body"; typeSize: "small" }
+                }
             }
         }
+    }
 
-        // 📐 Shape scale and 🖼️ motion preview
-        SectionTitle { title: "Shape & motion"; subtitle: "Hover or press the interactive sample to see the 150 ms Soul Curve." }
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 16 * page.themeGlobalScale
+    // 🌟 3. Semantic Corner Tokens Readout (语义圆角 Token 实时读数)
+    ShowcaseSection {
+        title: "Semantic Corner Radius Tokens Readout (语义圆角实时 Token 读数)"
+        subtitle: "Current active pixel radius values computed from globalScale * cornerScale."
+        width: parent.width
+
+        Flow {
+            width: parent.width
+            spacing: MeoTheme.space12
+
+            readonly property var tokens: [
+                { name: "ExtraSmall", val: MeoTheme.shapeExtraSmall },
+                { name: "Small", val: MeoTheme.shapeSmall },
+                { name: "Medium", val: MeoTheme.shapeMedium },
+                { name: "Large", val: MeoTheme.shapeLarge },
+                { name: "LargeIncreased", val: MeoTheme.shapeLargeIncreased },
+                { name: "ExtraLarge", val: MeoTheme.shapeExtraLarge },
+                { name: "ExtraLargeIncreased", val: MeoTheme.shapeExtraLargeIncreased },
+                { name: "ExtraExtraLarge", val: MeoTheme.shapeExtraExtraLarge }
+            ]
 
             Repeater {
-                model: [
-                    { "name": "Small", "radius": MeoTheme.shapeSmall },
-                    { "name": "Large", "radius": MeoTheme.shapeLarge },
-                    { "name": "Extra large", "radius": MeoTheme.shapeExtraLarge }
-                ]
+                model: parent.tokens
                 delegate: Rectangle {
-                    id: shapeSample
-                    required property var modelData
-                    Layout.fillWidth: true
-                    implicitHeight: 96 * page.themeGlobalScale
-                    radius: modelData.radius
-                    color: shapeMouse.pressed ? MeoTheme.primary : (shapeMouse.containsMouse ? MeoTheme.primaryContainer : MeoTheme.surfaceContainerHighest)
-                    scale: shapeMouse.pressed ? 0.96 : 1.0
+                    width: 130 * MeoTheme.globalScale
+                    height: 60 * MeoTheme.globalScale
+                    radius: modelData.val
+                    color: MeoTheme.surfaceContainerLow
+                    border.color: MeoTheme.outlineVariant
+                    border.width: 1
 
-                    Text {
+                    Column {
                         anchors.centerIn: parent
-                        text: shapeSample.modelData.name
-                        color: shapeMouse.pressed ? MeoTheme.onPrimary : MeoTheme.onSurface
-                        font.pixelSize: MeoTheme.labelLarge.size * page.themeGlobalScale
-                        font.weight: MeoTheme.labelLarge.weight
-                        Behavior on color { ColorAnimation { duration: 150; easing.bezierCurve: [0.34, 0.8, 0.34, 1.0] } }
+                        spacing: 2
+                        MeoText { text: modelData.name; typeRole: "label"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                        MeoText { text: Math.round(modelData.val) + " px"; typeRole: "body"; typeSize: "small"; color: MeoTheme.primary; horizontalAlignment: Text.AlignHCenter }
                     }
-                    MouseArea { id: shapeMouse; anchors.fill: parent; hoverEnabled: true }
-                    Behavior on color { ColorAnimation { duration: 150; easing.bezierCurve: [0.34, 0.8, 0.34, 1.0] } }
-                    Behavior on scale { NumberAnimation { duration: 150; easing.bezierCurve: [0.34, 0.8, 0.34, 1.0] } }
                 }
             }
         }
-    }
-
-    component SectionTitle: ColumnLayout {
-        property string title: ""
-        property string subtitle: ""
-        Layout.fillWidth: true
-        spacing: 2 * page.themeGlobalScale
-        Text {
-            text: parent.title
-            color: MeoTheme.primary
-            font.pixelSize: MeoTheme.headlineSmall.size * page.themeGlobalScale
-            font.weight: MeoTheme.headlineSmallEmphasized.weight
-        }
-        Text {
-            Layout.fillWidth: true
-            text: parent.subtitle
-            color: MeoTheme.onSurfaceVariant
-            font.pixelSize: MeoTheme.bodyMedium.size * page.themeGlobalScale
-            wrapMode: Text.WordWrap
-        }
-    }
-
-    component ColorRole: Rectangle {
-        id: colorRole
-        property string roleName: ""
-        property color containerColor: "transparent"
-        property color contentColor: "transparent"
-        width: 196 * page.themeGlobalScale
-        height: 104 * page.themeGlobalScale
-        radius: MeoTheme.shapeLarge
-        color: containerColor
-
-        Column {
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            anchors.margins: 12 * page.themeGlobalScale
-            spacing: 2 * page.themeGlobalScale
-            Text {
-                text: colorRole.roleName
-                color: colorRole.contentColor
-                font.pixelSize: MeoTheme.labelLarge.size * page.themeGlobalScale
-                font.weight: MeoTheme.labelLarge.weight
-            }
-            Text {
-                text: colorRole.containerColor.toString().toUpperCase()
-                color: colorRole.contentColor
-                opacity: 0.76
-                font.pixelSize: MeoTheme.bodySmall.size * page.themeGlobalScale
-            }
-        }
-        Behavior on color { ColorAnimation { duration: 150; easing.bezierCurve: [0.34, 0.8, 0.34, 1.0] } }
-    }
-
-    component TypeSample: Text {
-        required property var token
-        property string sampleText: ""
-        Layout.fillWidth: true
-        text: sampleText
-        color: MeoTheme.onSurface
-        font.pixelSize: token.size * page.themeGlobalScale
-        font.weight: token.weight
-        font.letterSpacing: token.letterSpacing * page.themeGlobalScale
-        wrapMode: Text.WordWrap
     }
 }

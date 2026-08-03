@@ -1,6 +1,5 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import MeoUI
 
 Item {
@@ -11,6 +10,8 @@ Item {
     property var navigationModel: []
     property list<Component> pages
     property int currentIndex: 0
+    property int compactNavigationLimit: 5
+    property bool windowResizeActive: false
 
     // 🌟 Safe Area Insets (Edge-to-Edge support)
     property real safeAreaTop: 0
@@ -22,12 +23,37 @@ Item {
     property Component accountHeader: null
     property Component fab: null
 
-    // 🌟 MD3 Adaptive Breakpoints
-    readonly property bool isCompact: width < 600 * themeGlobalScale
-    readonly property bool isMedium: width >= 600 * themeGlobalScale && width < 840 * themeGlobalScale
-    readonly property bool isExpanded: width >= 840 * themeGlobalScale
-
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property bool isCompact: windowMetrics.isCompactWidth
+    readonly property bool isMedium: windowMetrics.isMediumWidth
+    readonly property bool isExpanded: windowMetrics.isExpandedWidth
+    readonly property bool isLarge: windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
+    readonly property string windowSizeClass: windowMetrics.widthSizeClass
+    readonly property real expandedDrawerWidth: 280 * themeGlobalScale
+    readonly property var compactNavigationModel: navigationModel.slice(0, Math.min(compactNavigationLimit, navigationModel.length))
+
+    onWidthChanged: {
+        windowResizeActive = true
+        resizeSettled.restart()
+    }
+    onHeightChanged: {
+        windowResizeActive = true
+        resizeSettled.restart()
+    }
+
+    Timer {
+        id: resizeSettled
+        interval: 90
+        repeat: false
+        onTriggered: control.windowResizeActive = false
+    }
+
+    MeoWindowMetrics {
+        id: windowMetrics
+        availableWidth: control.width
+        availableHeight: control.height
+    }
+
 
     // Main Layout
     Row {
@@ -36,12 +62,20 @@ Item {
         // 1. Navigation Rail (Medium)
         MeoNavigationRail {
             id: navRail
+            width: control.isMedium ? 80 * control.themeGlobalScale : control.isExpanded ? 256 * control.themeGlobalScale : 0
             height: parent.height
             model: control.navigationModel
             currentIndex: control.currentIndex
-            visible: control.isMedium
+            visible: width > 0
+            enabled: control.isMedium || control.isExpanded
+            opacity: control.isMedium || control.isExpanded ? 1 : 0
+            isExpanded: control.isExpanded
+            resizeInstantly: control.windowResizeActive
             header: control.accountHeader ? accountHeaderWrapper : null
             onClicked: (index) => { control.currentIndex = index }
+
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
 
             Component {
                 id: accountHeaderWrapper
@@ -52,18 +86,26 @@ Item {
         // 2. Navigation Drawer (Expanded)
         MeoNavigationDrawer {
             id: navDrawer
+            width: control.isLarge ? control.expandedDrawerWidth : 0
             height: parent.height
             model: control.navigationModel
             currentIndex: control.currentIndex
-            visible: control.isExpanded
+            visible: width > 0
+            enabled: control.isLarge
+            opacity: control.isLarge ? 1 : 0
             header: control.accountHeader
             onClicked: (index) => { control.currentIndex = index }
+
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
         }
 
         // 3. Main Content Area
         Column {
             width: parent.width - (navRail.visible ? navRail.width : 0) - (navDrawer.visible ? navDrawer.width : 0)
             height: parent.height
+
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
             // Top App Bar (Compact only, with Hamburger)
             MeoTopAppBar {
@@ -76,10 +118,12 @@ Item {
                 // Add top padding for notch
                 Item { height: control.safeAreaTop; width: parent.width }
 
-                // Add a leading icon for the hamburger menu
-                leadingIcon: MeoIconButton {
-                    icon.name: "menu"
-                    onClicked: modalDrawer.open()
+                // Add a navigation icon for the hamburger menu
+                navigationIcon: Component {
+                    MeoIconButton {
+                        icon.name: "menu"
+                        onClicked: modalDrawer.open()
+                    }
                 }
             }
 
@@ -88,23 +132,14 @@ Item {
                 width: parent.width
                 height: parent.height - (topAppBar.visible ? topAppBar.height : 0) - (bottomNavBar.visible ? bottomNavBar.height + control.safeAreaBottom : 0)
 
-                StackLayout {
-                    id: stackLayout
+                Loader {
+                    id: pageLoader
+                    property real slideDistance: 0
                     anchors.fill: parent
                     anchors.leftMargin: control.safeAreaLeft
                     anchors.rightMargin: control.safeAreaRight
-                    currentIndex: control.currentIndex
-
-                    Repeater {
-                        model: control.pages
-                        delegate: Loader {
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            sourceComponent: modelData
-                            // Keep alive is achieved because StackLayout keeps all its children instantiated,
-                            // only changing their visibility based on currentIndex.
-                        }
-                    }
+                    sourceComponent: control.currentIndex >= 0 && control.currentIndex < control.pages.length
+                                     ? control.pages[control.currentIndex] : null
                 }
 
                 // FAB Layer
@@ -123,7 +158,7 @@ Item {
             MeoNavigationBar {
                 id: bottomNavBar
                 width: parent.width
-                model: control.navigationModel
+                model: control.compactNavigationModel
                 currentIndex: control.currentIndex
                 visible: control.isCompact
                 onClicked: (index) => { control.currentIndex = index }
@@ -147,6 +182,43 @@ Item {
         onClicked: (index) => {
             control.currentIndex = index
             modalDrawer.close()
+        }
+    }
+
+    property int lastIndex: 0
+
+    onCurrentIndexChanged: {
+        let isForward = currentIndex >= lastIndex;
+        lastIndex = currentIndex;
+        pageLoader.slideDistance = isForward ? (40 * control.themeGlobalScale) : (-40 * control.themeGlobalScale);
+        pageEntrance.restart();
+    }
+
+    ParallelAnimation {
+        id: pageEntrance
+        NumberAnimation {
+            target: pageLoader
+            property: "opacity"
+            from: 0.0
+            to: 1.0
+            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialDefault !== 'undefined') ? MeoTheme.motionDurationSpatialDefault : 240
+            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+        }
+        NumberAnimation {
+            target: pageLoader
+            property: "scale"
+            from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 1.0 : 0.96
+            to: 1.0
+            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
+            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSpringBouncy !== 'undefined') ? MeoTheme.motionEasingSpringBouncy : [0.34, 1.35, 0.64, 1.0]
+        }
+        NumberAnimation {
+            target: pageLoader
+            property: "x"
+            from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 0 : pageLoader.slideDistance
+            to: 0
+            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
+            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.05, 0.7, 0.1, 1]
         }
     }
 }

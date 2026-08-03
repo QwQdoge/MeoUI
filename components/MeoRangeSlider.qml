@@ -12,6 +12,7 @@ Control {
     property real secondValue: 80.0
     property bool discrete: false
     property real stepSize: 1.0
+    property bool isThick: false // 🌟 MD3 Expressive: Thicker track variant
     property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
 
     signal moved()
@@ -19,12 +20,13 @@ Control {
     // 🌟 作用域与主题安全防御
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
     readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onPrimary !== 'undefined') ? MeoTheme.onPrimary : "#FFFFFF"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurfaceVariant !== 'undefined') ? MeoTheme.onSurfaceVariant : "#49454F"
+    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     // 📐 尺寸映射 (MD3 Expressive Slider)
     readonly property real trackHeight: {
+        if (isThick) return 16 * themeGlobalScale;
         if (size === "s") return (MeoTheme.sliderTrackHeightS || 16 * themeGlobalScale)
         if (size === "m") return (MeoTheme.sliderTrackHeightM || 28 * themeGlobalScale)
         if (size === "l") return (MeoTheme.sliderTrackHeightL || 36 * themeGlobalScale)
@@ -32,8 +34,20 @@ Control {
         return (MeoTheme.sliderTrackHeightXS || 4 * themeGlobalScale) // default "xs"
     }
 
+    readonly property real thumbWidth: {
+        if (size === "xs") return 20 * themeGlobalScale
+        return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.sliderThumbWidthExpressive !== 'undefined') ? MeoTheme.sliderThumbWidthExpressive : 4 * themeGlobalScale
+    }
+
+    readonly property real thumbHeight: {
+        if (size === "xs") return 20 * themeGlobalScale
+        return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.sliderThumbHeightExpressive !== 'undefined') ? MeoTheme.sliderThumbHeightExpressive : 44 * themeGlobalScale
+    }
+
+    readonly property real thumbGap: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.sliderThumbGapExpressive !== 'undefined') ? MeoTheme.sliderThumbGapExpressive : 6 * themeGlobalScale
+
     implicitWidth: 200 * themeGlobalScale
-    implicitHeight: Math.max(44, trackHeight + 20) * themeGlobalScale
+    implicitHeight: Math.max(thumbHeight + 8 * themeGlobalScale, 44 * themeGlobalScale)
 
     RangeSlider {
         id: internalSlider
@@ -102,15 +116,12 @@ Control {
         first.handle: Item {
             x: internalSlider.leftPadding + internalSlider.first.visualPosition * (internalSlider.availableWidth - width)
             y: internalSlider.topPadding + (internalSlider.availableHeight - height) / 2
-            width: (control.size !== "xs" ? 4 : 20) * control.themeGlobalScale
-            height: (control.size === "xs" ? 20 : trackRect.height + 4) * control.themeGlobalScale
+            width: control.thumbWidth
+            height: control.thumbHeight
 
             Rectangle {
                 anchors.centerIn: parent
-                width: {
-                    if (control.size !== "xs") return (internalSlider.first.pressed ? 2 : 4) * control.themeGlobalScale
-                    return (internalSlider.first.pressed ? 2 : 20) * control.themeGlobalScale
-                }
+                width: internalSlider.first.pressed ? 2 * control.themeGlobalScale : control.thumbWidth
                 height: parent.height
                 radius: width / 2
                 color: control.size !== "xs" ? control.themeOnPrimary : control.themePrimary
@@ -124,9 +135,9 @@ Control {
                 anchors.bottom: parent.top
                 anchors.bottomMargin: 12 * control.themeGlobalScale
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.max(32 * control.themeGlobalScale, firstLabelText.implicitWidth + 12 * control.themeGlobalScale)
+                width: Math.max(32 * control.themeGlobalScale, firstLabelText.implicitWidth + 16 * control.themeGlobalScale)
                 height: 28 * control.themeGlobalScale
-                radius: 4 * control.themeGlobalScale
+                radius: height / 2
                 color: control.themePrimary
                 visible: internalSlider.first.pressed
 
@@ -171,15 +182,12 @@ Control {
         second.handle: Item {
             x: internalSlider.leftPadding + internalSlider.second.visualPosition * (internalSlider.availableWidth - width)
             y: internalSlider.topPadding + (internalSlider.availableHeight - height) / 2
-            width: (control.size !== "xs" ? 4 : 20) * control.themeGlobalScale
-            height: (control.size === "xs" ? 20 : trackRect.height + 4) * control.themeGlobalScale
+            width: control.thumbWidth
+            height: control.thumbHeight
 
             Rectangle {
                 anchors.centerIn: parent
-                width: {
-                    if (control.size !== "xs") return (internalSlider.second.pressed ? 2 : 4) * control.themeGlobalScale
-                    return (internalSlider.second.pressed ? 2 : 20) * control.themeGlobalScale
-                }
+                width: internalSlider.second.pressed ? 2 * control.themeGlobalScale : control.thumbWidth
                 height: parent.height
                 radius: width / 2
                 color: control.size !== "xs" ? control.themeOnPrimary : control.themePrimary
@@ -193,9 +201,9 @@ Control {
                 anchors.bottom: parent.top
                 anchors.bottomMargin: 12 * control.themeGlobalScale
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: Math.max(32 * control.themeGlobalScale, secondLabelText.implicitWidth + 12 * control.themeGlobalScale)
+                width: Math.max(32 * control.themeGlobalScale, secondLabelText.implicitWidth + 16 * control.themeGlobalScale)
                 height: 28 * control.themeGlobalScale
-                radius: 4 * control.themeGlobalScale
+                radius: height / 2
                 color: control.themePrimary
                 visible: internalSlider.second.pressed
 

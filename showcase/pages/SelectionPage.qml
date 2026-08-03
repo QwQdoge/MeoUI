@@ -1,116 +1,215 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import MeoUI
+import ".."
 
-Flickable {
-    contentHeight: selectionColumn.implicitHeight + 64 * MeoTheme.globalScale
-    clip: true
-    Column {
-        id: selectionColumn
-        padding: 24 * MeoTheme.globalScale
-        spacing: 32 * MeoTheme.globalScale
+ShowcaseCategoryPage {
+    id: selectionPage
+    categoryId: "selection"
+
+    // 🌟 Sizing scale variants (XS to XL) for Checkboxes, Radio Buttons, and Switches
+    ShowcaseSection {
+        title: "Selection Component XS-XL Sizing Scale"
+        subtitle: "Demonstrates 5-step sizing scales mapped from compact to expansive layouts, utilizing variable labels."
         width: parent.width
 
-        // Checkboxes
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "Checkboxes"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
-            Row {
-                spacing: 12 * MeoTheme.globalScale
-                MeoCheckbox { checked: true; label: "Checked" }
-                MeoCheckbox { checked: false; label: "Unchecked" }
-                MeoCheckbox { indeterminate: true; label: "Indeterminate" }
+        ColumnLayout {
+            width: parent.width
+            spacing: MeoTheme.space16
+
+            // Checkboxes Size Scale
+            MeoText {
+                text: "MeoCheckbox Sizes"
+                typeRole: "title"
+                typeSize: "small"
+                emphasized: true
+            }
+            Flow {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space16
+                MeoCheckbox { label: "XS Checkbox"; size: "xs"; checked: true }
+                MeoCheckbox { label: "S Checkbox"; size: "s"; checked: true }
+                MeoCheckbox { label: "M Checkbox"; size: "m"; checked: true }
+                MeoCheckbox { label: "L Checkbox"; size: "l"; checked: true }
+                MeoCheckbox { label: "XL Checkbox"; size: "xl"; checked: true }
+            }
+
+            // Radio Buttons Size Scale
+            MeoText {
+                text: "MeoRadioButton Sizes"
+                typeRole: "title"
+                typeSize: "small"
+                emphasized: true
+            }
+            Flow {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space16
+                MeoRadioButton { label: "XS Radio"; size: "xs"; checked: true }
+                MeoRadioButton { label: "S Radio"; size: "s"; checked: true }
+                MeoRadioButton { label: "M Radio"; size: "m"; checked: true }
+                MeoRadioButton { label: "L Radio"; size: "l"; checked: true }
+                MeoRadioButton { label: "XL Radio"; size: "xl"; checked: true }
+            }
+
+            // Switches Size Scale
+            MeoText {
+                text: "MeoSwitch Sizes"
+                typeRole: "title"
+                typeSize: "small"
+                emphasized: true
+            }
+            Flow {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space16
+                MeoSwitch { label: "XS Switch"; size: "xs"; checked: true }
+                MeoSwitch { label: "S Switch"; size: "s"; checked: true }
+                MeoSwitch { label: "M Switch"; size: "m"; checked: true }
+                MeoSwitch { label: "L Switch"; size: "l"; checked: true }
+                MeoSwitch { label: "XL Switch"; size: "xl"; checked: true }
             }
         }
+    }
 
-        // Switches
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "Switches"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
-            Row {
-                spacing: 12 * MeoTheme.globalScale
-                MeoSwitch { checked: true; label: "On" }
-                MeoSwitch { checked: false; label: "Off" }
-                MeoSwitch { checked: true; icon: "check"; label: "With Icon" }
-            }
-        }
+    // 🌟 Thickness Variants (Thin, Medium, Thick)
+    ShowcaseSection {
+        title: "Thickness and Outline Variants"
+        subtitle: "Visualizes the semantic outline thickness tokens from MeoTheme applied directly to Selection controls."
+        width: parent.width
 
-        // Radio Buttons
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "Radio Buttons"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
-            Row {
-                spacing: 12 * MeoTheme.globalScale
-                MeoRadioButton { checked: true; label: "Option A" }
-                MeoRadioButton { checked: false; label: "Option B" }
-            }
-        }
+        RowLayout {
+            width: parent.width
+            spacing: MeoTheme.space16
 
-        // Sliders
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "Sliders"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
-            Column {
-                spacing: 24 * MeoTheme.globalScale
-                MeoSlider {
-                    width: 300 * MeoTheme.globalScale
-                    value: 40
-                    from: 0
-                    to: 100
-                    discrete: true
-                    stepSize: 10
+            // Thin Panel
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 180 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.primary
+                border.width: MeoTheme.strokeWidthThin
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: MeoTheme.space8
+
+                    MeoText {
+                        text: "Thin (strokeWidthThin: 1dp)"
+                        typeRole: "label"
+                        typeSize: "medium"
+                        emphasized: true
+                    }
+                    MeoCheckbox { label: "Thin Outline"; thickness: "thin"; checked: false }
+                    MeoRadioButton { label: "Thin Outline"; thickness: "thin"; checked: false }
+                    MeoSwitch { label: "Thin Track"; thickness: "thin"; checked: false }
                 }
-                MeoRangeSlider {
-                    width: 300 * MeoTheme.globalScale
-                    firstValue: 20
-                    secondValue: 80
-                    from: 0
-                    to: 100
+            }
+
+            // Medium Panel
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 180 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.primary
+                border.width: MeoTheme.strokeWidthMedium
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: MeoTheme.space8
+
+                    MeoText {
+                        text: "Medium (strokeWidthMedium: 2dp)"
+                        typeRole: "label"
+                        typeSize: "medium"
+                        emphasized: true
+                    }
+                    MeoCheckbox { label: "Medium Outline"; thickness: "medium"; checked: false }
+                    MeoRadioButton { label: "Medium Outline"; thickness: "medium"; checked: false }
+                    MeoSwitch { label: "Medium Track"; thickness: "medium"; checked: false }
+                }
+            }
+
+            // Thick Panel
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 180 * MeoTheme.globalScale
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+                border.color: MeoTheme.primary
+                border.width: MeoTheme.strokeWidthThick
+
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    spacing: MeoTheme.space8
+
+                    MeoText {
+                        text: "Thick (strokeWidthThick: 3dp)"
+                        typeRole: "label"
+                        typeSize: "medium"
+                        emphasized: true
+                    }
+                    MeoCheckbox { label: "Thick Outline"; thickness: "thick"; checked: false }
+                    MeoRadioButton { label: "Thick Outline"; thickness: "thick"; checked: false }
+                    MeoSwitch { label: "Thick Track"; thickness: "thick"; checked: false }
                 }
             }
         }
+    }
 
-        // Selection Groups
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "Selection Groups (Lists)"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
+    // 🌟 Interaction States (Normal, Checked, Indeterminate, Error, Disabled, Focused)
+    ShowcaseSection {
+        title: "Interactive States and Feedback"
+        subtitle: "A detailed matrix highlighting complete state coverage for MD3 compliance."
+        width: parent.width
 
-            MeoSelectionGroup {
-                width: 360 * MeoTheme.globalScale
-                type: "checkbox"
-                showSelectAll: true
-                model: [
-                    { label: "Option 1", checked: true },
-                    { label: "Option 2", checked: false },
-                    { label: "Option 3", checked: false }
-                ]
-            }
-        }
+        GridLayout {
+            width: parent.width
+            columns: 3
+            columnSpacing: MeoTheme.space24
+            rowSpacing: MeoTheme.space24
 
-        // List with Multiple Actions (New)
-        Column {
-            spacing: 16 * MeoTheme.globalScale
-            Text { text: "List Item with Multiple Actions"; font.pixelSize: 20 * MeoTheme.globalScale; color: MeoTheme.onSurface }
+            // Checkbox States Column
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space12
 
-            MeoListItem {
-                width: 400 * MeoTheme.globalScale
-                headline: "Multi-action item"
-                supportingText: "This item has multiple trailing actions"
-                leadingIcon: "folder"
-                actions: [
-                    Component { MeoIconButton { icon.name: "edit"; type: "standard" } },
-                    Component { MeoIconButton { icon.name: "delete"; type: "standard" } }
-                ]
+                MeoText { text: "MeoCheckbox States"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoCheckbox { label: "Normal (Unchecked)"; checked: false }
+                MeoCheckbox { label: "Normal (Checked)"; checked: true }
+                MeoCheckbox { label: "Indeterminate"; indeterminate: true }
+                MeoCheckbox { label: "Error State"; isError: true; errorText: "Invalid choice!" }
+                MeoCheckbox { label: "With Helper Text"; helperText: "This is optional." }
+                MeoCheckbox { label: "Disabled State"; enabled: false; checked: true }
             }
 
-            MeoListItem {
-                width: 400 * MeoTheme.globalScale
-                headline: "Segmented Style"
-                isSegmented: true
-                selected: true
-                leadingImage: "https://picsum.photos/100"
-                leadingImageVariant: "circle"
-                trailingComponent: MeoIcon { icon: "check_circle"; color: MeoTheme.primary }
+            // Radio Button States Column
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space12
+
+                MeoText { text: "MeoRadioButton States"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoRadioButton { label: "Normal (Unchecked)"; checked: false }
+                MeoRadioButton { label: "Normal (Checked)"; checked: true }
+                MeoRadioButton { label: "Error State"; isError: true; errorText: "Please select one!" }
+                MeoRadioButton { label: "With Helper Text"; helperText: "Choose wisely." }
+                MeoRadioButton { label: "Disabled (Unchecked)"; enabled: false; checked: false }
+                MeoRadioButton { label: "Disabled (Checked)"; enabled: false; checked: true }
+            }
+
+            // Switch States Column
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: MeoTheme.space12
+
+                MeoText { text: "MeoSwitch States"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoSwitch { label: "Normal (Unchecked)"; checked: false }
+                MeoSwitch { label: "Normal (Checked)"; checked: true }
+                MeoSwitch { label: "Without Thumb Icon"; checked: true; showIcon: false }
+                MeoSwitch { label: "Error State"; isError: true; errorText: "Turn off immediately!" }
+                MeoSwitch { label: "With Helper Text"; helperText: "Controls system power." }
+                MeoSwitch { label: "Disabled State"; enabled: false; checked: true }
             }
         }
     }
