@@ -47,7 +47,7 @@ Item {
                 target: shimmer
                 from: -control.width * 2
                 to: control.width
-                duration: 1500
+                duration: (typeof MeoTheme !== 'undefined') ? 1500 : 1500
                 running: control.animationActive
                 loops: Animation.Infinite
             }

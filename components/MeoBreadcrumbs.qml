@@ -53,7 +53,7 @@ Control {
                             if (mouseArea.containsMouse) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
                             return "transparent"
                         }
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                        Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
                     }
 
                     Row {

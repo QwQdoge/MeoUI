@@ -46,7 +46,7 @@ Frame {
 
         Behavior on color {
             ColorAnimation {
-                duration: 150
+                duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150
             }
         }
     }
@@ -109,19 +109,21 @@ Frame {
                 anchors.verticalCenter: albumArtContainer.verticalCenter
                 spacing: 4 * control.themeGlobalScale
 
-                Text {
+                MeoText {
                     text: control.title
                     width: parent.width
-                    font.pixelSize: 16 * control.themeGlobalScale
+                    typeRole: "title"
+                    typeSize: "small"
                     font.weight: Font.Bold
                     color: control.themeOnSurface
                     elide: Text.ElideRight
                 }
 
-                Text {
+                MeoText {
                     text: control.artist
                     width: parent.width
-                    font.pixelSize: 14 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "medium"
                     color: control.themeOnSurfaceVariant
                     elide: Text.ElideRight
                 }
@@ -169,7 +171,7 @@ Frame {
 
                     Behavior on width {
                         NumberAnimation {
-                            duration: 100
+                            duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationShort2 : 100
                         }
                     }
                 }
@@ -185,18 +187,20 @@ Frame {
                 height: 16 * control.themeGlobalScale
 
                 // 当前播放位置
-                Text {
+                MeoText {
                     text: formatTime(control.position)
-                    font.pixelSize: 11 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "small"
                     color: control.themeOnSurfaceVariant
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
                 // 总播放时长
-                Text {
+                MeoText {
                     text: formatTime(control.duration)
-                    font.pixelSize: 11 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "small"
                     color: control.themeOnSurfaceVariant
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
@@ -287,7 +291,7 @@ Frame {
                         color: prevBtn.pressed ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12) : (prevBtn.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08) : "transparent")
                         Behavior on color {
                             ColorAnimation {
-                                duration: 150
+                                duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150
                             }
                         }
                     }
@@ -321,7 +325,7 @@ Frame {
 
                         Behavior on color {
                             ColorAnimation {
-                                duration: 150
+                                duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150
                             }
                         }
                     }
@@ -352,7 +356,7 @@ Frame {
                         color: nextBtn.pressed ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12) : (nextBtn.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08) : "transparent")
                         Behavior on color {
                             ColorAnimation {
-                                duration: 150
+                                duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150
                             }
                         }
                     }

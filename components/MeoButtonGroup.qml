@@ -183,7 +183,7 @@ Control {
                             height: parent.height - 16 * control.themeGlobalScale
                             color: control.outlined ? control.themeOutline : control.themeOutlineVariant
                             opacity: groupButton.index > 0 && !groupButton.selected ? 0.78 : 0
-                            Behavior on opacity { NumberAnimation { duration: 100 } }
+                            Behavior on opacity { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationShort2 : 100 } }
                         }
                     }
 
@@ -214,7 +214,7 @@ Control {
                                 lineHeight: (control.fontToken.lineHeight || 20) * control.themeGlobalScale
                                 verticalAlignment: Text.AlignVCenter
                                 anchors.verticalCenter: parent.verticalCenter
-                                Behavior on color { ColorAnimation { duration: 150 } }
+                                Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
                             }
                         }
                     }

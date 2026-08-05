@@ -54,8 +54,8 @@ Control {
             width: parent.width - 52 * control.themeGlobalScale - actions.implicitWidth
             anchors.verticalCenter: parent.verticalCenter
             spacing: 2 * control.themeGlobalScale
-            Text { width: parent.width; visible: control.title.length > 0; text: control.title; font.family: MeoTheme.typefacePlain; font.pixelSize: 16 * control.themeGlobalScale; font.weight: Font.DemiBold; color: control.contentColor; wrapMode: Text.WordWrap }
-            Text { width: parent.width; visible: control.text.length > 0; text: control.text; font.family: MeoTheme.typefacePlain; font.pixelSize: 14 * control.themeGlobalScale; color: control.contentColor; opacity: 0.84; wrapMode: Text.WordWrap }
+            MeoText { width: parent.width; visible: control.title.length > 0; text: control.title; font.family: MeoTheme.typefacePlain; typeRole: "title"; typeSize: "small"; font.weight: Font.DemiBold; color: control.contentColor; wrapMode: Text.WordWrap }
+            MeoText { width: parent.width; visible: control.text.length > 0; text: control.text; font.family: MeoTheme.typefacePlain; typeRole: "label"; typeSize: "medium"; color: control.contentColor; opacity: 0.84; wrapMode: Text.WordWrap }
         }
         Row {
             id: actions

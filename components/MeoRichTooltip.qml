@@ -86,20 +86,22 @@ Popup {
             padding: 16 * control.themeGlobalScale
             spacing: 12 * control.themeGlobalScale
 
-            Text {
+            MeoText {
             text: control.title
             visible: text !== ""
             width: parent.width - 32 * control.themeGlobalScale
-            font.pixelSize: 16 * control.themeGlobalScale
+            typeRole: "title"
+            typeSize: "small"
             font.weight: Font.Medium
             color: control.themeOnSurface
             wrapMode: Text.WordWrap
         }
 
-        Text {
+        MeoText {
             text: control.text
             width: parent.width - 32 * control.themeGlobalScale
-            font.pixelSize: 14 * control.themeGlobalScale
+            typeRole: "label"
+            typeSize: "medium"
             color: control.themeOnSurfaceVariant
             wrapMode: Text.WordWrap
         }
@@ -126,6 +128,6 @@ Popup {
     }
 
     enter: Transition {
-        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150 }
+        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 }
     }
 }

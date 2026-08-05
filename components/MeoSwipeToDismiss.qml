@@ -104,7 +104,7 @@ Item {
             target: contentItem
             property: "x"
             to: 0
-            duration: 200
+            duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200
             easing.type: Easing.OutQuad
         }
 
@@ -113,7 +113,7 @@ Item {
             target: contentItem
             property: "x"
             to: control.width
-            duration: 200
+            duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200
             easing.type: Easing.OutQuad
             onFinished: {
                 control.leftActionTriggered()
@@ -126,7 +126,7 @@ Item {
             target: contentItem
             property: "x"
             to: -control.width
-            duration: 200
+            duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200
             easing.type: Easing.OutQuad
             onFinished: {
                 control.rightActionTriggered()
@@ -137,7 +137,7 @@ Item {
 
     // Optional: Auto-hide height when dismissed
     Behavior on implicitHeight {
-        NumberAnimation { duration: 250; easing.type: Easing.InOutQuad }
+        NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250; easing.type: Easing.InOutQuad }
     }
 
     states: [

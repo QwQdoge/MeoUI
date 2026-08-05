@@ -43,8 +43,8 @@ Rectangle {
         onActiveChanged: control.active = active
         onTextChanged: control.text = text
 
-        Behavior on width { NumberAnimation { duration: 300; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined") ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1] } }
-        Behavior on height { NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+        Behavior on width { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined") ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1] } }
+        Behavior on height { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
     }
 
     // Optional Top App Bar level actions when inactive

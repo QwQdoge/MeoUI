@@ -45,7 +45,7 @@ Control {
                     // Leading Icon handled by MeoListItem logic (mostly)
                     // But we want to override the text rendering to support highlighting
 
-                    Text {
+                    MeoText {
                         width: parent.width - (modelData.isHistory ? 40 * control.themeGlobalScale : 0)
                         anchors.verticalCenter: parent.verticalCenter
                         textFormat: Text.StyledText
@@ -57,7 +57,8 @@ Control {
                             }
                             return label;
                         }
-                        font.pixelSize: 16 * control.themeGlobalScale
+                        typeRole: "title"
+                        typeSize: "small"
                         color: control.themeOnSurface
                         elide: Text.ElideRight
                     }

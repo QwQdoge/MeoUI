@@ -49,9 +49,10 @@ MeoCard {
             width: parent.width
             height: 48 * control.themeGlobalScale
 
-            Text {
+            MeoText {
                 text: Qt.formatDate(control.displayDate, "MMMM yyyy")
-                font.pixelSize: 14 * control.themeGlobalScale
+                typeRole: "label"
+                typeSize: "medium"
                 font.weight: Font.Medium
                 color: control.themeOnSurfaceVariant
                 anchors.verticalCenter: parent.verticalCenter
@@ -89,11 +90,12 @@ MeoCard {
             width: parent.width
             Repeater {
                 model: ["S", "M", "T", "W", "T", "F", "S"]
-                delegate: Text {
+                delegate: MeoText {
                     width: (parent.width) / 7
                     text: modelData
                     horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: 12 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "small"
                     color: control.themeOnSurfaceVariant
                 }
             }
@@ -122,10 +124,11 @@ MeoCard {
                         radius: 16 * control.themeGlobalScale
                         color: isSelected ? control.themePrimary : "transparent"
 
-                        Text {
+                        MeoText {
                             anchors.centerIn: parent
                             text: dateInfo.day
-                            font.pixelSize: 12 * control.themeGlobalScale
+                            typeRole: "label"
+                            typeSize: "small"
                             color: isSelected ? control.themeOnPrimary : (isCurrentMonth ? control.themeOnSurface : control.themeOnSurfaceVariant)
                             opacity: isCurrentMonth ? 1.0 : 0.4
                         }

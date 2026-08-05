@@ -52,7 +52,7 @@ MeoCard {
                     id: hourInput
                     anchors.centerIn: parent
                     text: control.hours.toString().padStart(2, '0')
-                    font.pixelSize: 45 * control.themeGlobalScale
+                    font.pixelSize: (typeof MeoTheme !== "undefined" && typeof MeoTheme.typeToken !== "undefined" ? MeoTheme.typeToken("title", "large", true).size : 45) * control.themeGlobalScale
                     color: control.themeOnPrimaryContainer
                     horizontalAlignment: TextInput.AlignHCenter
                     verticalAlignment: TextInput.AlignVCenter
@@ -72,9 +72,10 @@ MeoCard {
                 }
             }
 
-            Text {
+            MeoText {
                 text: ":"
-                font.pixelSize: 45 * control.themeGlobalScale
+                typeRole: "title"
+                typeSize: "large"
                 color: control.themeOnPrimaryContainer
                 anchors.verticalCenter: parent.verticalCenter
             }
@@ -89,7 +90,7 @@ MeoCard {
                     id: minuteInput
                     anchors.centerIn: parent
                     text: control.minutes.toString().padStart(2, '0')
-                    font.pixelSize: 45 * control.themeGlobalScale
+                    font.pixelSize: (typeof MeoTheme !== "undefined" && typeof MeoTheme.typeToken !== "undefined" ? MeoTheme.typeToken("title", "large", true).size : 45) * control.themeGlobalScale
                     color: control.themeOnPrimaryContainer
                     horizontalAlignment: TextInput.AlignHCenter
                     verticalAlignment: TextInput.AlignVCenter
@@ -121,10 +122,11 @@ MeoCard {
                     radius: 8 * control.themeGlobalScale
                     border.color: control.themeSurfaceVariant
                     color: !control.isPM ? control.themePrimaryContainer : "transparent"
-                    Text {
+                    MeoText {
                         anchors.centerIn: parent
                         text: "AM"
-                        font.pixelSize: 14 * control.themeGlobalScale
+                        typeRole: "label"
+                        typeSize: "medium"
                         color: !control.isPM ? control.themeOnPrimaryContainer : control.themeOnSurface
                     }
                     MouseArea { anchors.fill: parent; onClicked: control.isPM = false }
@@ -135,10 +137,11 @@ MeoCard {
                     radius: 8 * control.themeGlobalScale
                     border.color: control.themeSurfaceVariant
                     color: control.isPM ? control.themePrimaryContainer : "transparent"
-                    Text {
+                    MeoText {
                         anchors.centerIn: parent
                         text: "PM"
-                        font.pixelSize: 14 * control.themeGlobalScale
+                        typeRole: "label"
+                        typeSize: "medium"
                         color: control.isPM ? control.themeOnPrimaryContainer : control.themeOnSurface
                     }
                     MouseArea { anchors.fill: parent; onClicked: control.isPM = true }

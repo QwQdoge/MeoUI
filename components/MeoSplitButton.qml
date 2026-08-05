@@ -155,7 +155,7 @@ Control {
                     anchors.fill: parent
                     radius: control.groupRadius
                     color: menuPopup.opened ? Qt.rgba(control.themeForeground.r, control.themeForeground.g, control.themeForeground.b, 0.16) : "transparent"
-                    Behavior on color { ColorAnimation { duration: 150 } }
+                    Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
                 }
 
                 MeoStateLayer {

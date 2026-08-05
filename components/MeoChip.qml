@@ -189,9 +189,9 @@ Control {
 
             Behavior on icon {
                 SequentialAnimation {
-                    NumberAnimation { target: parent; property: "scale"; to: 0; duration: 80 }
+                    NumberAnimation { target: parent; property: "scale"; to: 0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationEffectFast : 80 }
                     PropertyAction { target: parent; property: "icon" }
-                    NumberAnimation { target: parent; property: "scale"; to: 1; duration: 80 }
+                    NumberAnimation { target: parent; property: "scale"; to: 1; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationEffectFast : 80 }
                 }
             }
         }

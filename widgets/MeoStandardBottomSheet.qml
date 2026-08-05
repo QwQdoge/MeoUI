@@ -53,7 +53,7 @@ Item {
         Behavior on y {
             id: yBehavior
             NumberAnimation {
-                duration: 300
+                duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300
                 easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1.0]
             }
         }

@@ -83,7 +83,7 @@ Control {
                 radius: height / 2
                 color: Qt.rgba(control.themeOnSurfaceVariant.r, control.themeOnSurfaceVariant.g, control.themeOnSurfaceVariant.b, 0.12)
 
-                Behavior on height { NumberAnimation { duration: 200 } }
+                Behavior on height { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200 } }
 
                 // Tick marks for discrete slider
                 Repeater {
@@ -109,7 +109,7 @@ Control {
                 radius: height / 2
                 color: control.themePrimary
 
-                Behavior on height { NumberAnimation { duration: 200 } }
+                Behavior on height { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200 } }
             }
         }
 
@@ -127,7 +127,7 @@ Control {
                 color: control.size !== "xs" ? control.themeOnPrimary : control.themePrimary
                 border.color: control.size !== "xs" ? control.themePrimary : "transparent"
                 border.width: control.size !== "xs" ? 1 * control.themeGlobalScale : 0
-                Behavior on width { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) } }
+                Behavior on width { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) } }
             }
 
             // 🌟 Value Label (MD3 Tooltip style)
@@ -141,12 +141,13 @@ Control {
                 color: control.themePrimary
                 visible: internalSlider.first.pressed
 
-                Text {
+                MeoText {
                     id: firstLabelText
                     anchors.centerIn: parent
                     text: control.discrete ? control.firstValue.toFixed(0) : control.firstValue.toFixed(1)
                     color: control.themeOnPrimary
-                    font.pixelSize: 12 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "small"
                     font.weight: Font.Medium
                 }
 
@@ -162,8 +163,8 @@ Control {
 
                 scale: internalSlider.first.pressed ? 1.0 : 0.0
                 opacity: internalSlider.first.pressed ? 1.0 : 0.0
-                Behavior on scale { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+                Behavior on opacity { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
             }
 
             // State layer
@@ -175,7 +176,7 @@ Control {
                 z: -1
                 color: internalSlider.first.pressed ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.12) :
                        (internalSlider.first.hovered ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.08) : "transparent")
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
             }
         }
 
@@ -193,7 +194,7 @@ Control {
                 color: control.size !== "xs" ? control.themeOnPrimary : control.themePrimary
                 border.color: control.size !== "xs" ? control.themePrimary : "transparent"
                 border.width: control.size !== "xs" ? 1 * control.themeGlobalScale : 0
-                Behavior on width { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) } }
+                Behavior on width { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) } }
             }
 
             // 🌟 Value Label (MD3 Tooltip style)
@@ -207,12 +208,13 @@ Control {
                 color: control.themePrimary
                 visible: internalSlider.second.pressed
 
-                Text {
+                MeoText {
                     id: secondLabelText
                     anchors.centerIn: parent
                     text: control.discrete ? control.secondValue.toFixed(0) : control.secondValue.toFixed(1)
                     color: control.themeOnPrimary
-                    font.pixelSize: 12 * control.themeGlobalScale
+                    typeRole: "label"
+                    typeSize: "small"
                     font.weight: Font.Medium
                 }
 
@@ -228,8 +230,8 @@ Control {
 
                 scale: internalSlider.second.pressed ? 1.0 : 0.0
                 opacity: internalSlider.second.pressed ? 1.0 : 0.0
-                Behavior on scale { NumberAnimation { duration: 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+                Behavior on opacity { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
             }
 
             // State layer
@@ -241,7 +243,7 @@ Control {
                 z: -1
                 color: internalSlider.second.pressed ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.12) :
                        (internalSlider.second.hovered ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.08) : "transparent")
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
             }
         }
     }

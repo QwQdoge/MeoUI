@@ -86,10 +86,11 @@ Popup {
                     opacity: 0.38
                 }
 
-                Text {
+                MeoText {
                     text: "Search your content"
                     color: control.themeOnSurfaceVariant
-                    font.pixelSize: 16 * control.themeGlobalScale
+                    typeRole: "title"
+                    typeSize: "small"
                     anchors.horizontalCenter: parent.horizontalCenter
                 }
             }
@@ -99,20 +100,20 @@ Popup {
     // 🌟 MD3 Expressive Expanding Animation
     enter: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 400; easing.bezierCurve: MeoTheme.motionEasingSoul }
-            NumberAnimation { property: "scale"; from: 0.92; to: 1.0; duration: 450; easing.bezierCurve: MeoTheme.motionEasingSoul }
-            NumberAnimation { target: mainColumn; property: "opacity"; from: 0.0; to: 1.0; duration: 300; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium4 : 400; easing.bezierCurve: MeoTheme.motionEasingSoul }
+            NumberAnimation { property: "scale"; from: 0.92; to: 1.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationLong1 : 450; easing.bezierCurve: MeoTheme.motionEasingSoul }
+            NumberAnimation { target: mainColumn; property: "opacity"; from: 0.0; to: 1.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300; easing.type: Easing.OutCubic }
 
             // Background morphing
-            ColorAnimation { target: control.background; property: "color"; from: "transparent"; to: control.themeSurface; duration: 300 }
+            ColorAnimation { target: control.background; property: "color"; from: "transparent"; to: control.themeSurface; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300 }
         }
     }
 
     exit: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 300; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.95; duration: 300; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
-            NumberAnimation { target: mainColumn; property: "opacity"; from: 1.0; to: 0.0; duration: 200 }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.95; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
+            NumberAnimation { target: mainColumn; property: "opacity"; from: 1.0; to: 0.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200 }
         }
     }
 }

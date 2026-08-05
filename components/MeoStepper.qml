@@ -71,19 +71,21 @@ Control {
                                 color: control.themeOnPrimary
                             }
 
-                            Text {
+                            MeoText {
                                 anchors.centerIn: parent
                                 text: String(index + 1)
                                 visible: !isCompleted
-                                font.pixelSize: 12 * control.themeGlobalScale
+                                typeRole: "label"
+                                typeSize: "small"
                                 font.weight: Font.Medium
                                 color: isActive ? control.themeOnPrimary : control.themeOnSurfaceVariant
                             }
                         }
 
-                        Text {
+                        MeoText {
                             text: modelData.label || ""
-                            font.pixelSize: 12 * control.themeGlobalScale
+                            typeRole: "label"
+                            typeSize: "small"
                             font.weight: isActive ? Font.Bold : Font.Normal
                             color: isActive ? control.themeOnSurface : control.themeOnSurfaceVariant
                             anchors.horizontalCenter: parent.horizontalCenter
@@ -143,19 +145,21 @@ Control {
                                 color: control.themeOnPrimary
                             }
 
-                            Text {
+                            MeoText {
                                 anchors.centerIn: parent
                                 text: String(index + 1)
                                 visible: !isCompleted
-                                font.pixelSize: 12 * control.themeGlobalScale
+                                typeRole: "label"
+                                typeSize: "small"
                                 font.weight: Font.Medium
                                 color: isActive ? control.themeOnPrimary : control.themeOnSurfaceVariant
                             }
                         }
 
-                        Text {
+                        MeoText {
                             text: modelData.label || ""
-                            font.pixelSize: 14 * control.themeGlobalScale
+                            typeRole: "label"
+                            typeSize: "medium"
                             font.weight: isActive ? Font.Bold : Font.Normal
                             color: isActive ? control.themeOnSurface : control.themeOnSurfaceVariant
                             anchors.verticalCenter: parent.verticalCenter

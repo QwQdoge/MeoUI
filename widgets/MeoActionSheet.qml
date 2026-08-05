@@ -83,9 +83,9 @@ Popup {
     }
 
     enter: Transition {
-        NumberAnimation { property: "y"; from: parent.height; to: control.y; duration: 300; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) }
+        NumberAnimation { property: "y"; from: parent.height; to: control.y; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) }
     }
     exit: Transition {
-        NumberAnimation { property: "y"; from: control.y; to: parent.height; duration: 250; easing.type: Easing.InCubic }
+        NumberAnimation { property: "y"; from: control.y; to: parent.height; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250; easing.type: Easing.InCubic }
     }
 }

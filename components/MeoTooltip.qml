@@ -58,7 +58,7 @@ ToolTip {
             property: "opacity"
             from: 1.0
             to: 0.0
-            duration: 100
+            duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationShort2 : 100
         }
     }
 }

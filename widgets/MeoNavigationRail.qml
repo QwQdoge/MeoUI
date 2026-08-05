@@ -195,10 +195,11 @@ Rectangle {
                                 }
                             }
 
-                            Text {
+                            MeoText {
                                 text: modelData.label
                                 font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-                                font.pixelSize: 12 * control.themeGlobalScale
+                                typeRole: "label"
+                                typeSize: "small"
                                 font.weight: Font.Medium
                                 color: isSelected ? control.themeOnSecondaryContainer : control.themeOnSurfaceVariant
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -238,7 +239,7 @@ Rectangle {
                                 }
                             }
 
-                            Text {
+                            MeoText {
                                 text: modelData.label
                                 font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
                                 font.pixelSize: fontLabelLarge.size * control.themeGlobalScale

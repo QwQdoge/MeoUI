@@ -111,14 +111,14 @@ Control {
                 loops: Animation.Infinite
 
                 ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: 666; easing.type: Easing.Linear }
+                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.Linear }
                 }
                 ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: 666; easing.type: Easing.Linear }
+                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.InOutSine }
+                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationExtraLong1 : 666; easing.type: Easing.Linear }
                 }
                 ScriptAction { script: { indicatorCanvas.animStartAngle %= 1.0; indicatorCanvas.animEndAngle %= 1.0; indicatorCanvas.animRotationAngle %= 1.0; } }
             }
@@ -128,6 +128,6 @@ Control {
     // Scale and opacity transitions
     scale: visible ? 1.0 : 0.0
     opacity: visible ? 1.0 : 0.0
-    Behavior on scale { NumberAnimation { duration: 200; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
-    Behavior on opacity { NumberAnimation { duration: 150 } }
+    Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium : 200; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+    Behavior on opacity { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationFast : 150 } }
 }

@@ -66,8 +66,8 @@ Control {
             scale: control.type === "hero" ? (listView.currentIndex === index ? 1.0 : 0.92) : 1.0
             opacity: control.type === "hero" ? (listView.currentIndex === index ? 1.0 : 0.65) : 1.0
 
-            Behavior on scale { NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
-            Behavior on opacity { NumberAnimation { duration: 250 } }
+            Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+            Behavior on opacity { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250 } }
 
             Loader {
                 id: delegateLoader

@@ -29,7 +29,7 @@ Rectangle {
     radius: 28 * themeGlobalScale
     color: themeSurfaceContainerHighest
 
-    Behavior on implicitHeight { NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+    Behavior on implicitHeight { NumberAnimation { duration: (typeof MeoTheme !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
 
     Column {
         anchors.fill: parent
@@ -55,7 +55,8 @@ Rectangle {
                 background: null
                 placeholderText: control.placeholder
                 text: control.text
-                font.pixelSize: 16 * control.themeGlobalScale
+                typeRole: "title"
+                typeSize: "small"
                 color: control.themeOnSurface
                 anchors.verticalCenter: parent.verticalCenter
 
