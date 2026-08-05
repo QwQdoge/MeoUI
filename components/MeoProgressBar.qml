@@ -190,4 +190,127 @@ Control {
             }
         }
     }
+
+    // Classic Standard Circular Progress (Non-wavy)
+    Item {
+        id: classicCircular
+        visible: control.type === "circular" && !control.wavy
+        anchors.centerIn: parent
+        width: Math.min(parent.width, parent.height)
+        height: width
+
+        RotationAnimation on rotation {
+            running: control.indeterminate && control.type === "circular" && !control.wavy && control.visible
+            loops: Animation.Infinite
+            from: 0
+            to: 360
+            duration: Math.round(1568 * control.themeMotionScale)
+        }
+
+        Canvas {
+            id: circularCanvas
+            anchors.fill: parent
+            visible: parent.visible
+
+            property real determinateValue: Math.max(0, Math.min(1, control.value))
+            property real indeterminateArcStart: -90
+            property real indeterminateArcLength: 10
+
+            onDeterminateValueChanged: requestPaint()
+            onIndeterminateArcStartChanged: requestPaint()
+            onIndeterminateArcLengthChanged: requestPaint()
+
+            SequentialAnimation {
+                running: control.indeterminate && control.type === "circular" && !control.wavy && control.visible
+                loops: Animation.Infinite
+
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: circularCanvas
+                        property: "indeterminateArcLength"
+                        from: 10
+                        to: 270
+                        duration: Math.round(1333 * control.themeMotionScale)
+                        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    }
+                    NumberAnimation {
+                        target: circularCanvas
+                        property: "indeterminateArcStart"
+                        from: -90
+                        to: -90 + 135
+                        duration: Math.round(1333 * control.themeMotionScale)
+                        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    }
+                }
+                ParallelAnimation {
+                    NumberAnimation {
+                        target: circularCanvas
+                        property: "indeterminateArcLength"
+                        from: 270
+                        to: 10
+                        duration: Math.round(1333 * control.themeMotionScale)
+                        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    }
+                    NumberAnimation {
+                        target: circularCanvas
+                        property: "indeterminateArcStart"
+                        from: 45
+                        to: 270
+                        duration: Math.round(1333 * control.themeMotionScale)
+                        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    }
+                }
+                ScriptAction {
+                    script: {
+                        circularCanvas.indeterminateArcStart = -90;
+                    }
+                }
+            }
+
+            Behavior on determinateValue {
+                enabled: !control.indeterminate
+                NumberAnimation {
+                    duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationEffectDefault !== 'undefined') ? MeoTheme.motionDurationEffectDefault : 150
+                    easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                }
+            }
+
+            onPaint: {
+                var ctx = getContext("2d");
+                ctx.reset();
+
+                var w = width;
+                var h = height;
+                var stroke = control.isThick ? 8 * control.themeGlobalScale : 4 * control.themeGlobalScale;
+                var R = (Math.min(w, h) - stroke) / 2;
+                var cx = w / 2;
+                var cy = h / 2;
+
+                if (control.showTrack) {
+                    ctx.strokeStyle = control.trackColor;
+                    ctx.lineWidth = stroke;
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, R, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+
+                ctx.strokeStyle = control.activeColor;
+                ctx.lineWidth = stroke;
+                ctx.lineCap = "round";
+                ctx.beginPath();
+
+                if (control.indeterminate) {
+                    var startRad = indeterminateArcStart * Math.PI / 180;
+                    var endRad = (indeterminateArcStart + indeterminateArcLength) * Math.PI / 180;
+                    ctx.arc(cx, cy, R, startRad, endRad);
+                    ctx.stroke();
+                } else if (determinateValue > 0) {
+                    var detStartRad = -Math.PI / 2;
+                    var detEndRad = detStartRad + determinateValue * 2 * Math.PI;
+                    ctx.arc(cx, cy, R, detStartRad, detEndRad);
+                    ctx.stroke();
+                }
+            }
+        }
+    }
 }
