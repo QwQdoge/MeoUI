@@ -8,6 +8,14 @@ embed or maintain private component copies.
 
 Design, token, component, and review rules live in [`DESIGN_SPEC.md`](DESIGN_SPEC.md).
 
+## GitHub Pages Specification Site
+
+The repository contains an interactive Material Design 3 component specification website in [`docs/`](docs/index.html). It displays all 89+ QML components, token tables, interactive search, code examples, and visual component image previews.
+
+To host on GitHub Pages:
+1. Enable GitHub Pages in repository settings.
+2. Select `main` branch and `/docs` folder as the source.
+
 ## Requirements
 
 - Qt 6 with `Core`, `Gui`, `Qml`, `Quick`, and `QuickControls2`
