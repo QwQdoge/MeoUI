@@ -112,6 +112,7 @@ MeoTheme.qml
         components/MeoIconButton.qml
         components/MeoDataTable.qml
         components/MeoExposedDropdown.qml
+        components/MeoExpansionPanel.qml
         components/MeoRichTooltip.qml
         widgets/MeoMediaController.qml
         widgets/MeoDatePicker.qml
