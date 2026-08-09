@@ -1,6 +1,6 @@
 # Verified MeoUI components
 
-Shared reference: `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/references/components.md`.
+Shared reference: `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/05-component-reference/README.md` (with a paired English index and bilingual page for every exported component).
 
 Primary sources:
 
