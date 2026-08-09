@@ -20,8 +20,8 @@ MeoMotionPopup {
     readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
     readonly property color themeOutlineVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#CAC4D0"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 150
-    readonly property int motionMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium !== 'undefined') ? MeoTheme.motionDurationMedium : 300
+    readonly property int motionFast: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
+    readonly property int motionMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium !== 'undefined') ? MeoTheme.motionDurationMedium : 220
 
     function itemLabel(item) {
         return item.label || item.text || ""

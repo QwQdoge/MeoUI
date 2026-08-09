@@ -36,7 +36,7 @@ Control {
     readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
     readonly property int motionStateDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationShort2 !== 'undefined') ? MeoTheme.motionDurationShort2 : 100
-    readonly property int motionSelectDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 150
+    readonly property int motionSelectDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
 
     // 📐 尺寸与比例自适应 (Sizes and Proportions)
     readonly property real radioOuterSize: {

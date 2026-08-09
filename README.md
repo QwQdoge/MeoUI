@@ -6,7 +6,9 @@ The CMake target is a versioned shared runtime (`libmeoui.so.0`) with a
 dynamically loaded QML plugin. Applications import `MeoUI 1.0`; they must not
 embed or maintain private component copies.
 
-Design, token, component, and review rules live in [`DESIGN_SPEC.md`](DESIGN_SPEC.md).
+The shared, verified MeoUI design-system reference lives at
+`/home/shekong/Documents/Obsidian Vault/Meo UI/design system/`; the project-level
+`$meoui` skill routes Codex there while keeping source code authoritative.
 
 ## GitHub Pages Specification Site
 

@@ -43,7 +43,7 @@ Control {
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
     readonly property real themeFontScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined') ? MeoTheme.fontScale : 1.0
     readonly property string themeFontFamily: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast * (MeoTheme.motionScale || 1.0) : 150
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast * (MeoTheme.motionScale || 1.0) : 120
 
     readonly property var fontToken: {
         if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Medium };
