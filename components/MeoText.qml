@@ -16,6 +16,7 @@ Text {
     }
 
     readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    readonly property real themeFontScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.fontScale !== "undefined") ? MeoTheme.fontScale : 1.0
     readonly property var typeToken: (typeof MeoTheme !== "undefined" && typeof MeoTheme.typeToken !== "undefined")
                                      ? MeoTheme.typeToken(typeRole, typeSize, emphasized)
                                      : { "size": 14, "weight": Font.Normal, "lineHeight": 20, "letterSpacing": 0 }
@@ -24,13 +25,13 @@ Text {
     font.family: fontFamilyOverride !== "" ? fontFamilyOverride
                  : (typeToken.family ? typeToken.family
                  : (usesBrandTypeface && typeof MeoTheme !== "undefined" ? MeoTheme.typefaceBrand : MeoTheme.typefacePlain))
-    font.pixelSize: typeToken.size * themeGlobalScale
+    font.pixelSize: typeToken.size * themeGlobalScale * themeFontScale
     font.weight: typeToken.weight
     font.variableAxes: ({ "wght": weightValue })
-    font.letterSpacing: (typeToken.letterSpacing || 0) * themeGlobalScale
+    font.letterSpacing: (typeToken.letterSpacing || 0) * themeGlobalScale * themeFontScale
     // Fixed MD3 line boxes avoid the apparent baseline drift that proportional
     // line height causes when labels sit beside icons or controls.
     lineHeightMode: Text.FixedHeight
-    lineHeight: typeToken.lineHeight ? typeToken.lineHeight * themeGlobalScale : font.pixelSize * 1.2
+    lineHeight: typeToken.lineHeight ? typeToken.lineHeight * themeGlobalScale * themeFontScale : font.pixelSize * 1.2
     verticalAlignment: Text.AlignVCenter
 }

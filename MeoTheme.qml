@@ -286,9 +286,12 @@ QtObject {
     readonly property int motionDurationEffectSlow: reduceMotion ? 0 : Math.round(250 * motionScale)
 
     // 🌟 字体族 Token (Font Family Tokens)
-    property string fontFamily: "Inter, Roboto, Noto Sans SC, sans-serif"
-    property string fontFamilyMonospace: "Roboto Mono, JetBrains Mono, Fira Code, monospace"
-    property string fontFamilyBrand: "Google Sans, Outfit, Roboto, sans-serif"
+    // Consumers may bind these to the platform font provider. Keep a concrete
+    // family here: QFont's `family` property is a single family name, not a CSS
+    // comma-separated fallback declaration.
+    property string fontFamily: "Roboto"
+    property string fontFamilyMonospace: "Roboto Mono"
+    property string fontFamilyBrand: "Comfortaa"
 
     // 🌟 字体全局缩放 (Font Scale Token)
     property real fontScale: 1.0
@@ -411,8 +414,8 @@ QtObject {
 
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
-    readonly property string typefacePlain: "Roboto"
-    readonly property string typefaceBrand: "Comfortaa"
+    readonly property string typefacePlain: fontFamily
+    readonly property string typefaceBrand: fontFamilyBrand
     readonly property string typefaceChineseFallback: "Noto Sans SC, Microsoft YaHei, Source Han Sans SC"
 
     // Display
