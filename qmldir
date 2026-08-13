@@ -17,6 +17,7 @@ MeoDialog 1.0 components/MeoDialog.qml
 MeoDivider 1.0 components/MeoDivider.qml
 MeoDockedToolbar 1.0 components/MeoDockedToolbar.qml
 MeoExposedDropdown 1.0 components/MeoExposedDropdown.qml
+MeoExpansionPanel 1.0 components/MeoExpansionPanel.qml
 MeoFAB 1.0 components/MeoFAB.qml
 MeoFABMenu 1.0 components/MeoFABMenu.qml
 MeoFilterChip 1.0 components/MeoFilterChip.qml
