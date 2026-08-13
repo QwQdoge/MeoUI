@@ -26,8 +26,8 @@ Button {
     checked: false
 
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 150
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 300
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
+    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
 
     readonly property var fontToken: {
         if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Medium };
@@ -48,11 +48,13 @@ Button {
         return token;
     }
 
+    readonly property color disabledOnSurfaceColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.onSurface !== 'undefined') ? MeoTheme.onSurface : (isDarkMode ? "#E4E4E6" : "#323233")
+
     readonly property color bgColor: {
         if (!control.enabled) {
             if (effectiveType === "outlined" || effectiveType === "text")
-                return Qt.rgba(textColor.r, textColor.g, textColor.b, 0);
-            return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
+                return Qt.rgba(disabledOnSurfaceColor.r, disabledOnSurfaceColor.g, disabledOnSurfaceColor.b, 0);
+            return Qt.rgba(disabledOnSurfaceColor.r, disabledOnSurfaceColor.g, disabledOnSurfaceColor.b, MeoTheme.disabledContainerOpacity);
         }
 
         let base;
@@ -85,7 +87,7 @@ Button {
 
     readonly property color textColor: {
         if (!control.enabled) {
-            return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
+            return Qt.rgba(disabledOnSurfaceColor.r, disabledOnSurfaceColor.g, disabledOnSurfaceColor.b, MeoTheme.disabledContentOpacity);
         }
         if (control.checked || control.selected) {
              if (effectiveType === "filled") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D";

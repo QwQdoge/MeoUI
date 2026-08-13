@@ -139,7 +139,7 @@ Button {
                 if (control.effectiveType === "tonal") return control.themeOnSecondaryContainer;
                 return control.themeOnSurfaceVariant;
             }
-            Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 150 } }
+            Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120 } }
         }
 
         MeoBadge {

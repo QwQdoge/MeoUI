@@ -22,13 +22,13 @@ Item {
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     // 🌟 状态层透明度定义 (MD3 规范)
-    readonly property real hoverOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityHover !== 'undefined') ? MeoTheme.stateOpacityHover : 0.08
-    readonly property real focusOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityFocus !== 'undefined') ? MeoTheme.stateOpacityFocus : 0.10
-    readonly property real pressedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityPressed !== 'undefined') ? MeoTheme.stateOpacityPressed : 0.10
+    readonly property real hoverOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityHover !== 'undefined') ? MeoTheme.stateOpacityHover : 0.10
+    readonly property real focusOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityFocus !== 'undefined') ? MeoTheme.stateOpacityFocus : 0.12
+    readonly property real pressedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityPressed !== 'undefined') ? MeoTheme.stateOpacityPressed : 0.14
     readonly property real draggedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityDragged !== 'undefined') ? MeoTheme.stateOpacityDragged : 0.16
-    readonly property int hoverDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 150
-    readonly property int rippleExpandDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleExpand !== 'undefined') ? MeoTheme.motionDurationRippleExpand : 400
-    readonly property int rippleFadeDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleFade !== 'undefined') ? MeoTheme.motionDurationRippleFade : 300
+    readonly property int hoverDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
+    readonly property int rippleExpandDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleExpand !== 'undefined') ? MeoTheme.motionDurationRippleExpand : 280
+    readonly property int rippleFadeDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleFade !== 'undefined') ? MeoTheme.motionDurationRippleFade : 160
 
     anchors.fill: parent
     width: parent ? parent.width : 0

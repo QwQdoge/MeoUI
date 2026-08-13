@@ -286,9 +286,12 @@ QtObject {
     readonly property int motionDurationEffectSlow: reduceMotion ? 0 : Math.round(250 * motionScale)
 
     // 🌟 字体族 Token (Font Family Tokens)
-    property string fontFamily: "Inter, Roboto, Noto Sans SC, sans-serif"
-    property string fontFamilyMonospace: "Roboto Mono, JetBrains Mono, Fira Code, monospace"
-    property string fontFamilyBrand: "Google Sans, Outfit, Roboto, sans-serif"
+    // Consumers may bind these to the platform font provider. Keep a concrete
+    // family here: QFont's `family` property is a single family name, not a CSS
+    // comma-separated fallback declaration.
+    property string fontFamily: "Roboto"
+    property string fontFamilyMonospace: "Roboto Mono"
+    property string fontFamilyBrand: "Comfortaa"
 
     // 🌟 字体全局缩放 (Font Scale Token)
     property real fontScale: 1.0
@@ -297,11 +300,11 @@ QtObject {
     property real motionScale: 1.0
 
     // 🌟 图标尺寸 Token (Icon Size Tokens)
-    readonly property real iconSizeXS: 16 * globalScale
-    readonly property real iconSizeS: 18 * globalScale
-    readonly property real iconSizeM: 24 * globalScale
-    readonly property real iconSizeL: 32 * globalScale
-    readonly property real iconSizeXL: 48 * globalScale
+    readonly property real iconSizeXS: MeoTokens.iconSizeXS * globalScale
+    readonly property real iconSizeS: MeoTokens.iconSizeS * globalScale
+    readonly property real iconSizeM: MeoTokens.iconSizeM * globalScale
+    readonly property real iconSizeL: MeoTokens.iconSizeL * globalScale
+    readonly property real iconSizeXL: MeoTokens.iconSizeXL * globalScale
 
     // 🌟 悬浮/阴影 Token (Elevation Tokens)
     readonly property real elevationLevel0: 0
@@ -312,10 +315,10 @@ QtObject {
     readonly property real elevationLevel5: 12 * globalScale
 
     // MD3 state-layer opacity tokens.
-    readonly property real stateOpacityHover: 0.10
-    readonly property real stateOpacityFocus: 0.12
-    readonly property real stateOpacityPressed: 0.14
-    readonly property real stateOpacityDragged: 0.16
+    readonly property real stateOpacityHover: MeoTokens.stateOpacityHover
+    readonly property real stateOpacityFocus: MeoTokens.stateOpacityFocus
+    readonly property real stateOpacityPressed: MeoTokens.stateOpacityPressed
+    readonly property real stateOpacityDragged: MeoTokens.stateOpacityDragged
 
     // Semantic feedback and surface roles used by products consuming MeoUI.
     readonly property real disabledContainerOpacity: 0.12
@@ -351,23 +354,23 @@ QtObject {
 
     // 🌟 M3 Shape Scale (MD3 Standard)
     readonly property real shapeNone: 0
-    readonly property real shapeExtraSmall: 4 * globalScale * cornerScale
-    readonly property real shapeSmall: 8 * globalScale * cornerScale
-    readonly property real shapeMedium: 12 * globalScale * cornerScale
-    readonly property real shapeLarge: 16 * globalScale * cornerScale
-    readonly property real shapeLargeIncreased: 20 * globalScale * cornerScale
-    readonly property real shapeExtraLarge: 28 * globalScale * cornerScale
-    readonly property real shapeExtraLargeIncreased: 32 * globalScale * cornerScale
-    readonly property real expressiveShapeCornerRadius: 32 * globalScale * cornerScale
-    readonly property real shapeExtraExtraLarge: 48 * globalScale * cornerScale
+    readonly property real shapeExtraSmall: MeoTokens.shapeExtraSmall * globalScale * cornerScale
+    readonly property real shapeSmall: MeoTokens.shapeSmall * globalScale * cornerScale
+    readonly property real shapeMedium: MeoTokens.shapeMedium * globalScale * cornerScale
+    readonly property real shapeLarge: MeoTokens.shapeLarge * globalScale * cornerScale
+    readonly property real shapeLargeIncreased: MeoTokens.shapeLargeIncreased * globalScale * cornerScale
+    readonly property real shapeExtraLarge: MeoTokens.shapeExtraLarge * globalScale * cornerScale
+    readonly property real shapeExtraLargeIncreased: MeoTokens.shapeExtraLargeIncreased * globalScale * cornerScale
+    readonly property real expressiveShapeCornerRadius: MeoTokens.shapeExtraLargeIncreased * globalScale * cornerScale
+    readonly property real shapeExtraExtraLarge: MeoTokens.shapeExtraExtraLarge * globalScale * cornerScale
     readonly property real shapeFull: 1000 * globalScale // Large value for full rounding
 
     // 🌟 MD3 Expressive Dimension Tokens
-    readonly property real buttonHeightXS: 32 * globalScale
-    readonly property real buttonHeightS: 40 * globalScale
-    readonly property real buttonHeightM: 48 * globalScale
-    readonly property real buttonHeightL: 56 * globalScale
-    readonly property real buttonHeightXL: 72 * globalScale
+    readonly property real buttonHeightXS: MeoTokens.buttonHeightXS * globalScale
+    readonly property real buttonHeightS: MeoTokens.buttonHeightS * globalScale
+    readonly property real buttonHeightM: MeoTokens.buttonHeightM * globalScale
+    readonly property real buttonHeightL: MeoTokens.buttonHeightL * globalScale
+    readonly property real buttonHeightXL: MeoTokens.buttonHeightXL * globalScale
 
     readonly property real sliderTrackHeightXS: 4 * globalScale
     readonly property real sliderTrackHeightS: 16 * globalScale
@@ -394,15 +397,15 @@ QtObject {
     readonly property string shapeOctagon: "octagon"
 
     // 🌟 M3 间距网格系统 (Spacing Tokens)
-    readonly property real space2: 2 * globalScale
-    readonly property real space4: 4 * globalScale
-    readonly property real space8: 8 * globalScale
-    readonly property real space12: 12 * globalScale
-    readonly property real space16: 16 * globalScale
-    readonly property real space24: 24 * globalScale
-    readonly property real space32: 32 * globalScale
-    readonly property real space40: 40 * globalScale
-    readonly property real space48: 48 * globalScale
+    readonly property real space2: MeoTokens.space2 * globalScale
+    readonly property real space4: MeoTokens.space4 * globalScale
+    readonly property real space8: MeoTokens.space8 * globalScale
+    readonly property real space12: MeoTokens.space12 * globalScale
+    readonly property real space16: MeoTokens.space16 * globalScale
+    readonly property real space24: MeoTokens.space24 * globalScale
+    readonly property real space32: MeoTokens.space32 * globalScale
+    readonly property real space40: MeoTokens.space40 * globalScale
+    readonly property real space48: MeoTokens.space48 * globalScale
 
     // 🌟 兼容老版组件的 Padding 定义
     readonly property real compactPadding: 8 * globalScale
@@ -411,8 +414,8 @@ QtObject {
 
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
-    readonly property string typefacePlain: "Roboto"
-    readonly property string typefaceBrand: "Comfortaa"
+    readonly property string typefacePlain: fontFamily
+    readonly property string typefaceBrand: fontFamilyBrand
     readonly property string typefaceChineseFallback: "Noto Sans SC, Microsoft YaHei, Source Han Sans SC"
 
     // Display

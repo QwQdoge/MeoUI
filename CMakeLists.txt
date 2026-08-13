@@ -10,6 +10,22 @@ option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml)
 
+# The token runtime is the single metric/state source for both the QML module
+# and native renderers such as Meo QStyle.  It intentionally contains no
+# widget painter code or desktop-specific policy.
+add_library(meoui_tokens STATIC
+    runtime/meotokens.cpp
+    runtime/meotokens.h
+)
+add_library(MeoUI::Tokens ALIAS meoui_tokens)
+set_target_properties(meoui_tokens PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(meoui_tokens PUBLIC Qt6::Core Qt6::Gui Qt6::Qml)
+target_include_directories(meoui_tokens
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/runtime>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/MeoUI>
+)
+
 # Use Qt 6's standard :/qt/qml resource prefix for QML modules.
 if(COMMAND qt_policy)
     qt_policy(SET QTP0001 NEW)
@@ -28,6 +44,8 @@ qt_add_qml_module(meoui_module
     URI "MeoUI"
     VERSION 1.0
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/MeoUI"
+    SOURCES
+        runtime/meotokens.h
     QML_FILES
                 widgets/MeoNavigationBar.qml
         widgets/MeoNavigationDrawerModal.qml
@@ -164,7 +182,7 @@ MeoTheme.qml
         assets/fonts/Roboto-Bold.ttf
 )
 
-target_link_libraries(meoui_module PUBLIC Qt6::Core Qt6::Quick Qt6::QuickControls2)
+target_link_libraries(meoui_module PUBLIC MeoUI::Tokens Qt6::Core Qt6::Quick Qt6::QuickControls2)
 set_target_properties(meoui_module PROPERTIES
     OUTPUT_NAME meoui
     VERSION ${PROJECT_VERSION}
@@ -174,6 +192,12 @@ set_target_properties(meoui_module PROPERTIES
 install(TARGETS meoui_module
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(TARGETS meoui_tokens
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES runtime/meotokens.h
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/MeoUI"
 )
 install(TARGETS meoui_moduleplugin
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
