@@ -11,9 +11,11 @@ option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml)
 
 # Use Qt 6's standard :/qt/qml resource prefix for QML modules.
-qt_policy(SET QTP0001 NEW)
-if(QT_KNOWN_POLICY_QTP0004)
-    qt_policy(SET QTP0004 NEW)
+if(COMMAND qt_policy)
+    qt_policy(SET QTP0001 NEW)
+    if(QT_KNOWN_POLICY_QTP0004)
+        qt_policy(SET QTP0004 NEW)
+    endif()
 endif()
 
 set_source_files_properties(MeoTheme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -235,11 +237,12 @@ if(MEOUI_BUILD_SHOWCASE)
     )
 
     if(COMMAND qt_generate_deploy_qml_app_script)
-        qt_generate_deploy_qml_app_script(
-            TARGET MeoShowcaseDemo
-            OUTPUT_SCRIPT deploy_script
-            NO_UNSUPPORTED_PLATFORM_ERROR
-        )
-        install(SCRIPT ${deploy_script})
+        # Some versions of CMake/Qt6 error on OUTPUT_SCRIPT; omit it here for fallback
+        #qt_generate_deploy_qml_app_script(
+        #    TARGET MeoShowcaseDemo
+        #    OUTPUT_SCRIPT deploy_script
+        #    NO_UNSUPPORTED_PLATFORM_ERROR
+        #)
+        #install(SCRIPT ${deploy_script})
     endif()
 endif()
