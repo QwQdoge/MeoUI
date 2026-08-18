@@ -22,8 +22,6 @@ Row {
 
     spacing: 4 * themeGlobalScale
 
-    signal ratingChanged(real newRating)
-
     Repeater {
         model: control.maxRating
 
@@ -71,8 +69,8 @@ Row {
                         // Allows un-rating by clicking the same star again (common UX pattern)
                         newRating = 0
                     }
+                    // The rating property automatically emits ratingChanged when assigned.
                     control.rating = newRating
-                    control.ratingChanged(newRating)
                 }
 
                 onPositionChanged: (mouse) => {
