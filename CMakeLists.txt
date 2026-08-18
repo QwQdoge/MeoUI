@@ -122,6 +122,7 @@ MeoTheme.qml
         components/MeoFilterChip.qml
         components/MeoInputChip.qml
         components/MeoPullToRefresh.qml
+        components/MeoRatingBar.qml
         components/MeoFilterGroup.qml
         components/MeoListHeader.qml
         components/MeoSelectionGroup.qml
@@ -170,6 +171,7 @@ MeoTheme.qml
         patterns/MeoSearchHeader.qml
         patterns/MeoExpressiveDialog.qml
         patterns/MeoSegmentedList.qml
+        patterns/MeoSupportingPaneLayout.qml
         components/MeoShape.qml
         components/MeoShapeMorph.qml
         components/MeoMaterialShapes.js
