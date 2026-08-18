@@ -80,3 +80,5 @@ MeoListDetailLayout 1.0 patterns/MeoListDetailLayout.qml
 MeoScaffold 1.0 patterns/MeoScaffold.qml
 MeoSearchFilterBar 1.0 patterns/MeoSearchFilterBar.qml
 MeoSettingsLayout 1.0 patterns/MeoSettingsLayout.qml
+MeoRatingBar 1.0 components/MeoRatingBar.qml
+MeoSupportingPaneLayout 1.0 patterns/MeoSupportingPaneLayout.qml
