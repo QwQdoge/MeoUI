@@ -14,6 +14,8 @@ Control {
     property real stepSize: 1.0
     property bool isThick: false // 🌟 MD3 Expressive: Thicker track variant
     property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
+    property bool wavy: false // 🌟 MD3 Expressive: Wavy track variant
+    property bool valueLabelEnabled: true
 
     signal moved()
 
@@ -34,6 +36,11 @@ Control {
         return (MeoTheme.sliderTrackHeightXS || 4 * themeGlobalScale) // default "xs"
     }
 
+    readonly property real motionTrackDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSelection !== 'undefined') ? MeoTheme.motionDurationSelection : 200
+    readonly property real motionStateDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationState !== 'undefined') ? MeoTheme.motionDurationState : 150
+    readonly property real motionWaveDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationWave !== 'undefined') ? MeoTheme.motionDurationWave : 1500
+
+
     readonly property real thumbWidth: {
         if (size === "xs") return 20 * themeGlobalScale
         return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.sliderThumbWidthExpressive !== 'undefined') ? MeoTheme.sliderThumbWidthExpressive : 4 * themeGlobalScale
@@ -46,8 +53,10 @@ Control {
 
     readonly property real thumbGap: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.sliderThumbGapExpressive !== 'undefined') ? MeoTheme.sliderThumbGapExpressive : 6 * themeGlobalScale
 
+    readonly property bool waveAnimationActive: wavy && visible && enabled && width > 0 && height > 0 && (internalSlider.first.hovered || internalSlider.first.pressed || internalSlider.second.hovered || internalSlider.second.pressed || internalSlider.activeFocus)
+
     implicitWidth: 200 * themeGlobalScale
-    implicitHeight: Math.max(thumbHeight + 8 * themeGlobalScale, 44 * themeGlobalScale)
+    implicitHeight: wavy ? 44 * themeGlobalScale : Math.max(thumbHeight + 8 * themeGlobalScale, 44 * themeGlobalScale)
 
     RangeSlider {
         id: internalSlider
@@ -77,6 +86,7 @@ Control {
             // 轨道背景
             Rectangle {
                 id: trackRect
+                visible: !control.wavy
                 anchors.centerIn: parent
                 width: parent.width
                 height: control.trackHeight
@@ -102,6 +112,7 @@ Control {
 
             // 已填充部分 (Active Range)
             Rectangle {
+                visible: !control.wavy
                 y: (parent.height - height) / 2
                 x: internalSlider.first.visualPosition * parent.width
                 width: (internalSlider.second.visualPosition - internalSlider.first.visualPosition) * parent.width
@@ -111,6 +122,73 @@ Control {
 
                 Behavior on height { NumberAnimation { duration: 200 } }
             }
+
+            Canvas {
+                id: wavyCanvas
+                visible: control.wavy
+                anchors.fill: parent
+                property real phase: 0
+
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
+
+                    var strokeWidth = (control.isThick ? 10 : (control.size === "xs" ? 4 : 8)) * control.themeGlobalScale;
+                    var mid = height / 2;
+                    var startWidth = width * internalSlider.first.visualPosition;
+                    var endWidth = width * internalSlider.second.visualPosition;
+                    var amp = Math.min(strokeWidth * 0.34, 3.5 * control.themeGlobalScale);
+                    var wavelength = 40 * control.themeGlobalScale;
+                    var sampleStep = Math.max(1, 1.25 * control.themeGlobalScale);
+
+                    ctx.lineCap = "round";
+                    ctx.lineJoin = "round";
+                    ctx.lineWidth = strokeWidth;
+
+                    // Inactive wavy track
+                    ctx.strokeStyle = Qt.rgba(control.themeOnSurfaceVariant.r, control.themeOnSurfaceVariant.g, control.themeOnSurfaceVariant.b, 0.12);
+                    ctx.beginPath();
+                    ctx.moveTo(0, mid);
+                    ctx.lineTo(width, mid);
+                    ctx.stroke();
+
+                    // Active wavy track
+                    ctx.strokeStyle = control.themePrimary;
+                    ctx.beginPath();
+                    for (var x = startWidth; x <= endWidth; x += sampleStep) {
+                        var y = mid + Math.sin((x + phase) / wavelength * Math.PI * 2) * amp;
+                        if (x === startWidth) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    if (endWidth > startWidth) {
+                        var endY = mid + Math.sin((endWidth + phase) / wavelength * Math.PI * 2) * amp;
+                        ctx.lineTo(endWidth, endY);
+                    }
+                    ctx.stroke();
+                }
+
+                onWidthChanged: requestPaint()
+                onHeightChanged: requestPaint()
+                onPhaseChanged: requestPaint()
+
+                Connections {
+                    target: internalSlider.first
+                    function onVisualPositionChanged() { wavyCanvas.requestPaint() }
+                }
+                Connections {
+                    target: internalSlider.second
+                    function onVisualPositionChanged() { wavyCanvas.requestPaint() }
+                }
+
+                NumberAnimation on phase {
+                    running: control.waveAnimationActive
+                    from: 0
+                    to: 40 * control.themeGlobalScale
+                    duration: control.motionWaveDuration
+                    loops: Animation.Infinite
+                    easing.type: Easing.Linear
+                }
+            }
+
         }
 
         first.handle: Item {

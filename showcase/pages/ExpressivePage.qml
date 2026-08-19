@@ -282,6 +282,31 @@ ShowcaseCategoryPage {
         }
     }
 
+
+    // 🌟 5. M3 Expressive Range Slider
+    ShowcaseSection {
+        title: "M3 Expressive Range Slider"
+        subtitle: "MD3 Expressive wavy range sliders."
+        width: parent.width
+
+        ColumnLayout {
+            width: parent.width
+            spacing: MeoTheme.space24
+
+            MeoText { text: "Wavy Range Slider:"; typeRole: "title"; typeSize: "small"; emphasized: true }
+
+            RowLayout {
+                spacing: MeoTheme.space24
+                Layout.fillWidth: true
+
+                MeoRangeSlider {
+                    wavy: true
+                    Layout.fillWidth: true
+                }
+            }
+        }
+    }
+
     // 🌟 5. Bouncy Interactive Cards & Surfaces
     ShowcaseSection {
         title: "Bouncy Interactive Cards & Surfaces (MeoMotionSurface)"
