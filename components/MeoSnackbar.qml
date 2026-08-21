@@ -36,78 +36,83 @@ Popup {
         color: control.themeInverseSurface
     }
 
-    contentItem: Row {
-        leftPadding: 16 * control.themeGlobalScale
-        rightPadding: 8 * control.themeGlobalScale
-        topPadding: 10 * control.themeGlobalScale
-        bottomPadding: 10 * control.themeGlobalScale
-        spacing: 10 * control.themeGlobalScale
+    contentItem: Item {
+        implicitHeight: Math.max(52 * control.themeGlobalScale, contentRow.implicitHeight + 20 * control.themeGlobalScale)
 
-        MeoIcon {
-            visible: control.icon !== ""
-            icon: control.icon
-            size: 22
-            color: control.themeInverseOnSurface
-            anchors.verticalCenter: parent.verticalCenter
-        }
+        Row {
+            id: contentRow
+            anchors.fill: parent
+            anchors.leftMargin: 16 * control.themeGlobalScale
+            anchors.rightMargin: 8 * control.themeGlobalScale
+            anchors.topMargin: 10 * control.themeGlobalScale
+            anchors.bottomMargin: 10 * control.themeGlobalScale
+            spacing: 10 * control.themeGlobalScale
 
-        Text {
-            width: Math.max(0, parent.width
-                            - (control.icon !== "" ? 32 * control.themeGlobalScale : 0)
-                            - (control.actionText !== "" ? actionButton.implicitWidth + 12 * control.themeGlobalScale : 0)
-                            - (control.dismissible ? dismissButton.width + 8 * control.themeGlobalScale : 0)
-                            - 24 * control.themeGlobalScale)
-            text: control.message
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-            font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
-            font.weight: control.fontBodyMedium.weight
-            color: control.themeInverseOnSurface
-            verticalAlignment: Text.AlignVCenter
-            wrapMode: Text.WordWrap
-            anchors.verticalCenter: parent.verticalCenter
-        }
-
-        Button {
-            id: actionButton
-            visible: control.actionText !== ""
-            text: control.actionText
-            height: 40 * control.themeGlobalScale
-            padding: 12 * control.themeGlobalScale
-            hoverEnabled: true
-            anchors.verticalCenter: parent.verticalCenter
-            onClicked: {
-                control.actionClicked()
-                control.close()
+            MeoIcon {
+                visible: control.icon !== ""
+                icon: control.icon
+                size: 22
+                color: control.themeInverseOnSurface
+                anchors.verticalCenter: parent.verticalCenter
             }
-            background: Rectangle {
-                radius: height / 2
-                color: actionButton.pressed ? Qt.rgba(control.themeInversePrimary.r, control.themeInversePrimary.g, control.themeInversePrimary.b, 0.16)
-                                            : actionButton.hovered ? Qt.rgba(control.themeInversePrimary.r, control.themeInversePrimary.g, control.themeInversePrimary.b, 0.10)
-                                                                   : "transparent"
-            }
-            contentItem: Text {
-                text: actionButton.text
-                color: control.themeInversePrimary
+
+            Text {
+                width: Math.max(0, parent.width
+                                - (control.icon !== "" ? 32 * control.themeGlobalScale : 0)
+                                - (control.actionText !== "" ? actionButton.implicitWidth + 12 * control.themeGlobalScale : 0)
+                                - (control.dismissible ? dismissButton.width + 8 * control.themeGlobalScale : 0))
+                text: control.message
                 font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-                font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
-                font.weight: control.fontLabelLarge.weight
-                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.weight: control.fontBodyMedium.weight
+                color: control.themeInverseOnSurface
                 verticalAlignment: Text.AlignVCenter
+                wrapMode: Text.WordWrap
+                anchors.verticalCenter: parent.verticalCenter
             }
-        }
 
-        MeoIconButton {
-            id: dismissButton
-            visible: control.dismissible
-            icon.name: "close"
-            size: "s"
-            type: "standard"
-            width: 36 * control.themeGlobalScale
-            height: width
-            anchors.verticalCenter: parent.verticalCenter
-            onClicked: {
-                control.dismissed()
-                control.close()
+            Button {
+                id: actionButton
+                visible: control.actionText !== ""
+                text: control.actionText
+                height: 40 * control.themeGlobalScale
+                padding: 12 * control.themeGlobalScale
+                hoverEnabled: true
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: {
+                    control.actionClicked()
+                    control.close()
+                }
+                background: Rectangle {
+                    radius: height / 2
+                    color: actionButton.pressed ? Qt.rgba(control.themeInversePrimary.r, control.themeInversePrimary.g, control.themeInversePrimary.b, 0.16)
+                                                : actionButton.hovered ? Qt.rgba(control.themeInversePrimary.r, control.themeInversePrimary.g, control.themeInversePrimary.b, 0.10)
+                                                                       : "transparent"
+                }
+                contentItem: Text {
+                    text: actionButton.text
+                    color: control.themeInversePrimary
+                    font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                    font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                    font.weight: control.fontLabelLarge.weight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+            }
+
+            MeoIconButton {
+                id: dismissButton
+                visible: control.dismissible
+                icon.name: "close"
+                size: "s"
+                type: "standard"
+                width: 36 * control.themeGlobalScale
+                height: width
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: {
+                    control.dismissed()
+                    control.close()
+                }
             }
         }
     }
