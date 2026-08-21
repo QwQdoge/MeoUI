@@ -21,7 +21,7 @@ Control {
     signal resizeRequested()
 
     implicitWidth: (wide ? 176 : 84) * MeoTheme.globalScale
-    implicitHeight: 96 * MeoTheme.globalScale
+    implicitHeight: (wide ? 72 : 96) * MeoTheme.globalScale
     activeFocusOnTab: !editMode
     z: dragHandler.active ? 100 : 0
     opacity: dragHandler.active ? 0.76 : 1
