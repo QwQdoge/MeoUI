@@ -130,16 +130,16 @@ Control {
     }
     readonly property real thumbGap: (typeof MeoTheme !== "undefined" && typeof MeoTheme.sliderThumbGapExpressive !== "undefined")
                                      ? MeoTheme.sliderThumbGapExpressive : 6 * themeGlobalScale
-    readonly property real visualThumbWidth: internalSlider.pressed
-                                              ? 2 * themeGlobalScale
-                                              : thumbWidth
+    readonly property real trackPositionX: Math.max(0,
+                                                    Math.min(internalSlider.availableWidth,
+                                                             internalSlider.visualPosition * internalSlider.availableWidth))
     readonly property real handleCenterX: {
         if (!internalSlider)
             return 0
         var travel = Math.max(0, internalSlider.availableWidth - thumbWidth)
         return internalSlider.visualPosition * travel + thumbWidth / 2
     }
-    readonly property real activeTrackWidth: Math.max(0, Math.min(internalSlider.availableWidth, handleCenterX))
+    readonly property real activeTrackWidth: trackPositionX
     readonly property real splitActiveWidth: Math.max(0, Math.min(internalSlider.availableWidth, handleCenterX - thumbGap))
     readonly property real splitInactiveX: Math.max(0, Math.min(internalSlider.availableWidth, handleCenterX + thumbGap))
     readonly property bool waveAnimationActive: wavy
@@ -329,7 +329,7 @@ Control {
 
                     var strokeWidth = (control.isThick ? 10 : (control.size === "xs" ? 4 : 8)) * control.themeGlobalScale
                     var mid = height / 2
-                    var progressWidth = Math.max(0, Math.min(width, control.handleCenterX))
+                    var progressWidth = Math.max(0, Math.min(width, control.trackPositionX))
                     var amp = Math.min(strokeWidth * 0.34, 3.5 * control.themeGlobalScale)
                     var wavelength = 40 * control.themeGlobalScale
                     var sampleStep = Math.max(1, 1.25 * control.themeGlobalScale)
