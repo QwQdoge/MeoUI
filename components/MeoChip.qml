@@ -85,6 +85,8 @@ Control {
 
     function activate() {
         if (!enabled) return
+        if (type === "filter")
+            selected = !selected
         clicked()
     }
 
