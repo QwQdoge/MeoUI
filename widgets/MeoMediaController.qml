@@ -60,8 +60,8 @@ Control {
     readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
     readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
     readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
+    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
     readonly property int motionPage: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationPage !== "undefined") ? MeoTheme.motionDurationPage : 320
 
     readonly property bool hasArtworkAccent: useArtworkAccent && artworkAccentColor.a > 0.001
@@ -111,15 +111,15 @@ Control {
     }
 
     implicitWidth: {
-        if (resolvedPresentation === "compact") return 320 * themeGlobalScale
-        if (resolvedPresentation === "controlCenter") return 440 * themeGlobalScale
-        if (resolvedPresentation === "lockScreen") return 420 * themeGlobalScale
+        if (resolvedPresentation === "compact") return 328 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 460 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 440 * themeGlobalScale
         return 960 * themeGlobalScale
     }
     implicitHeight: {
-        if (resolvedPresentation === "compact") return 108 * themeGlobalScale
-        if (resolvedPresentation === "controlCenter") return 220 * themeGlobalScale
-        if (resolvedPresentation === "lockScreen") return 620 * themeGlobalScale
+        if (resolvedPresentation === "compact") return 120 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 236 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 700 * themeGlobalScale
         return 620 * themeGlobalScale
     }
 
@@ -129,10 +129,8 @@ Control {
     background: Rectangle {
         radius: control.cornerRadius
         color: control.resolvedContainerColor
-
         border.width: control.activeFocus ? 2 * control.themeGlobalScale : 0
         border.color: control.mediaAccent
-
         Behavior on radius {
             NumberAnimation {
                 duration: control.motionMedium
@@ -143,7 +141,6 @@ Control {
     }
 
     contentItem: Loader {
-        id: presentationLoader
         anchors.fill: parent
         anchors.margins: control.contentPadding
         sourceComponent: {
@@ -152,8 +149,6 @@ Control {
             if (control.resolvedPresentation === "fullScreen") return fullScreenPresentation
             return controlCenterPresentation
         }
-
-        Behavior on opacity { NumberAnimation { duration: control.motionMedium } }
     }
 
     component MediaArtwork: Rectangle {
@@ -179,7 +174,6 @@ Control {
             anchors.fill: parent
             visible: !control.showArtwork || control.coverSource === ""
             color: control.mediaAccentContainer
-
             MeoIcon {
                 anchors.centerIn: parent
                 icon: control.isPlaying ? "graphic_eq" : "music_note"
@@ -263,7 +257,6 @@ Control {
             elide: Text.ElideRight
             horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
         }
-
         Text {
             width: parent.width
             text: control.artist
@@ -273,7 +266,6 @@ Control {
             elide: Text.ElideRight
             horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
         }
-
         Text {
             width: parent.width
             text: control.album !== "" ? control.album : control.sourceName
@@ -288,7 +280,6 @@ Control {
     }
 
     component SeekSlider: MeoSlider {
-        id: mediaSeek
         property string mediaSize: "s"
         from: 0
         to: Math.max(1, control.duration)
@@ -324,28 +315,57 @@ Control {
         }
     }
 
+    component SecondaryActions: Row {
+        spacing: 16 * control.themeGlobalScale
+        MediaActionButton {
+            glyph: "shuffle"
+            accessibleName: "Shuffle"
+            active: control.shuffleEnabled
+            onClicked: {
+                control.shuffleEnabled = !control.shuffleEnabled
+                control.shuffleRequested(control.shuffleEnabled)
+            }
+        }
+        MediaActionButton {
+            glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+            accessibleName: "Repeat"
+            active: control.repeatMode !== "off"
+            onClicked: control.cycleRepeat()
+        }
+        MediaActionButton {
+            glyph: control.liked ? "favorite" : "favorite_border"
+            accessibleName: "Favorite"
+            active: control.liked
+            onClicked: {
+                control.liked = !control.liked
+                control.likedRequested(control.liked)
+            }
+        }
+        MediaActionButton {
+            glyph: "devices"
+            accessibleName: "Output device"
+            onClicked: control.outputRequested()
+        }
+    }
+
     Component {
         id: compactPresentation
         Column {
             spacing: 8 * control.themeGlobalScale
-
             Row {
                 width: parent.width
                 height: 60 * control.themeGlobalScale
                 spacing: 12 * control.themeGlobalScale
-
                 MediaArtwork {
                     artworkSize: 56 * control.themeGlobalScale
                     artworkRadius: 18 * control.themeGlobalScale
                     anchors.verticalCenter: parent.verticalCenter
                 }
-
                 MediaMetadata {
                     width: Math.max(0, parent.width - 56 * control.themeGlobalScale - compactPlay.width - parent.spacing * 2)
                     anchors.verticalCenter: parent.verticalCenter
                     showAlbum: false
                 }
-
                 MediaActionButton {
                     id: compactPlay
                     anchors.verticalCenter: parent.verticalCenter
@@ -356,7 +376,6 @@ Control {
                     onClicked: control.togglePlayback()
                 }
             }
-
             SeekSlider {
                 width: parent.width
                 height: 28 * control.themeGlobalScale
@@ -370,28 +389,20 @@ Control {
         id: controlCenterPresentation
         Column {
             spacing: 12 * control.themeGlobalScale
-
             Row {
                 width: parent.width
                 height: 76 * control.themeGlobalScale
                 spacing: 14 * control.themeGlobalScale
-
                 MediaArtwork {
                     artworkSize: 72 * control.themeGlobalScale
                     artworkRadius: 22 * control.themeGlobalScale
                     anchors.verticalCenter: parent.verticalCenter
                 }
-
                 Column {
                     width: Math.max(0, parent.width - 72 * control.themeGlobalScale - centerPlay.width - parent.spacing * 2)
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 6 * control.themeGlobalScale
-
-                    MediaMetadata {
-                        width: parent.width
-                        showAlbum: false
-                    }
-
+                    MediaMetadata { width: parent.width; showAlbum: false }
                     Button {
                         id: outputPill
                         visible: control.outputDevice !== ""
@@ -420,7 +431,6 @@ Control {
                         }
                     }
                 }
-
                 MediaActionButton {
                     id: centerPlay
                     anchors.verticalCenter: parent.verticalCenter
@@ -431,18 +441,11 @@ Control {
                     onClicked: control.togglePlayback()
                 }
             }
-
-            SeekSlider {
-                width: parent.width
-                height: 40 * control.themeGlobalScale
-                mediaSize: "s"
-            }
-
+            SeekSlider { width: parent.width; height: 40 * control.themeGlobalScale; mediaSize: "s" }
             Row {
                 width: parent.width
                 height: 44 * control.themeGlobalScale
                 spacing: 8 * control.themeGlobalScale
-
                 MediaActionButton {
                     glyph: "skip_previous"
                     accessibleName: "Previous"
@@ -455,7 +458,10 @@ Control {
                     enabled: control.canSkipNext
                     onClicked: control.nextRequested()
                 }
-                Item { width: Math.max(0, parent.width - 44 * control.themeGlobalScale * 4 - parent.spacing * 3); height: 1 }
+                Item {
+                    width: Math.max(0, parent.width - 44 * control.themeGlobalScale * 4 - parent.spacing * 4)
+                    height: 1
+                }
                 MediaActionButton {
                     glyph: control.liked ? "favorite" : "favorite_border"
                     accessibleName: "Favorite"
@@ -478,31 +484,26 @@ Control {
         id: lockScreenPresentation
         Column {
             spacing: 18 * control.themeGlobalScale
-
             MediaArtwork {
                 artworkSize: Math.min(parent.width, 300 * control.themeGlobalScale)
                 artworkRadius: 32 * control.themeGlobalScale
                 anchors.horizontalCenter: parent.horizontalCenter
             }
-
             MediaMetadata {
                 width: parent.width
                 centered: true
                 large: true
                 showAlbum: true
             }
-
             Column {
                 width: parent.width
                 spacing: 4 * control.themeGlobalScale
                 SeekSlider { width: parent.width; height: 44 * control.themeGlobalScale; mediaSize: "m" }
                 TimeLabels { width: parent.width }
             }
-
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 22 * control.themeGlobalScale
-
                 MediaActionButton {
                     glyph: "skip_previous"
                     accessibleName: "Previous"
@@ -525,41 +526,9 @@ Control {
                     onClicked: control.nextRequested()
                 }
             }
-
-            Row {
+            SecondaryActions {
                 visible: control.showSecondaryActions
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 18 * control.themeGlobalScale
-
-                MediaActionButton {
-                    glyph: "shuffle"
-                    accessibleName: "Shuffle"
-                    active: control.shuffleEnabled
-                    onClicked: {
-                        control.shuffleEnabled = !control.shuffleEnabled
-                        control.shuffleRequested(control.shuffleEnabled)
-                    }
-                }
-                MediaActionButton {
-                    glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
-                    accessibleName: "Repeat"
-                    active: control.repeatMode !== "off"
-                    onClicked: control.cycleRepeat()
-                }
-                MediaActionButton {
-                    glyph: control.liked ? "favorite" : "favorite_border"
-                    accessibleName: "Favorite"
-                    active: control.liked
-                    onClicked: {
-                        control.liked = !control.liked
-                        control.likedRequested(control.liked)
-                    }
-                }
-                MediaActionButton {
-                    glyph: "devices"
-                    accessibleName: "Output device"
-                    onClicked: control.outputRequested()
-                }
             }
         }
     }
@@ -568,35 +537,27 @@ Control {
         id: fullScreenPresentation
         Row {
             spacing: 36 * control.themeGlobalScale
-
             Item {
+                id: artworkPane
                 width: Math.min(parent.width * 0.46, parent.height)
                 height: parent.height
                 MediaArtwork {
-                    artworkSize: Math.min(parent.width, parent.height)
+                    artworkSize: Math.min(artworkPane.width, artworkPane.height)
                     artworkRadius: 40 * control.themeGlobalScale
                     anchors.centerIn: parent
                 }
             }
-
             Column {
-                width: Math.max(0, parent.width - parent.spacing - parent.children[0].width)
+                width: Math.max(0, parent.width - artworkPane.width - parent.spacing)
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 22 * control.themeGlobalScale
-
-                MediaMetadata {
-                    width: parent.width
-                    large: true
-                    showAlbum: true
-                }
-
+                MediaMetadata { width: parent.width; large: true; showAlbum: true }
                 Column {
                     width: parent.width
                     spacing: 6 * control.themeGlobalScale
                     SeekSlider { width: parent.width; height: 48 * control.themeGlobalScale; mediaSize: "l" }
                     TimeLabels { width: parent.width }
                 }
-
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
                     spacing: 24 * control.themeGlobalScale
@@ -622,42 +583,10 @@ Control {
                         onClicked: control.nextRequested()
                     }
                 }
-
-                Row {
+                SecondaryActions {
                     visible: control.showSecondaryActions
                     anchors.horizontalCenter: parent.horizontalCenter
-                    spacing: 16 * control.themeGlobalScale
-                    MediaActionButton {
-                        glyph: "shuffle"
-                        accessibleName: "Shuffle"
-                        active: control.shuffleEnabled
-                        onClicked: {
-                            control.shuffleEnabled = !control.shuffleEnabled
-                            control.shuffleRequested(control.shuffleEnabled)
-                        }
-                    }
-                    MediaActionButton {
-                        glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
-                        accessibleName: "Repeat"
-                        active: control.repeatMode !== "off"
-                        onClicked: control.cycleRepeat()
-                    }
-                    MediaActionButton {
-                        glyph: control.liked ? "favorite" : "favorite_border"
-                        accessibleName: "Favorite"
-                        active: control.liked
-                        onClicked: {
-                            control.liked = !control.liked
-                            control.likedRequested(control.liked)
-                        }
-                    }
-                    MediaActionButton {
-                        glyph: "devices"
-                        accessibleName: "Output device"
-                        onClicked: control.outputRequested()
-                    }
                 }
-
                 Row {
                     visible: control.showVolume && control.canAdjustVolume
                     width: parent.width
