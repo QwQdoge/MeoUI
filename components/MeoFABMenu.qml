@@ -28,7 +28,7 @@ Item {
     readonly property real themeFontScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined') ? MeoTheme.fontScale : 1.0
     readonly property string themeFontFamily: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
     readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
-    readonly property int motionDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium1 !== 'undefined') ? MeoTheme.motionDurationMedium1 * (MeoTheme.motionScale || 1.0) : 250
+    readonly property int motionDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium1 !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250
 
     implicitWidth: mainFab.implicitWidth
     implicitHeight: mainFab.implicitHeight
@@ -72,14 +72,14 @@ Item {
 
                     Behavior on scale {
                         NumberAnimation {
-                            duration: control.motionDuration + (itemRow.index * 25)
+                            duration: control.motionDuration + (itemRow.index * MeoTheme.motionStaggerDelay)
                             easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]
                         }
                     }
 
                     Behavior on opacity {
                         NumberAnimation {
-                            duration: control.motionDuration + (itemRow.index * 15)
+                            duration: control.motionDuration + (itemRow.index * MeoTheme.motionStaggerDelay)
                         }
                     }
 
@@ -174,7 +174,7 @@ Item {
             NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.motionDuration }
         }
         exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 150 }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.motionDurationEffectDefault }
         }
     }
 

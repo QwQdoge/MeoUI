@@ -12,7 +12,7 @@ ToolTip {
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
     readonly property real themeFontScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined') ? MeoTheme.fontScale : 1.0
     readonly property string themeFontFamily: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
-    readonly property int motionDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast * (MeoTheme.motionScale || 1.0) : 120
+    readonly property int motionDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
     readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
 
     padding: 8 * themeGlobalScale
@@ -58,7 +58,8 @@ ToolTip {
             property: "opacity"
             from: 1.0
             to: 0.0
-            duration: 100
+            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationTooltipExit !== 'undefined') ? MeoTheme.motionDurationTooltipExit : 100
+            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandardAccelerate !== 'undefined') ? MeoTheme.motionEasingStandardAccelerate : [0.3, 0, 1, 1]
         }
     }
 }

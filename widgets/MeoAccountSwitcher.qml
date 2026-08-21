@@ -14,6 +14,7 @@ Control {
     signal accountSelected(int index, var data)
     signal addAccountRequested()
     signal manageAccountsRequested()
+    signal signOutRequested(int index, var data)
 
     // 🌟 作用域与主题安全防御
     readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
@@ -130,7 +131,14 @@ Control {
         width: parent.width
         model: [
             { label: "Manage Accounts", icon: "manage_accounts", action: () => control.manageAccountsRequested() },
-            { label: "Sign Out", icon: "logout", action: () => console.log("Sign out requested") }
+            {
+                label: "Sign Out",
+                icon: "logout",
+                action: () => control.signOutRequested(
+                    control.currentIndex,
+                    control.model.length > control.currentIndex ? control.model[control.currentIndex] : null
+                )
+            }
         ]
     }
 }

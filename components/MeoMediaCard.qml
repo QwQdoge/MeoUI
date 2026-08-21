@@ -91,7 +91,7 @@ MeoCard {
             strokeWidth: control.selected ? ((typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthMedium !== 'undefined') ? MeoTheme.strokeWidthMedium : 2 * control.themeGlobalScale)
                                           : control.type === "outlined" ? control.strokeWidthValue : 0
 
-            scale: control.interactive && control.bouncy ? ((typeof mouseArea !== 'undefined' && mouseArea.pressed) ? 0.97 : ((typeof mouseArea !== 'undefined' && mouseArea.containsMouse) ? 1.015 : 1.0)) : 1.0
+            scale: control.interactive && control.bouncy ? ((typeof mouseArea !== 'undefined' && mouseArea.pressed) ? 0.97 : 1.0) : 1.0
 
             Behavior on scale {
                 NumberAnimation {

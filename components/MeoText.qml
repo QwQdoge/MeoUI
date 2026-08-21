@@ -8,6 +8,9 @@ Text {
     property string typeSize: "medium" // "big" | "medium" | "small"
     property bool emphasized: false
     property string fontFamilyOverride: ""
+    // Lets a host surface offer a local accessibility/density preference
+    // without mutating the global MeoUI typography scale for every app.
+    property real fontScaleOverride: 1.0
     property int weightValue: {
         if (typeToken.weight === Font.Bold) return 700;
         if (typeToken.weight === Font.DemiBold) return 600;
@@ -25,13 +28,13 @@ Text {
     font.family: fontFamilyOverride !== "" ? fontFamilyOverride
                  : (typeToken.family ? typeToken.family
                  : (usesBrandTypeface && typeof MeoTheme !== "undefined" ? MeoTheme.typefaceBrand : MeoTheme.typefacePlain))
-    font.pixelSize: typeToken.size * themeGlobalScale * themeFontScale
+    font.pixelSize: typeToken.size * themeGlobalScale * themeFontScale * fontScaleOverride
     font.weight: typeToken.weight
     font.variableAxes: ({ "wght": weightValue })
-    font.letterSpacing: (typeToken.letterSpacing || 0) * themeGlobalScale * themeFontScale
+    font.letterSpacing: (typeToken.letterSpacing || 0) * themeGlobalScale * themeFontScale * fontScaleOverride
     // Fixed MD3 line boxes avoid the apparent baseline drift that proportional
     // line height causes when labels sit beside icons or controls.
     lineHeightMode: Text.FixedHeight
-    lineHeight: typeToken.lineHeight ? typeToken.lineHeight * themeGlobalScale * themeFontScale : font.pixelSize * 1.2
+    lineHeight: typeToken.lineHeight ? typeToken.lineHeight * themeGlobalScale * themeFontScale * fontScaleOverride : font.pixelSize * 1.2
     verticalAlignment: Text.AlignVCenter
 }

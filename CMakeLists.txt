@@ -123,6 +123,8 @@ MeoTheme.qml
         components/MeoInputChip.qml
         components/MeoPullToRefresh.qml
         components/MeoRatingBar.qml
+        components/MeoQuickControlSlider.qml
+        components/MeoQuickSettingsTile.qml
         components/MeoFilterGroup.qml
         components/MeoListHeader.qml
         components/MeoSelectionGroup.qml

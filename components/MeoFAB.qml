@@ -50,7 +50,7 @@ Button {
         radius: control.interactiveRadius
         color: control.themePrimaryContainer
         transformOrigin: Item.Center
-        scale: control.pressed ? 0.96 : control.hovered ? 1.025 : 1.0
+        scale: control.pressed ? 0.96 : 1.0
 
         layer.enabled: control.elevationLevel > 0
         layer.effect: MultiEffect {

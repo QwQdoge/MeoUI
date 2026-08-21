@@ -16,6 +16,7 @@ Item {
     property int activeSlot: 0
     property int pendingSlot: 0
     property bool initialized: false
+    property bool componentReady: false
     property var incomingLoader: firstLoader
     property var outgoingLoader: secondLoader
 
@@ -74,8 +75,14 @@ Item {
         pageTransition.restart()
     }
 
-    onSourceChanged: requestPage()
-    Component.onCompleted: requestPage()
+    // `source` is normally bound while the host itself is being constructed.
+    // Deferring that first request avoids racing it with Component.onCompleted
+    // and creating two competing initial loaders for a deep-linked page.
+    onSourceChanged: if (componentReady) requestPage()
+    Component.onCompleted: {
+        componentReady = true
+        requestPage()
+    }
 
     Loader {
         id: firstLoader

@@ -115,7 +115,7 @@ Button {
             }
         }
 
-        scale: control.pressed ? 0.96 : (control.hovered ? 1.035 : 1.0)
+        scale: control.pressed ? 0.96 : 1.0
         Behavior on scale {
             NumberAnimation {
                 duration: control.pressed ? MeoTheme.motionDurationFast : MeoTheme.motionDurationShapeEnter
@@ -125,7 +125,7 @@ Button {
     }
 
     contentItem: Item {
-        scale: control.pressed ? 0.94 : (control.hovered ? 1.02 : 1)
+        scale: control.pressed ? 0.94 : 1.0
         Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== "undefined" ? MeoTheme.motionDurationFast : 120); easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]) } }
         MeoIcon {
             anchors.centerIn: parent

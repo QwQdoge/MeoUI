@@ -7,6 +7,9 @@ MeoUI is a standalone Qt Quick / QML Material Design 3 component library.
 - Multiply pixel values by `MeoTheme.globalScale`.
 - Keep showcase pages under `showcase/`; reusable controls belong in `components/`, `widgets/`, or `patterns/`.
 - Prefer out-of-source builds under `out/`.
+- Put screenshots and visual acceptance evidence under
+  `artifacts/validation/<run-id>/`; do not place generated images in the source
+  component directories.
 
 ## UI/UX workflow
 

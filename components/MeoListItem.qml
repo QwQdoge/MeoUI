@@ -262,8 +262,8 @@ Control {
             }
 
             Loader {
-                width: 24 * control.themeGlobalScale
-                height: 24 * control.themeGlobalScale
+                width: item ? item.implicitWidth : 24 * control.themeGlobalScale
+                height: item ? item.implicitHeight : 24 * control.themeGlobalScale
                 anchors.verticalCenter: parent.verticalCenter
                 sourceComponent: control.trailingComponent
                 visible: control.trailingComponent !== null
@@ -288,17 +288,8 @@ Control {
     }
 
     function trailingRowItemWidth() {
-        let w = 0;
-        if (control.badgeText !== "") w += 24 * control.themeGlobalScale;
-        if (control.trailingComponent !== null) w += 24 * control.themeGlobalScale;
-
-        // Actions width estimation
-        if (control.actions.length > 0) {
-            w += control.actions.length * 40 * control.themeGlobalScale; // estimated button width
-            w += (control.actions.length - 1) * (12 * control.themeGlobalScale);
-        }
-
-        if (w > 0) w += control.spacing;
-        return w;
+        return trailingActionsRow.visible
+            ? trailingActionsRow.implicitWidth + control.spacing
+            : 0;
     }
 }

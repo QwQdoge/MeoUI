@@ -48,74 +48,126 @@ QtObject {
         return 40 * globalScale
     }
 
-    // 🎨 MeoArch MD3 fallback color schemes
-    // Used role-by-role whenever a dynamic color scheme is unavailable or incomplete.
+    // The C++ token singleton is the canonical metric source.  Plasma can keep
+    // a QML engine alive while the module plugin is replaced during a desktop
+    // update, though; during that narrow handoff a singleton member may be
+    // temporarily unavailable.  Keep the fallback values here, at the design
+    // system boundary, so no product has to invent raw spacing or shape values
+    // and a panel never receives an undefined geometry value.
+    function metricToken(name, fallback) {
+        if (typeof MeoTokens !== "undefined"
+                && typeof MeoTokens[name] === "number") {
+            return MeoTokens[name]
+        }
+        return fallback
+    }
+
+    // 🎨 MeoArch MD3 fallback color schemes. These are the Material Color
+    // Utilities SchemeTonalSpot roles for the default Meo seed (#6750A4), so
+    // the installer and offscreen consumers follow the same specification as
+    // the live KDE dynamic-color bridge.
     readonly property var fallbackLightColorScheme: ({
-        "primary": "#6750A4",
+        "primary": "#65558F",
         "onPrimary": "#FFFFFF",
-        "primaryContainer": "#CBC0E6",
-        "onPrimaryContainer": "#201933",
+        "primaryContainer": "#E9DDFF",
+        "onPrimaryContainer": "#4D3D75",
+        "inversePrimary": "#CFBDFE",
         "secondary": "#625B71",
         "onSecondary": "#FFFFFF",
-        "secondaryContainer": "#DCD8E6",
-        "onSecondaryContainer": "#2C2933",
-        "tertiary": "#7D5260",
+        "secondaryContainer": "#E8DEF8",
+        "onSecondaryContainer": "#4A4458",
+        "tertiary": "#7E5260",
         "onTertiary": "#FFFFFF",
-        "tertiaryContainer": "#E6CDD5",
-        "onTertiaryContainer": "#332227",
-        "error": "#B3261E",
+        "tertiaryContainer": "#FFD9E3",
+        "onTertiaryContainer": "#633B48",
+        "error": "#BA1A1A",
         "onError": "#FFFFFF",
-        "errorContainer": "#E6ACA9",
-        "onErrorContainer": "#330B09",
-        "background": "#FCFCFC",
-        "onBackground": "#323233",
-        "surface": "#FCFCFC",
-        "onSurface": "#323233",
-        "surfaceVariant": "#E0DEE6",
-        "onSurfaceVariant": "#5E5C66",
-        "outline": "#8E8999",
-        "outlineVariant": "#C4C7C5",
+        "errorContainer": "#FFDAD6",
+        "onErrorContainer": "#93000A",
+        "background": "#FDF7FF",
+        "onBackground": "#1D1B20",
+        "surface": "#FDF7FF",
+        "onSurface": "#1D1B20",
+        "surfaceDim": "#DED8E0",
+        "surfaceBright": "#FDF7FF",
+        "surfaceVariant": "#E7E0EB",
+        "onSurfaceVariant": "#49454E",
+        "outline": "#7A757F",
+        "outlineVariant": "#CAC4CF",
         "surfaceContainerLowest": "#FFFFFF",
-        "surfaceContainerLow": "#F7F2FA",
-        "surfaceContainer": "#F3EDF7",
-        "surfaceContainerHigh": "#ECE6F0",
-        "surfaceContainerHighest": "#E6E1E5",
-        "inverseSurface": "#313033",
-        "onInverseSurface": "#F4F0F4"
+        "surfaceContainerLow": "#F8F2FA",
+        "surfaceContainer": "#F2ECF4",
+        "surfaceContainerHigh": "#ECE6EE",
+        "surfaceContainerHighest": "#E6E0E9",
+        "inverseSurface": "#322F35",
+        "onInverseSurface": "#F5EFF7",
+        "shadow": "#000000",
+        "scrim": "#000000",
+        "surfaceTint": "#65558F",
+        "primaryFixed": "#E9DDFF",
+        "primaryFixedDim": "#CFBDFE",
+        "onPrimaryFixed": "#201047",
+        "onPrimaryFixedVariant": "#4D3D75",
+        "secondaryFixed": "#E8DEF8",
+        "secondaryFixedDim": "#CBC2DB",
+        "onSecondaryFixed": "#1E192B",
+        "onSecondaryFixedVariant": "#4A4458",
+        "tertiaryFixed": "#FFD9E3",
+        "tertiaryFixedDim": "#EFB8C8",
+        "onTertiaryFixed": "#31101D",
+        "onTertiaryFixedVariant": "#633B48"
     })
 
     readonly property var fallbackDarkColorScheme: ({
-        "primary": "#C0B1E6",
-        "onPrimary": "#30254C",
-        "primaryContainer": "#403266",
-        "onPrimaryContainer": "#CBC0E6",
-        "secondary": "#D8D2E6",
-        "onSecondary": "#433E4C",
-        "secondaryContainer": "#595366",
-        "onSecondaryContainer": "#DCD8E6",
-        "tertiary": "#E6C3CE",
-        "onTertiary": "#4C323B",
-        "tertiaryContainer": "#66434F",
-        "onTertiaryContainer": "#E6CDD5",
-        "error": "#E69490",
-        "onError": "#4C100D",
-        "errorContainer": "#661511",
-        "onErrorContainer": "#E6ACA9",
-        "background": "#323233",
-        "onBackground": "#E4E4E6",
-        "surface": "#323233",
-        "onSurface": "#E4E4E6",
-        "surfaceVariant": "#5E5C66",
-        "onSurfaceVariant": "#DEDBE6",
-        "outline": "#AAA7B3",
-        "outlineVariant": "#44474F",
-        "surfaceContainerLowest": "#0F0E11",
+        "primary": "#CFBDFE",
+        "onPrimary": "#36275D",
+        "primaryContainer": "#4D3D75",
+        "onPrimaryContainer": "#E9DDFF",
+        "inversePrimary": "#65558F",
+        "secondary": "#CBC2DB",
+        "onSecondary": "#332D41",
+        "secondaryContainer": "#4A4458",
+        "onSecondaryContainer": "#E8DEF8",
+        "tertiary": "#EFB8C8",
+        "onTertiary": "#4A2532",
+        "tertiaryContainer": "#633B48",
+        "onTertiaryContainer": "#FFD9E3",
+        "error": "#FFB4AB",
+        "onError": "#690005",
+        "errorContainer": "#93000A",
+        "onErrorContainer": "#FFDAD6",
+        "background": "#141218",
+        "onBackground": "#E6E0E9",
+        "surface": "#141218",
+        "onSurface": "#E6E0E9",
+        "surfaceDim": "#141218",
+        "surfaceBright": "#3B383E",
+        "surfaceVariant": "#49454E",
+        "onSurfaceVariant": "#CAC4CF",
+        "outline": "#948F99",
+        "outlineVariant": "#49454E",
+        "surfaceContainerLowest": "#0F0D13",
         "surfaceContainerLow": "#1D1B20",
-        "surfaceContainer": "#211F26",
-        "surfaceContainerHigh": "#2B2930",
-        "surfaceContainerHighest": "#36343B",
-        "inverseSurface": "#E6E1E5",
-        "onInverseSurface": "#313033"
+        "surfaceContainer": "#211F24",
+        "surfaceContainerHigh": "#2B292F",
+        "surfaceContainerHighest": "#36343A",
+        "inverseSurface": "#E6E0E9",
+        "onInverseSurface": "#322F35",
+        "shadow": "#000000",
+        "scrim": "#000000",
+        "surfaceTint": "#CFBDFE",
+        "primaryFixed": "#E9DDFF",
+        "primaryFixedDim": "#CFBDFE",
+        "onPrimaryFixed": "#201047",
+        "onPrimaryFixedVariant": "#4D3D75",
+        "secondaryFixed": "#E8DEF8",
+        "secondaryFixedDim": "#CBC2DB",
+        "onSecondaryFixed": "#1E192B",
+        "onSecondaryFixedVariant": "#4A4458",
+        "tertiaryFixed": "#FFD9E3",
+        "tertiaryFixedDim": "#EFB8C8",
+        "onTertiaryFixed": "#31101D",
+        "onTertiaryFixedVariant": "#633B48"
     })
 
     // 🎨 Dynamic color provider API
@@ -158,42 +210,45 @@ QtObject {
 
     // 🎨 Active MD3 roles. Content roles use a non-`onXxx` public name because
     // QML reserves that shape for signal handlers in several compiled paths.
-    property color primary: dynamicColorsAvailable && dynamicColorScheme.primary ? dynamicColorScheme.primary : (isDarkMode ? "#C0B1E6" : "#6750A4")
-    property color contentOnPrimary: dynamicColorsAvailable && dynamicColorScheme.onPrimary ? dynamicColorScheme.onPrimary : (isDarkMode ? "#30254C" : "#FFFFFF")
-    property color primaryContainer: dynamicColorsAvailable && dynamicColorScheme.primaryContainer ? dynamicColorScheme.primaryContainer : (isDarkMode ? "#403266" : "#CBC0E6")
-    property color contentOnPrimaryContainer: dynamicColorsAvailable && dynamicColorScheme.onPrimaryContainer ? dynamicColorScheme.onPrimaryContainer : (isDarkMode ? "#CBC0E6" : "#201933")
+    property color primary: dynamicOrFallback("primary")
+    property color contentOnPrimary: dynamicOrFallback("onPrimary")
+    property color primaryContainer: dynamicOrFallback("primaryContainer")
+    property color contentOnPrimaryContainer: dynamicOrFallback("onPrimaryContainer")
+    property color inversePrimary: dynamicOrFallback("inversePrimary")
 
-    property color secondary: dynamicColorsAvailable && dynamicColorScheme.secondary ? dynamicColorScheme.secondary : (isDarkMode ? "#D8D2E6" : "#625B71")
-    property color contentOnSecondary: dynamicColorsAvailable && dynamicColorScheme.onSecondary ? dynamicColorScheme.onSecondary : (isDarkMode ? "#433E4C" : "#FFFFFF")
-    property color secondaryContainer: dynamicColorsAvailable && dynamicColorScheme.secondaryContainer ? dynamicColorScheme.secondaryContainer : (isDarkMode ? "#595366" : "#DCD8E6")
-    property color contentOnSecondaryContainer: dynamicColorsAvailable && dynamicColorScheme.onSecondaryContainer ? dynamicColorScheme.onSecondaryContainer : (isDarkMode ? "#DCD8E6" : "#2C2933")
+    property color secondary: dynamicOrFallback("secondary")
+    property color contentOnSecondary: dynamicOrFallback("onSecondary")
+    property color secondaryContainer: dynamicOrFallback("secondaryContainer")
+    property color contentOnSecondaryContainer: dynamicOrFallback("onSecondaryContainer")
 
-    property color tertiary: dynamicColorsAvailable && dynamicColorScheme.tertiary ? dynamicColorScheme.tertiary : (isDarkMode ? "#E6C3CE" : "#7D5260")
-    property color contentOnTertiary: dynamicColorsAvailable && dynamicColorScheme.onTertiary ? dynamicColorScheme.onTertiary : (isDarkMode ? "#4C323B" : "#FFFFFF")
-    property color tertiaryContainer: dynamicColorsAvailable && dynamicColorScheme.tertiaryContainer ? dynamicColorScheme.tertiaryContainer : (isDarkMode ? "#66434F" : "#E6CDD5")
-    property color contentOnTertiaryContainer: dynamicColorsAvailable && dynamicColorScheme.onTertiaryContainer ? dynamicColorScheme.onTertiaryContainer : (isDarkMode ? "#E6CDD5" : "#332227")
+    property color tertiary: dynamicOrFallback("tertiary")
+    property color contentOnTertiary: dynamicOrFallback("onTertiary")
+    property color tertiaryContainer: dynamicOrFallback("tertiaryContainer")
+    property color contentOnTertiaryContainer: dynamicOrFallback("onTertiaryContainer")
 
-    property color error: dynamicColorsAvailable && dynamicColorScheme.error ? dynamicColorScheme.error : (isDarkMode ? "#E69490" : "#B3261E")
-    property color contentOnError: dynamicColorsAvailable && dynamicColorScheme.onError ? dynamicColorScheme.onError : (isDarkMode ? "#4C100D" : "#FFFFFF")
-    property color errorContainer: dynamicColorsAvailable && dynamicColorScheme.errorContainer ? dynamicColorScheme.errorContainer : (isDarkMode ? "#661511" : "#E6ACA9")
-    property color contentOnErrorContainer: dynamicColorsAvailable && dynamicColorScheme.onErrorContainer ? dynamicColorScheme.onErrorContainer : (isDarkMode ? "#E6ACA9" : "#330B09")
+    property color error: dynamicOrFallback("error")
+    property color contentOnError: dynamicOrFallback("onError")
+    property color errorContainer: dynamicOrFallback("errorContainer")
+    property color contentOnErrorContainer: dynamicOrFallback("onErrorContainer")
 
-    property color background: dynamicColorsAvailable && dynamicColorScheme.background ? dynamicColorScheme.background : (isDarkMode ? "#323233" : "#FCFCFC")
-    property color contentOnBackground: dynamicColorsAvailable && dynamicColorScheme.onBackground ? dynamicColorScheme.onBackground : (isDarkMode ? "#E4E4E6" : "#323233")
-    property color surface: dynamicColorsAvailable && dynamicColorScheme.surface ? dynamicColorScheme.surface : (isDarkMode ? "#323233" : "#FCFCFC")
-    property color contentOnSurface: dynamicColorsAvailable && dynamicColorScheme.onSurface ? dynamicColorScheme.onSurface : (isDarkMode ? "#E4E4E6" : "#323233")
-    property color surfaceVariant: dynamicColorsAvailable && dynamicColorScheme.surfaceVariant ? dynamicColorScheme.surfaceVariant : (isDarkMode ? "#5E5C66" : "#E0DEE6")
-    property color contentOnSurfaceVariant: dynamicColorsAvailable && dynamicColorScheme.onSurfaceVariant ? dynamicColorScheme.onSurfaceVariant : (isDarkMode ? "#DEDBE6" : "#5E5C66")
-    property color outline: dynamicColorsAvailable && dynamicColorScheme.outline ? dynamicColorScheme.outline : (isDarkMode ? "#AAA7B3" : "#8E8999")
+    property color background: dynamicOrFallback("background")
+    property color contentOnBackground: dynamicOrFallback("onBackground")
+    property color surface: dynamicOrFallback("surface")
+    property color contentOnSurface: dynamicOrFallback("onSurface")
+    property color surfaceDim: dynamicOrFallback("surfaceDim")
+    property color surfaceBright: dynamicOrFallback("surfaceBright")
+    property color surfaceVariant: dynamicOrFallback("surfaceVariant")
+    property color contentOnSurfaceVariant: dynamicOrFallback("onSurfaceVariant")
+    property color outline: dynamicOrFallback("outline")
 
     // M3 Content color aliases
     property color onPrimary: contentOnPrimary
     // M3 Surface Containers
-    property color surfaceContainerLowest: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerLowest ? dynamicColorScheme.surfaceContainerLowest : (isDarkMode ? "#0F0E11" : "#FFFFFF")
-    property color surfaceContainerLow: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerLow ? dynamicColorScheme.surfaceContainerLow : (isDarkMode ? "#1D1B20" : "#F7F2FA")
-    property color surfaceContainer: dynamicColorsAvailable && dynamicColorScheme.surfaceContainer ? dynamicColorScheme.surfaceContainer : (isDarkMode ? "#211F26" : "#F3EDF7")
-    property color surfaceContainerHigh: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerHigh ? dynamicColorScheme.surfaceContainerHigh : (isDarkMode ? "#2B2930" : "#ECE6F0")
-    property color surfaceContainerHighest: dynamicColorsAvailable && dynamicColorScheme.surfaceContainerHighest ? dynamicColorScheme.surfaceContainerHighest : (isDarkMode ? "#36343B" : "#E6E1E5")
+    property color surfaceContainerLowest: dynamicOrFallback("surfaceContainerLowest")
+    property color surfaceContainerLow: dynamicOrFallback("surfaceContainerLow")
+    property color surfaceContainer: dynamicOrFallback("surfaceContainer")
+    property color surfaceContainerHigh: dynamicOrFallback("surfaceContainerHigh")
+    property color surfaceContainerHighest: dynamicOrFallback("surfaceContainerHighest")
     property color onPrimaryContainer: contentOnPrimaryContainer
     property color onSecondary: contentOnSecondary
     property color onSecondaryContainer: contentOnSecondaryContainer
@@ -218,44 +273,54 @@ QtObject {
         return Qt.tint(surface, Qt.rgba(primary.r, primary.g, primary.b, opacity));
     }
 
-    // 🌟 Motion Tokens (MD3 Standard)
-    readonly property int motionDurationShort1: reduceMotion ? 0 : 50
-    readonly property int motionDurationShort2: reduceMotion ? 0 : 100
-    readonly property int motionDurationShort3: reduceMotion ? 0 : 150
-    readonly property int motionDurationShort4: reduceMotion ? 0 : 200
-    readonly property int motionDurationMedium1: reduceMotion ? 0 : 250
-    readonly property int motionDurationMedium2: reduceMotion ? 0 : 300
-    readonly property int motionDurationMedium3: reduceMotion ? 0 : 350
-    readonly property int motionDurationMedium4: reduceMotion ? 0 : 400
-    readonly property int motionDurationLong1: reduceMotion ? 0 : 450
-    readonly property int motionDurationLong2: reduceMotion ? 0 : 500
-    readonly property int motionDurationLong3: reduceMotion ? 0 : 550
-    readonly property int motionDurationLong4: reduceMotion ? 0 : 600
-    readonly property int motionDurationExtraLong1: reduceMotion ? 0 : 700
-    readonly property int motionDurationExtraLong2: reduceMotion ? 0 : 800
-    readonly property int motionDurationExtraLong3: reduceMotion ? 0 : 900
-    readonly property int motionDurationExtraLong4: reduceMotion ? 0 : 1000
+    // 🌟 Motion Tokens (MD3 Standard). Keep one duration gateway so the
+    // accessibility setting and the user-selected motion scale affect every
+    // semantic token consistently.
+    readonly property real effectiveMotionScale: Math.max(0, Math.min(4, motionScale))
+
+    function motionDurationFor(milliseconds) {
+        return reduceMotion ? 0 : Math.max(0, Math.round(milliseconds * effectiveMotionScale))
+    }
+
+    readonly property int motionDurationShort1: motionDurationFor(50)
+    readonly property int motionDurationShort2: motionDurationFor(100)
+    readonly property int motionDurationShort3: motionDurationFor(150)
+    readonly property int motionDurationShort4: motionDurationFor(200)
+    readonly property int motionDurationMedium1: motionDurationFor(250)
+    readonly property int motionDurationMedium2: motionDurationFor(300)
+    readonly property int motionDurationMedium3: motionDurationFor(350)
+    readonly property int motionDurationMedium4: motionDurationFor(400)
+    readonly property int motionDurationLong1: motionDurationFor(450)
+    readonly property int motionDurationLong2: motionDurationFor(500)
+    readonly property int motionDurationLong3: motionDurationFor(550)
+    readonly property int motionDurationLong4: motionDurationFor(600)
+    readonly property int motionDurationExtraLong1: motionDurationFor(700)
+    readonly property int motionDurationExtraLong2: motionDurationFor(800)
+    readonly property int motionDurationExtraLong3: motionDurationFor(900)
+    readonly property int motionDurationExtraLong4: motionDurationFor(1000)
 
     // Material 3 semantic motion aliases for component code.
     readonly property var motionDurationInstant: motionDurationShort1
     // Interactive desktop feedback needs to acknowledge a pointer immediately.
     // Longer values stay reserved for spatial transitions rather than hover/press.
-    readonly property var motionDurationFast: reduceMotion ? 0 : 120
-    readonly property var motionDurationMedium: reduceMotion ? 0 : 220
-    readonly property var motionDurationSlow: reduceMotion ? 0 : 320
-    readonly property var motionDurationRippleExpand: reduceMotion ? 0 : 280
-    readonly property var motionDurationRippleFade: reduceMotion ? 0 : 160
-    readonly property int motionDurationState: reduceMotion ? 0 : 100
-    readonly property int motionDurationSelection: reduceMotion ? 0 : 220
-    readonly property int motionDurationShapeEnter: reduceMotion ? 0 : 140
-    readonly property int motionDurationShapeSettle: reduceMotion ? 0 : 220
-    readonly property int motionDurationDialogEnter: reduceMotion ? 0 : 240
-    readonly property int motionDurationDialogExit: reduceMotion ? 0 : 160
-    readonly property int motionDurationMenuEnter: reduceMotion ? 0 : 160
-    readonly property int motionDurationMenuExit: reduceMotion ? 0 : 120
-    readonly property int motionDurationSheetEnter: reduceMotion ? 0 : 320
-    readonly property int motionDurationSheetExit: reduceMotion ? 0 : 220
-    readonly property int motionDurationPage: reduceMotion ? 0 : 320
+    readonly property var motionDurationFast: motionDurationFor(120)
+    readonly property var motionDurationMedium: motionDurationFor(220)
+    readonly property var motionDurationSlow: motionDurationFor(320)
+    readonly property var motionDurationRippleExpand: motionDurationFor(280)
+    readonly property var motionDurationRippleFade: motionDurationFor(160)
+    readonly property int motionDurationState: motionDurationFor(100)
+    readonly property int motionDurationSelection: motionDurationFor(220)
+    readonly property int motionDurationShapeEnter: motionDurationFor(140)
+    readonly property int motionDurationShapeSettle: motionDurationFor(220)
+    readonly property int motionDurationDialogEnter: motionDurationFor(240)
+    readonly property int motionDurationDialogExit: motionDurationFor(160)
+    readonly property int motionDurationMenuEnter: motionDurationFor(160)
+    readonly property int motionDurationMenuExit: motionDurationFor(120)
+    readonly property int motionDurationSheetEnter: motionDurationFor(320)
+    readonly property int motionDurationSheetExit: motionDurationFor(220)
+    readonly property int motionDurationPage: motionDurationFor(320)
+    readonly property int motionDurationTooltipExit: motionDurationFor(100)
+    readonly property int motionStaggerDelay: motionDurationFor(25)
 
     readonly property list<real> motionEasingStandard: [0.2, 0, 0, 1]
     readonly property list<real> motionEasingStandardAccelerate: [0.3, 0, 1, 1]
@@ -267,23 +332,23 @@ QtObject {
     readonly property list<real> motionEasingExit: [1, 0, 1, 1]
 
     // 🌟 M3E Spring Physics Motion Curves (Spatial vs Effect)
-    readonly property list<real> motionEasingSpringBouncy: [0.34, 1.35, 0.64, 1.0] // Controlled Settling Overshoot
-    readonly property list<real> motionEasingSpringStiff: [0.18, 0.89, 0.32, 1.25] // Instant Physical Press Response
-    readonly property list<real> motionEasingSpringSubtle: [0.22, 1.1, 0.36, 1.0]  // Smooth Release Settling
+    readonly property list<real> motionEasingSpringBouncy: isBouncy ? [0.34, 1.35, 0.64, 1.0] : motionEasingEmphasizedDecelerate // Controlled Settling Overshoot
+    readonly property list<real> motionEasingSpringStiff: isBouncy ? [0.18, 0.89, 0.32, 1.25] : motionEasingStandardDecelerate // Instant Physical Press Response
+    readonly property list<real> motionEasingSpringSubtle: isBouncy ? [0.22, 1.1, 0.36, 1.0] : motionEasingEmphasizedDecelerate // Smooth Release Settling
 
     // Compatibility & Primary M3E Curve
     readonly property list<real> motionEasingSoul: motionEasingEmphasized
 
     // 🌟 M3E Motion Scheme Categories
     // Spatial Motion (Position, Size, Bounds, Shape Morphing)
-    readonly property int motionDurationSpatialFast: reduceMotion ? 0 : Math.round(120 * motionScale)
-    readonly property int motionDurationSpatialDefault: reduceMotion ? 0 : Math.round(220 * motionScale)
-    readonly property int motionDurationSpatialSlow: reduceMotion ? 0 : Math.round(340 * motionScale)
+    readonly property int motionDurationSpatialFast: motionDurationFor(120)
+    readonly property int motionDurationSpatialDefault: motionDurationFor(220)
+    readonly property int motionDurationSpatialSlow: motionDurationFor(340)
 
     // Effect Motion (Opacity, Color, State Layer, Scrim - Monotonic without Overshoot)
-    readonly property int motionDurationEffectFast: reduceMotion ? 0 : Math.round(80 * motionScale)
-    readonly property int motionDurationEffectDefault: reduceMotion ? 0 : Math.round(150 * motionScale)
-    readonly property int motionDurationEffectSlow: reduceMotion ? 0 : Math.round(250 * motionScale)
+    readonly property int motionDurationEffectFast: motionDurationFor(80)
+    readonly property int motionDurationEffectDefault: motionDurationFor(150)
+    readonly property int motionDurationEffectSlow: motionDurationFor(250)
 
     // 🌟 字体族 Token (Font Family Tokens)
     // Consumers may bind these to the platform font provider. Keep a concrete
@@ -300,11 +365,11 @@ QtObject {
     property real motionScale: 1.0
 
     // 🌟 图标尺寸 Token (Icon Size Tokens)
-    readonly property real iconSizeXS: MeoTokens.iconSizeXS * globalScale
-    readonly property real iconSizeS: MeoTokens.iconSizeS * globalScale
-    readonly property real iconSizeM: MeoTokens.iconSizeM * globalScale
-    readonly property real iconSizeL: MeoTokens.iconSizeL * globalScale
-    readonly property real iconSizeXL: MeoTokens.iconSizeXL * globalScale
+    readonly property real iconSizeXS: metricToken("iconSizeXS", 16) * globalScale
+    readonly property real iconSizeS: metricToken("iconSizeS", 18) * globalScale
+    readonly property real iconSizeM: metricToken("iconSizeM", 24) * globalScale
+    readonly property real iconSizeL: metricToken("iconSizeL", 32) * globalScale
+    readonly property real iconSizeXL: metricToken("iconSizeXL", 48) * globalScale
 
     // 🌟 悬浮/阴影 Token (Elevation Tokens)
     readonly property real elevationLevel0: 0
@@ -315,16 +380,16 @@ QtObject {
     readonly property real elevationLevel5: 12 * globalScale
 
     // MD3 state-layer opacity tokens.
-    readonly property real stateOpacityHover: MeoTokens.stateOpacityHover
-    readonly property real stateOpacityFocus: MeoTokens.stateOpacityFocus
-    readonly property real stateOpacityPressed: MeoTokens.stateOpacityPressed
-    readonly property real stateOpacityDragged: MeoTokens.stateOpacityDragged
+    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.10)
+    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.12)
+    readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.14)
+    readonly property real stateOpacityDragged: metricToken("stateOpacityDragged", 0.16)
 
     // Semantic feedback and surface roles used by products consuming MeoUI.
     readonly property real disabledContainerOpacity: 0.12
     readonly property real disabledContentOpacity: 0.38
-    readonly property color scrim: "#000000"
-    readonly property color shadow: "#000000"
+    readonly property color scrim: dynamicOrFallback("scrim")
+    readonly property color shadow: dynamicOrFallback("shadow")
     readonly property color inverseSurface: dynamicOrFallback("inverseSurface")
     readonly property color contentOnInverseSurface: dynamicOrFallback("onInverseSurface")
     readonly property color success: isDarkMode ? "#8ED6A0" : "#256D3A"
@@ -333,44 +398,45 @@ QtObject {
 
     property color outlineVariant: dynamicOrFallback("outlineVariant")
 
-    // MD3 Fixed Colors (Same in both Light and Dark mode)
-    property color primaryFixed: "#EADDFF"
-    property color fixedOnPrimary: "#21005D"
-    property color primaryFixedDim: "#D0BCFF"
-    property color fixedOnPrimaryVariant: "#4F378B"
+    // MD3 Fixed Colors remain stable across light/dark, but follow the active
+    // HCT source when a dynamic scheme is installed.
+    property color primaryFixed: dynamicOrFallback("primaryFixed")
+    property color fixedOnPrimary: dynamicOrFallback("onPrimaryFixed")
+    property color primaryFixedDim: dynamicOrFallback("primaryFixedDim")
+    property color fixedOnPrimaryVariant: dynamicOrFallback("onPrimaryFixedVariant")
 
-    property color secondaryFixed: "#E8DEF8"
-    property color fixedOnSecondary: "#1D192B"
-    property color secondaryFixedDim: "#CCC2DC"
-    property color fixedOnSecondaryVariant: "#4A4458"
+    property color secondaryFixed: dynamicOrFallback("secondaryFixed")
+    property color fixedOnSecondary: dynamicOrFallback("onSecondaryFixed")
+    property color secondaryFixedDim: dynamicOrFallback("secondaryFixedDim")
+    property color fixedOnSecondaryVariant: dynamicOrFallback("onSecondaryFixedVariant")
 
-    property color tertiaryFixed: "#FFD8E4"
-    property color fixedOnTertiary: "#31111D"
-    property color tertiaryFixedDim: "#EFB8C8"
-    property color fixedOnTertiaryVariant: "#633B48"
+    property color tertiaryFixed: dynamicOrFallback("tertiaryFixed")
+    property color fixedOnTertiary: dynamicOrFallback("onTertiaryFixed")
+    property color tertiaryFixedDim: dynamicOrFallback("tertiaryFixedDim")
+    property color fixedOnTertiaryVariant: dynamicOrFallback("onTertiaryFixedVariant")
 
     // 🌟 辅助/窗口背景色
     property color windowBg: background
 
     // 🌟 M3 Shape Scale (MD3 Standard)
     readonly property real shapeNone: 0
-    readonly property real shapeExtraSmall: MeoTokens.shapeExtraSmall * globalScale * cornerScale
-    readonly property real shapeSmall: MeoTokens.shapeSmall * globalScale * cornerScale
-    readonly property real shapeMedium: MeoTokens.shapeMedium * globalScale * cornerScale
-    readonly property real shapeLarge: MeoTokens.shapeLarge * globalScale * cornerScale
-    readonly property real shapeLargeIncreased: MeoTokens.shapeLargeIncreased * globalScale * cornerScale
-    readonly property real shapeExtraLarge: MeoTokens.shapeExtraLarge * globalScale * cornerScale
-    readonly property real shapeExtraLargeIncreased: MeoTokens.shapeExtraLargeIncreased * globalScale * cornerScale
-    readonly property real expressiveShapeCornerRadius: MeoTokens.shapeExtraLargeIncreased * globalScale * cornerScale
-    readonly property real shapeExtraExtraLarge: MeoTokens.shapeExtraExtraLarge * globalScale * cornerScale
+    readonly property real shapeExtraSmall: metricToken("shapeExtraSmall", 4) * globalScale * cornerScale
+    readonly property real shapeSmall: metricToken("shapeSmall", 8) * globalScale * cornerScale
+    readonly property real shapeMedium: metricToken("shapeMedium", 12) * globalScale * cornerScale
+    readonly property real shapeLarge: metricToken("shapeLarge", 16) * globalScale * cornerScale
+    readonly property real shapeLargeIncreased: metricToken("shapeLargeIncreased", 20) * globalScale * cornerScale
+    readonly property real shapeExtraLarge: metricToken("shapeExtraLarge", 28) * globalScale * cornerScale
+    readonly property real shapeExtraLargeIncreased: metricToken("shapeExtraLargeIncreased", 32) * globalScale * cornerScale
+    readonly property real expressiveShapeCornerRadius: metricToken("shapeExtraLargeIncreased", 32) * globalScale * cornerScale
+    readonly property real shapeExtraExtraLarge: metricToken("shapeExtraExtraLarge", 48) * globalScale * cornerScale
     readonly property real shapeFull: 1000 * globalScale // Large value for full rounding
 
     // 🌟 MD3 Expressive Dimension Tokens
-    readonly property real buttonHeightXS: MeoTokens.buttonHeightXS * globalScale
-    readonly property real buttonHeightS: MeoTokens.buttonHeightS * globalScale
-    readonly property real buttonHeightM: MeoTokens.buttonHeightM * globalScale
-    readonly property real buttonHeightL: MeoTokens.buttonHeightL * globalScale
-    readonly property real buttonHeightXL: MeoTokens.buttonHeightXL * globalScale
+    readonly property real buttonHeightXS: metricToken("buttonHeightXS", 32) * globalScale
+    readonly property real buttonHeightS: metricToken("buttonHeightS", 40) * globalScale
+    readonly property real buttonHeightM: metricToken("buttonHeightM", 48) * globalScale
+    readonly property real buttonHeightL: metricToken("buttonHeightL", 56) * globalScale
+    readonly property real buttonHeightXL: metricToken("buttonHeightXL", 72) * globalScale
 
     readonly property real sliderTrackHeightXS: 4 * globalScale
     readonly property real sliderTrackHeightS: 16 * globalScale
@@ -397,15 +463,15 @@ QtObject {
     readonly property string shapeOctagon: "octagon"
 
     // 🌟 M3 间距网格系统 (Spacing Tokens)
-    readonly property real space2: MeoTokens.space2 * globalScale
-    readonly property real space4: MeoTokens.space4 * globalScale
-    readonly property real space8: MeoTokens.space8 * globalScale
-    readonly property real space12: MeoTokens.space12 * globalScale
-    readonly property real space16: MeoTokens.space16 * globalScale
-    readonly property real space24: MeoTokens.space24 * globalScale
-    readonly property real space32: MeoTokens.space32 * globalScale
-    readonly property real space40: MeoTokens.space40 * globalScale
-    readonly property real space48: MeoTokens.space48 * globalScale
+    readonly property real space2: metricToken("space2", 2) * globalScale
+    readonly property real space4: metricToken("space4", 4) * globalScale
+    readonly property real space8: metricToken("space8", 8) * globalScale
+    readonly property real space12: metricToken("space12", 12) * globalScale
+    readonly property real space16: metricToken("space16", 16) * globalScale
+    readonly property real space24: metricToken("space24", 24) * globalScale
+    readonly property real space32: metricToken("space32", 32) * globalScale
+    readonly property real space40: metricToken("space40", 40) * globalScale
+    readonly property real space48: metricToken("space48", 48) * globalScale
 
     // 🌟 兼容老版组件的 Padding 定义
     readonly property real compactPadding: 8 * globalScale

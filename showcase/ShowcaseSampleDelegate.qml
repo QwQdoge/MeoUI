@@ -81,6 +81,8 @@ Item {
         if (name === "MeoRadioButton") return radioSample
         if (name === "MeoSwitch") return switchSample
         if (name === "MeoSlider") return sliderSample
+        if (name === "MeoQuickControlSlider") return quickControlSliderSample
+        if (name === "MeoQuickSettingsTile") return quickSettingsTileSample
         if (name === "MeoRangeSlider") return rangeSliderSample
         if (name === "MeoSelectionGroup") return selectionGroupSample
         if (name === "MeoFilterGroup") return filterGroupSample
@@ -423,6 +425,15 @@ Item {
         }
     }
     Component { id: rangeSliderSample; MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 24; secondValue: 78 } }
+    Component { id: quickControlSliderSample; MeoQuickControlSlider { width: 360 * MeoTheme.globalScale; iconName: "light_mode"; value: 72; detailsAvailable: true } }
+    Component {
+        id: quickSettingsTileSample
+        Row {
+            spacing: MeoTheme.space12
+            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Connected"; iconName: "wifi"; active: true; wide: true }
+            MeoQuickSettingsTile { title: "Bluetooth"; supportingText: "Off"; iconName: "bluetooth"; wide: true }
+        }
+    }
     Component { id: selectionGroupSample; MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": "Design", "checked": true }, { "label": "Code", "checked": false }] } }
     Component { id: filterGroupSample; MeoFilterGroup { width: 420 * MeoTheme.globalScale; model: control.chipItems; currentIndex: 0 } }
     Component { id: stepperSample; Flow { spacing: MeoTheme.space16; MeoStepper { width: 420 * MeoTheme.globalScale; model: [{ "label": "Account" }, { "label": "Profile" }, { "label": "Review" }]; currentIndex: 1 } MeoStepper { height: 220 * MeoTheme.globalScale; orientation: "vertical"; model: [{ "label": "Draft" }, { "label": "Check" }, { "label": "Publish" }]; currentIndex: 2 } } }
