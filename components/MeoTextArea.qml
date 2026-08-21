@@ -38,7 +38,6 @@ TextArea {
     rightPadding: 16 * themeGlobalScale
     topPadding: labelRaised ? 32 * themeGlobalScale : 16 * themeGlobalScale
     bottomPadding: 16 * themeGlobalScale + supportingHeight
-    maximumLength: maxLength > 0 ? maxLength : 32767
 
     color: enabled ? (isError ? themeError : themeOnSurface)
                    : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
@@ -53,6 +52,14 @@ TextArea {
     placeholderText: labelRaised ? placeholder : (label !== "" ? label : placeholder)
     placeholderTextColor: enabled ? themeOnSurfaceVariant
                                   : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
+
+    onTextChanged: {
+        if (maxLength > 0 && text.length > maxLength) {
+            var keepCursor = Math.min(cursorPosition, maxLength)
+            text = text.substring(0, maxLength)
+            cursorPosition = keepCursor
+        }
+    }
 
     background: Item {
         Rectangle {
