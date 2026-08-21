@@ -5,8 +5,7 @@ import MeoUI
 TextArea {
     id: control
 
-    // 🌟 核心对外属性
-    property string type: "filled" // "filled" (默认) | "outlined"
+    property string type: "filled" // "filled" | "outlined"
     property string label: ""
     property string helperText: ""
     property bool isError: false
@@ -15,169 +14,122 @@ TextArea {
     property int maxLength: -1
     property bool showCounter: false
 
-    // 🌟 作用域防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
+    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
+    readonly property color themeOutline: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outline !== "undefined") ? MeoTheme.outline : "#79747E"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
+    readonly property color themeError: (typeof MeoTheme !== "undefined" && typeof MeoTheme.error !== "undefined") ? MeoTheme.error : "#B3261E"
+    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
+    readonly property var fontBody: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyLarge !== "undefined") ? MeoTheme.bodyLarge : ({ "size": 16, "weight": Font.Normal })
+    readonly property var fontLabel: (typeof MeoTheme !== "undefined" && typeof MeoTheme.labelSmall !== "undefined") ? MeoTheme.labelSmall : ({ "size": 11, "weight": Font.Medium })
+    readonly property var fontSupporting: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodySmall !== "undefined") ? MeoTheme.bodySmall : ({ "size": 12, "weight": Font.Normal })
 
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property bool labelRaised: label !== "" && (activeFocus || text !== "" || placeholder !== "")
+    readonly property bool hasSupportingLine: helperText !== "" || (isError && errorText !== "") || showCounter
+    readonly property real supportingHeight: hasSupportingLine ? 24 * themeGlobalScale : 0
+    readonly property real containerRadius: 20 * themeGlobalScale
 
-    readonly property var fontBodyLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyLarge !== 'undefined') ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal }
-    readonly property var fontBodySmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodySmall !== 'undefined') ? MeoTheme.bodySmall : { "size": 12, "weight": Font.Normal }
-    readonly property var fontLabelSmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelSmall !== 'undefined') ? MeoTheme.labelSmall : { "size": 11, "weight": Font.Medium }
-
-    readonly property real helperSpace: (helperText !== "" || (isError && errorText !== "") || showCounter) ? 20 * themeGlobalScale : 0
-
+    implicitWidth: 320 * themeGlobalScale
+    implicitHeight: Math.max(120 * themeGlobalScale, contentHeight + topPadding + bottomPadding)
     padding: 0
-    implicitHeight: Math.max(100 * themeGlobalScale, contentHeight + topPadding + bottomPadding)
-    implicitWidth: 280 * themeGlobalScale
+    leftPadding: 16 * themeGlobalScale
+    rightPadding: 16 * themeGlobalScale
+    topPadding: labelRaised ? 32 * themeGlobalScale : 16 * themeGlobalScale
+    bottomPadding: 16 * themeGlobalScale + supportingHeight
+    maximumLength: maxLength > 0 ? maxLength : 32767
 
-    color: {
-        if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
-        return isError ? themeError : themeOnSurface;
-    }
-    selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.3)
+    color: enabled ? (isError ? themeError : themeOnSurface)
+                   : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
+    selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.28)
     selectedTextColor: themeOnSurface
-    font.pixelSize: fontBodyLarge.size * themeGlobalScale
     font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-    font.weight: fontBodyLarge.weight
+    font.pixelSize: fontBody.size * themeGlobalScale
+    font.weight: fontBody.weight
     selectByMouse: true
     wrapMode: TextArea.Wrap
 
-    placeholderText: (label === "" || overlayLayer.isCollapsed) ? placeholder : ""
-    placeholderTextColor: {
-        if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
-        return isError ? themeError : themeOnSurfaceVariant;
-    }
-
-    leftPadding: 16 * themeGlobalScale
-    rightPadding: 16 * themeGlobalScale
-    topPadding: type === "filled"
-                ? (label !== "" ? 24 * themeGlobalScale : 16 * themeGlobalScale)
-                : 16 * themeGlobalScale
-    bottomPadding: 16 * themeGlobalScale + helperSpace
+    placeholderText: labelRaised ? placeholder : (label !== "" ? label : placeholder)
+    placeholderTextColor: enabled ? themeOnSurfaceVariant
+                                  : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
 
     background: Item {
         Rectangle {
-            id: containerRect
-            anchors.fill: parent
-            anchors.bottomMargin: control.helperSpace
-            radius: control.type === "filled" ? 0 : 4 * control.themeGlobalScale
-            topLeftRadius: 4 * control.themeGlobalScale
-            topRightRadius: 4 * control.themeGlobalScale
+            id: areaContainer
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: supportingRow.top
+            anchors.bottomMargin: control.hasSupportingLine ? 4 * control.themeGlobalScale : 0
+            radius: control.containerRadius
             color: {
-                if (!control.enabled) return control.type === "filled" ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.04) : "transparent";
-                if (control.type === "filled") return control.themeSurfaceContainerHighest;
-                return "transparent";
+                if (control.type === "outlined") return "transparent"
+                if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.04)
+                var base = control.themeSurfaceContainerHighest
+                if (control.hovered)
+                    return Qt.tint(base, Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06))
+                return base
             }
-
-            Rectangle {
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 4 * control.themeGlobalScale
-                color: containerRect.color
-                visible: control.type === "filled"
+            border.width: {
+                if (control.activeFocus) return 2 * control.themeGlobalScale
+                if (control.type === "outlined") return 1 * control.themeGlobalScale
+                return 0
             }
-
             border.color: {
-                if (!control.enabled) return control.isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
-                if (control.isError) return control.themeError;
-                if (control.activeFocus) return control.themePrimary;
-                if (control.hovered) return control.themeOnSurface;
-                return control.type === "filled" ? control.themeOnSurfaceVariant : control.themeOutline;
+                if (control.isError) return control.themeError
+                if (control.activeFocus) return control.themePrimary
+                if (control.type === "outlined") return control.hovered ? control.themeOnSurface : control.themeOutline
+                return "transparent"
             }
-            border.width: control.type === "outlined" ? (control.activeFocus ? 2 : 1) : 0
-
+            Behavior on color { ColorAnimation { duration: control.motionFast } }
             Behavior on border.color { ColorAnimation { duration: control.motionFast } }
-
-            Rectangle {
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: control.activeFocus ? 2 : 1
-                color: parent.border.color
-                visible: control.type === "filled"
-                Behavior on color { ColorAnimation { duration: control.motionFast } }
-            }
+            Behavior on border.width { NumberAnimation { duration: control.motionFast } }
         }
-    }
 
-    Item {
-        id: overlayLayer
-        width: parent.width
-        height: parent.height - control.helperSpace
-        visible: control.label !== ""
-        enabled: false
+        Text {
+            visible: control.labelRaised
+            text: control.label
+            anchors.left: areaContainer.left
+            anchors.leftMargin: 16 * control.themeGlobalScale
+            anchors.top: areaContainer.top
+            anchors.topMargin: 9 * control.themeGlobalScale
+            font.family: control.font.family
+            font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+            font.weight: control.fontLabel.weight
+            color: control.isError ? control.themeError : (control.activeFocus ? control.themePrimary : control.themeOnSurfaceVariant)
+            Behavior on color { ColorAnimation { duration: control.motionFast } }
+        }
 
-        readonly property bool isCollapsed: control.activeFocus || control.text !== ""
+        Row {
+            id: supportingRow
+            anchors.left: parent.left
+            anchors.leftMargin: 16 * control.themeGlobalScale
+            anchors.right: parent.right
+            anchors.rightMargin: 16 * control.themeGlobalScale
+            anchors.bottom: parent.bottom
+            height: control.supportingHeight
+            visible: control.hasSupportingLine
 
-        Item {
-            x: 16 * control.themeGlobalScale
-            y: overlayLayer.isCollapsed
-               ? (control.type === "filled" ? 8 * control.themeGlobalScale : -8 * control.themeGlobalScale)
-               : 16 * control.themeGlobalScale
-            width: labelText.implicitWidth
-            height: labelText.implicitHeight
-
-            Behavior on y { NumberAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
-
-            Rectangle {
-                anchors.fill: parent
-                anchors.leftMargin: -4 * control.themeGlobalScale
-                anchors.rightMargin: -4 * control.themeGlobalScale
-                color: control.themeSurface
-                visible: control.type === "outlined" && overlayLayer.isCollapsed
+            Text {
+                width: Math.max(0, parent.width - counterLabel.width - 12 * control.themeGlobalScale)
+                text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
+                visible: text !== ""
+                font.family: control.font.family
+                font.pixelSize: control.fontSupporting.size * control.themeGlobalScale
+                font.weight: control.fontSupporting.weight
+                color: control.isError ? control.themeError : control.themeOnSurfaceVariant
+                elide: Text.ElideRight
             }
 
             Text {
-                id: labelText
-                text: control.label
-                font.pixelSize: (overlayLayer.isCollapsed ? control.fontLabelSmall.size : control.fontBodyLarge.size) * control.themeGlobalScale
-                font.weight: overlayLayer.isCollapsed ? control.fontLabelSmall.weight : control.fontBodyLarge.weight
-                color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
-                    if (control.isError) return control.themeError;
-                    if (control.activeFocus) return control.themePrimary;
-                    return control.themeOnSurfaceVariant;
-                }
-                Behavior on font.pixelSize { NumberAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+                id: counterLabel
+                visible: control.showCounter
+                text: control.maxLength > 0 ? (control.text.length + " / " + control.maxLength) : control.text.length
+                font.family: control.font.family
+                font.pixelSize: control.fontSupporting.size * control.themeGlobalScale
+                color: control.themeOnSurfaceVariant
             }
-        }
-    }
-
-    Item {
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.leftMargin: 16 * control.themeGlobalScale
-        anchors.right: parent.right
-        anchors.rightMargin: 16 * control.themeGlobalScale
-        height: 16 * control.themeGlobalScale
-        visible: control.helperSpace > 0
-
-        Text {
-            anchors.left: parent.left
-            anchors.right: counterLabel.left
-            anchors.rightMargin: 16 * control.themeGlobalScale
-            text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
-            font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
-            color: control.isError ? control.themeError : control.themeOnSurfaceVariant
-            elide: Text.ElideRight
-        }
-
-        Text {
-            id: counterLabel
-            anchors.right: parent.right
-            visible: control.showCounter
-            text: control.maxLength > 0 ? (control.text.length + " / " + control.maxLength) : control.text.length
-            font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
-            color: control.themeOnSurfaceVariant
         }
     }
 }
