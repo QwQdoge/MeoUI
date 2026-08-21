@@ -28,9 +28,10 @@ Rectangle {
     color: themeSurfaceContainerLow
 
     Row {
+        id: destinationsRow
         anchors.fill: parent
-        leftPadding: 8 * control.themeGlobalScale
-        rightPadding: 8 * control.themeGlobalScale
+        anchors.leftMargin: 8 * control.themeGlobalScale
+        anchors.rightMargin: 8 * control.themeGlobalScale
         spacing: 4 * control.themeGlobalScale
 
         Repeater {
@@ -40,8 +41,8 @@ Rectangle {
                 id: destination
                 required property int index
                 required property var modelData
-                width: Math.max(0, (parent.width - parent.leftPadding - parent.rightPadding - parent.spacing * Math.max(0, control.model.length - 1)) / Math.max(1, control.model.length))
-                height: parent.height
+                width: Math.max(0, (destinationsRow.width - destinationsRow.spacing * Math.max(0, control.model.length - 1)) / Math.max(1, control.model.length))
+                height: destinationsRow.height
                 activeFocusOnTab: true
 
                 readonly property bool isSelected: control.currentIndex === index
