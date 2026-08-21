@@ -85,6 +85,7 @@ Control {
             return "compact"
         return "controlCenter"
     }
+    readonly property string implicitPresentation: presentation === "adaptive" ? "controlCenter" : presentation
 
     readonly property color resolvedContainerColor: {
         if (resolvedPresentation === "compact")
@@ -111,16 +112,16 @@ Control {
     }
 
     implicitWidth: {
-        if (resolvedPresentation === "compact") return 328 * themeGlobalScale
-        if (resolvedPresentation === "controlCenter") return 460 * themeGlobalScale
-        if (resolvedPresentation === "lockScreen") return 440 * themeGlobalScale
-        return 960 * themeGlobalScale
+        if (implicitPresentation === "compact") return 328 * themeGlobalScale
+        if (implicitPresentation === "lockScreen") return 440 * themeGlobalScale
+        if (implicitPresentation === "fullScreen") return 960 * themeGlobalScale
+        return 460 * themeGlobalScale
     }
     implicitHeight: {
-        if (resolvedPresentation === "compact") return 120 * themeGlobalScale
-        if (resolvedPresentation === "controlCenter") return 236 * themeGlobalScale
-        if (resolvedPresentation === "lockScreen") return 700 * themeGlobalScale
-        return 620 * themeGlobalScale
+        if (implicitPresentation === "compact") return 120 * themeGlobalScale
+        if (implicitPresentation === "lockScreen") return 700 * themeGlobalScale
+        if (implicitPresentation === "fullScreen") return 620 * themeGlobalScale
+        return 236 * themeGlobalScale
     }
 
     padding: 0
