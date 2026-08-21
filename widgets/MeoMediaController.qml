@@ -2,383 +2,723 @@ import QtQuick
 import QtQuick.Controls
 import MeoUI
 
-Frame {
+Control {
     id: control
 
-    // 🌟 对外暴露的核心接口
+    // Media model
     property string title: "Untitled Track"
     property string artist: "Unknown Artist"
-    property string coverSource: "" // 封面图片源，若为空则显示动态 placeholder
+    property string album: ""
+    property string sourceName: ""
+    property string coverSource: ""
     property bool isPlaying: false
-    property int duration: 180000 // 总时长（毫秒，默认3分钟）
-    property int position: 45000 // 当前进度（毫秒，默认45秒）
-    property real volume: 0.7 // 音量 (0.0 ~ 1.0)
+    property int duration: 180000
+    property int position: 45000
+    property int bufferedPosition: 0
+    property real volume: 0.7
 
-    signal playRequested
-    signal pauseRequested
-    signal nextRequested
-    signal previousRequested
+    // Playback capabilities / state
+    property bool canSeek: true
+    property bool canSkipPrevious: true
+    property bool canSkipNext: true
+    property bool canAdjustVolume: true
+    property bool shuffleEnabled: false
+    property string repeatMode: "off" // "off" | "all" | "one"
+    property bool liked: false
+    property string outputDevice: "This device"
+
+    // Pixel media presentations
+    property string presentation: "adaptive" // "adaptive" | "compact" | "controlCenter" | "lockScreen" | "fullScreen"
+    property bool showArtwork: true
+    property bool showVolume: true
+    property bool showSecondaryActions: true
+    property bool useWavyProgress: true
+    property bool useArtworkAccent: true
+    property color artworkAccentColor: "transparent"
+    property color artworkOnAccentColor: themeOnPrimaryContainer
+
+    signal playRequested()
+    signal pauseRequested()
+    signal nextRequested()
+    signal previousRequested()
     signal seekRequested(int newPosition)
     signal volumeRequested(real newVolume)
+    signal shuffleRequested(bool enabled)
+    signal repeatRequested(string mode)
+    signal likedRequested(bool liked)
+    signal outputRequested()
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
+    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
+    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
+    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimaryContainer !== "undefined") ? MeoTheme.contentOnPrimaryContainer : "#21005D"
+    readonly property color themeSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surface !== "undefined") ? MeoTheme.surface : "#FFFBFE"
+    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
+    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
+    readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHigh !== "undefined") ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
+    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
+    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
+    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
+    readonly property int motionPage: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationPage !== "undefined") ? MeoTheme.motionDurationPage : 320
 
-    padding: 16 * themeGlobalScale
-    implicitWidth: 360 * themeGlobalScale
-    implicitHeight: 180 * themeGlobalScale
+    readonly property bool hasArtworkAccent: useArtworkAccent && artworkAccentColor.a > 0.001
+    readonly property color mediaAccent: hasArtworkAccent ? artworkAccentColor : themePrimary
+    readonly property color mediaAccentContainer: hasArtworkAccent ? artworkAccentColor : themePrimaryContainer
+    readonly property color mediaOnAccent: hasArtworkAccent ? artworkOnAccentColor : themeOnPrimaryContainer
+    readonly property color mediaTrackColor: Qt.rgba(themeOnSurfaceVariant.r, themeOnSurfaceVariant.g, themeOnSurfaceVariant.b, isDarkMode ? 0.24 : 0.16)
 
-    // 🌟 外层 M3 卡片容器
+    function tintedSurface(base, strength) {
+        return Qt.tint(base, Qt.rgba(mediaAccent.r, mediaAccent.g, mediaAccent.b, strength))
+    }
+
+    readonly property string resolvedPresentation: {
+        if (presentation !== "adaptive")
+            return presentation
+        var effectiveWidth = width / Math.max(0.1, themeGlobalScale)
+        var effectiveHeight = height / Math.max(0.1, themeGlobalScale)
+        if (effectiveWidth >= 820 && effectiveHeight >= 480)
+            return "fullScreen"
+        if (effectiveWidth < 330)
+            return "compact"
+        return "controlCenter"
+    }
+
+    readonly property color resolvedContainerColor: {
+        if (resolvedPresentation === "compact")
+            return tintedSurface(themeSurfaceContainerLow, isDarkMode ? 0.10 : 0.06)
+        if (resolvedPresentation === "controlCenter")
+            return tintedSurface(themeSurfaceContainerHigh, isDarkMode ? 0.16 : 0.10)
+        if (resolvedPresentation === "lockScreen")
+            return tintedSurface(themeSurfaceContainer, isDarkMode ? 0.20 : 0.13)
+        return tintedSurface(themeSurface, isDarkMode ? 0.22 : 0.15)
+    }
+
+    readonly property real cornerRadius: {
+        if (resolvedPresentation === "compact") return 20 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 28 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 32 * themeGlobalScale
+        return 36 * themeGlobalScale
+    }
+
+    readonly property real contentPadding: {
+        if (resolvedPresentation === "compact") return 12 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 20 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 24 * themeGlobalScale
+        return 32 * themeGlobalScale
+    }
+
+    implicitWidth: {
+        if (resolvedPresentation === "compact") return 320 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 440 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 420 * themeGlobalScale
+        return 960 * themeGlobalScale
+    }
+    implicitHeight: {
+        if (resolvedPresentation === "compact") return 108 * themeGlobalScale
+        if (resolvedPresentation === "controlCenter") return 220 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 620 * themeGlobalScale
+        return 620 * themeGlobalScale
+    }
+
+    padding: 0
+    hoverEnabled: true
+
     background: Rectangle {
-        color: control.themeSurfaceContainerLow
-        radius: 16 * control.themeGlobalScale
-        border.color: control.isDarkMode ? Qt.rgba(255, 255, 255, 0.08) : Qt.rgba(0, 0, 0, 0.08)
-        border.width: 1
+        radius: control.cornerRadius
+        color: control.resolvedContainerColor
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 150
+        border.width: control.activeFocus ? 2 * control.themeGlobalScale : 0
+        border.color: control.mediaAccent
+
+        Behavior on radius {
+            NumberAnimation {
+                duration: control.motionMedium
+                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+            }
+        }
+        Behavior on color { ColorAnimation { duration: control.motionPage } }
+    }
+
+    contentItem: Loader {
+        id: presentationLoader
+        anchors.fill: parent
+        anchors.margins: control.contentPadding
+        sourceComponent: {
+            if (control.resolvedPresentation === "compact") return compactPresentation
+            if (control.resolvedPresentation === "lockScreen") return lockScreenPresentation
+            if (control.resolvedPresentation === "fullScreen") return fullScreenPresentation
+            return controlCenterPresentation
+        }
+
+        Behavior on opacity { NumberAnimation { duration: control.motionMedium } }
+    }
+
+    component MediaArtwork: Rectangle {
+        id: artworkRoot
+        property real artworkSize: 72 * control.themeGlobalScale
+        property real artworkRadius: Math.min(24 * control.themeGlobalScale, artworkSize * 0.22)
+        width: artworkSize
+        height: artworkSize
+        radius: artworkRadius
+        clip: true
+        color: control.mediaAccentContainer
+
+        Image {
+            anchors.fill: parent
+            source: control.coverSource
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            visible: control.showArtwork && control.coverSource !== ""
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            visible: !control.showArtwork || control.coverSource === ""
+            color: control.mediaAccentContainer
+
+            MeoIcon {
+                anchors.centerIn: parent
+                icon: control.isPlaying ? "graphic_eq" : "music_note"
+                size: Math.max(24, artworkRoot.artworkSize / control.themeGlobalScale * 0.34)
+                color: control.mediaOnAccent
+                fill: control.isPlaying
+            }
+        }
+
+        scale: control.isPlaying ? 1.0 : 0.97
+        Behavior on scale {
+            NumberAnimation {
+                duration: control.motionMedium
+                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
             }
         }
     }
 
-    // 内部总体布局
-    Column {
-        anchors.fill: parent
-        spacing: 12 * control.themeGlobalScale
+    component MediaActionButton: Button {
+        id: mediaButton
+        property string glyph: "play_arrow"
+        property string accessibleName: ""
+        property bool prominent: false
+        property bool active: false
+        property real diameter: 44 * control.themeGlobalScale
 
-        // 第一行：封面与歌曲信息
-        Row {
-            width: parent.width
-            spacing: 16 * control.themeGlobalScale
+        width: diameter
+        height: diameter
+        padding: 0
+        hoverEnabled: true
+        Accessible.name: accessibleName
 
-            // Album Art (唱片封面)
-            Rectangle {
-                id: albumArtContainer
-                width: 64 * control.themeGlobalScale
-                height: 64 * control.themeGlobalScale
-                radius: 8 * control.themeGlobalScale
-                clip: true
-                color: control.isDarkMode ? "#36343B" : "#ECE6F0"
-
-                // 封面图片
-                Image {
-                    anchors.fill: parent
-                    source: control.coverSource
-                    fillMode: Image.PreserveAspectCrop
-                    visible: source !== ""
-                }
-
-                // 封面缺失时的动态艺术生成 placeholder
-                Rectangle {
-                    anchors.fill: parent
-                    visible: control.coverSource === ""
-                    gradient: Gradient {
-                        GradientStop {
-                            position: 0.0
-                            color: control.themePrimary
-                        }
-                        GradientStop {
-                            position: 1.0
-                            color: Qt.darker(control.themePrimary, 1.8)
-                        }
-                    }
-
-                    // 音符图标
-                    MeoIcon {
-                        anchors.centerIn: parent
-                        icon: "music_note"
-                        color: control.themeOnPrimary
-                        size: 32 * control.themeGlobalScale
-                    }
-                }
+        background: Rectangle {
+            radius: mediaButton.pressed ? Math.min(width, height) * 0.34 : width / 2
+            color: {
+                if (!mediaButton.enabled)
+                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
+                if (mediaButton.prominent)
+                    return control.mediaAccentContainer
+                if (mediaButton.active)
+                    return control.tintedSurface(control.themeSurfaceContainerHighest, control.isDarkMode ? 0.28 : 0.18)
+                if (mediaButton.hovered)
+                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
+                return "transparent"
             }
-
-            // 歌曲信息文字区
-            Column {
-                width: parent.width - albumArtContainer.width - parent.spacing
-                anchors.verticalCenter: albumArtContainer.verticalCenter
-                spacing: 4 * control.themeGlobalScale
-
-                Text {
-                    text: control.title
-                    width: parent.width
-                    font.pixelSize: 16 * control.themeGlobalScale
-                    font.weight: Font.Bold
-                    color: control.themeOnSurface
-                    elide: Text.ElideRight
-                }
-
-                Text {
-                    text: control.artist
-                    width: parent.width
-                    font.pixelSize: 14 * control.themeGlobalScale
-                    color: control.themeOnSurfaceVariant
-                    elide: Text.ElideRight
-                }
-            }
+            Behavior on radius { NumberAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast } }
         }
 
-        // 第二行：进度条与播放时长指示
+        contentItem: MeoIcon {
+            anchors.centerIn: parent
+            icon: mediaButton.glyph
+            fill: mediaButton.prominent || mediaButton.active
+            size: mediaButton.prominent ? 32 : 24
+            color: mediaButton.prominent ? control.mediaOnAccent : control.themeOnSurface
+        }
+
+        scale: pressed ? 0.94 : hovered ? 1.025 : 1.0
+        Behavior on scale {
+            NumberAnimation {
+                duration: control.motionFast
+                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+            }
+        }
+    }
+
+    component MediaMetadata: Column {
+        id: metadataRoot
+        property bool centered: false
+        property bool large: false
+        property bool showAlbum: true
+        spacing: (large ? 8 : 3) * control.themeGlobalScale
+
+        Text {
+            width: parent.width
+            text: control.title
+            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.pixelSize: (metadataRoot.large ? 28 : 16) * control.themeGlobalScale
+            font.weight: Font.DemiBold
+            color: control.themeOnSurface
+            elide: Text.ElideRight
+            horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
+        }
+
+        Text {
+            width: parent.width
+            text: control.artist
+            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.pixelSize: (metadataRoot.large ? 16 : 14) * control.themeGlobalScale
+            color: control.themeOnSurfaceVariant
+            elide: Text.ElideRight
+            horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
+        }
+
+        Text {
+            width: parent.width
+            text: control.album !== "" ? control.album : control.sourceName
+            visible: metadataRoot.showAlbum && text !== ""
+            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.pixelSize: (metadataRoot.large ? 13 : 12) * control.themeGlobalScale
+            color: control.themeOnSurfaceVariant
+            opacity: 0.78
+            elide: Text.ElideRight
+            horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
+        }
+    }
+
+    component SeekSlider: MeoSlider {
+        id: mediaSeek
+        property string mediaSize: "s"
+        from: 0
+        to: Math.max(1, control.duration)
+        value: Math.max(0, Math.min(control.duration, control.position))
+        size: mediaSize
+        expressive: true
+        trackStyle: "split"
+        wavy: control.useWavyProgress && control.isPlaying
+        valueLabelEnabled: false
+        enabled: control.canSeek
+        activeTrackColor: control.mediaAccentContainer
+        inactiveTrackColor: control.mediaTrackColor
+        thumbColor: control.mediaAccentContainer
+        onMoved: (newValue) => {
+            control.position = Math.round(newValue)
+            control.seekRequested(control.position)
+        }
+    }
+
+    component TimeLabels: Item {
+        height: 16 * control.themeGlobalScale
+        Text {
+            anchors.left: parent.left
+            text: control.formatTime(control.position)
+            font.pixelSize: 11 * control.themeGlobalScale
+            color: control.themeOnSurfaceVariant
+        }
+        Text {
+            anchors.right: parent.right
+            text: control.formatTime(control.duration)
+            font.pixelSize: 11 * control.themeGlobalScale
+            color: control.themeOnSurfaceVariant
+        }
+    }
+
+    Component {
+        id: compactPresentation
         Column {
-            width: parent.width
-            spacing: 4 * control.themeGlobalScale
+            spacing: 8 * control.themeGlobalScale
 
-            // 进度条本身 (Slider 扁平化重构)
-            Slider {
-                id: progressSlider
+            Row {
                 width: parent.width
-                height: 12 * control.themeGlobalScale
-                padding: 0
-                from: 0
-                to: Math.max(1, control.duration)
-                value: control.position
+                height: 60 * control.themeGlobalScale
+                spacing: 12 * control.themeGlobalScale
 
-                background: Rectangle {
-                    x: progressSlider.leftPadding
-                    y: progressSlider.topPadding + (progressSlider.availableHeight - height) / 2
-                    width: progressSlider.availableWidth
-                    height: 4 * control.themeGlobalScale
-                    radius: 2 * control.themeGlobalScale
-                    color: Qt.rgba(control.themeOnSurfaceVariant.r, control.themeOnSurfaceVariant.g, control.themeOnSurfaceVariant.b, 0.24)
-
-                    Rectangle {
-                        width: progressSlider.visualPosition * parent.width
-                        height: parent.height
-                        color: control.themePrimary
-                        radius: 2 * control.themeGlobalScale
-                    }
+                MediaArtwork {
+                    artworkSize: 56 * control.themeGlobalScale
+                    artworkRadius: 18 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
-                handle: Rectangle {
-                    x: progressSlider.leftPadding + progressSlider.visualPosition * (progressSlider.availableWidth - width)
-                    y: progressSlider.topPadding + (progressSlider.availableHeight - height) / 2
-                    width: progressSlider.hovered ? 12 * control.themeGlobalScale : 8 * control.themeGlobalScale
-                    height: width
-                    radius: width / 2
-                    color: control.themePrimary
-
-                    Behavior on width {
-                        NumberAnimation {
-                            duration: 100
-                        }
-                    }
+                MediaMetadata {
+                    width: Math.max(0, parent.width - 56 * control.themeGlobalScale - compactPlay.width - parent.spacing * 2)
+                    anchors.verticalCenter: parent.verticalCenter
+                    showAlbum: false
                 }
 
-                onMoved: {
-                    control.seekRequested(value);
+                MediaActionButton {
+                    id: compactPlay
+                    anchors.verticalCenter: parent.verticalCenter
+                    glyph: control.isPlaying ? "pause" : "play_arrow"
+                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    prominent: true
+                    diameter: 48 * control.themeGlobalScale
+                    onClicked: control.togglePlayback()
                 }
             }
 
-            // 时长标签
-            Item {
+            SeekSlider {
                 width: parent.width
-                height: 16 * control.themeGlobalScale
-
-                // 当前播放位置
-                Text {
-                    text: formatTime(control.position)
-                    font.pixelSize: 11 * control.themeGlobalScale
-                    color: control.themeOnSurfaceVariant
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-
-                // 总播放时长
-                Text {
-                    text: formatTime(control.duration)
-                    font.pixelSize: 11 * control.themeGlobalScale
-                    color: control.themeOnSurfaceVariant
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                }
+                height: 28 * control.themeGlobalScale
+                mediaSize: "xs"
+                wavy: false
             }
         }
+    }
 
-        // 第三行：控制按钮区与音量控制
-        Row {
-            width: parent.width
+    Component {
+        id: controlCenterPresentation
+        Column {
             spacing: 12 * control.themeGlobalScale
-            anchors.horizontalCenter: parent.horizontalCenter
 
-            // 占位使得控制按钮完美居中，左侧音量在角落
-            Item {
-                width: (parent.width - centerButtons.width) / 2
-                height: 36 * control.themeGlobalScale
+            Row {
+                width: parent.width
+                height: 76 * control.themeGlobalScale
+                spacing: 14 * control.themeGlobalScale
 
-                // 左侧音量小组件
-                Row {
-                    anchors.left: parent.left
+                MediaArtwork {
+                    artworkSize: 72 * control.themeGlobalScale
+                    artworkRadius: 22 * control.themeGlobalScale
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 4 * control.themeGlobalScale
+                }
 
-                    MeoIcon {
-                        icon: control.volume > 0.5 ? "volume_up" : (control.volume > 0.0 ? "volume_down" : "volume_off")
-                        size: 20 * control.themeGlobalScale
-                        color: control.themeOnSurfaceVariant
-                        anchors.verticalCenter: parent.verticalCenter
+                Column {
+                    width: Math.max(0, parent.width - 72 * control.themeGlobalScale - centerPlay.width - parent.spacing * 2)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 6 * control.themeGlobalScale
+
+                    MediaMetadata {
+                        width: parent.width
+                        showAlbum: false
                     }
 
-                    Slider {
-                        id: volumeSlider
-                        width: 60 * control.themeGlobalScale
-                        height: 12 * control.themeGlobalScale
+                    Button {
+                        id: outputPill
+                        visible: control.outputDevice !== ""
+                        height: 28 * control.themeGlobalScale
+                        width: Math.min(parent.width, outputRow.implicitWidth + 20 * control.themeGlobalScale)
                         padding: 0
-                        from: 0.0
-                        to: 1.0
-                        value: control.volume
-
+                        hoverEnabled: true
+                        onClicked: control.outputRequested()
                         background: Rectangle {
-                            x: volumeSlider.leftPadding
-                            y: volumeSlider.topPadding + (volumeSlider.availableHeight - height) / 2
-                            width: volumeSlider.availableWidth
-                            height: 2 * control.themeGlobalScale
-                            radius: 1 * control.themeGlobalScale
-                            color: Qt.rgba(control.themeOnSurfaceVariant.r, control.themeOnSurfaceVariant.g, control.themeOnSurfaceVariant.b, 0.2)
-
-                            Rectangle {
-                                width: volumeSlider.visualPosition * parent.width
-                                height: parent.height
+                            radius: height / 2
+                            color: outputPill.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.10)
+                                                      : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
+                        }
+                        contentItem: Row {
+                            id: outputRow
+                            anchors.centerIn: parent
+                            spacing: 6 * control.themeGlobalScale
+                            MeoIcon { icon: "cast"; size: 16; color: control.themeOnSurfaceVariant }
+                            Text {
+                                text: control.outputDevice
+                                font.pixelSize: 11 * control.themeGlobalScale
+                                font.weight: Font.Medium
                                 color: control.themeOnSurfaceVariant
-                                radius: 1 * control.themeGlobalScale
+                                elide: Text.ElideRight
                             }
-                        }
-
-                        handle: Rectangle {
-                            x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
-                            y: volumeSlider.topPadding + (volumeSlider.availableHeight - height) / 2
-                            width: 6 * control.themeGlobalScale
-                            height: width
-                            radius: width / 2
-                            color: control.themeOnSurfaceVariant
-                        }
-
-                        onMoved: {
-                            control.volumeRequested(value);
                         }
                     }
                 }
+
+                MediaActionButton {
+                    id: centerPlay
+                    anchors.verticalCenter: parent.verticalCenter
+                    glyph: control.isPlaying ? "pause" : "play_arrow"
+                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    prominent: true
+                    diameter: 56 * control.themeGlobalScale
+                    onClicked: control.togglePlayback()
+                }
             }
 
-            // 中间的三个控制键 (⏭ ⏮ 播放键)
+            SeekSlider {
+                width: parent.width
+                height: 40 * control.themeGlobalScale
+                mediaSize: "s"
+            }
+
             Row {
-                id: centerButtons
-                spacing: 16 * control.themeGlobalScale
-                anchors.verticalCenter: parent.verticalCenter
+                width: parent.width
+                height: 44 * control.themeGlobalScale
+                spacing: 8 * control.themeGlobalScale
 
-                // ⏮ Previous Button
-                Button {
-                    id: prevBtn
-                    width: 36 * control.themeGlobalScale
-                    height: 36 * control.themeGlobalScale
-                    hoverEnabled: true
-
-                    background: Rectangle {
-                        radius: 18 * control.themeGlobalScale
-                        color: prevBtn.pressed ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12) : (prevBtn.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08) : "transparent")
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-                        }
-                    }
-                    contentItem: MeoIcon {
-                        icon: "skip_previous"
-                        size: 24 * control.themeGlobalScale
-                        color: control.themeOnSurface
-                        anchors.centerIn: parent
-                    }
+                MediaActionButton {
+                    glyph: "skip_previous"
+                    accessibleName: "Previous"
+                    enabled: control.canSkipPrevious
                     onClicked: control.previousRequested()
                 }
-
-                // ▶ Play / ⏸ Pause Button (M3 Tonal/Filled 混合态主操作钮)
-                Button {
-                    id: playBtn
-                    width: 48 * control.themeGlobalScale
-                    height: 48 * control.themeGlobalScale
-                    anchors.verticalCenter: parent.verticalCenter
-                    hoverEnabled: true
-
-                    background: Rectangle {
-                        radius: 24 * control.themeGlobalScale
-                        color: control.isPlaying ? control.themeSecondaryContainer : control.themePrimary
-
-                        // Hover/Pressed State Layer
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: parent.radius
-                            color: playBtn.pressed ? Qt.rgba(0, 0, 0, 0.12) : (playBtn.hovered ? Qt.rgba(255, 255, 255, 0.08) : "transparent")
-                        }
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-                        }
-                    }
-                    contentItem: MeoIcon {
-                        icon: control.isPlaying ? "pause" : "play_arrow"
-                        size: 28 * control.themeGlobalScale
-                        color: control.isPlaying ? control.themeOnSecondaryContainer : control.themeOnPrimary
-                        anchors.centerIn: parent
-                    }
+                MediaActionButton {
+                    glyph: "skip_next"
+                    accessibleName: "Next"
+                    enabled: control.canSkipNext
+                    onClicked: control.nextRequested()
+                }
+                Item { width: Math.max(0, parent.width - 44 * control.themeGlobalScale * 4 - parent.spacing * 3); height: 1 }
+                MediaActionButton {
+                    glyph: control.liked ? "favorite" : "favorite_border"
+                    accessibleName: "Favorite"
+                    active: control.liked
                     onClicked: {
-                        if (control.isPlaying) {
-                            control.pauseRequested();
-                        } else {
-                            control.playRequested();
-                        }
+                        control.liked = !control.liked
+                        control.likedRequested(control.liked)
                     }
                 }
+                MediaActionButton {
+                    glyph: "more_vert"
+                    accessibleName: "More"
+                    onClicked: control.outputRequested()
+                }
+            }
+        }
+    }
 
-                // ⏭ Next Button
-                Button {
-                    id: nextBtn
-                    width: 36 * control.themeGlobalScale
-                    height: 36 * control.themeGlobalScale
-                    hoverEnabled: true
+    Component {
+        id: lockScreenPresentation
+        Column {
+            spacing: 18 * control.themeGlobalScale
 
-                    background: Rectangle {
-                        radius: 18 * control.themeGlobalScale
-                        color: nextBtn.pressed ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12) : (nextBtn.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08) : "transparent")
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-                        }
-                    }
-                    contentItem: MeoIcon {
-                        icon: "skip_next"
-                        size: 24 * control.themeGlobalScale
-                        color: control.themeOnSurface
-                        anchors.centerIn: parent
-                    }
+            MediaArtwork {
+                artworkSize: Math.min(parent.width, 300 * control.themeGlobalScale)
+                artworkRadius: 32 * control.themeGlobalScale
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+
+            MediaMetadata {
+                width: parent.width
+                centered: true
+                large: true
+                showAlbum: true
+            }
+
+            Column {
+                width: parent.width
+                spacing: 4 * control.themeGlobalScale
+                SeekSlider { width: parent.width; height: 44 * control.themeGlobalScale; mediaSize: "m" }
+                TimeLabels { width: parent.width }
+            }
+
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 22 * control.themeGlobalScale
+
+                MediaActionButton {
+                    glyph: "skip_previous"
+                    accessibleName: "Previous"
+                    diameter: 52 * control.themeGlobalScale
+                    enabled: control.canSkipPrevious
+                    onClicked: control.previousRequested()
+                }
+                MediaActionButton {
+                    glyph: control.isPlaying ? "pause" : "play_arrow"
+                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    prominent: true
+                    diameter: 72 * control.themeGlobalScale
+                    onClicked: control.togglePlayback()
+                }
+                MediaActionButton {
+                    glyph: "skip_next"
+                    accessibleName: "Next"
+                    diameter: 52 * control.themeGlobalScale
+                    enabled: control.canSkipNext
                     onClicked: control.nextRequested()
                 }
             }
 
-            // 右侧对称占位项
-            Item {
-                width: (parent.width - centerButtons.width) / 2
-                height: 36 * control.themeGlobalScale
+            Row {
+                visible: control.showSecondaryActions
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 18 * control.themeGlobalScale
+
+                MediaActionButton {
+                    glyph: "shuffle"
+                    accessibleName: "Shuffle"
+                    active: control.shuffleEnabled
+                    onClicked: {
+                        control.shuffleEnabled = !control.shuffleEnabled
+                        control.shuffleRequested(control.shuffleEnabled)
+                    }
+                }
+                MediaActionButton {
+                    glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+                    accessibleName: "Repeat"
+                    active: control.repeatMode !== "off"
+                    onClicked: control.cycleRepeat()
+                }
+                MediaActionButton {
+                    glyph: control.liked ? "favorite" : "favorite_border"
+                    accessibleName: "Favorite"
+                    active: control.liked
+                    onClicked: {
+                        control.liked = !control.liked
+                        control.likedRequested(control.liked)
+                    }
+                }
+                MediaActionButton {
+                    glyph: "devices"
+                    accessibleName: "Output device"
+                    onClicked: control.outputRequested()
+                }
             }
         }
     }
 
-    // 🌟 辅助时间格式化函数 (毫秒 -> mm:ss)
+    Component {
+        id: fullScreenPresentation
+        Row {
+            spacing: 36 * control.themeGlobalScale
+
+            Item {
+                width: Math.min(parent.width * 0.46, parent.height)
+                height: parent.height
+                MediaArtwork {
+                    artworkSize: Math.min(parent.width, parent.height)
+                    artworkRadius: 40 * control.themeGlobalScale
+                    anchors.centerIn: parent
+                }
+            }
+
+            Column {
+                width: Math.max(0, parent.width - parent.spacing - parent.children[0].width)
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 22 * control.themeGlobalScale
+
+                MediaMetadata {
+                    width: parent.width
+                    large: true
+                    showAlbum: true
+                }
+
+                Column {
+                    width: parent.width
+                    spacing: 6 * control.themeGlobalScale
+                    SeekSlider { width: parent.width; height: 48 * control.themeGlobalScale; mediaSize: "l" }
+                    TimeLabels { width: parent.width }
+                }
+
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 24 * control.themeGlobalScale
+                    MediaActionButton {
+                        glyph: "skip_previous"
+                        accessibleName: "Previous"
+                        diameter: 56 * control.themeGlobalScale
+                        enabled: control.canSkipPrevious
+                        onClicked: control.previousRequested()
+                    }
+                    MediaActionButton {
+                        glyph: control.isPlaying ? "pause" : "play_arrow"
+                        accessibleName: control.isPlaying ? "Pause" : "Play"
+                        prominent: true
+                        diameter: 80 * control.themeGlobalScale
+                        onClicked: control.togglePlayback()
+                    }
+                    MediaActionButton {
+                        glyph: "skip_next"
+                        accessibleName: "Next"
+                        diameter: 56 * control.themeGlobalScale
+                        enabled: control.canSkipNext
+                        onClicked: control.nextRequested()
+                    }
+                }
+
+                Row {
+                    visible: control.showSecondaryActions
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 16 * control.themeGlobalScale
+                    MediaActionButton {
+                        glyph: "shuffle"
+                        accessibleName: "Shuffle"
+                        active: control.shuffleEnabled
+                        onClicked: {
+                            control.shuffleEnabled = !control.shuffleEnabled
+                            control.shuffleRequested(control.shuffleEnabled)
+                        }
+                    }
+                    MediaActionButton {
+                        glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+                        accessibleName: "Repeat"
+                        active: control.repeatMode !== "off"
+                        onClicked: control.cycleRepeat()
+                    }
+                    MediaActionButton {
+                        glyph: control.liked ? "favorite" : "favorite_border"
+                        accessibleName: "Favorite"
+                        active: control.liked
+                        onClicked: {
+                            control.liked = !control.liked
+                            control.likedRequested(control.liked)
+                        }
+                    }
+                    MediaActionButton {
+                        glyph: "devices"
+                        accessibleName: "Output device"
+                        onClicked: control.outputRequested()
+                    }
+                }
+
+                Row {
+                    visible: control.showVolume && control.canAdjustVolume
+                    width: parent.width
+                    spacing: 12 * control.themeGlobalScale
+                    MeoIcon {
+                        icon: control.volume <= 0 ? "volume_off" : (control.volume < 0.5 ? "volume_down" : "volume_up")
+                        size: 22
+                        color: control.themeOnSurfaceVariant
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                    MeoSlider {
+                        width: Math.max(0, parent.width - 34 * control.themeGlobalScale)
+                        height: 40 * control.themeGlobalScale
+                        from: 0
+                        to: 1
+                        value: control.volume
+                        size: "s"
+                        trackStyle: "split"
+                        leadingIcon: "volume_up"
+                        valueLabelEnabled: false
+                        activeTrackColor: control.mediaAccentContainer
+                        inactiveTrackColor: control.mediaTrackColor
+                        thumbColor: control.mediaAccentContainer
+                        onMoved: (newValue) => {
+                            control.volume = newValue
+                            control.volumeRequested(newValue)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function togglePlayback() {
+        if (isPlaying) {
+            isPlaying = false
+            pauseRequested()
+        } else {
+            isPlaying = true
+            playRequested()
+        }
+    }
+
+    function cycleRepeat() {
+        if (repeatMode === "off") repeatMode = "all"
+        else if (repeatMode === "all") repeatMode = "one"
+        else repeatMode = "off"
+        repeatRequested(repeatMode)
+    }
+
     function formatTime(ms) {
-        let totalSeconds = Math.floor(ms / 1000);
-        let minutes = Math.floor(totalSeconds / 60);
-        let seconds = totalSeconds % 60;
-        return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        var safeMs = Math.max(0, ms || 0)
+        var totalSeconds = Math.floor(safeMs / 1000)
+        var hours = Math.floor(totalSeconds / 3600)
+        var minutes = Math.floor((totalSeconds % 3600) / 60)
+        var seconds = totalSeconds % 60
+        var secondsText = seconds < 10 ? "0" + seconds : seconds.toString()
+        if (hours > 0) {
+            var minutesText = minutes < 10 ? "0" + minutes : minutes.toString()
+            return hours + ":" + minutesText + ":" + secondsText
+        }
+        return minutes + ":" + secondsText
     }
 }
