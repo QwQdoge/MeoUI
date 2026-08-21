@@ -72,6 +72,8 @@ ShowcaseCategoryPage {
                         from: 0.2
                         to: 2.5
                         value: MeoTheme.cornerScale
+                        leadingIcon: "rounded_corner"
+                        valueLabelEnabled: false
                         onValueChanged: { MeoTheme.cornerScale = value }
                     }
                 }
@@ -91,6 +93,8 @@ ShowcaseCategoryPage {
                         from: 0.8
                         to: 1.5
                         value: MeoTheme.globalScale
+                        leadingIcon: "zoom_out_map"
+                        valueLabelEnabled: false
                         onValueChanged: { MeoTheme.globalScale = value }
                     }
                 }
@@ -116,6 +120,8 @@ ShowcaseCategoryPage {
                         from: 0.8
                         to: 1.4
                         value: MeoTheme.fontScale
+                        leadingIcon: "text_fields"
+                        valueLabelEnabled: false
                         onValueChanged: { MeoTheme.fontScale = value }
                     }
                 }
@@ -135,6 +141,8 @@ ShowcaseCategoryPage {
                         from: 0.5
                         to: 2.0
                         value: MeoTheme.motionScale
+                        leadingIcon: "animation"
+                        valueLabelEnabled: false
                         onValueChanged: { MeoTheme.motionScale = value }
                     }
                 }
@@ -159,6 +167,8 @@ ShowcaseCategoryPage {
                         from: 0.3
                         to: 3.5
                         value: MeoTheme.scrollSpeedScale
+                        leadingIcon: "mouse"
+                        valueLabelEnabled: false
                         onValueChanged: { MeoTheme.scrollSpeedScale = value }
                     }
                 }

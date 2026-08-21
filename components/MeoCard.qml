@@ -1,114 +1,93 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import MeoUI
 
 Frame {
     id: control
 
-    // 🌟 核心属性
-    // type: "elevated" | "filled" | "outlined"
-    property string type: "elevated"
+    property string type: "elevated" // "elevated" | "filled" | "outlined"
     property int level: type === "elevated" ? 1 : 0
-    property real radius: 12 * themeGlobalScale
-    property string shape: "rect" // 🌟 MD3 Expressive: "rect" | "squircle" | "hexagon" | "diamond" | ...
-    property bool interactive: false // 🌟 MD3: Supports click interaction
+    property real radius: (typeof MeoTheme !== "undefined" && typeof MeoTheme.shapeExtraLarge !== "undefined") ? MeoTheme.shapeExtraLarge : 28 * themeGlobalScale
+    property string shape: "rect"
+    property bool interactive: false
     property bool selected: false
-    property bool bouncy: true // 🌟 MD3: Expressive scale animation on interaction
+    property bool bouncy: true
+    property bool compact: false
 
     signal clicked()
 
-    // MD3 Elevation (Shadow)
+    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
+    readonly property color themeSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surface !== "undefined") ? MeoTheme.surface : "#FFFBFE"
+    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
+    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
+    readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHigh !== "undefined") ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
+    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
+    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
+    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
+    readonly property color themeOutlineVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outlineVariant !== "undefined") ? MeoTheme.outlineVariant : "#CAC4D0"
+    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
+    readonly property int motionShape: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationShapeSettle !== "undefined") ? MeoTheme.motionDurationShapeSettle : 220
+
+    readonly property real effectiveRadius: compact ? Math.min(radius, 20 * themeGlobalScale) : radius
+    readonly property color containerColor: {
+        if (selected) return themePrimaryContainer
+        if (type === "filled") return themeSurfaceContainerHigh
+        if (type === "elevated") return themeSurfaceContainerLow
+        return themeSurface
+    }
     readonly property real elevation: {
-        if (type !== "elevated") return 0;
-        if (interactive && mouseArea.containsMouse) return Math.max(level + 1, 2);
-        return level;
+        if (type !== "elevated" || !enabled) return 0
+        if (interactive && hitArea.pressed) return 0
+        if (interactive && hitArea.containsMouse) return 2
+        return Math.max(0, Math.min(2, level))
     }
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceVariant !== 'undefined') ? MeoTheme.surfaceVariant : "#E7E0EC"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#C4C7C5"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
-
-    padding: 16 * themeGlobalScale
+    padding: (compact ? 12 : 20) * themeGlobalScale
     activeFocusOnTab: interactive
     Accessible.role: interactive ? Accessible.Button : Accessible.Pane
     Accessible.focusable: interactive
     Accessible.selected: selected
-    Accessible.onPressAction: if (interactive) control.clicked()
-    Keys.onReturnPressed: if (interactive) control.clicked()
-    Keys.onEnterPressed: if (interactive) control.clicked()
-    Keys.onSpacePressed: if (interactive) control.clicked()
+    Accessible.onPressAction: if (interactive) activate()
+    Keys.onReturnPressed: if (interactive) activate()
+    Keys.onEnterPressed: if (interactive) activate()
+    Keys.onSpacePressed: if (interactive) activate()
+
+    function activate() {
+        if (!interactive || !enabled)
+            return
+        clicked()
+    }
 
     background: Item {
         MeoShape {
             id: shapeBg
             anchors.fill: parent
             type: control.shape
-            radius: mouseArea.pressed
-                    ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeMedium) ? MeoTheme.shapeMedium : control.radius)
-                    : mouseArea.containsMouse && control.interactive
-                      ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeLargeIncreased) ? MeoTheme.shapeLargeIncreased : control.radius)
-                    : control.selected
-                      ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeLargeIncreased) ? MeoTheme.shapeLargeIncreased : control.radius)
-                      : control.radius
-            color: {
-                if (control.selected) return (typeof MeoTheme !== 'undefined' && MeoTheme.primaryContainer) ? MeoTheme.primaryContainer : control.themeSurfaceContainerHighest
-                if (control.type === "filled") return control.themeSurfaceContainerHighest
-                if (control.type === "elevated") return control.themeSurfaceContainerLow
-                return control.themeSurface
+            radius: {
+                if (!control.interactive) return control.effectiveRadius
+                if (hitArea.pressed) return Math.max(14 * control.themeGlobalScale, control.effectiveRadius - 8 * control.themeGlobalScale)
+                return control.effectiveRadius
             }
-            strokeColor: control.selected ? ((typeof MeoTheme !== 'undefined' && MeoTheme.primary) ? MeoTheme.primary : control.themeOutlineVariant)
-                                          : control.type === "outlined" ? control.themeOutlineVariant : "transparent"
-            strokeWidth: control.selected ? ((typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthMedium !== 'undefined') ? MeoTheme.strokeWidthMedium : 2 * control.themeGlobalScale)
-                                          : control.type === "outlined" ? ((typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthThin !== 'undefined') ? MeoTheme.strokeWidthThin : 1 * control.themeGlobalScale) : 0
-
-            scale: control.interactive && control.bouncy ? (mouseArea.pressed ? 0.97 : (mouseArea.containsMouse ? 1.015 : 1.0)) : 1.0
-
-            Behavior on scale {
-                NumberAnimation {
-                    duration: control.motionFast
-                    easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 1.56, 0.64, 1.0]
-                }
+            color: control.containerColor
+            strokeColor: {
+                if (control.selected) return control.themePrimary
+                if (control.type === "outlined") return control.themeOutlineVariant
+                return "transparent"
             }
+            strokeWidth: control.selected ? 2 * control.themeGlobalScale
+                                          : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
-            // Surface Tint for Elevation
-            Rectangle {
-                anchors.fill: parent
-                color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceTint !== 'undefined') ? MeoTheme.surfaceTint(control.level) : "transparent"
-                // Surface tint belongs to elevated surfaces.  Keeping it off
-                // plain and outlined cards avoids an otherwise permanent
-                // offscreen mask for the most common card variants.
-                visible: control.type === "elevated" && control.level > 0
-                Behavior on color { ColorAnimation { duration: control.motionFast } }
+            scale: control.interactive && control.bouncy ? (hitArea.pressed ? 0.985 : 1.0) : 1.0
 
-                layer.enabled: visible && control.visible
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: shapeBg.width
-                        height: shapeBg.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                        }
-                    }
-                }
-            }
-
-            // MD3 Elevation for 'elevated' type
             layer.enabled: control.visible && control.elevation > 0
             layer.effect: MultiEffect {
                 shadowEnabled: true
-                shadowBlur: control.elevation * 0.2
-                shadowVerticalOffset: control.elevation * 1.2 * control.themeGlobalScale
-                shadowOpacity: 0.2 + control.elevation * 0.02
-                shadowColor: Qt.rgba(0,0,0,0.2)
+                shadowBlur: control.elevation * 0.12
+                shadowVerticalOffset: control.elevation * control.themeGlobalScale
+                shadowOpacity: control.isDarkMode ? 0.18 : 0.12
+                shadowColor: Qt.rgba(0, 0, 0, 0.22)
             }
 
             MeoStateLayer {
@@ -116,33 +95,39 @@ Frame {
                 radius: shapeBg.radius
                 shape: shapeBg.type
                 visible: control.interactive
-                pressed: mouseArea.pressed
-                hovered: mouseArea.containsMouse
+                pressed: hitArea.pressed
+                hovered: hitArea.containsMouse
                 focused: control.activeFocus
-                pressX: mouseArea.mouseX
-                pressY: mouseArea.mouseY
-                color: control.isDarkMode ? "#FFFFFF" : "#000000"
-            }
-
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                enabled: control.interactive
-                hoverEnabled: true
-                onClicked: {
-                    control.forceActiveFocus(Qt.MouseFocusReason)
-                    control.clicked()
-                }
+                pressX: hitArea.mouseX
+                pressY: hitArea.mouseY
+                color: control.themeOnSurface
             }
 
             Behavior on color { ColorAnimation { duration: control.motionFast } }
             Behavior on radius {
                 NumberAnimation {
-                    duration: mouseArea.containsMouse || mouseArea.pressed ? MeoTheme.motionDurationShapeEnter : MeoTheme.motionDurationShapeSettle
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                    duration: control.motionShape
+                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                }
+            }
+            Behavior on scale {
+                NumberAnimation {
+                    duration: control.motionFast
+                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
                 }
             }
         }
 
+        MouseArea {
+            id: hitArea
+            anchors.fill: parent
+            enabled: control.interactive && control.enabled
+            hoverEnabled: true
+            cursorShape: control.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
+            onClicked: {
+                control.forceActiveFocus(Qt.MouseFocusReason)
+                control.activate()
+            }
+        }
     }
 }
