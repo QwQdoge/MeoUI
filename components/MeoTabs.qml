@@ -33,6 +33,7 @@ Control {
         }
         return false
     }
+    readonly property real edgeInset: useExpressivePills ? 4 * themeGlobalScale : 0
 
     implicitWidth: 360 * themeGlobalScale
     implicitHeight: useExpressivePills ? (hasIcons ? 72 : 56) * themeGlobalScale
@@ -54,17 +55,16 @@ Control {
     contentItem: ScrollView {
         id: scrollView
         clip: true
-        contentWidth: tabsRow.implicitWidth
+        contentWidth: control.isScrollable ? tabsRow.implicitWidth + control.edgeInset * 2 : control.availableWidth
         ScrollBar.horizontal.policy: control.isScrollable ? ScrollBar.AsNeeded : ScrollBar.AlwaysOff
         ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
         Row {
             id: tabsRow
+            x: control.edgeInset
             height: control.availableHeight
-            width: control.isScrollable ? implicitWidth : control.availableWidth
+            width: control.isScrollable ? implicitWidth : Math.max(0, control.availableWidth - control.edgeInset * 2)
             spacing: control.useExpressivePills ? 4 * control.themeGlobalScale : 0
-            leftPadding: control.useExpressivePills ? 4 * control.themeGlobalScale : 0
-            rightPadding: leftPadding
 
             Repeater {
                 model: control.model
@@ -83,7 +83,7 @@ Control {
 
                     width: control.isScrollable
                            ? Math.max(96 * control.themeGlobalScale, contentColumn.implicitWidth + 36 * control.themeGlobalScale)
-                           : Math.max(0, (tabsRow.width - tabsRow.leftPadding - tabsRow.rightPadding - tabsRow.spacing * Math.max(0, control.model.length - 1)) / Math.max(1, control.model.length))
+                           : Math.max(0, (tabsRow.width - tabsRow.spacing * Math.max(0, control.model.length - 1)) / Math.max(1, control.model.length))
                     height: tabsRow.height
                     activeFocusOnTab: true
 
