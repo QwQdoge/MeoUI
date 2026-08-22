@@ -1,4 +1,7 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
 
@@ -7,13 +10,46 @@ Item {
 
     property date selectedDate: new Date()
     property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+    property date focusedDate: selectedDate
     property bool interactive: true
     property int firstDayOfWeek: Qt.locale().firstDayOfWeek
+    property var _dayItems: []
+    property int _dayItemsRevision: 0
+
+    readonly property int focusedIndex: indexForDate(focusedDate)
+    readonly property Item focusedDayItem: {
+        const revision = _dayItemsRevision
+        return focusedIndex >= 0 && focusedIndex < _dayItems.length
+            ? (_dayItems[focusedIndex] || null) : null
+    }
 
     signal dateSelected(date selected)
 
     implicitWidth: 300 * MeoTheme.globalScale
-    implicitHeight: 296 * MeoTheme.globalScale
+    implicitHeight: 324 * MeoTheme.globalScale
+
+    onSelectedDateChanged: {
+        const moveActiveFocus = focusedDayItem && focusedDayItem.activeFocus
+        if (!isSameDay(focusedDate, selectedDate))
+            focusedDate = normalizedDate(selectedDate)
+        if (moveActiveFocus)
+            Qt.callLater(focusFocusedDay)
+    }
+
+    onDisplayDateChanged: {
+        if (indexForDate(focusedDate) >= 0)
+            return
+        const selected = normalizedDate(selectedDate)
+        const lastDay = new Date(displayDate.getFullYear(), displayDate.getMonth() + 1, 0).getDate()
+        focusedDate = new Date(displayDate.getFullYear(), displayDate.getMonth(),
+                               Math.min(selected.getDate(), lastDay))
+    }
+
+    function normalizedDate(value) {
+        if (!value || isNaN(value.getTime()))
+            return new Date()
+        return new Date(value.getFullYear(), value.getMonth(), value.getDate())
+    }
 
     function dateAt(index) {
         const first = new Date(displayDate.getFullYear(), displayDate.getMonth(), 1)
@@ -29,8 +65,57 @@ Item {
             && left.getDate() === right.getDate()
     }
 
+    function indexForDate(value) {
+        if (!value || isNaN(value.getTime()))
+            return -1
+        const first = dateAt(0)
+        const firstUtc = Date.UTC(first.getFullYear(), first.getMonth(), first.getDate())
+        const valueUtc = Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())
+        const index = Math.round((valueUtc - firstUtc) / 86400000)
+        return index >= 0 && index < 42 ? index : -1
+    }
+
+    function focusFocusedDay(reason) {
+        const item = focusedDayItem
+        if (item && item.visible && item.enabled)
+            item.forceActiveFocus(reason === undefined ? Qt.TabFocusReason : reason)
+    }
+
+    function selectDay(value, focusItem) {
+        if (!interactive)
+            return
+        const day = normalizedDate(value)
+        focusedDate = day
+        selectedDate = day
+        if (day.getFullYear() !== displayDate.getFullYear()
+                || day.getMonth() !== displayDate.getMonth()) {
+            displayDate = new Date(day.getFullYear(), day.getMonth(), 1)
+        }
+        if (focusItem && !focusItem.activeFocus)
+            focusItem.forceActiveFocus(Qt.MouseFocusReason)
+        dateSelected(day)
+    }
+
+    function moveDayFocus(value, offset) {
+        if (!interactive)
+            return
+        const day = normalizedDate(value)
+        const target = new Date(day.getFullYear(), day.getMonth(), day.getDate() + offset)
+        focusedDate = target
+        if (target.getFullYear() !== displayDate.getFullYear()
+                || target.getMonth() !== displayDate.getMonth()) {
+            displayDate = new Date(target.getFullYear(), target.getMonth(), 1)
+        }
+        Qt.callLater(focusFocusedDay)
+    }
+
     function moveMonth(offset) {
-        displayDate = new Date(displayDate.getFullYear(), displayDate.getMonth() + offset, 1)
+        const targetDisplay = new Date(displayDate.getFullYear(), displayDate.getMonth() + offset, 1)
+        const focus = normalizedDate(focusedDate)
+        const lastDay = new Date(targetDisplay.getFullYear(), targetDisplay.getMonth() + 1, 0).getDate()
+        focusedDate = new Date(targetDisplay.getFullYear(), targetDisplay.getMonth(),
+                               Math.min(focus.getDate(), lastDay))
+        displayDate = targetDisplay
     }
 
     ColumnLayout {
@@ -79,7 +164,7 @@ Item {
                     required property int index
                     width: weekdayGrid.width / 7
                     height: weekdayGrid.height
-                    text: Qt.locale().dayName((control.firstDayOfWeek + index - 1) % 7 + 1, Locale.NarrowFormat)
+                    text: Qt.formatDate(control.dateAt(index), "ddd")
                     typeRole: "label"
                     typeSize: "small"
                     emphasized: true
@@ -96,9 +181,19 @@ Item {
             columns: 7
 
             Repeater {
+                id: dayRepeater
                 model: 42
+                onItemAdded: function(index, item) {
+                    control._dayItems[index] = item
+                    control._dayItemsRevision += 1
+                }
+                onItemRemoved: function(index) {
+                    control._dayItems[index] = null
+                    control._dayItemsRevision += 1
+                }
 
-                delegate: Item {
+                delegate: AbstractButton {
+                    id: dayButton
                     required property int index
                     readonly property date day: control.dateAt(index)
                     readonly property bool isCurrentMonth: day.getMonth() === control.displayDate.getMonth()
@@ -107,52 +202,59 @@ Item {
 
                     width: dayGrid.width / 7
                     height: dayGrid.height / 6
+                    padding: 0
+                    enabled: control.interactive
+                    activeFocusOnTab: enabled && (activeFocus || index === control.focusedIndex)
                     Accessible.role: Accessible.Button
-                    Accessible.name: Qt.formatDate(day, Qt.DefaultLocaleLongDate)
+                    Accessible.name: Qt.formatDate(day, Locale.LongFormat)
+                    Accessible.checkable: true
                     Accessible.checked: isSelected
-                    Accessible.focusable: control.interactive
+                    Accessible.focusable: enabled
 
-                    MeoShape {
-                        id: daySurface
-                        anchors.centerIn: parent
-                        width: Math.min(parent.width, 36 * MeoTheme.globalScale)
-                        height: width
-                        type: "circle"
-                        color: isSelected ? MeoTheme.primary
-                              : (isToday ? MeoTheme.secondaryContainer : Qt.rgba(0, 0, 0, 0))
+                    onActiveFocusChanged: {
+                        if (activeFocus)
+                            control.focusedDate = day
+                    }
+                    onClicked: control.selectDay(day, dayButton)
+                    Keys.onReturnPressed: control.selectDay(day, dayButton)
+                    Keys.onEnterPressed: control.selectDay(day, dayButton)
+                    Keys.onLeftPressed: control.moveDayFocus(day, -1)
+                    Keys.onRightPressed: control.moveDayFocus(day, 1)
+                    Keys.onUpPressed: control.moveDayFocus(day, -7)
+                    Keys.onDownPressed: control.moveDayFocus(day, 7)
 
-                        MeoStateLayer {
-                            anchors.fill: parent
-                            radius: width / 2
-                            hovered: dayMouse.containsMouse
-                            pressed: dayMouse.pressed
-                            focused: parent.activeFocus
-                            color: isSelected ? MeoTheme.onPrimary : MeoTheme.onSurface
+                    background: Item {
+                        MeoShape {
+                            id: daySurface
+                            anchors.centerIn: parent
+                            width: Math.min(parent.width, 36 * MeoTheme.globalScale)
+                            height: width
+                            type: "circle"
+                            color: dayButton.isSelected ? MeoTheme.primary
+                                  : (dayButton.isToday ? MeoTheme.secondaryContainer
+                                                       : Qt.rgba(MeoTheme.surface.r, MeoTheme.surface.g, MeoTheme.surface.b, 0))
+
+                            MeoStateLayer {
+                                anchors.fill: parent
+                                radius: width / 2
+                                hovered: dayButton.hovered
+                                pressed: dayButton.pressed
+                                focused: dayButton.visualFocus
+                                color: dayButton.isSelected ? MeoTheme.onPrimary : MeoTheme.onSurface
+                            }
                         }
                     }
 
-                    MeoText {
-                        anchors.centerIn: parent
-                        text: day.getDate()
+                    contentItem: MeoText {
+                        text: dayButton.day.getDate()
                         typeRole: "label"
                         typeSize: "medium"
-                        emphasized: isSelected || isToday
-                        color: isSelected ? MeoTheme.onPrimary
-                              : (isCurrentMonth ? MeoTheme.onSurface : MeoTheme.onSurfaceVariant)
-                        opacity: isCurrentMonth ? 1 : 0.55
-                    }
-
-                    MouseArea {
-                        id: dayMouse
-                        anchors.fill: parent
-                        enabled: control.interactive
-                        hoverEnabled: true
-                        onClicked: {
-                            control.selectedDate = day
-                            if (!isCurrentMonth)
-                                control.displayDate = new Date(day.getFullYear(), day.getMonth(), 1)
-                            control.dateSelected(day)
-                        }
+                        emphasized: dayButton.isSelected || dayButton.isToday
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                        color: dayButton.isSelected ? MeoTheme.onPrimary
+                              : (dayButton.isCurrentMonth ? MeoTheme.onSurface : MeoTheme.onSurfaceVariant)
+                        opacity: dayButton.isCurrentMonth ? 1 : 0.55
                     }
                 }
             }

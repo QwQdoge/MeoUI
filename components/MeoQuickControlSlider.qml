@@ -7,6 +7,9 @@ Control {
     id: control
     property string iconName: ""
     property string label: ""
+    property string accessibleName: label
+    property string iconAccessibleName: accessibleName
+    property bool iconActionEnabled: iconAccessibleName !== ""
     property real from: 0
     property real to: 100
     property real value: 0
@@ -23,19 +26,43 @@ Control {
 
     contentItem: RowLayout {
         spacing: 0
-        Item {
+        AbstractButton {
+            id: iconButton
+            objectName: "quickControlIconButton"
             Layout.preferredWidth: 52 * MeoTheme.globalScale
             Layout.fillHeight: true
-            Rectangle {
-                anchors.fill: parent
-                color: MeoTheme.primaryContainer
-                topLeftRadius: height / 2
-                bottomLeftRadius: height / 2
-                topRightRadius: MeoTheme.shapeSmall
-                bottomRightRadius: MeoTheme.shapeSmall
+            enabled: control.enabled && control.iconActionEnabled
+            padding: 0
+            activeFocusOnTab: enabled
+            Accessible.name: control.iconAccessibleName
+            Accessible.description: control.accessibleName
+            onClicked: control.iconTriggered()
+
+            background: Item {
+                Rectangle {
+                    anchors.fill: parent
+                    color: MeoTheme.primaryContainer
+                    topLeftRadius: height / 2
+                    bottomLeftRadius: height / 2
+                    topRightRadius: MeoTheme.shapeSmall
+                    bottomRightRadius: MeoTheme.shapeSmall
+                }
+                MeoStateLayer {
+                    anchors.fill: parent
+                    radius: MeoTheme.shapeSmall
+                    hovered: iconButton.hovered
+                    pressed: iconButton.pressed
+                    focused: iconButton.visualFocus
+                    color: MeoTheme.onPrimaryContainer
+                }
             }
-            MeoIcon { anchors.centerIn: parent; icon: control.iconName; size: 22; color: MeoTheme.onPrimaryContainer }
-            MouseArea { anchors.fill: parent; hoverEnabled: true; onClicked: control.iconTriggered() }
+
+            contentItem: MeoIcon {
+                icon: control.iconName
+                size: 22
+                color: MeoTheme.onPrimaryContainer
+                opacity: control.enabled ? 1 : MeoTheme.disabledContentOpacity
+            }
         }
         Item {
             id: sliderArea
@@ -72,10 +99,15 @@ Control {
                 width: Math.min(112 * MeoTheme.globalScale, parent.width * 0.36)
             }
             Slider {
+                id: valueSlider
+                objectName: "quickControlValueSlider"
                 anchors.fill: parent
                 from: control.from
                 to: control.to
                 value: control.value
+                activeFocusOnTab: enabled
+                Accessible.name: control.accessibleName
+                Accessible.description: control.label !== control.accessibleName ? control.label : ""
                 background: Item {}
                 handle: Item {}
                 onMoved: control.moved(value)

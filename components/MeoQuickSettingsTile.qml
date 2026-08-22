@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -12,6 +14,9 @@ Control {
     property bool wide: false
     property bool busy: false
     property bool detailsEnabled: false
+    property string detailsAccessibleName: title !== ""
+        ? qsTr("Open %1 settings").arg(title)
+        : qsTr("Open settings")
     property bool editMode: false
     property bool showCompactLabel: false
     property int modelIndex: -1
@@ -22,16 +27,19 @@ Control {
 
     implicitWidth: (wide ? 176 : 84) * MeoTheme.globalScale
     implicitHeight: (wide ? 72 : 96) * MeoTheme.globalScale
-    activeFocusOnTab: !editMode
+    activeFocusOnTab: enabled && !busy && !editMode
     z: dragHandler.active ? 100 : 0
     opacity: dragHandler.active ? 0.76 : 1
     Accessible.role: Accessible.Button
     Accessible.name: title
     Accessible.description: supportingText
+    Accessible.checkable: true
     Accessible.checked: active
-    Accessible.focusable: !editMode
-    Keys.onReturnPressed: triggered()
-    Keys.onSpacePressed: triggered()
+    Accessible.focusable: activeFocusOnTab
+    Accessible.onPressAction: activateMain()
+    Keys.onReturnPressed: activateMain()
+    Keys.onEnterPressed: activateMain()
+    Keys.onSpacePressed: activateMain()
     Drag.active: dragHandler.active
     Drag.source: control
     Drag.hotSpot.x: width / 2
@@ -39,6 +47,48 @@ Control {
     transform: Translate {
         x: dragHandler.activeTranslation.x
         y: dragHandler.activeTranslation.y
+    }
+
+    function activateMain() {
+        if (enabled && !busy && !editMode)
+            triggered()
+    }
+
+    function requestDetails() {
+        if (enabled && !busy && !editMode && detailsEnabled)
+            detailsRequested()
+    }
+
+    Component {
+        id: detailsButtonComponent
+
+        AbstractButton {
+            id: detailsButton
+            objectName: "quickSettingsDetailsButton"
+            anchors.fill: parent
+            enabled: control.enabled && !control.busy && !control.editMode
+            activeFocusOnTab: visible && enabled
+            padding: 0
+            Accessible.name: control.detailsAccessibleName
+            Accessible.description: control.supportingText
+            Keys.onReturnPressed: control.requestDetails()
+            Keys.onEnterPressed: control.requestDetails()
+            onClicked: control.requestDetails()
+
+            background: MeoStateLayer {
+                radius: width / 2
+                hovered: detailsButton.hovered
+                pressed: detailsButton.pressed
+                focused: detailsButton.visualFocus
+                color: control.active ? MeoTheme.onPrimaryContainer : MeoTheme.onSurface
+            }
+
+            contentItem: MeoIcon {
+                icon: "chevron_right"
+                size: 18
+                color: control.active ? MeoTheme.onPrimaryContainer : MeoTheme.onSurfaceVariant
+            }
+        }
     }
 
     background: Item {
@@ -72,6 +122,8 @@ Control {
     }
 
     contentItem: Item {
+        z: 2
+
         RowLayout {
             visible: control.wide
             anchors.left: parent.left
@@ -111,23 +163,37 @@ Control {
                     elide: Text.ElideRight
                 }
             }
-            MeoIcon {
-                visible: control.wide && control.detailsEnabled && !control.editMode
-                icon: "chevron_right"
-                size: 18
-                color: control.active ? MeoTheme.onPrimaryContainer : MeoTheme.onSurfaceVariant
+            Loader {
+                visible: control.detailsEnabled && !control.editMode
+                active: visible
+                Layout.preferredWidth: 44 * MeoTheme.globalScale
+                Layout.preferredHeight: 44 * MeoTheme.globalScale
+                sourceComponent: detailsButtonComponent
             }
         }
 
         MeoIcon {
             visible: !control.wide
             anchors.horizontalCenter: parent.horizontalCenter
+            anchors.horizontalCenterOffset: control.detailsEnabled && !control.editMode
+                ? -22 * MeoTheme.globalScale : 0
             anchors.top: parent.top
             anchors.topMargin: (control.visualHeight - height) / 2
             icon: control.iconName
             size: 24
             fill: control.active
             color: control.active ? MeoTheme.onPrimaryContainer : MeoTheme.onSurface
+        }
+
+        Loader {
+            visible: !control.wide && control.detailsEnabled && !control.editMode
+            active: visible
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.top
+            anchors.verticalCenterOffset: control.visualHeight / 2
+            width: 44 * MeoTheme.globalScale
+            height: width
+            sourceComponent: detailsButtonComponent
         }
 
         MeoText {
@@ -158,16 +224,17 @@ Control {
 
     MouseArea {
         id: pointer
+        z: 1
         anchors.fill: parent
         enabled: control.enabled && !control.busy && !control.editMode
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: {
+        onClicked: function(mouse) {
             control.forceActiveFocus(Qt.MouseFocusReason)
             if (control.detailsEnabled && mouse.button === Qt.RightButton)
-                control.detailsRequested()
+                control.requestDetails()
             else
-                control.triggered()
+                control.activateMain()
         }
     }
     DragHandler { id: dragHandler; enabled: control.editMode; target: null }

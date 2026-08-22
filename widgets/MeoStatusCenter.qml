@@ -12,6 +12,7 @@ MeoMotionSurface {
     property string dateText: Qt.formatDate(currentDateTime, Qt.DefaultLocaleLongDate)
     property int unreadCount: 0
     property string notificationsTitle: qsTr("Notifications")
+    readonly property bool compact: width < 640 * MeoTheme.globalScale
 
     color: MeoTheme.surfaceContainerLow
     radius: MeoTheme.shapeExtraLarge
@@ -41,10 +42,12 @@ MeoMotionSurface {
                 }
 
                 MeoText {
+                    Layout.fillWidth: true
                     text: control.dateText
                     typeRole: "body"
                     typeSize: "medium"
                     color: MeoTheme.onSurfaceVariant
+                    elide: Text.ElideRight
                 }
             }
 
@@ -70,6 +73,7 @@ MeoMotionSurface {
             spacing: MeoTheme.space24
 
             MeoMonthCalendar {
+                visible: !control.compact
                 Layout.preferredWidth: 300 * MeoTheme.globalScale
                 Layout.fillHeight: true
                 selectedDate: control.currentDateTime
@@ -77,6 +81,7 @@ MeoMotionSurface {
             }
 
             MeoDivider {
+                visible: !control.compact
                 Layout.fillHeight: true
                 orientation: "vertical"
             }

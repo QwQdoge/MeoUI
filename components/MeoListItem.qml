@@ -228,7 +228,12 @@ Control {
                     return control.themeOnSurface;
                 }
                 elide: Text.ElideRight
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: MeoTheme.motionDurationEffectDefault
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                    }
+                }
             }
 
             Text {

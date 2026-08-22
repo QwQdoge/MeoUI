@@ -131,6 +131,7 @@ MeoTheme.qml
         components/MeoNavigationDrawerItem.qml
         components/MeoDateInput.qml
         components/MeoTimeInput.qml
+        components/MeoMonthCalendar.qml
         components/MeoIcon.qml
         components/MeoIconButton.qml
         components/MeoDataTable.qml
@@ -162,6 +163,7 @@ MeoTheme.qml
         widgets/MeoSideSheetModal.qml
         widgets/MeoSideSheet.qml
         widgets/MeoStandardBottomSheet.qml
+        widgets/MeoStatusCenter.qml
         patterns/MeoEmptyState.qml
         patterns/MeoScaffold.qml
         patterns/MeoListDetailLayout.qml
