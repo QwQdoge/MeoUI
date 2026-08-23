@@ -28,7 +28,7 @@ QtObject {
     readonly property real controlSpacing: (isCompactWidth ? 8 : 12) * scale
     readonly property real paneWidth: (isCompactWidth ? Math.min(360, effectiveWidth)
                                                        : isMediumWidth ? 80
-                                                       : isExpandedWidth ? 256 : 280) * scale
+                                                       : isExpandedWidth ? 240 : 280) * scale
     readonly property real maximumContentWidth: (isCompactWidth ? effectiveWidth
                                                                   : isMediumWidth ? 840
                                                                   : isExpandedWidth ? 1040

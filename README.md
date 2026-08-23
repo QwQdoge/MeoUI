@@ -10,6 +10,20 @@ The shared, verified MeoUI design-system reference lives at
 `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/`; the project-level
 `$meoui` skill routes Codex there while keeping source code authoritative.
 
+## Dynamic color and page contracts
+
+Dynamic color is required for every visible Meo/KDE product session. MeoUI is
+the platform-neutral consumer and validator of a complete Material/HCT role
+table; the KDE bridge is its generator. An application must not derive a
+palette from wallpaper or raw RGB/HSL, and it must not silently call a fixed
+preview palette “dynamic.” See [the dynamic-color contract](docs/design/DYNAMIC_COLOR.md).
+
+Settings-like applications use a declared page hierarchy: category/index,
+complete second-level detail or task page, then only transient third-level
+sheets. The full [page contract](docs/design/PAGE_TYPES.md) and
+[Settings pattern](docs/design/SETTINGS.md) define ownership, safety, and
+responsive navigation requirements.
+
 ## GitHub Pages Specification Site
 
 The repository contains an interactive Material Design 3 component specification website in [`docs/`](docs/index.html). It displays all 89+ QML components, token tables, interactive search, code examples, and visual component image previews.
@@ -127,4 +141,4 @@ On multi-config generators such as Visual Studio, add `--config Release` to the 
 
 The showcase entry point is `showcase/MeoShowcase.qml`. It includes pages for theme tokens, buttons, inputs, navigation, selection, display, feedback, patterns, data tables, expressive controls, component lab, widget lab, and layout lab.
 
-`MeoWindowMetrics` follows Windows effective-pixel size classes: small through 640 px, medium from 641-1007 px, and large from 1008 px. Applications should consume its navigation mode, page margins, pane width, maximum content width, and adaptive column count rather than defining local breakpoints.
+`MeoWindowMetrics` uses five effective-pixel size classes: compact below 600 px, medium from 600–839 px, expanded from 840–1199 px, large from 1200–1599 px, and extra-large from 1600 px. Applications should consume its navigation mode, page margins, pane width, maximum content width, and adaptive column count rather than defining local breakpoints.

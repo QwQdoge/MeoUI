@@ -15,6 +15,11 @@ Button {
     property bool selected: false
     property bool vibrant: false // solid expressive tertiary container; never a gradient
     property bool bouncy: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isExpressive !== "undefined") ? MeoTheme.isExpressive : true
+    // An optional, reusable leading visual for identities that cannot be
+    // represented by a single Material icon glyph. The loaded item is sized to
+    // the same visual slot as `icon` so labels, hit targets, and motion remain
+    // consistent with regular icon buttons.
+    property Component leadingComponent: null
     property real contentSpacing: (size === "xs" ? 5 : 8) * themeGlobalScale
 
     readonly property string effectiveType: type === "filledTonal" ? "tonal" : type
@@ -56,7 +61,7 @@ Button {
         if (size === "xl") return 36 * themeGlobalScale
         return 24 * themeGlobalScale
     }
-    readonly property bool hasIcon: icon.name !== "" || icon.source.toString() !== "" || checked || selected
+    readonly property bool hasIcon: leadingComponent !== null || icon.name !== "" || icon.source.toString() !== "" || checked || selected
     readonly property var fontToken: {
         if (typeof MeoTheme === "undefined") return ({ "size": 14, "weight": Font.Medium })
         var token = typeof MeoTheme.labelLarge !== "undefined" ? MeoTheme.labelLarge : ({ "size": 14, "weight": Font.Medium })
@@ -119,9 +124,20 @@ Button {
             spacing: control.contentSpacing
             opacity: control.loading ? 0 : 1
 
+            Loader {
+                id: leadingComponentLoader
+                active: control.leadingComponent !== null && !control.checked && !control.selected
+                visible: active
+                sourceComponent: control.leadingComponent
+                width: control.iconSize * control.themeGlobalScale
+                height: width
+                opacity: control.enabled ? 1 : 0.38
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
             MeoIcon {
                 icon: (control.checked || control.selected) ? "check" : (control.icon.name || control.icon.source.toString())
-                visible: control.hasIcon
+                visible: control.hasIcon && !leadingComponentLoader.active
                 fill: control.checked || control.selected
                 size: control.iconSize
                 color: control.textColor

@@ -9,6 +9,7 @@ MeoMotionPopup {
     property string title: ""
     property Component content: null
     property bool showCloseButton: true
+    property bool dismissible: true
 
     // 🌟 作用域与主题安全防御
     readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
@@ -28,7 +29,9 @@ MeoMotionPopup {
     surfaceColor: control.themeSurfaceContainerLow
     modal: true
     focus: true
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    closePolicy: control.dismissible
+                 ? (Popup.CloseOnEscape | Popup.CloseOnPressOutside)
+                 : Popup.NoAutoClose
 
     contentItem: Column {
         anchors.fill: parent

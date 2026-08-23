@@ -91,6 +91,7 @@ MeoTheme.qml
         components/MeoSwipeToDismiss.qml
         components/MeoSegmentedButtons.qml
         components/MeoTextField.qml
+        components/MeoColorField.qml
         components/MeoTextArea.qml
         components/MeoBanner.qml
         components/MeoBreadcrumbs.qml
@@ -111,6 +112,7 @@ MeoTheme.qml
         components/MeoBadge.qml
         components/MeoDivider.qml
         components/MeoListItem.qml
+        components/MeoSettingsRow.qml
         components/MeoMenu.qml
         components/MeoTabs.qml
         components/MeoTooltip.qml
@@ -133,6 +135,7 @@ MeoTheme.qml
         components/MeoTimeInput.qml
         components/MeoMonthCalendar.qml
         components/MeoIcon.qml
+        components/MeoAiMark.qml
         components/MeoIconButton.qml
         components/MeoDataTable.qml
         components/MeoExposedDropdown.qml
@@ -168,6 +171,8 @@ MeoTheme.qml
         patterns/MeoScaffold.qml
         patterns/MeoListDetailLayout.qml
         patterns/MeoSettingsLayout.qml
+        patterns/MeoSettingsGroup.qml
+        patterns/MeoSettingsTaskSheet.qml
         patterns/MeoSearchFilterBar.qml
         patterns/MeoPageLayout.qml
         patterns/MeoGroupedList.qml
@@ -186,6 +191,7 @@ MeoTheme.qml
         assets/fonts/Roboto-Regular.ttf
         assets/fonts/Roboto-Medium.ttf
         assets/fonts/Roboto-Bold.ttf
+        assets/icons/meo-ai-f.svg
 )
 
 target_link_libraries(meoui_module PUBLIC MeoUI::Tokens Qt6::Core Qt6::Quick Qt6::QuickControls2)
@@ -238,6 +244,10 @@ install(FILES MeoTheme.qml MeoWindowMetrics.qml
 install(DIRECTORY components patterns widgets showcase
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
     FILES_MATCHING PATTERN "*.qml"
+)
+install(FILES assets/icons/meo-ai-f.svg
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
+    RENAME meo-ai.svg
 )
 
 # 新增 Demo 展示程序可执行目标

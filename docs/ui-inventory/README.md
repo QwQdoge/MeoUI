@@ -16,3 +16,9 @@
 - `patterns/`: Page structure, layouts, scaffolds, and templates
 - `showcase/`: Interactive documentation and demo pages
 - `assets/`: Typography fonts and brand resources
+
+## Product contracts
+
+- [Dynamic Color Contract](../design/DYNAMIC_COLOR.md)
+- [Page and Hierarchy Contract](../design/PAGE_TYPES.md)
+- [Settings Pattern](../design/SETTINGS.md)

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import MeoUI
 
 Popup {
@@ -63,19 +64,20 @@ Popup {
         }
     }
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12 * control.themeGlobalScale
+        spacing: 0
 
         Loader {
-            width: parent.width
+            Layout.fillWidth: true
             sourceComponent: control.header
             visible: control.header !== null
         }
 
         Item {
-            width: parent.width
-            height: 17 * control.themeGlobalScale
+            Layout.fillWidth: true
+            Layout.preferredHeight: 17 * control.themeGlobalScale
             visible: control.header !== null
 
             MeoDivider {
@@ -84,17 +86,54 @@ Popup {
             }
         }
 
-        Repeater {
-            model: control.model
-            delegate: MeoNavigationDrawerItem {
+        ScrollView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+            Column {
                 width: parent.width
-                icon: modelData.icon
-                label: modelData.label
-                badgeText: modelData.badgeText || (modelData.badgeCount !== undefined ? modelData.badgeCount.toString() : "")
-                badgeDot: modelData.badgeDot || false
-                selected: control.currentIndex === index
-                onClicked: {
-                    control.clicked(index)
+                spacing: 0
+
+                Repeater {
+                    model: control.model
+
+                    delegate: Loader {
+                        id: rowLoader
+                        required property int index
+                        required property var modelData
+
+                        width: parent.width
+                        sourceComponent: modelData.type === "header" ? groupHeader : destinationItem
+                        height: item ? item.implicitHeight : 0
+
+                        Component {
+                            id: groupHeader
+
+                            MeoListHeader {
+                                width: rowLoader.width
+                                text: rowLoader.modelData.label || ""
+                                topPadding: 16 * control.themeGlobalScale
+                                bottomPadding: 8 * control.themeGlobalScale
+                            }
+                        }
+
+                        Component {
+                            id: destinationItem
+
+                            MeoNavigationDrawerItem {
+                                width: rowLoader.width
+                                icon: rowLoader.modelData.icon || ""
+                                label: rowLoader.modelData.label || ""
+                                badgeText: rowLoader.modelData.badgeText
+                                           || (rowLoader.modelData.badgeCount !== undefined
+                                               ? rowLoader.modelData.badgeCount.toString() : "")
+                                badgeDot: rowLoader.modelData.badgeDot || false
+                                selected: control.currentIndex === rowLoader.index
+                                onClicked: control.clicked(rowLoader.index)
+                            }
+                        }
+                    }
                 }
             }
         }

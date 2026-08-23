@@ -10,7 +10,7 @@ ShowcaseCategoryPage {
     // 🌟 1. Responsive Viewport & Window Metrics Simulator (MeoWindowMetrics)
     ShowcaseSection {
         title: "Responsive Viewport & Window Metrics Simulator"
-        subtitle: "Live window width size class inspector (Compact <600dp, Medium 600-840dp, Expanded 840-1200dp, Large >1200dp)."
+        subtitle: "Live effective-pixel inspector: Compact <600, Medium 600-839, Expanded 840-1199, Large 1200-1599, Extra-large >=1600."
         width: parent.width
 
         ColumnLayout {

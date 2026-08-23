@@ -16,9 +16,11 @@ Popup {
     signal dismissed()
 
     readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    readonly property color themeInverseSurface: isDarkMode ? "#E6E1E5" : "#313033"
-    readonly property color themeInverseOnSurface: isDarkMode ? "#313033" : "#F4F0F4"
-    readonly property color themeInversePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? (isDarkMode ? MeoTheme.primary : "#D0BCFF") : "#D0BCFF"
+    // Inverse roles are semantic Material roles.  They must follow the active
+    // dynamic scheme instead of reconstructing an old static palette here.
+    readonly property color themeInverseSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.inverseSurface !== "undefined") ? MeoTheme.inverseSurface : (isDarkMode ? "#E6E1E5" : "#313033")
+    readonly property color themeInverseOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnInverseSurface !== "undefined") ? MeoTheme.contentOnInverseSurface : (isDarkMode ? "#313033" : "#F4F0F4")
+    readonly property color themeInversePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.inversePrimary !== "undefined") ? MeoTheme.inversePrimary : "#D0BCFF"
     readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
     readonly property int motionEnter: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSheetEnter !== "undefined") ? MeoTheme.motionDurationSheetEnter : 320
     readonly property int motionExit: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSheetExit !== "undefined") ? MeoTheme.motionDurationSheetExit : 220

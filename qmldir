@@ -13,6 +13,7 @@ MeoCarousel 1.0 components/MeoCarousel.qml
 MeoCheckbox 1.0 components/MeoCheckbox.qml
 MeoChip 1.0 components/MeoChip.qml
 MeoChipDropdown 1.0 components/MeoChipDropdown.qml
+MeoColorField 1.0 components/MeoColorField.qml
 MeoDataTable 1.0 components/MeoDataTable.qml
 MeoDateInput 1.0 components/MeoDateInput.qml
 MeoDialog 1.0 components/MeoDialog.qml
@@ -27,11 +28,13 @@ MeoFilterGroup 1.0 components/MeoFilterGroup.qml
 MeoFloatingToolbar 1.0 components/MeoFloatingToolbar.qml
 MeoFullScreenDialog 1.0 components/MeoFullScreenDialog.qml
 MeoIcon 1.0 components/MeoIcon.qml
+MeoAiMark 1.0 components/MeoAiMark.qml
 MeoIconButton 1.0 components/MeoIconButton.qml
 MeoIconToggleButton 1.0 components/MeoIconToggleButton.qml
 MeoInputChip 1.0 components/MeoInputChip.qml
 MeoListHeader 1.0 components/MeoListHeader.qml
 MeoListItem 1.0 components/MeoListItem.qml
+MeoSettingsRow 1.0 components/MeoSettingsRow.qml
 MeoLoadingIndicator 1.0 components/MeoLoadingIndicator.qml
 MeoMediaCard 1.0 components/MeoMediaCard.qml
 MeoMenu 1.0 components/MeoMenu.qml
@@ -105,5 +108,7 @@ MeoSearchFilterBar 1.0 patterns/MeoSearchFilterBar.qml
 MeoSearchHeader 1.0 patterns/MeoSearchHeader.qml
 MeoSegmentedList 1.0 patterns/MeoSegmentedList.qml
 MeoSettingsLayout 1.0 patterns/MeoSettingsLayout.qml
+MeoSettingsGroup 1.0 patterns/MeoSettingsGroup.qml
+MeoSettingsTaskSheet 1.0 patterns/MeoSettingsTaskSheet.qml
 MeoRatingBar 1.0 components/MeoRatingBar.qml
 MeoSupportingPaneLayout 1.0 patterns/MeoSupportingPaneLayout.qml

@@ -171,18 +171,63 @@ QtObject {
     })
 
     // 🎨 Dynamic color provider API
-    // Replace the complete object through applyDynamicColorScheme() so QML bindings update.
+    //
+    // A dynamic scheme is an atomic Material/HCT role table, never a seed
+    // colour or a handful of hand-picked containers.  Accepting partial maps
+    // used to make one product surface dynamic while another silently fell
+    // back to the purple preview palette.  Keep the validation here, at the
+    // shared design-system boundary, so applications cannot accidentally
+    // ship a mixed theme.
+    readonly property var requiredDynamicColorRoles: Object.keys(fallbackLightColorScheme)
     property bool dynamicColorsAvailable: false
     property var dynamicColorScheme: ({})
+    property string colorSchemeMode: "fallback" // dynamic | fallback | invalid
+    property string dynamicColorSourceId: ""
+    property string dynamicColorError: ""
+    property int colorSchemeRevision: 0
 
-    function applyDynamicColorScheme(scheme) {
-        dynamicColorScheme = scheme || ({})
-        dynamicColorsAvailable = scheme !== null && typeof scheme === "object"
+    function hasCompleteColorScheme(scheme) {
+        if (!scheme || typeof scheme !== "object")
+            return false
+        for (let index = 0; index < requiredDynamicColorRoles.length; ++index) {
+            const role = requiredDynamicColorRoles[index]
+            const value = scheme[role]
+            if (typeof value === "undefined" || value === null || value === "")
+                return false
+        }
+        return true
+    }
+
+    // Returns true only when the entire MD3 role table has been installed.
+    // `sourceId` is diagnostic metadata; MeoUI deliberately does not know how
+    // a platform generated the table.
+    function applyDynamicColorScheme(scheme, sourceId) {
+        if (!hasCompleteColorScheme(scheme)) {
+            dynamicColorScheme = ({})
+            dynamicColorsAvailable = false
+            colorSchemeMode = "invalid"
+            dynamicColorSourceId = ""
+            dynamicColorError = "A complete Material color-role table is required."
+            colorSchemeRevision += 1
+            return false
+        }
+
+        dynamicColorScheme = scheme
+        dynamicColorsAvailable = true
+        colorSchemeMode = "dynamic"
+        dynamicColorSourceId = sourceId || "external"
+        dynamicColorError = ""
+        colorSchemeRevision += 1
+        return true
     }
 
     function clearDynamicColorScheme() {
         dynamicColorsAvailable = false
         dynamicColorScheme = ({})
+        colorSchemeMode = "fallback"
+        dynamicColorSourceId = ""
+        dynamicColorError = ""
+        colorSchemeRevision += 1
     }
 
     function colorForRole(role, darkMode, dynamicAvailable, scheme) {

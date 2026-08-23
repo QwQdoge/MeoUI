@@ -50,6 +50,11 @@ Control {
                     }
 
                     Column {
+                        // The label below is intentionally constrained to the
+                        // delegate width. Without this, a horizontally
+                        // anchored Column keeps only its implicit width and
+                        // every translated label can collapse to an ellipsis.
+                        width: parent.width
                         anchors.centerIn: parent
                         spacing: 8 * control.themeGlobalScale
 

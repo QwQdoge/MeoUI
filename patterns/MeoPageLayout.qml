@@ -10,19 +10,29 @@ Flickable {
     property string subtitle: ""
     property Component topBar: null
     property list<Component> actions
+    // A shell can pass root metrics here so a page and its navigation agree on
+    // the active breakpoint even when the content host is narrower.
+    property var metricsOverride: null
     property real compactWidth: 680 * themeGlobalScale
     property real mediumWidth: 920 * themeGlobalScale
     property real expandedWidth: 1180 * themeGlobalScale
-    property real padding: windowMetrics.pageMargin
-    property real sectionSpacing: windowMetrics.sectionSpacing
+    property real padding: activeMetrics.pageMargin
+    property real sectionSpacing: activeMetrics.sectionSpacing
     default property alias content: bodyColumn.data
 
     readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property bool isCompact: windowMetrics.isCompactWidth
-    readonly property bool isMedium: windowMetrics.isMediumWidth
-    readonly property bool isExpanded: windowMetrics.isExpandedWidth || windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
-    readonly property string windowSizeClass: windowMetrics.widthSizeClass
-    readonly property real maxContentWidth: Math.min(windowMetrics.maximumContentWidth, isCompact ? compactWidth : (isMedium ? mediumWidth : expandedWidth))
+    readonly property var activeMetrics: metricsOverride || localWindowMetrics
+    readonly property bool isCompact: activeMetrics.isCompactWidth
+    readonly property bool isMedium: activeMetrics.isMediumWidth
+    readonly property bool isExpanded: activeMetrics.isExpandedWidth || activeMetrics.isLargeWidth || activeMetrics.isExtraLargeWidth
+    readonly property bool isLarge: activeMetrics.isLargeWidth
+    readonly property bool isExtraLarge: activeMetrics.isExtraLargeWidth
+    readonly property string windowSizeClass: activeMetrics.widthSizeClass
+    readonly property int preferredColumns: activeMetrics.preferredColumns
+    // Use this for grids: a large root can still have a narrower content host
+    // after a permanent navigation drawer is reserved.
+    readonly property int contentPreferredColumns: localWindowMetrics.preferredColumns
+    readonly property real maxContentWidth: Math.min(activeMetrics.maximumContentWidth, isCompact ? compactWidth : (isMedium ? mediumWidth : expandedWidth))
     readonly property var fontPageTitle: (typeof MeoTheme !== "undefined" && typeof MeoTheme.titleBig !== "undefined") ? MeoTheme.titleBig : { "size": 28, "weight": Font.DemiBold, "lineHeight": 36, "letterSpacing": 0 }
     readonly property var fontPageSubtitle: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyBig !== "undefined") ? MeoTheme.bodyBig : { "size": 16, "weight": Font.Normal, "lineHeight": 24, "letterSpacing": 0.5 }
 
@@ -32,7 +42,7 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
 
     MeoWindowMetrics {
-        id: windowMetrics
+        id: localWindowMetrics
         availableWidth: control.width
         availableHeight: control.height
     }
@@ -83,6 +93,13 @@ Flickable {
                         visible: text !== ""
                         typeRole: "title"
                         typeSize: "big"
+                        // A 40dp display title is intentionally spacious on
+                        // desktop, but it makes ordinary multi-word system
+                        // settings titles wrap or clip on a compact window.
+                        // Keep the same semantic token and scale its optical
+                        // size for the compact class instead of asking every
+                        // application to fork its page title.
+                        fontScaleOverride: control.isCompact ? 0.78 : 1.0
                         emphasized: true
                         color: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
                         wrapMode: Text.WordWrap
@@ -99,11 +116,12 @@ Flickable {
                     }
                 }
 
-                Row {
+                Flow {
                     id: actionsRow
                     visible: control.actions.length > 0
                     spacing: 4 * control.themeGlobalScale
                     Layout.alignment: control.isCompact ? Qt.AlignLeft : Qt.AlignRight | Qt.AlignVCenter
+                    Layout.fillWidth: control.isCompact
 
                     Repeater {
                         model: control.actions
