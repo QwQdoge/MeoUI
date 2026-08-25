@@ -77,6 +77,8 @@ qt_add_qml_module(meoui_module
         showcase/ShowcaseVariantRow.qml
 MeoTheme.qml
         MeoWindowMetrics.qml
+        components/MeoScrollBar.qml
+        components/MeoSpinBox.qml
         components/MeoButton.qml
         components/MeoIconToggleButton.qml
         components/MeoChipDropdown.qml
