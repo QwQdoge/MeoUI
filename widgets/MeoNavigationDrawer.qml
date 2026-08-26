@@ -13,6 +13,7 @@ Rectangle {
     property string title: ""
     property Component header: null
     property Component footer: null
+    property string visualStyle: "standard" // standard | settings
 
     signal clicked(int index)
 
@@ -23,7 +24,8 @@ Rectangle {
 
     readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
 
-    implicitWidth: 280 * themeGlobalScale
+    implicitWidth: visualStyle === "settings" ? MeoTheme.settingsSidebarWidth
+                                               : 280 * themeGlobalScale
     width: implicitWidth
     height: parent ? parent.height : 600 * themeGlobalScale
     color: themeSurfaceContainerLow
@@ -84,12 +86,15 @@ Rectangle {
                         Component {
                             id: itemComp
                             MeoNavigationDrawerItem {
-                                width: parent.width - 24 * control.themeGlobalScale
+                                width: parent.width - (control.visualStyle === "settings"
+                                                      ? MeoTheme.settingsSidebarHorizontalMargin * 2
+                                                      : 24 * control.themeGlobalScale)
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 label: modelData.label
                                 icon: modelData.icon
                                 badgeText: modelData.badgeText || ""
                                 selected: control.currentIndex === index
+                                visualStyle: control.visualStyle
                                 onClicked: {
                                     control.currentIndex = index
                                     control.clicked(index)

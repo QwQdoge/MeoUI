@@ -18,7 +18,7 @@ Control {
     // can also be used directly in a small one-off group.
     property string positionInGroup: "only" // only | first | middle | last
     property bool showDivider: false
-    property real dividerInset: 72 * MeoTheme.globalScale
+    property real dividerInset: 0
 
     // Surface and state
     property color surfaceColor: MeoTheme.surfaceContainerLowest
@@ -133,7 +133,9 @@ Control {
     readonly property bool hasExpandedControl: isSlider || isSegmented || isDropdown || isProgress
     readonly property bool isInteractive: interactive && enabled && !hasExpandedControl
     readonly property real scale: MeoTheme.globalScale
-    readonly property real rowRadius: MeoTheme.shapeLarge
+    readonly property real rowRadius: MeoTheme.shapeExtraLarge
+    readonly property bool pressed: rowHitArea.pressed
+    readonly property bool focusVisible: activeFocus
     readonly property real inlineControlInset: leadingIcon !== "" ? 56 * scale : 0
     readonly property color currentSurfaceColor: selected ? selectionColor : surfaceColor
     readonly property color currentContentColor: selected ? selectionContentColor : MeoTheme.contentOnSurface
@@ -230,12 +232,13 @@ Control {
     property color iconColor: toneIconColor
 
     implicitWidth: 360 * scale
-    implicitHeight: Math.max(72 * scale,
+    implicitHeight: Math.max(MeoTheme.settingsRowHeight,
                              rowContent.implicitHeight + 24 * scale)
     padding: 12 * scale
-    leftPadding: 16 * scale
-    rightPadding: 16 * scale
+    leftPadding: MeoTheme.settingsRowHorizontalPadding
+    rightPadding: MeoTheme.settingsRowHorizontalPadding
     activeFocusOnTab: isInteractive
+    hoverEnabled: isInteractive
 
     Accessible.role: isRadio ? Accessible.RadioButton
                              : ((isToggle || isCheckbox) ? Accessible.CheckBox : Accessible.Button)
@@ -382,16 +385,42 @@ Control {
 
         MeoStateLayer {
             anchors.fill: parent
-            // A middle row has square feedback; the rounded group ends retain
-            // the state layer's rounded hit feedback.
-            radius: control.positionInGroup === "middle" ? 0 : control.rowRadius
+            radius: control.rowRadius
+            topLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
+            topRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
+            bottomLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
             visible: control.isInteractive
             pressed: rowHitArea.pressed
             hovered: rowHitArea.containsMouse
+            // The explicit primary focus ring below carries keyboard focus;
+            // keep the state layer tonal so focus and hover can combine.
             focused: control.activeFocus
-            pressX: rowHitArea.mouseX
-            pressY: rowHitArea.mouseY
+            focusRingEnabled: false
+            pressX: rowHitArea.mouseX - x
+            pressY: rowHitArea.mouseY - y
             color: control.selected ? control.selectionContentColor : MeoTheme.contentOnSurface
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: MeoTheme.strokeWidthThin
+            color: "transparent"
+            radius: Math.max(0, control.rowRadius - MeoTheme.strokeWidthThin)
+            topLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
+            topRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
+            bottomLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            border.width: control.activeFocus ? MeoTheme.strokeWidthMedium : 0
+            border.color: MeoTheme.primary
+            opacity: control.activeFocus ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: MeoTheme.motionDurationEffectDefault
+                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                }
+            }
         }
 
         Rectangle {
@@ -402,6 +431,7 @@ Control {
             height: Math.max(1, 1 * control.scale)
             visible: control.showDivider
             color: MeoTheme.outlineVariant
+            opacity: 0.28
         }
 
         MouseArea {
@@ -425,11 +455,11 @@ Control {
             height: Math.max(48 * control.scale,
                              textColumn.implicitHeight,
                              trailingSlot.implicitHeight)
-            spacing: 16 * control.scale
+            spacing: MeoTheme.settingsIconTextGap
 
             Item {
-                width: visible ? 40 * control.scale : 0
-                height: visible ? 40 * control.scale : 0
+                width: visible ? MeoTheme.settingsLeadingContainerSize : 0
+                height: visible ? MeoTheme.settingsLeadingContainerSize : 0
                 anchors.verticalCenter: parent.verticalCenter
                 visible: control.leadingIcon !== ""
 
@@ -442,7 +472,7 @@ Control {
                 MeoIcon {
                     anchors.centerIn: parent
                     icon: control.leadingIcon
-                    size: 24
+                    size: MeoTheme.settingsLeadingIconSize
                     color: control.iconColor
                 }
             }
@@ -450,7 +480,7 @@ Control {
             Column {
                 id: textColumn
                 width: Math.max(0, headerRow.width
-                                - (control.leadingIcon !== "" ? 40 * control.scale + headerRow.spacing : 0)
+                                - (control.leadingIcon !== "" ? MeoTheme.settingsLeadingContainerSize + headerRow.spacing : 0)
                                 - (trailingSlot.visible ? trailingSlot.width + headerRow.spacing : 0))
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2 * control.scale
@@ -459,9 +489,11 @@ Control {
                     width: parent.width
                     text: control.title
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.bodyLarge.size * control.scale
-                    font.weight: MeoTheme.bodyLarge.weight
-                    font.letterSpacing: (MeoTheme.bodyLarge.letterSpacing || 0) * control.scale
+                    font.pixelSize: MeoTheme.titleMedium.size * control.scale
+                    font.weight: MeoTheme.titleMedium.weight
+                    font.letterSpacing: (MeoTheme.titleMedium.letterSpacing || 0) * control.scale
+                    lineHeightMode: Text.FixedHeight
+                    lineHeight: 20 * control.scale
                     color: control.currentContentColor
                     elide: Text.ElideRight
                     textFormat: Text.PlainText
@@ -531,7 +563,7 @@ Control {
                     MeoIcon {
                         id: trailingChevron
                         icon: "chevron_right"
-                        size: 24
+                        size: 20
                         color: control.trailingContentColor
                         visible: control.hasChevron
                     }

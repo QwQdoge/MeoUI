@@ -523,6 +523,23 @@ QtObject {
     readonly property real standardPadding: 16 * globalScale
     readonly property real largePadding: 24 * globalScale
 
+    // Settings composition tokens.  These keep the Pixel/Material 3 rhythm in
+    // one reusable contract while allowing desktop pages to remain adaptive.
+    readonly property real settingsContentMaxWidth: metricToken("settingsContentMaxWidth", 760) * globalScale
+    readonly property real settingsSidebarWidth: metricToken("settingsSidebarWidth", 288) * globalScale
+    readonly property real settingsSidebarHorizontalMargin: metricToken("settingsSidebarHorizontalMargin", 8) * globalScale
+    readonly property real settingsSidebarItemHeight: metricToken("settingsSidebarItemHeight", 56) * globalScale
+    readonly property real settingsRowHeight: metricToken("settingsRowHeight", 72) * globalScale
+    readonly property real settingsRowHorizontalPadding: metricToken("settingsRowHorizontalPadding", 16) * globalScale
+    readonly property real settingsLeadingContainerSize: metricToken("settingsLeadingContainerSize", 40) * globalScale
+    readonly property real settingsLeadingIconSize: metricToken("settingsLeadingIconSize", 24)
+    readonly property real settingsIconTextGap: metricToken("settingsIconTextGap", 16) * globalScale
+    readonly property real settingsSearchHeight: metricToken("settingsSearchHeight", 64) * globalScale
+    readonly property real settingsSearchRadius: shapeExtraLargeIncreased
+    readonly property real settingsAccountHeight: metricToken("settingsAccountHeight", 92) * globalScale
+    readonly property real settingsAccountRadius: shapeExtraLarge
+    readonly property real settingsAvatarSize: metricToken("settingsAvatarSize", 48) * globalScale
+
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
     readonly property string typefacePlain: fontFamily

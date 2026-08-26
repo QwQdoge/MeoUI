@@ -49,6 +49,48 @@ Item {
 
     SignalSpy { id: sliderIconSpy; target: quickSlider; signalName: "iconTriggered" }
 
+    MeoSteppedSlider {
+        id: steppedSlider
+        x: 20
+        y: 340
+        width: 360 * MeoTheme.globalScale
+        title: "Font size"
+        supportingText: "Make text bigger or smaller"
+        from: 0
+        to: 4
+        value: 2
+        stepSize: 1
+        discrete: true
+        valueSuffix: "/4"
+    }
+
+    SignalSpy { id: steppedSliderMovedSpy; target: steppedSlider; signalName: "moved" }
+
+    MeoAppGridItem {
+        id: appGridItem
+        x: 440
+        y: 340
+        title: "Settings"
+        iconName: "settings"
+    }
+
+    SignalSpy { id: appGridTriggeredSpy; target: appGridItem; signalName: "triggered" }
+
+    MeoQuickSettingsEditor {
+        id: pixelEditor
+        x: 20
+        y: 470
+        width: 500 * MeoTheme.globalScale
+        visible: false
+        tiles: [
+            { "id": "wifi", "title": "Wi-Fi", "iconName": "wifi", "span": 2 },
+            { "id": "focus", "title": "Modes", "iconName": "do_not_disturb_on", "span": 1 }
+        ]
+        availableTiles: [
+            { "id": "bluetooth", "title": "Bluetooth", "iconName": "bluetooth", "span": 2 }
+        ]
+    }
+
     MeoMonthCalendar {
         id: calendar
         x: 430
@@ -79,6 +121,10 @@ Item {
             dropdownSelectedSpy.clear()
 
             sliderIconSpy.clear()
+
+            steppedSlider.value = 2
+            steppedSliderMovedSpy.clear()
+            appGridTriggeredSpy.clear()
 
             calendar.selectedDate = new Date(2026, 0, 31)
             calendar.displayDate = new Date(2026, 0, 1)
@@ -178,6 +224,27 @@ Item {
             iconButton.forceActiveFocus(Qt.TabFocusReason)
             keyClick(Qt.Key_Space)
             compare(sliderIconSpy.count, 1)
+        }
+
+        function test_pixelReferencePrimitivesKeepTheirContracts() {
+            // The Android 16 editor works on four logical columns: a wide
+            // tile spans two, while a compact tile spans one.
+            compare(pixelEditor.effectiveColumns, 4)
+            compare(pixelEditor.tileSpan(pixelEditor.tiles[0]), 2)
+            compare(pixelEditor.tileSpan(pixelEditor.tiles[1]), 1)
+            compare(pixelEditor.tileIcon(pixelEditor.availableTiles[0]), "bluetooth")
+
+            steppedSlider.adjust(1)
+            compare(steppedSlider.value, 3)
+            compare(steppedSliderMovedSpy.count, 1)
+            steppedSlider.adjust(9)
+            compare(steppedSlider.value, 4)
+            compare(steppedSliderMovedSpy.count, 2)
+
+            compare(appGridItem.tileWidth, 80 * MeoTheme.globalScale)
+            compare(appGridItem.tileHeight, 88 * MeoTheme.globalScale)
+            appGridItem.activate()
+            compare(appGridTriggeredSpy.count, 1)
         }
 
         function test_quickTileDetailButtonClickAndKeyboard() {

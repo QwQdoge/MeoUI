@@ -17,6 +17,9 @@ Flickable {
     property real mediumWidth: 920 * themeGlobalScale
     property real expandedWidth: 1180 * themeGlobalScale
     property real padding: activeMetrics.pageMargin
+    property real horizontalPadding: padding
+    property real topPadding: padding
+    property real bottomPadding: padding
     property real sectionSpacing: activeMetrics.sectionSpacing
     default property alias content: bodyColumn.data
 
@@ -37,7 +40,7 @@ Flickable {
     readonly property var fontPageSubtitle: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyBig !== "undefined") ? MeoTheme.bodyBig : { "size": 16, "weight": Font.Normal, "lineHeight": 24, "letterSpacing": 0.5 }
 
     contentWidth: width
-    contentHeight: rootColumn.implicitHeight + padding * 2
+    contentHeight: rootColumn.implicitHeight + topPadding + bottomPadding
     clip: true
     boundsBehavior: Flickable.StopAtBounds
 
@@ -61,7 +64,7 @@ Flickable {
     Column {
         id: rootColumn
         width: control.width
-        y: control.padding
+        y: control.topPadding
         spacing: control.sectionSpacing
 
         Loader {
@@ -72,7 +75,7 @@ Flickable {
 
         Column {
             id: contentShell
-            width: Math.min(control.width - control.padding * 2, control.maxContentWidth)
+            width: Math.min(control.width - control.horizontalPadding * 2, control.maxContentWidth)
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: control.sectionSpacing
 

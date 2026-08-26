@@ -1,144 +1,49 @@
 # MeoUI
 
-MeoUI is the Material Design 3 / M3 Expressive QML component library used by the MeoArch workspace. The `MeoShowcaseDemo` target launches a finished showcase with token, component, widget, pattern, and layout pages.
+MeoUI 是 MeoArch 共用的 Qt Quick / QML Material Design 3 设计系统。它拥有可复用的主题 token、组件、控件、模式和布局；Plasma/KDE 集成属于 `meo-kde`，具体应用流程属于各应用仓库。
 
-The CMake target is a versioned shared runtime (`libmeoui.so.0`) with a
-dynamically loaded QML plugin. Applications import `MeoUI 1.0`; they must not
-embed or maintain private component copies.
+## 目录 / Layout
 
-The shared, verified MeoUI design-system reference lives at
-`/home/shekong/Documents/Obsidian Vault/Meo UI/design system/`; the project-level
-`$meoui` skill routes Codex there while keeping source code authoritative.
+- `MeoTheme.qml`、`MeoWindowMetrics.qml`：共享主题与窗口尺寸契约。
+- `components/`、`widgets/`、`patterns/`：可复用的公开 QML 交付物。
+- `showcase/`：MeoUI 的完整可运行展示与覆盖入口。
+- `runtime/`：运行时 C++/头文件接口；`assets/`：源资源。
+- `validation/`：版本控制的验证源码、测试和清单，不是验证结果目录。
+- `docs/`：与已交付代码绑定的公开契约、组件规范和使用说明。
+- `examples/`、`tools/`、`packaging/`：受代码维护的示例、工具和打包定义。
+- `CMakeLists.txt`、`CMakePresets.json`、`qmldir`：构建与模块配置。
+- `main.cpp`：根级 Showcase 程序入口；`.agents/`、`.codex/`：现有本地工具配置。
+- `docs/releases/`：随代码保留的发布历史；`out/`、`artifacts/`：既有生成内容，不能作为新输出入口。
 
-## Dynamic color and page contracts
+根目录只新增入口文档、源码目录及必要的构建/发布配置。不要新增零散的 `plan.md`、`项目架构（第一版）`、审计副本或临时截图。已有的 `out/` 与 `artifacts/` 保持不动；它们不是新输出的目的地。旧根目录测试脚本、错误的 Showcase 报告和空占位文件已分别归档或送入回收站。
 
-Dynamic color is required for every visible Meo/KDE product session. MeoUI is
-the platform-neutral consumer and validator of a complete Material/HCT role
-table; the KDE bridge is its generator. An application must not derive a
-palette from wallpaper or raw RGB/HSL, and it must not silently call a fixed
-preview palette “dynamic.” See [the dynamic-color contract](docs/design/DYNAMIC_COLOR.md).
+## 文件与记录边界 / File policy
 
-Settings-like applications use a declared page hierarchy: category/index,
-complete second-level detail or task page, then only transient third-level
-sheets. The full [page contract](docs/design/PAGE_TYPES.md) and
-[Settings pattern](docs/design/SETTINGS.md) define ownership, safety, and
-responsive navigation requirements.
+代码绑定、需要随实现一起维护的公共契约放在 `docs/`。计划、审计、决策记录、Agent 工作日志和历史报告一律放在：
 
-## GitHub Pages Specification Site
+`/home/shekong/Documents/Obsidian Vault/MeoArch/Projects/meo-ui/`
 
-The repository contains an interactive Material Design 3 component specification website in [`docs/`](docs/index.html). It displays all 89+ QML components, token tables, interactive search, code examples, and visual component image previews.
+该项目记录目录必须有面向读者的 `README.md`，说明当前记录的目的和索引。不要把这些过程性资料复制回仓库。
 
-To host on GitHub Pages:
-1. Enable GitHub Pages in repository settings.
-2. Select `main` branch and `/docs` folder as the source.
+记录目录使用统一的编号结构：`00-inbox/`（临时收集）、`01-overview/`（范围与事实）、`02-decisions/`（已确认决定）、`03-work/`（计划和交接）、`04-validation/`（验证结论）和 `99-archive/`（已替代记录）。项目根 `README.md` 是人类入口；记录文件使用 `YYYY-MM-DD--short-topic.md`，不要使用含混的“第一版”式文件名。
 
-## Requirements
+持久生成物一律放在：
 
-- Qt 6 with `Core`, `Gui`, `Qml`, `Quick`, and `QuickControls2`
-- CMake 3.16 or newer
-- A C++17 compiler
+`/home/shekong/Projects/outputs/meo-ui/{build,install,validation,packages,tmp}/`
 
-Use an out-of-source build. The helper scripts below place generated files under `out/build/showcase` so source QML stays clean.
+`build/` 放配置和编译结果，`install/` 放暂存安装树，`packages/` 放待发布包及校验资料，`validation/` 放可复查验证证据，`tmp/` 仅作可丢弃工作区。`validation/` 的每次运行使用 UTC 标识 `YYYY-MM-DDTHHMMSSZ-short-label`，例如 `2026-08-26T104500Z-showcase/`，并在该运行目录放一个 `README.md`、日志、覆盖清单和截图/其他证据。`tmp/` 可丢弃，不能作为验收证据。
 
-## Windows
+## Showcase 是交付门槛 / Showcase gate
 
-From this directory:
+任何影响 MeoUI 交付物的改动（token、QML、C++、资源、公开契约、构建或打包）都必须刷新 Showcase；不得只改组件而保留过时示例。刷新后必须：
 
-```powershell
-.\tools\build-showcase.ps1 -Config Release -Run
-```
+1. 运行 `tools/verify-showcase-coverage.py`：它对 `qmldir` 中公开 **QML export** 到 Catalog 和直接示例的映射实施 100% 门禁；这个百分比不自动涵盖 token、C++ runtime API、资源或行为质量。
+2. 对全部交付范围刷新 Showcase，并在本次 validation 记录中保留可读的交付清单：说明每个改动的 token、QML、runtime/API、资源和可见行为如何在 Showcase 或相应证据中被呈现；没有可视化演示的项目必须明确说明理由，不能留下未说明缺口。
+3. 构建并实际运行 `MeoShowcaseDemo`，而不是仅通过静态检查或编译。
+4. 将构建/运行日志、QML 覆盖结果、交付清单和可复查的视觉证据保存到 `/home/shekong/Projects/outputs/meo-ui/validation/<UTC-run-id>/`。
 
-If Qt is not on `PATH`, pass the Qt prefix:
+编译、离屏检查和截图分别只能证明其实际覆盖的范围；不要把它们表述成未执行的真实交互验收。
 
-```powershell
-.\tools\build-showcase.ps1 -QtPrefixPath "C:\Qt\6.7.3\msvc2019_64" -Config Release -Run
-```
+## Read first
 
-## Linux
-
-From this directory:
-
-```bash
-./tools/build-showcase.sh --config Release --run
-```
-
-If Qt is installed in a custom prefix:
-
-```bash
-./tools/build-showcase.sh --qt-prefix "$HOME/Qt/6.7.3/gcc_64" --config Release --run
-```
-
-The Linux showcase release source package also includes `run-showcase-linux.sh`
-at the package root:
-
-```bash
-tar -xzf meo-ui-showcase-linux-x64-source-0.3.1.tar.gz
-cd meo-ui-showcase-linux-x64-source-0.3.1
-./run-showcase-linux.sh
-```
-
-For a custom Qt install, set `MEO_UI_QT_PREFIX`:
-
-```bash
-MEO_UI_QT_PREFIX="$HOME/Qt/6.7.3/gcc_64" ./run-showcase-linux.sh
-```
-
-## Runtime Install
-
-The release runtime package includes installer scripts for Linux and Windows.
-They support `install`, `update`, `upgrade`, `verify`, and `uninstall`.
-
-On Linux the default install root is `/opt/meo-ui`; bundled fonts are installed
-under `/usr/local/share/fonts/meo-ui`. The script creates the compatibility
-import path `/opt/meo-ui/qml/MeoUI` for existing `import MeoUI` applications.
-
-```bash
-tar -xzf meo-ui-runtime-0.3.1.tar.gz
-cd meo-ui-runtime-0.3.1
-./install-runtime.sh install
-./install-runtime.sh verify
-./install-runtime.sh update --yes
-./install-runtime.sh upgrade --version 0.3.1
-./install-runtime.sh uninstall
-```
-
-On Windows the default install root is `%LOCALAPPDATA%\MeoUI`, so a user-level
-install does not require administrator privileges:
-
-```powershell
-.\tools\install-runtime.ps1 -Action install
-.\tools\install-runtime.ps1 -Action verify
-.\tools\install-runtime.ps1 -Action update -Yes
-.\tools\install-runtime.ps1 -Action upgrade -Version 0.3.1
-.\tools\install-runtime.ps1 -Action uninstall
-```
-
-Both scripts accept custom install locations. Use the reported `qml` directory
-as the Qt import path.
-
-```bash
-./install-runtime.sh install --prefix "$HOME/.local/share/meo-ui" --font-dir "$HOME/.local/share/fonts/meo-ui"
-```
-
-```powershell
-.\tools\install-runtime.ps1 -Action install -Prefix "$env:LOCALAPPDATA\MeoUI" -FontDir "$env:LOCALAPPDATA\MeoUI\fonts"
-```
-
-## Manual CMake
-
-```bash
-cmake -S . -B out/build/showcase -DCMAKE_BUILD_TYPE=Release
-cmake --build out/build/showcase --target MeoShowcaseDemo
-cmake --install out/build/showcase --prefix out/install/showcase
-```
-
-The install tree places the shared library under `lib` and the QML plugin,
-type information, and inspectable QML sources under `lib/qt6/qml/MeoUI`.
-
-On multi-config generators such as Visual Studio, add `--config Release` to the build and install commands.
-
-## Showcase Coverage
-
-The showcase entry point is `showcase/MeoShowcase.qml`. It includes pages for theme tokens, buttons, inputs, navigation, selection, display, feedback, patterns, data tables, expressive controls, component lab, widget lab, and layout lab.
-
-`MeoWindowMetrics` uses five effective-pixel size classes: compact below 600 px, medium from 600–839 px, expanded from 840–1199 px, large from 1200–1599 px, and extra-large from 1600 px. Applications should consume its navigation mode, page margins, pane width, maximum content width, and adaptive column count rather than defining local breakpoints.
+先阅读 [AGENTS.md](AGENTS.md)，再按需要阅读 `docs/` 中与目标代码直接相关的契约。使用者应通过 `MeoUI 1.0` 导入公共模块，而不是复制私有组件到应用中。

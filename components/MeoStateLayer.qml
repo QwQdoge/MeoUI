@@ -9,9 +9,18 @@ Item {
     property bool hovered: false
     property bool focused: false
     property bool dragged: false
+    property bool focusRingEnabled: true
     property bool rippleEnabled: true
     property color color: "#000000" // 默认覆盖颜色（通常为 On-Surface 或 Primary）
     property real radius: 0
+    // Connected groups need one continuous outer silhouette: only the first
+    // and last item inherit the container corners.  Keep this in the shared
+    // state-layer primitive so button groups, lists, and semantic adapters do
+    // not each invent a different mask.
+    property real topLeftRadius: radius
+    property real topRightRadius: radius
+    property real bottomLeftRadius: radius
+    property real bottomRightRadius: radius
     // Keep the state layer clipped to the same silhouette as its owner.  A
     // radius-only mask turns circular and expressive controls into rectangles.
     property string shape: "rect"
@@ -78,6 +87,10 @@ Item {
                 width: control.width
                 height: control.height
                 radius: control.radius
+                topLeftRadius: control.topLeftRadius
+                topRightRadius: control.topRightRadius
+                bottomLeftRadius: control.bottomLeftRadius
+                bottomRightRadius: control.bottomRightRadius
             }
         }
 
@@ -121,9 +134,13 @@ Item {
             anchors.fill: parent
             color: "transparent"
             radius: control.radius
-            border.width: control.focused ? Math.max(2, 2 * control.themeGlobalScale) : 0
+            topLeftRadius: control.topLeftRadius
+            topRightRadius: control.topRightRadius
+            bottomLeftRadius: control.bottomLeftRadius
+            bottomRightRadius: control.bottomRightRadius
+            border.width: control.focused && control.focusRingEnabled ? Math.max(2, 2 * control.themeGlobalScale) : 0
             border.color: control.color
-            opacity: control.focused ? 0.78 : 0
+            opacity: control.focused && control.focusRingEnabled ? 0.78 : 0
 
             Behavior on opacity {
                 NumberAnimation { duration: control.hoverDuration }

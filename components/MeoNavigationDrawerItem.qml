@@ -16,6 +16,7 @@ Control {
     property bool roundedBottom: true
     property bool showDivider: false
     property string supportingText: ""
+    property string visualStyle: "standard" // standard | settings
 
     signal clicked()
 
@@ -28,6 +29,9 @@ Control {
     readonly property color themeOutlineVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#C4C7C5"
     readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
     readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
+    readonly property bool settingsStyle: visualStyle === "settings"
+    readonly property color selectedContainerColor: settingsStyle ? MeoTheme.primaryContainer : themeSecondaryContainer
+    readonly property color selectedContentColor: settingsStyle ? MeoTheme.contentOnPrimaryContainer : themeOnSecondaryContainer
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
@@ -37,7 +41,25 @@ Control {
     readonly property var emphasizedCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasized !== 'undefined') ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]
 
     implicitWidth: 336 * themeGlobalScale
-    implicitHeight: (mode === "group" && supportingText !== "" ? 72 : 56) * themeGlobalScale
+    implicitHeight: mode === "group" && supportingText !== ""
+                    ? MeoTheme.settingsRowHeight : MeoTheme.settingsSidebarItemHeight
+    activeFocusOnTab: enabled
+    Accessible.role: Accessible.Button
+    Accessible.name: label
+    Accessible.focusable: true
+    Accessible.selected: selected
+    Accessible.onPressAction: activate()
+
+    function activate() {
+        if (!enabled)
+            return
+        forceActiveFocus(Qt.MouseFocusReason)
+        clicked()
+    }
+
+    Keys.onReturnPressed: activate()
+    Keys.onEnterPressed: activate()
+    Keys.onSpacePressed: activate()
 
     background: Item {
         Rectangle {
@@ -60,7 +82,7 @@ Control {
             anchors.rightMargin: control.mode === "group" ? 8 * control.themeGlobalScale : 0
             height: control.mode === "group" ? 48 * control.themeGlobalScale : 56 * control.themeGlobalScale
             radius: height / 2
-            color: control.selected ? control.themeSecondaryContainer : "transparent"
+            color: control.selected ? control.selectedContainerColor : "transparent"
             clip: true
 
             MeoStateLayer {
@@ -70,7 +92,8 @@ Control {
                 hovered: mouseArea.containsMouse
                 pressX: mouseArea.mouseX - selectedLayer.x
                 pressY: mouseArea.mouseY - selectedLayer.y
-                color: control.selected ? control.themeOnSecondaryContainer : control.themeOnSurface
+                color: control.selected ? control.selectedContentColor : control.themeOnSurface
+                focused: control.activeFocus
             }
 
             Behavior on color { ColorAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
@@ -94,21 +117,24 @@ Control {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: control.clicked()
+        cursorShape: Qt.PointingHandCursor
+        onClicked: control.activate()
     }
 
     contentItem: Row {
         id: contentRow
         anchors.fill: parent
-        anchors.leftMargin: control.mode === "group" ? 32 * control.themeGlobalScale : 24 * control.themeGlobalScale
-        anchors.rightMargin: control.mode === "group" ? 24 * control.themeGlobalScale : 24 * control.themeGlobalScale
+        anchors.leftMargin: control.mode === "group" ? 32 * control.themeGlobalScale
+                                                    : (control.settingsStyle ? 20 * control.themeGlobalScale : 24 * control.themeGlobalScale)
+        anchors.rightMargin: control.mode === "group" ? 24 * control.themeGlobalScale
+                                                     : (control.settingsStyle ? 20 * control.themeGlobalScale : 24 * control.themeGlobalScale)
         spacing: 16 * control.themeGlobalScale
 
         MeoIcon {
             icon: control.icon
             fill: control.selected
             size: 24
-            color: control.selected ? control.themeOnSecondaryContainer : control.themeOnSurfaceVariant
+            color: control.selected ? control.selectedContentColor : control.themeOnSurfaceVariant
             anchors.verticalCenter: parent.verticalCenter
         }
 
@@ -126,7 +152,7 @@ Control {
                 lineHeightMode: Text.FixedHeight
                 lineHeight: (control.mode === "group" ? fontBodyLarge.lineHeight : 20) * control.themeGlobalScale
                 font.letterSpacing: ((control.mode === "group" ? fontBodyLarge.letterSpacing : fontLabelLarge.letterSpacing) || 0) * control.themeGlobalScale
-                color: control.selected ? control.themeOnSecondaryContainer : (control.mode === "group" ? control.themeOnSurface : control.themeOnSurfaceVariant)
+                color: control.selected ? control.selectedContentColor : (control.mode === "group" ? control.themeOnSurface : control.themeOnSurfaceVariant)
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
                 Behavior on color {

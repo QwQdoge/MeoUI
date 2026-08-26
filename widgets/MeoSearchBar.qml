@@ -11,6 +11,14 @@ Rectangle {
     property string leadingIcon: "search"
     property string trailingIcon: "person"
     property bool active: false // 🌟 MD3 Expressive: Active state for transition
+    // A reference-preserving variant for Android/ChromeOS-like search-first
+    // surfaces. It only changes geometry and semantic surface roles, so it
+    // remains compatible with the active dynamic color scheme.
+    property string visualStyle: "standard" // "standard" | "pixel" | "settings" | "launcher"
+    readonly property bool settingsStyle: visualStyle === "settings"
+    readonly property bool pixelStyle: visualStyle === "pixel" || settingsStyle || visualStyle === "launcher"
+    readonly property bool launcherStyle: visualStyle === "launcher"
+    readonly property bool focusVisible: textField.activeFocus
 
     signal activated()
     signal accepted(string text)
@@ -24,7 +32,10 @@ Rectangle {
     readonly property var fontBodyLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyLarge !== 'undefined') ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal, "lineHeight": 24, "letterSpacing": 0.5 }
 
     implicitWidth: Math.min(720 * themeGlobalScale, parent ? parent.width : 720 * themeGlobalScale)
-    implicitHeight: 56 * themeGlobalScale
+    // Pixel Settings uses a 56dp field, while the Chromium launcher reference
+    // uses a 48dp field.  Both retain the same semantic border/surface roles.
+    implicitHeight: settingsStyle ? MeoTheme.settingsSearchHeight
+                                  : (launcherStyle ? 48 : 56) * themeGlobalScale
 
     // 📐 Expressive Expansion Logic
     readonly property bool isWide: parent && parent.width >= MeoTheme.windowBreakpointMedium
@@ -41,8 +52,16 @@ Rectangle {
         textField.forceActiveFocus()
     }
 
-    radius: active ? (isWide ? 16 * themeGlobalScale : 0) : 28 * themeGlobalScale
-    color: active ? themeSurface : themeSurfaceContainerHigh
+    radius: settingsStyle ? MeoTheme.settingsSearchRadius
+                          : pixelStyle ? height / 2
+                       : (active ? (isWide ? 16 * themeGlobalScale : 0) : 28 * themeGlobalScale)
+    color: settingsStyle ? MeoTheme.surfaceContainer
+                         : pixelStyle ? (active ? themeSurface : MeoTheme.surfaceContainerLowest)
+                      : (active ? themeSurface : themeSurfaceContainerHigh)
+    border.width: settingsStyle && focusVisible ? MeoTheme.strokeWidthMedium
+                  : pixelStyle && !settingsStyle ? MeoTheme.strokeWidthThin : 0
+    border.color: settingsStyle ? MeoTheme.primary
+                                : pixelStyle ? MeoTheme.outlineVariant : "transparent"
 
     readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
 
@@ -74,8 +93,8 @@ Rectangle {
             contentItem: MeoIcon {
                 icon: leadingButton.icon.name
                 size: 24
-                color: leadingButton.icon.color
-                rotation: control.active ? 0 : -90
+                color: control.settingsStyle ? control.themeOnSurfaceVariant : leadingButton.icon.color
+                rotation: control.settingsStyle ? 0 : (control.active ? 0 : -90)
                 Behavior on rotation { NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
                 Behavior on icon {
                     SequentialAnimation {

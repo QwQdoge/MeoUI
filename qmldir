@@ -29,6 +29,7 @@ MeoFloatingToolbar 1.0 components/MeoFloatingToolbar.qml
 MeoFullScreenDialog 1.0 components/MeoFullScreenDialog.qml
 MeoIcon 1.0 components/MeoIcon.qml
 MeoAiMark 1.0 components/MeoAiMark.qml
+MeoAppGridItem 1.0 components/MeoAppGridItem.qml
 MeoIconButton 1.0 components/MeoIconButton.qml
 MeoIconToggleButton 1.0 components/MeoIconToggleButton.qml
 MeoInputChip 1.0 components/MeoInputChip.qml
@@ -60,6 +61,7 @@ MeoSlider 1.0 components/MeoSlider.qml
 MeoSnackbar 1.0 components/MeoSnackbar.qml
 MeoSplitButton 1.0 components/MeoSplitButton.qml
 MeoStateLayer 1.0 components/MeoStateLayer.qml
+MeoSteppedSlider 1.0 components/MeoSteppedSlider.qml
 MeoStepper 1.0 components/MeoStepper.qml
 MeoSuggestionChip 1.0 components/MeoSuggestionChip.qml
 MeoSwipeToDismiss 1.0 components/MeoSwipeToDismiss.qml
@@ -72,6 +74,7 @@ MeoTimeInput 1.0 components/MeoTimeInput.qml
 MeoTooltip 1.0 components/MeoTooltip.qml
 MeoAccountHeader 1.0 widgets/MeoAccountHeader.qml
 MeoAccountSwitcher 1.0 widgets/MeoAccountSwitcher.qml
+MeoSettingsAccountCard 1.0 widgets/MeoSettingsAccountCard.qml
 MeoActionSheet 1.0 widgets/MeoActionSheet.qml
 MeoBottomAppBar 1.0 widgets/MeoBottomAppBar.qml
 MeoBottomSheet 1.0 widgets/MeoBottomSheet.qml
@@ -103,6 +106,7 @@ MeoGroupedList 1.0 patterns/MeoGroupedList.qml
 MeoListDetailLayout 1.0 patterns/MeoListDetailLayout.qml
 MeoNavigationSuite 1.0 patterns/MeoNavigationSuite.qml
 MeoPageLayout 1.0 patterns/MeoPageLayout.qml
+MeoQuickSettingsEditor 1.0 patterns/MeoQuickSettingsEditor.qml
 MeoScaffold 1.0 patterns/MeoScaffold.qml
 MeoSearchFilterBar 1.0 patterns/MeoSearchFilterBar.qml
 MeoSearchHeader 1.0 patterns/MeoSearchHeader.qml

@@ -75,6 +75,7 @@ qt_add_qml_module(meoui_module
         showcase/ShowcaseSnippet.qml
         showcase/ShowcaseStateGrid.qml
         showcase/ShowcaseVariantRow.qml
+        showcase/SettingsPreviewSchemes.js
 MeoTheme.qml
         MeoWindowMetrics.qml
         components/MeoButton.qml
@@ -127,6 +128,8 @@ MeoTheme.qml
         components/MeoRatingBar.qml
         components/MeoQuickControlSlider.qml
         components/MeoQuickSettingsTile.qml
+        components/MeoAppGridItem.qml
+        components/MeoSteppedSlider.qml
         components/MeoFilterGroup.qml
         components/MeoListHeader.qml
         components/MeoSelectionGroup.qml
@@ -152,6 +155,7 @@ MeoTheme.qml
         widgets/MeoToolbar.qml
         widgets/MeoAccountHeader.qml
         widgets/MeoAccountSwitcher.qml
+        widgets/MeoSettingsAccountCard.qml
         widgets/MeoSearchBar.qml
         widgets/MeoSearchAppBar.qml
         widgets/MeoDockedSearchBar.qml
@@ -173,6 +177,7 @@ MeoTheme.qml
         patterns/MeoSettingsLayout.qml
         patterns/MeoSettingsGroup.qml
         patterns/MeoSettingsTaskSheet.qml
+        patterns/MeoQuickSettingsEditor.qml
         patterns/MeoSearchFilterBar.qml
         patterns/MeoPageLayout.qml
         patterns/MeoGroupedList.qml
@@ -256,6 +261,17 @@ if(MEOUI_BUILD_SHOWCASE)
         main.cpp
     )
 
+    # Showcase evidence belongs beside the workspace-wide outputs tree rather
+    # than beside whichever binary CMake happened to produce.  A caller may
+    # choose another root at configure time with MEO_OUTPUT_ROOT; the process
+    # environment still takes precedence when the executable is launched.
+    set(MEOUI_DEFAULT_OUTPUT_ROOT "$ENV{MEO_OUTPUT_ROOT}")
+    if(MEOUI_DEFAULT_OUTPUT_ROOT STREQUAL "")
+        get_filename_component(MEOUI_DEFAULT_OUTPUT_ROOT
+            "${CMAKE_CURRENT_SOURCE_DIR}/../outputs" ABSOLUTE)
+    endif()
+    file(TO_CMAKE_PATH "${MEOUI_DEFAULT_OUTPUT_ROOT}" MEOUI_DEFAULT_OUTPUT_ROOT)
+
     target_link_libraries(MeoShowcaseDemo PRIVATE
         Qt6::Core
         Qt6::Gui
@@ -263,6 +279,9 @@ if(MEOUI_BUILD_SHOWCASE)
         Qt6::Quick
         Qt6::QuickControls2
         meoui_module
+    )
+    target_compile_definitions(MeoShowcaseDemo PRIVATE
+        MEOUI_DEFAULT_OUTPUT_ROOT="${MEOUI_DEFAULT_OUTPUT_ROOT}"
     )
 
     # 移除不支持的 qt_import_qml_modules，改用设置 target 属性

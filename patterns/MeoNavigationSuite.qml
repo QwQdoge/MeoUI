@@ -19,6 +19,8 @@ Item {
     // instead, so their category hierarchy is not hidden behind five tabs.
     property string compactPresentation: "bottomBar" // bottomBar | drawer
     property bool windowResizeActive: false
+    property bool preferPersistentDrawer: false
+    property string navigationVisualStyle: "standard"
 
     signal clicked(int index)
 
@@ -33,7 +35,11 @@ Item {
     // permanent drawer width unless an application deliberately composes more
     // drawer content through its header/footer slots.
     readonly property real expandedRailWidth: 240 * themeGlobalScale
-    readonly property real drawerWidth: 280 * themeGlobalScale
+    readonly property real drawerWidth: navigationVisualStyle === "settings"
+                                        ? MeoTheme.settingsSidebarWidth
+                                        : 280 * themeGlobalScale
+    readonly property bool usesPersistentDrawer: preferPersistentDrawer
+                                                 && (isExpanded || isLarge || isExtraLarge)
     readonly property int compactDirectCount: Math.min(model.length,
                                                        Math.max(1, compactNavigationLimit - (model.length > compactNavigationLimit ? 1 : 0)))
     readonly property bool hasCompactOverflow: model.length > compactDirectCount
@@ -55,7 +61,7 @@ Item {
 
     implicitWidth: isCompact ? (parent ? parent.width : 360 * themeGlobalScale)
                              : isMedium ? 80 * themeGlobalScale
-                                        : isExpanded ? expandedRailWidth
+                                        : isExpanded && !usesPersistentDrawer ? expandedRailWidth
                                                      : drawerWidth
     implicitHeight: isCompact ? bottomNavigation.implicitHeight : 600 * themeGlobalScale
     width: implicitWidth
@@ -123,9 +129,9 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         width: control.isMedium ? 80 * control.themeGlobalScale
-                                : control.isExpanded ? control.expandedRailWidth : 0
+                                : control.isExpanded && !control.usesPersistentDrawer ? control.expandedRailWidth : 0
         visible: width > 0
-        opacity: control.isMedium || control.isExpanded ? 1 : 0
+        opacity: control.isMedium || (control.isExpanded && !control.usesPersistentDrawer) ? 1 : 0
         model: control.model
         currentIndex: control.currentIndex
         isExpanded: control.isExpanded
@@ -154,13 +160,14 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: control.isLarge || control.isExtraLarge ? control.drawerWidth : 0
+        width: control.usesPersistentDrawer || control.isLarge || control.isExtraLarge ? control.drawerWidth : 0
         visible: width > 0
-        opacity: control.isLarge || control.isExtraLarge ? 1 : 0
+        opacity: control.usesPersistentDrawer || control.isLarge || control.isExtraLarge ? 1 : 0
         model: control.model
         currentIndex: control.currentIndex
         header: control.header
         footer: control.footer
+        visualStyle: control.navigationVisualStyle
         onClicked: (index) => control.select(index)
 
         Behavior on width {

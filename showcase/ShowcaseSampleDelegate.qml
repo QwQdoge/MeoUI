@@ -61,29 +61,36 @@ Item {
         if (name === "MeoWindowMetrics") return windowMetricsSample
         if (name === "MeoText") return textSample
         if (name === "MeoIcon") return iconSample
+        if (name === "MeoAiMark") return aiMarkSample
         if (name === "MeoStateLayer") return stateLayerSample
         if (name === "MeoButton" || name === "Expressive buttons") return buttonSample
         if (name === "MeoIconButton") return iconButtonSample
+        if (name === "MeoIconToggleButton") return iconToggleButtonSample
         if (name === "MeoFAB") return fabSample
         if (name === "MeoFABMenu") return fabMenuSample
         if (name === "MeoSplitButton") return splitButtonSample
         if (name === "MeoButtonGroup") return buttonGroupSample
         if (name === "MeoSegmentedButtons") return segmentedSample
         if (name === "MeoTextField") return textFieldSample
+        if (name === "MeoColorField") return colorFieldSample
         if (name === "MeoTextArea") return textAreaSample
         if (name === "MeoExposedDropdown") return dropdownSample
+        if (name === "MeoChipDropdown") return chipDropdownSample
         if (name === "MeoDateInput") return dateInputSample
         if (name === "MeoTimeInput") return timeInputSample
         if (name === "MeoDatePicker") return datePickerSample
         if (name === "MeoDateRangePicker") return dateRangeSample
+        if (name === "MeoMonthCalendar") return monthCalendarSample
         if (name === "MeoTimePicker") return timePickerSample
         if (name === "MeoCheckbox") return checkboxSample
         if (name === "MeoRadioButton") return radioSample
         if (name === "MeoSwitch") return switchSample
         if (name === "MeoSlider") return sliderSample
+        if (name === "MeoSteppedSlider") return steppedSliderSample
         if (name === "MeoQuickControlSlider") return quickControlSliderSample
         if (name === "MeoQuickSettingsTile") return quickSettingsTileSample
         if (name === "MeoRangeSlider") return rangeSliderSample
+        if (name === "MeoRatingBar") return ratingBarSample
         if (name === "MeoSelectionGroup") return selectionGroupSample
         if (name === "MeoFilterGroup") return filterGroupSample
         if (name === "MeoStepper") return stepperSample
@@ -92,6 +99,7 @@ Item {
         if (name === "MeoNavigationDrawer") return navigationDrawerSample
         if (name === "MeoNavigationDrawerModal") return modalDrawerSample
         if (name === "MeoNavigationDrawerItem") return drawerItemSample
+        if (name === "MeoAppGridItem") return appGridItemSample
         if (name === "MeoNavigationSuite") return navigationSuiteSample
         if (name === "MeoBreadcrumbs") return breadcrumbsSample
         if (name === "MeoTabs") return tabsSample
@@ -100,13 +108,19 @@ Item {
         if (name === "MeoMenu") return menuSample
         if (name === "MeoDataTable") return dataTableSample
         if (name === "MeoListItem") return listItemSample
+        if (name === "Expressive list items") return expressiveListItemSample
+        if (name === "MeoExpansionPanel") return expansionPanelSample
+        if (name === "MeoSettingsRow") return settingsRowSample
         if (name === "MeoListHeader") return listHeaderSample
         if (name === "MeoGroupedList") return groupedListSample
+        if (name === "MeoSegmentedList") return segmentedListSample
+        if (name === "MeoStatusCenter") return statusCenterSample
         if (name === "MeoBadge") return badgeSample
         if (name === "MeoAvatar") return avatarSample
         if (name === "MeoDivider") return dividerSample
         if (name === "MeoSkeleton") return skeletonSample
         if (name === "MeoCard") return cardSample
+        if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoFullScreenDialog") return fullDialogSample
         if (name === "MeoExpressiveDialog") return expressiveDialogSample
@@ -115,6 +129,7 @@ Item {
         if (name === "MeoSideSheet") return sideSheetSample
         if (name === "MeoSideSheetModal") return modalSideSheetSample
         if (name === "MeoActionSheet") return actionSheetSample
+        if (name === "MeoMotionPopup") return motionPopupSample
         if (name === "MeoBanner") return bannerSample
         if (name === "MeoSnackbar") return snackbarSample
         if (name === "MeoTooltip") return tooltipSample
@@ -132,11 +147,14 @@ Item {
         if (name === "MeoSearchFilterBar") return searchFilterSample
         if (name === "MeoCarousel") return carouselSample
         if (name === "MeoPageIndicator") return pageIndicatorSample
+        if (name === "MeoMediaCard") return mediaCardSample
         if (name === "MeoMediaController") return mediaSample
         if (name === "MeoToolbar") return toolbarSample
         if (name === "MeoDockedToolbar") return dockedToolbarSample
         if (name === "MeoFloatingToolbar") return floatingToolbarSample
         if (name === "MeoAccountHeader") return accountHeaderSample
+        if (name === "MeoAccountSwitcher") return accountSwitcherSample
+        if (name === "MeoSettingsAccountCard") return settingsAccountCardSample
         if (name === "MeoSwipeToDismiss") return swipeToDismissSample
         if (name === "MeoChip" || name === "Expressive chips") return chipSample
         if (name === "MeoAssistChip") return assistChipSample
@@ -149,8 +167,14 @@ Item {
         if (name === "MeoDashboardLayout") return dashboardSample
         if (name === "MeoFeedLayout") return feedSample
         if (name === "MeoListDetailLayout") return listDetailSample
+        if (name === "MeoPageHost") return pageHostSample
         if (name === "MeoSettingsLayout") return settingsSample
+        if (name === "MeoSettingsGroup") return settingsGroupSample
+        if (name === "MeoSettingsTaskSheet") return settingsTaskSheetSample
+        if (name === "MeoQuickSettingsEditor") return quickSettingsEditorSample
+        if (name === "MeoSupportingPaneLayout") return supportingPaneSample
         if (name === "MeoShape") return shapeSample
+        if (name === "MeoShapeMorph") return shapeMorphSample
         return fallbackSample
     }
 
@@ -832,6 +856,7 @@ Item {
     Component { id: dockedToolbarSample; MeoDockedToolbar { width: 420 * MeoTheme.globalScale; actions: [Component { MeoIconButton { icon.name: "format_bold" } }, Component { MeoIconButton { icon.name: "format_italic" } }] } }
     Component { id: floatingToolbarSample; MeoFloatingToolbar { actions: [Component { MeoIconButton { icon.name: "content_cut" } }, Component { MeoIconButton { icon.name: "content_copy" } }, Component { MeoIconButton { icon.name: "content_paste" } }] } }
     Component { id: accountHeaderSample; MeoAccountHeader { width: 420 * MeoTheme.globalScale; name: "Meo User"; email: "hello@meoarch.dev" } }
+    Component { id: settingsAccountCardSample; MeoSettingsAccountCard { width: 460 * MeoTheme.globalScale; title: "Shekong"; subtitle: "Local session · shekong-laptop"; initials: "SH" } }
     Component {
         id: swipeToDismissSample
         MeoSwipeToDismiss {
@@ -897,7 +922,356 @@ Item {
     }
     Component { id: settingsSample; MeoSettingsLayout { width: 420 * MeoTheme.globalScale; height: 220 * MeoTheme.globalScale; title: "Settings"; model: [{ "sectionTitle": "Appearance", "items": [{ "title": "Dark theme", "subtitle": "Use dark colors", "icon": "dark_mode", "type": "switch", "checked": true }] }] } }
     Component { id: shapeSample; Flow { spacing: MeoTheme.space16; Repeater { model: ["squircle", "hexagon", "diamond", "pentagon", "octagon"]; delegate: Column { required property string modelData; spacing: MeoTheme.space4; MeoShape { width: 72 * MeoTheme.globalScale; height: 72 * MeoTheme.globalScale; type: modelData; color: MeoTheme.primaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.horizontalCenter: parent.horizontalCenter; text: modelData; typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant } } } } }
-    Component { id: fallbackSample; MeoText { text: "Sample registered in catalog"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } }
+    Component {
+        id: aiMarkSample
+        Flow {
+            spacing: MeoTheme.space16
+            MeoAiMark { width: 48 * MeoTheme.globalScale; height: width }
+            MeoAiMark { width: 64 * MeoTheme.globalScale; height: width; containerColor: MeoTheme.primary; cornerRadius: MeoTheme.shapeMedium }
+        }
+    }
+
+    Component {
+        id: iconToggleButtonSample
+        Flow {
+            spacing: MeoTheme.space12
+            MeoIconToggleButton { icon.name: "favorite_border"; checkedIcon: "favorite"; checked: true }
+            MeoIconToggleButton { icon.name: "bookmark_border"; checkedIcon: "bookmark"; type: "tonal"; checked: true }
+            MeoIconToggleButton { icon.name: "notifications_none"; checkedIcon: "notifications"; type: "outlined"; badgeText: "3" }
+            MeoIconToggleButton { icon.name: "favorite_border"; checkedIcon: "favorite"; enabled: false }
+        }
+    }
+
+    Component {
+        id: colorFieldSample
+        Flow {
+            spacing: MeoTheme.space16
+            MeoColorField { width: 260 * MeoTheme.globalScale; label: "Theme seed"; color: "#6750A4"; helperText: "Valid #RRGGBB seed" }
+            MeoColorField { width: 260 * MeoTheme.globalScale; label: "Tonal seed"; color: "#146C94" }
+        }
+    }
+
+    Component {
+        id: chipDropdownSample
+        Flow {
+            spacing: MeoTheme.space16
+            MeoChipDropdown {
+                width: 320 * MeoTheme.globalScale
+                label: "Included platforms"
+                placeholder: "Choose platforms"
+                model: ["Desktop", "Mobile", "Web"]
+                selectedIndices: [0, 2]
+                showCounter: true
+            }
+            MeoChipDropdown {
+                width: 260 * MeoTheme.globalScale
+                type: "outlined"
+                label: "Disabled"
+                model: ["Unavailable"]
+                enabled: false
+            }
+        }
+    }
+
+    Component {
+        id: monthCalendarSample
+        MeoMonthCalendar {
+            selectedDate: new Date(2026, 7, 26)
+            displayDate: new Date(2026, 7, 1)
+        }
+    }
+
+    Component {
+        id: steppedSliderSample
+        Column {
+            width: 360 * MeoTheme.globalScale
+            spacing: MeoTheme.space16
+            MeoSteppedSlider { width: parent.width; title: "Volume"; supportingText: "Room speaker"; value: 60; stepSize: 10; valueSuffix: "%"; showValueLabel: true }
+            MeoSteppedSlider { width: parent.width; title: "Brightness"; value: 4; from: 0; to: 5; stepSize: 1; showValueLabel: true }
+        }
+    }
+
+    Component {
+        id: ratingBarSample
+        Flow {
+            spacing: MeoTheme.space24
+            MeoRatingBar { rating: 3.5 }
+            MeoRatingBar { rating: 4; size: "l"; readOnly: true }
+        }
+    }
+
+    Component {
+        id: appGridItemSample
+        Flow {
+            spacing: MeoTheme.space12
+            MeoAppGridItem { title: "Settings"; iconName: "settings"; selected: true }
+            MeoAppGridItem { title: "Files"; iconName: "folder" }
+            MeoAppGridItem { title: "AI Studio"; iconName: "auto_awesome"; compact: true }
+        }
+    }
+
+    Component {
+        id: expansionPanelSample
+        MeoExpansionPanel {
+            width: 440 * MeoTheme.globalScale
+            title: "Advanced color settings"
+            subtitle: "Override the platform seed for this preview"
+            icon: "palette"
+            expanded: true
+            contentItem: Component {
+                MeoText {
+                    width: 408 * MeoTheme.globalScale
+                    text: "A panel keeps secondary controls available without overwhelming the primary screen."
+                    typeRole: "body"
+                    typeSize: "medium"
+                    color: MeoTheme.contentOnSurfaceVariant
+                    wrapMode: Text.WordWrap
+                }
+            }
+        }
+    }
+
+    Component {
+        id: settingsRowSample
+        Column {
+            width: 460 * MeoTheme.globalScale
+            spacing: MeoTheme.space4
+            MeoSettingsRow { width: parent.width; title: "Wi-Fi"; subtitle: "Meo Network"; leadingIcon: "wifi"; trailingKind: "navigation"; selected: true }
+            MeoSettingsRow { width: parent.width; title: "Dark theme"; subtitle: "Use dark colors"; leadingIcon: "dark_mode"; trailingKind: "switch"; checked: true }
+            MeoSettingsRow { width: parent.width; title: "Storage"; leadingIcon: "storage"; trailingKind: "value"; valueText: "68% used" }
+        }
+    }
+
+    Component {
+        id: segmentedListSample
+        MeoSegmentedList {
+            width: 420 * MeoTheme.globalScale
+            title: "Recent components"
+            model: ["Buttons", "Navigation", "Feedback"]
+            delegate: Component {
+                MeoListItem {
+                    headline: "Segmented row"
+                    supportingText: "Uses adaptive first, middle, and last rounding"
+                    leadingIcon: "widgets"
+                }
+            }
+        }
+    }
+
+    Component {
+        id: expressiveListItemSample
+        Column {
+            width: 420 * MeoTheme.globalScale
+            spacing: MeoTheme.space2
+            MeoListItem { width: parent.width; headline: "Selected expressive item"; supportingText: "Top rounding"; leadingIcon: "auto_awesome"; selected: true; isSegmented: true; roundingStrategy: "top"; vibrant: true }
+            MeoListItem { width: parent.width; headline: "Adjacent item"; supportingText: "Bottom rounding"; leadingIcon: "palette"; isSegmented: true; roundingStrategy: "bottom" }
+        }
+    }
+
+    Component {
+        id: fallbackSample
+        MeoText { text: "Sample registered in catalog"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant }
+    }
+
+    Component {
+        id: pageHostSample
+        MeoPageHost {
+            width: 440 * MeoTheme.globalScale
+            height: 180 * MeoTheme.globalScale
+            sourceComponent: Component {
+                Rectangle {
+                    color: MeoTheme.secondaryContainer
+                    radius: MeoTheme.shapeLarge
+                    MeoText {
+                        anchors.centerIn: parent
+                        text: "Hosted page component"
+                        typeRole: "title"
+                        typeSize: "medium"
+                        color: MeoTheme.contentOnSecondaryContainer
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: settingsGroupSample
+        MeoSettingsGroup {
+            width: 460 * MeoTheme.globalScale
+            title: "Connections"
+            subtitle: "Account and network controls"
+            model: [
+                { "title": "Wi-Fi", "subtitle": "Meo Network", "leadingIcon": "wifi", "trailingKind": "navigation" },
+                { "title": "Bluetooth", "subtitle": "Headphones", "leadingIcon": "bluetooth", "trailingKind": "switch", "checked": true }
+            ]
+        }
+    }
+
+    Component {
+        id: settingsTaskSheetSample
+        Column {
+            spacing: MeoTheme.space8
+            MeoButton { text: "Open settings task"; onClicked: taskSheet.open() }
+            MeoSettingsTaskSheet {
+                id: taskSheet
+                title: "Choose display density"
+                subtitle: "This preview changes nothing outside the Showcase."
+                acceptText: "Apply"
+                rejectText: "Cancel"
+                content: Component {
+                    MeoSegmentedButtons {
+                        width: 300 * MeoTheme.globalScale
+                        model: ["Compact", "Default", "Comfortable"]
+                        currentIndex: 1
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: quickSettingsEditorSample
+        MeoQuickSettingsEditor {
+            width: 512 * MeoTheme.globalScale
+            tiles: [
+                { "title": "Wi-Fi", "supportingText": "Meo Network", "iconName": "wifi", "active": true, "span": 2 },
+                { "title": "Bluetooth", "supportingText": "Headphones", "iconName": "bluetooth", "active": true, "span": 2 },
+                { "title": "Flashlight", "iconName": "flashlight_on", "span": 1 },
+                { "title": "Do not disturb", "iconName": "do_not_disturb_on", "span": 1 }
+            ]
+            availableTiles: [
+                { "title": "Night light", "iconName": "nightlight" },
+                { "title": "Airplane mode", "iconName": "flight" }
+            ]
+            selectedIndex: 0
+        }
+    }
+
+    Component {
+        id: supportingPaneSample
+        MeoSupportingPaneLayout {
+            width: 620 * MeoTheme.globalScale
+            height: 220 * MeoTheme.globalScale
+            adaptiveMode: "side-by-side"
+            showSupportingPane: true
+            mainPane: Component {
+                Rectangle {
+                    color: MeoTheme.surfaceContainerLow
+                    radius: MeoTheme.shapeLarge
+                    MeoText { anchors.centerIn: parent; text: "Main pane"; typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface }
+                }
+            }
+            supportingPane: Component {
+                Rectangle {
+                    color: MeoTheme.secondaryContainer
+                    radius: MeoTheme.shapeLarge
+                    MeoText { anchors.centerIn: parent; text: "Supporting pane"; typeRole: "label"; typeSize: "large"; color: MeoTheme.contentOnSecondaryContainer }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: shapeMorphSample
+        Row {
+            spacing: MeoTheme.space24
+            MeoShapeMorph { width: 112 * MeoTheme.globalScale; height: width; fromShape: "SoftBurst"; toShape: "Cookie9Sided"; morphProgress: 0.2; color: MeoTheme.primary }
+            MeoShapeMorph { width: 112 * MeoTheme.globalScale; height: width; fromShape: "SoftBurst"; toShape: "Cookie9Sided"; morphProgress: 0.75; color: MeoTheme.tertiary }
+        }
+    }
+
+    Component {
+        id: statusCenterSample
+        MeoStatusCenter {
+            width: 720 * MeoTheme.globalScale
+            height: 432 * MeoTheme.globalScale
+            unreadCount: 3
+            notificationContent: Component {
+                Column {
+                    spacing: MeoTheme.space8
+                    MeoListItem { width: parent.width; headline: "Build complete"; supportingText: "Showcase is ready to inspect"; leadingIcon: "task_alt" }
+                    MeoListItem { width: parent.width; headline: "No new warnings"; supportingText: "All checked samples are mapped"; leadingIcon: "info" }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: motionSurfaceSample
+        MeoMotionSurface {
+            width: 320 * MeoTheme.globalScale
+            height: 132 * MeoTheme.globalScale
+            color: MeoTheme.tertiaryContainer
+            animateOnCompleted: true
+            MeoText {
+                anchors.centerIn: parent
+                text: "Animated surface"
+                typeRole: "title"
+                typeSize: "medium"
+                color: MeoTheme.contentOnTertiaryContainer
+            }
+        }
+    }
+
+    Component {
+        id: motionPopupSample
+        Column {
+            spacing: MeoTheme.space8
+            MeoButton { id: motionPopupTrigger; text: "Open motion popup"; onClicked: popup.openFrom(motionPopupTrigger) }
+            MeoMotionPopup {
+                id: popup
+                width: 300 * MeoTheme.globalScale
+                height: 132 * MeoTheme.globalScale
+                presentation: MeoMotionPopup.Dialog
+                MeoText {
+                    anchors.centerIn: parent
+                    width: parent.width - 2 * MeoTheme.space24
+                    text: "The same primitive can become a dialog, menu, or sheet."
+                    typeRole: "body"
+                    typeSize: "medium"
+                    color: MeoTheme.contentOnSurface
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignHCenter
+                }
+            }
+        }
+    }
+
+    Component {
+        id: mediaCardSample
+        Flow {
+            spacing: MeoTheme.space16
+            MeoMediaCard {
+                cardSize: "m"
+                type: "filled"
+                headerTitle: "MeoUI"
+                headerSubtitle: "Design system"
+                avatarInitials: "M"
+                title: "Showcase coverage"
+                supportingText: "Every public type gets a visible, intentional sample."
+                actions: [{ "label": "Open", "icon": "open_in_new", "type": "text" }]
+            }
+            MeoMediaCard {
+                cardSize: "s"
+                type: "outlined"
+                mediaPosition: "left"
+                title: "Media card"
+                supportingText: "Side media layout"
+            }
+        }
+    }
+
+    Component {
+        id: accountSwitcherSample
+        MeoAccountSwitcher {
+            model: [
+                { "name": "Meo User", "email": "hello@meoarch.dev", "active": true },
+                { "name": "Design Review", "email": "design@meoarch.dev" },
+                { "name": "Preview", "email": "preview@meoarch.dev" }
+            ]
+            currentIndex: 0
+        }
+    }
 
     component TokenSwatch: Rectangle {
         property string label: ""

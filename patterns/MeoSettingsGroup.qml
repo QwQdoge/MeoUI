@@ -15,7 +15,7 @@ Column {
     property bool showDividers: true
     property color containerColor: MeoTheme.surfaceContainerLowest
     property color selectedContainerColor: MeoTheme.secondaryContainer
-    property real radius: MeoTheme.shapeLarge
+    property real radius: MeoTheme.shapeExtraLarge
     property real horizontalInset: 0
     property Component delegate: defaultDelegate
 
@@ -159,7 +159,7 @@ Column {
             interactive: item.interactive === undefined
                          ? trailingKind !== "status" && trailingKind !== "none"
                          : item.interactive
-            surfaceColor: control.containerColor
+            surfaceColor: "transparent"
             selectionColor: control.selectedContainerColor
             positionInGroup: rowRepeater.count <= 1 ? "only"
                              : index === 0 ? "first"
