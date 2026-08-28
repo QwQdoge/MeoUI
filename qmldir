@@ -116,3 +116,5 @@ MeoSettingsGroup 1.0 patterns/MeoSettingsGroup.qml
 MeoSettingsTaskSheet 1.0 patterns/MeoSettingsTaskSheet.qml
 MeoRatingBar 1.0 components/MeoRatingBar.qml
 MeoSupportingPaneLayout 1.0 patterns/MeoSupportingPaneLayout.qml
+MeoScrollBar 1.0 components/MeoScrollBar.qml
+MeoSpinBox 1.0 components/MeoSpinBox.qml
