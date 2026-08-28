@@ -12,20 +12,23 @@ Rectangle {
     signal clicked(int index)
 
     readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
+    readonly property color themeSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.secondaryContainer !== "undefined") ? MeoTheme.secondaryContainer : "#E8DEF8"
+    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSecondaryContainer !== "undefined") ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
+    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
     readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
     readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
     readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimaryContainer !== "undefined") ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
     readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
     readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
     readonly property int motionSelection: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
     readonly property int motionState: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
     readonly property var fontLabel: (typeof MeoTheme !== "undefined" && typeof MeoTheme.labelMedium !== "undefined") ? MeoTheme.labelMedium : ({ "size": 12, "weight": Font.Medium })
 
     implicitWidth: 360 * themeGlobalScale
-    implicitHeight: (compact ? 64 : 76) * themeGlobalScale
+    implicitHeight: 80 * themeGlobalScale
     radius: 0
-    color: themeSurfaceContainerLow
+    color: themeSurfaceContainer
 
     Row {
         id: destinationsRow
@@ -65,8 +68,8 @@ Rectangle {
                     spacing: 3 * control.themeGlobalScale
 
                     Item {
-                        width: (control.compact ? 56 : 64) * control.themeGlobalScale
-                        height: (control.compact ? 32 : 36) * control.themeGlobalScale
+                        width: 64 * control.themeGlobalScale
+                        height: 32 * control.themeGlobalScale
                         anchors.horizontalCenter: parent.horizontalCenter
 
                         MeoShape {
@@ -76,7 +79,7 @@ Rectangle {
                             height: parent.height
                             radius: height / 2
                             type: control.shape
-                            color: destination.isSelected ? control.themePrimaryContainer
+                            color: destination.isSelected ? control.themeSecondaryContainer
                                                           : hitArea.containsMouse ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
                                                                                   : "transparent"
 
@@ -94,7 +97,7 @@ Rectangle {
                             icon: destination.itemIcon
                             fill: destination.isSelected
                             size: 24
-                            color: destination.isSelected ? control.themeOnPrimaryContainer : control.themeOnSurfaceVariant
+                            color: destination.isSelected ? control.themeOnSecondaryContainer : control.themeOnSurfaceVariant
                         }
 
                         MeoBadge {
