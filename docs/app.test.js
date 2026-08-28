@@ -1,27 +1,19 @@
+/** @jest-environment jsdom */
+
 const fs = require('fs');
 const path = require('path');
-const { JSDOM } = require('jsdom');
 
 describe('MeoUI-SpecSite app.js', () => {
-  let dom;
-  let document;
-  let window;
+  let tokenSections;
+  let components;
 
   beforeEach(() => {
-    // Load the HTML file
-    const html = fs.readFileSync(path.resolve(__dirname, 'index.html'), 'utf8');
+    document.documentElement.innerHTML = fs.readFileSync(
+      path.resolve(__dirname, 'index.html'),
+      'utf8'
+    );
 
-    // Set up JSDOM environment
-    dom = new JSDOM(html, {
-      runScripts: 'dangerously',
-      resources: 'usable'
-    });
-
-    window = dom.window;
-    document = window.document;
-
-    // Define the global data that app.js expects from spec-data.js
-    window.tokenSections = {
+    tokenSections = {
       typography: [
         ["typefaceBrand", "Comfortaa Bold", "Brand name"],
         ["titleBig", "Comfortaa Bold 40 / 48", "Page title"]
@@ -31,19 +23,14 @@ describe('MeoUI-SpecSite app.js', () => {
       ]
     };
 
-    window.components = [
+    components = [
       ["Atomic", "MeoButton", "Command button"],
       ["Atomic", "MeoIcon", "Material Symbols"],
       ["Inputs", "MeoTextField", "Single-line text input"]
     ];
 
-    // Read and evaluate app.js within the JSDOM context
     const appJsCode = fs.readFileSync(path.resolve(__dirname, 'app.js'), 'utf8');
-
-    // Create a script element and append it to the document to execute app.js
-    const script = document.createElement('script');
-    script.textContent = appJsCode;
-    document.body.appendChild(script);
+    Function('tokenSections', 'components', appJsCode)(tokenSections, components);
   });
 
   it('renders typography tokens by default', () => {
