@@ -35,13 +35,9 @@ Button {
         return 24; // m, l
     }
 
-    implicitWidth: {
-        if (size === "xs") return 28 * themeGlobalScale;
-        if (size === "s") return 32 * themeGlobalScale;
-        if (size === "l") return 48 * themeGlobalScale;
-        if (size === "xl") return 56 * themeGlobalScale;
-        return 40 * themeGlobalScale; // m
-    }
+    implicitWidth: (typeof MeoTheme !== "undefined" && typeof MeoTheme.iconButtonSizeForSize === "function")
+                   ? MeoTheme.iconButtonSizeForSize(size)
+                   : (size === "xs" ? 32 : size === "s" ? 36 : size === "l" ? 48 : size === "xl" ? 56 : 40) * themeGlobalScale
     implicitHeight: implicitWidth
 
     padding: 0
@@ -50,12 +46,13 @@ Button {
 
         readonly property real baseRadius: {
             if (control.pressed)
-                return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeMedium !== 'undefined') ? MeoTheme.shapeMedium : 12 * control.themeGlobalScale;
+                return (typeof MeoTheme !== "undefined" && typeof MeoTheme.buttonRadiusForHeight === "function")
+                        ? MeoTheme.buttonRadiusForHeight(height, true) : 8 * control.themeGlobalScale;
             if (control.hovered && shape === "square")
                 return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeLargeIncreased !== 'undefined') ? MeoTheme.shapeLargeIncreased : 20 * control.themeGlobalScale;
             if (shape === "square") {
-                if (size === "xs" || size === "s") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeMedium !== 'undefined') ? MeoTheme.shapeMedium : 12 * MeoTheme.globalScale;
-                return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeLarge !== 'undefined') ? MeoTheme.shapeLarge : 16 * MeoTheme.globalScale;
+                if (size === "xs" || size === "s") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.controlRadius !== 'undefined') ? MeoTheme.controlRadius : 12 * control.themeGlobalScale;
+                return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.windowRadius !== 'undefined') ? MeoTheme.windowRadius : 16 * control.themeGlobalScale;
             }
             return height / 2;
         }

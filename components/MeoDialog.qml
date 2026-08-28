@@ -40,7 +40,7 @@ MeoMotionPopup {
 
     background: Rectangle {
         color: control.themeSurfaceContainerHigh
-        radius: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeExtraLarge !== 'undefined') ? MeoTheme.shapeExtraLarge : 28 * control.themeGlobalScale
+        radius: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.dialogRadius !== 'undefined') ? MeoTheme.dialogRadius : 28 * control.themeGlobalScale
         layer.enabled: control.visible
         layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.55; shadowVerticalOffset: 8; shadowColor: Qt.rgba(0, 0, 0, 0.22) }
     }

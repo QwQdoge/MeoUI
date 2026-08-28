@@ -43,6 +43,23 @@ public:
     static constexpr qreal buttonHeightL() { return 56.0; }
     static constexpr qreal buttonHeightXL() { return 72.0; }
 
+    // Cross-toolkit control semantics.  QML controls, the Plasma shell and
+    // the native Qt style consume these aliases instead of independently
+    // choosing a value from the raw shape scale.
+    static constexpr qreal controlHeight() { return buttonHeightS(); }
+    static constexpr qreal controlRadius() { return shapeMedium(); }
+    static constexpr qreal controlPressedRadius() { return shapeSmall(); }
+    static constexpr qreal cardRadius() { return shapeLargeIncreased(); }
+    static constexpr qreal dialogRadius() { return shapeExtraLarge(); }
+    static constexpr qreal windowRadius() { return shapeLarge(); }
+    static constexpr qreal focusRingWidth() { return space2(); }
+
+    static constexpr qreal iconButtonSizeXS() { return 32.0; }
+    static constexpr qreal iconButtonSizeS() { return 36.0; }
+    static constexpr qreal iconButtonSizeM() { return 40.0; }
+    static constexpr qreal iconButtonSizeL() { return 48.0; }
+    static constexpr qreal iconButtonSizeXL() { return 56.0; }
+
     static constexpr qreal stateOpacityHover() { return 0.10; }
     static constexpr qreal stateOpacityFocus() { return 0.12; }
     static constexpr qreal stateOpacityPressed() { return 0.14; }
@@ -84,6 +101,18 @@ class MeoTokens final : public QObject
     Q_PROPERTY(qreal buttonHeightM READ buttonHeightM CONSTANT)
     Q_PROPERTY(qreal buttonHeightL READ buttonHeightL CONSTANT)
     Q_PROPERTY(qreal buttonHeightXL READ buttonHeightXL CONSTANT)
+    Q_PROPERTY(qreal controlHeight READ controlHeight CONSTANT)
+    Q_PROPERTY(qreal controlRadius READ controlRadius CONSTANT)
+    Q_PROPERTY(qreal controlPressedRadius READ controlPressedRadius CONSTANT)
+    Q_PROPERTY(qreal cardRadius READ cardRadius CONSTANT)
+    Q_PROPERTY(qreal dialogRadius READ dialogRadius CONSTANT)
+    Q_PROPERTY(qreal windowRadius READ windowRadius CONSTANT)
+    Q_PROPERTY(qreal focusRingWidth READ focusRingWidth CONSTANT)
+    Q_PROPERTY(qreal iconButtonSizeXS READ iconButtonSizeXS CONSTANT)
+    Q_PROPERTY(qreal iconButtonSizeS READ iconButtonSizeS CONSTANT)
+    Q_PROPERTY(qreal iconButtonSizeM READ iconButtonSizeM CONSTANT)
+    Q_PROPERTY(qreal iconButtonSizeL READ iconButtonSizeL CONSTANT)
+    Q_PROPERTY(qreal iconButtonSizeXL READ iconButtonSizeXL CONSTANT)
     Q_PROPERTY(qreal stateOpacityHover READ stateOpacityHover CONSTANT)
     Q_PROPERTY(qreal stateOpacityFocus READ stateOpacityFocus CONSTANT)
     Q_PROPERTY(qreal stateOpacityPressed READ stateOpacityPressed CONSTANT)
@@ -120,6 +149,18 @@ public:
     qreal buttonHeightM() const;
     qreal buttonHeightL() const;
     qreal buttonHeightXL() const;
+    qreal controlHeight() const;
+    qreal controlRadius() const;
+    qreal controlPressedRadius() const;
+    qreal cardRadius() const;
+    qreal dialogRadius() const;
+    qreal windowRadius() const;
+    qreal focusRingWidth() const;
+    qreal iconButtonSizeXS() const;
+    qreal iconButtonSizeS() const;
+    qreal iconButtonSizeM() const;
+    qreal iconButtonSizeL() const;
+    qreal iconButtonSizeXL() const;
     qreal stateOpacityHover() const;
     qreal stateOpacityFocus() const;
     qreal stateOpacityPressed() const;

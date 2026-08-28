@@ -24,19 +24,25 @@ const tokenSections = {
     ["motionEasingEmphasized", "[0.05, 0.7, 0.1, 1]", "Shape, ripple, selected transitions"]
   ],
   state: [
-    ["stateOpacityHover", "0.08", "Hover state layer"],
-    ["stateOpacityFocus", "0.10", "Keyboard focus state"],
-    ["stateOpacityPressed", "0.10", "Pressed and ripple state"],
+    ["stateOpacityHover", "0.10", "Hover state layer"],
+    ["stateOpacityFocus", "0.12", "Keyboard focus state"],
+    ["stateOpacityPressed", "0.14", "Pressed and ripple state"],
     ["stateOpacityDragged", "0.16", "Dragged state"]
   ],
   shape: [
     ["shapeExtraSmall", "4", "Tiny surface radius"],
     ["shapeSmall", "8", "Small controls"],
     ["shapeMedium", "12", "Medium controls"],
-    ["shapeLarge", "16", "Cards and surfaces"],
-    ["shapeExtraLarge", "28", "Large surfaces"],
+    ["shapeLarge", "16", "Raw large shape"],
+    ["shapeLargeIncreased", "20", "Raw increased large shape"],
+    ["shapeExtraLarge", "28", "Raw extra-large shape"],
     ["expressiveShapeCornerRadius", "32", "Expressive controls"],
-    ["shapeFull", "1000", "Pills and circles"]
+    ["shapeFull", "1000", "Pills and circles"],
+    ["controlRadius / controlPressedRadius", "12 / 8", "Controls and pressed shape morph"],
+    ["windowRadius / cardRadius / dialogRadius", "16 / 20 / 28", "Cross-toolkit surfaces"],
+    ["controlHeight", "40", "Compact desktop control baseline"],
+    ["iconButtonSizeXS…XL", "32 / 36 / 40 / 48 / 56", "Icon-only action target scale"],
+    ["focusRingWidth", "2", "Keyboard focus outline"]
   ],
   spacing: [
     ["space2", "2", "Hairline gap"],

@@ -8,7 +8,7 @@ Frame {
 
     property string type: "elevated" // "elevated" | "filled" | "outlined"
     property int level: type === "elevated" ? 1 : 0
-    property real radius: (typeof MeoTheme !== "undefined" && typeof MeoTheme.shapeExtraLarge !== "undefined") ? MeoTheme.shapeExtraLarge : 28 * themeGlobalScale
+    property real radius: (typeof MeoTheme !== "undefined" && typeof MeoTheme.cardRadius !== "undefined") ? MeoTheme.cardRadius : 20 * themeGlobalScale
     property string shape: "rect"
     property bool interactive: false
     property bool selected: false

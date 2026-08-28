@@ -197,7 +197,7 @@ ShowcaseCategoryPage {
                     anchors.centerIn: parent
                     spacing: MeoTheme.space4
                     MeoText { text: "Dynamic Shape Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Radius: " + Math.round(MeoTheme.shapeLarge) + "px"; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: "Radius: " + Math.round(MeoTheme.cardRadius) + "px"; typeRole: "body"; typeSize: "small" }
                 }
             }
         }
@@ -239,6 +239,75 @@ ShowcaseCategoryPage {
                         spacing: 2
                         MeoText { text: modelData.name; typeRole: "label"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
                         MeoText { text: Math.round(modelData.val) + " px"; typeRole: "body"; typeSize: "small"; color: MeoTheme.primary; horizontalAlignment: Text.AlignHCenter }
+                    }
+                }
+            }
+        }
+    }
+
+    // 4. Cross-toolkit semantic geometry contract
+    ShowcaseSection {
+        title: "Control Geometry Contract (跨工具包控件几何契约)"
+        subtitle: "The same semantic roles drive MeoUI, Plasma surfaces, native Qt controls, and KWin decoration."
+        width: parent.width
+
+        Flow {
+            width: parent.width
+            spacing: MeoTheme.space16
+
+            Column {
+                spacing: MeoTheme.space8
+                MeoText { text: "Button · " + Math.round(MeoTheme.controlHeight) + " px"; typeRole: "label"; typeSize: "medium"; emphasized: true }
+                MeoButton { text: "Primary action"; type: "filled"; size: "s" }
+            }
+
+            Column {
+                spacing: MeoTheme.space8
+                MeoText { text: "Icon targets · 32–56 px"; typeRole: "label"; typeSize: "medium"; emphasized: true }
+                Row {
+                    spacing: MeoTheme.space8
+                    Repeater {
+                        model: ["xs", "s", "m", "l", "xl"]
+                        delegate: MeoIconButton {
+                            required property string modelData
+                            size: modelData
+                            type: modelData === "m" ? "tonal" : "outlined"
+                            icon.name: "favorite"
+                            Accessible.name: "Icon button size " + modelData
+                        }
+                    }
+                }
+            }
+
+            Column {
+                spacing: MeoTheme.space8
+                MeoText { text: "Surface roles"; typeRole: "label"; typeSize: "medium"; emphasized: true }
+                Row {
+                    spacing: MeoTheme.space8
+                    Repeater {
+                        model: [
+                            { label: "Control", radius: MeoTheme.controlRadius },
+                            { label: "Window", radius: MeoTheme.windowRadius },
+                            { label: "Card", radius: MeoTheme.cardRadius },
+                            { label: "Dialog", radius: MeoTheme.dialogRadius }
+                        ]
+                        delegate: Rectangle {
+                            required property var modelData
+                            width: 88 * MeoTheme.globalScale
+                            height: 56 * MeoTheme.globalScale
+                            radius: modelData.radius
+                            color: MeoTheme.surfaceContainerHigh
+                            border.color: MeoTheme.outlineVariant
+                            border.width: MeoTheme.strokeWidthThin
+                            MeoText {
+                                anchors.centerIn: parent
+                                text: modelData.label + "\n" + Math.round(modelData.radius) + " px"
+                                typeRole: "label"
+                                typeSize: "small"
+                                horizontalAlignment: Text.AlignHCenter
+                                color: MeoTheme.contentOnSurface
+                            }
+                        }
                     }
                 }
             }

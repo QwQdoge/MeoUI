@@ -483,6 +483,46 @@ QtObject {
     readonly property real buttonHeightL: metricToken("buttonHeightL", 56) * globalScale
     readonly property real buttonHeightXL: metricToken("buttonHeightXL", 72) * globalScale
 
+    // Semantic control geometry shared by MeoUI, native Qt/KDE styling and
+    // the Plasma shell.  Raw shape tokens remain available for illustration;
+    // product controls should prefer these role-based values.
+    readonly property real controlHeight: metricToken("controlHeight", 40) * globalScale
+    readonly property real controlRadius: metricToken("controlRadius", 12) * globalScale * cornerScale
+    readonly property real controlPressedRadius: metricToken("controlPressedRadius", 8) * globalScale * cornerScale
+    readonly property real cardRadius: metricToken("cardRadius", 20) * globalScale * cornerScale
+    readonly property real dialogRadius: metricToken("dialogRadius", 28) * globalScale * cornerScale
+    readonly property real windowRadius: metricToken("windowRadius", 16) * globalScale * cornerScale
+    readonly property real focusRingWidth: metricToken("focusRingWidth", 2) * globalScale
+
+    readonly property real iconButtonSizeXS: metricToken("iconButtonSizeXS", 32) * globalScale
+    readonly property real iconButtonSizeS: metricToken("iconButtonSizeS", 36) * globalScale
+    readonly property real iconButtonSizeM: metricToken("iconButtonSizeM", 40) * globalScale
+    readonly property real iconButtonSizeL: metricToken("iconButtonSizeL", 48) * globalScale
+    readonly property real iconButtonSizeXL: metricToken("iconButtonSizeXL", 56) * globalScale
+
+    function buttonHeightForSize(size) {
+        if (size === "xs") return buttonHeightXS
+        if (size === "s") return buttonHeightS
+        if (size === "l") return buttonHeightL
+        if (size === "xl") return buttonHeightXL
+        return buttonHeightM
+    }
+
+    function iconButtonSizeForSize(size) {
+        if (size === "xs") return iconButtonSizeXS
+        if (size === "s") return iconButtonSizeS
+        if (size === "l") return iconButtonSizeL
+        if (size === "xl") return iconButtonSizeXL
+        return iconButtonSizeM
+    }
+
+    function buttonRadiusForHeight(height, pressed) {
+        if (!pressed) return height / 2
+        return Math.min(height / 2,
+                        Math.max(controlPressedRadius,
+                                 Math.min(controlRadius, height / 2 - space8)))
+    }
+
     readonly property real sliderTrackHeightXS: 4 * globalScale
     readonly property real sliderTrackHeightS: 16 * globalScale
     readonly property real sliderTrackHeightM: 28 * globalScale

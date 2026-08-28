@@ -40,13 +40,11 @@ Button {
     readonly property int motionSelection: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
     readonly property int motionShape: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationShapeSettle !== "undefined") ? MeoTheme.motionDurationShapeSettle : 220
 
-    readonly property real buttonHeight: {
-        if (size === "xs") return 32 * themeGlobalScale
-        if (size === "s") return 40 * themeGlobalScale
-        if (size === "l") return 56 * themeGlobalScale
-        if (size === "xl") return 72 * themeGlobalScale
-        return 48 * themeGlobalScale
-    }
+    readonly property real buttonHeight: (typeof MeoTheme !== "undefined"
+                                          && typeof MeoTheme.buttonHeightForSize === "function")
+                                         ? MeoTheme.buttonHeightForSize(size)
+                                         : (size === "xs" ? 32 : size === "s" ? 40
+                                            : size === "l" ? 56 : size === "xl" ? 72 : 48) * themeGlobalScale
     readonly property int iconSize: {
         if (size === "xs") return 18
         if (size === "s") return 20
@@ -98,12 +96,18 @@ Button {
     }
     readonly property real restingRadius: {
         if (shape === "square") {
-            if (size === "xs" || size === "s") return 12 * themeGlobalScale
-            return 16 * themeGlobalScale
+            if (size === "xs" || size === "s")
+                return Math.min(buttonHeight / 2, (typeof MeoTheme !== "undefined" ? MeoTheme.controlRadius : 12 * themeGlobalScale))
+            return Math.min(buttonHeight / 2, (typeof MeoTheme !== "undefined" ? MeoTheme.windowRadius : 16 * themeGlobalScale))
         }
-        return buttonHeight / 2
+        return (typeof MeoTheme !== "undefined" && typeof MeoTheme.buttonRadiusForHeight === "function")
+                ? MeoTheme.buttonRadiusForHeight(buttonHeight, false) : buttonHeight / 2
     }
-    readonly property real activeRadius: pressed && shape === "round" ? Math.max(12 * themeGlobalScale, restingRadius - 8 * themeGlobalScale) : restingRadius
+    readonly property real activeRadius: pressed && shape === "round"
+                                         ? ((typeof MeoTheme !== "undefined" && typeof MeoTheme.buttonRadiusForHeight === "function")
+                                            ? MeoTheme.buttonRadiusForHeight(buttonHeight, true)
+                                            : Math.max(8 * themeGlobalScale, restingRadius - 8 * themeGlobalScale))
+                                         : restingRadius
 
     implicitHeight: buttonHeight
     implicitWidth: Math.max((effectiveType === "text" ? 48 : 64) * themeGlobalScale,
@@ -186,7 +190,9 @@ Button {
             radius: control.activeRadius
             color: control.baseContainerColor
             strokeColor: control.effectiveType === "outlined" ? (control.enabled ? control.themeOutline : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12)) : "transparent"
-            strokeWidth: control.effectiveType === "outlined" ? 1 * control.themeGlobalScale : 0
+            strokeWidth: control.effectiveType === "outlined"
+                         ? ((typeof MeoTheme !== "undefined" && typeof MeoTheme.strokeWidthThin !== "undefined")
+                            ? MeoTheme.strokeWidthThin : 1 * control.themeGlobalScale) : 0
             scale: control.pressed ? (control.bouncy ? 0.975 : 0.99) : 1.0
 
             layer.enabled: control.visible && control.effectiveType === "elevated" && control.enabled && !control.pressed
