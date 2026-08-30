@@ -58,7 +58,7 @@ SpinBox {
         MeoIconButton {
             anchors.centerIn: parent
             size: "s"
-            icon: "add"
+            icon.name: "add"
             enabled: control.value < control.to
             onClicked: control.increase()
             onPressAndHold: {
@@ -91,7 +91,7 @@ SpinBox {
         MeoIconButton {
             anchors.centerIn: parent
             size: "s"
-            icon: "remove"
+            icon.name: "remove"
             enabled: control.value > control.from
             onClicked: control.decrease()
             onPressAndHold: {
@@ -118,7 +118,9 @@ SpinBox {
     background: Rectangle {
         implicitWidth: 144 * control.themeGlobalScale
         implicitHeight: 48 * control.themeGlobalScale
-        radius: 4 * control.themeGlobalScale // M3 Outlined Text Field radius
+        // Use the shared shape token so this compact numeric control responds
+        // to the same dynamic corner scale as the Pixel shell surfaces.
+        radius: MeoTheme.shapeSmall
         color: "transparent"
         border.color: control.activeFocus ? control.themePrimary : (control.enabled ? control.themeOutline : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12))
         border.width: (control.activeFocus ? 2 : 1) * control.themeGlobalScale
@@ -126,6 +128,12 @@ SpinBox {
         Behavior on border.color {
             ColorAnimation {
                 duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 150
+            }
+        }
+        Behavior on radius {
+            NumberAnimation {
+                duration: MeoTheme.motionDurationShapeSettle
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }

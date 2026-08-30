@@ -15,7 +15,10 @@ MeoMotionSurface {
     readonly property bool compact: width < 640 * MeoTheme.globalScale
 
     color: MeoTheme.surfaceContainerLow
-    radius: MeoTheme.shapeExtraLarge
+    // Status Center is a transient Pixel-style surface rather than a generic
+    // card.  Its larger semantic corner stays tied to MeoTheme.cornerScale,
+    // so desktop accessibility and dynamic-shape preferences reach it too.
+    radius: MeoTheme.shapeExtraLargeIncreased
     elevation: 3
     implicitWidth: 720 * MeoTheme.globalScale
     implicitHeight: 432 * MeoTheme.globalScale

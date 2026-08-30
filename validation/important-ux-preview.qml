@@ -74,6 +74,7 @@ ApplicationWindow {
                             iconName: "wifi"
                             active: true
                             wide: true
+                            visualStyle: "pixel"
                             detailsEnabled: true
                         }
 
@@ -82,6 +83,7 @@ ApplicationWindow {
                             title: "Bluetooth"
                             iconName: "bluetooth"
                             wide: false
+                            visualStyle: "pixel"
                             detailsEnabled: true
                             showCompactLabel: true
                         }

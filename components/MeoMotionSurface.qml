@@ -31,6 +31,12 @@ Item {
         radius: control.radius
         color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, control.elevation > 0 ? 0.055 : 0)
         opacity: control.elevation > 0 ? 1 : 0
+        Behavior on color {
+            ColorAnimation {
+                duration: MeoTheme.motionDurationEffectSlow
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
     }
     Rectangle {
         x: 0; y: control.elevation * 2
@@ -38,6 +44,12 @@ Item {
         radius: control.radius
         color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, control.elevation > 0 ? 0.065 : 0)
         opacity: control.elevation > 0 ? 1 : 0
+        Behavior on color {
+            ColorAnimation {
+                duration: MeoTheme.motionDurationEffectSlow
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
     }
     Rectangle {
         anchors.fill: parent
@@ -46,6 +58,18 @@ Item {
         border.width: 1
         border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.16)
         Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+        Behavior on color {
+            ColorAnimation {
+                duration: MeoTheme.motionDurationEffectSlow
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
+        Behavior on border.color {
+            ColorAnimation {
+                duration: MeoTheme.motionDurationEffectSlow
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
     }
     Item { id: contentLayer; anchors.fill: parent }
 

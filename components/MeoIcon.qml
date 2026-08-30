@@ -46,4 +46,17 @@ Text {
             easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
         }
     }
+
+    // Palette roles may change with the wallpaper-derived scheme.  Keep the
+    // icon in sync with the selected-glyph morph instead of snapping colors.
+    Behavior on color {
+        ColorAnimation {
+            duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.reduceMotion !== "undefined" && MeoTheme.reduceMotion)
+                      ? 0
+                      : ((typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined")
+                         ? MeoTheme.motionDurationSelection : 220)
+            easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined")
+                                ? MeoTheme.motionEasingEmphasized : [0.2, 0, 0, 1]
+        }
+    }
 }

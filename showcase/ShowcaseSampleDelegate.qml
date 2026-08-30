@@ -81,11 +81,13 @@ Item {
         if (name === "MeoDatePicker") return datePickerSample
         if (name === "MeoDateRangePicker") return dateRangeSample
         if (name === "MeoMonthCalendar") return monthCalendarSample
+        if (name === "MeoSpinBox") return spinBoxSample
         if (name === "MeoTimePicker") return timePickerSample
         if (name === "MeoCheckbox") return checkboxSample
         if (name === "MeoRadioButton") return radioSample
         if (name === "MeoSwitch") return switchSample
         if (name === "MeoSlider") return sliderSample
+        if (name === "MeoScrollBar") return scrollBarSample
         if (name === "MeoSteppedSlider") return steppedSliderSample
         if (name === "MeoQuickControlSlider") return quickControlSliderSample
         if (name === "MeoQuickSettingsTile") return quickSettingsTileSample
@@ -368,6 +370,7 @@ Item {
         }
     }
     Component { id: dateRangeSample; MeoDateRangePicker { startDate: new Date(2026, 6, 1); endDate: new Date(2026, 6, 12) } }
+    Component { id: spinBoxSample; MeoSpinBox { from: 0; to: 100; value: 42; stepSize: 2 } }
     Component {
         id: timePickerSample
         Column {
@@ -448,14 +451,35 @@ Item {
             MeoSlider { width: 360 * MeoTheme.globalScale; value: 30; enabled: false }
         }
     }
+    Component {
+        id: scrollBarSample
+        Item {
+            width: 48 * MeoTheme.globalScale
+            height: 180 * MeoTheme.globalScale
+
+            Rectangle {
+                anchors.fill: parent
+                radius: MeoTheme.shapeMedium
+                color: MeoTheme.surfaceContainerLow
+            }
+            MeoScrollBar {
+                anchors.centerIn: parent
+                height: parent.height - 2 * MeoTheme.space12
+                orientation: Qt.Vertical
+                policy: ScrollBar.AlwaysOn
+                position: 0.28
+                size: 0.35
+            }
+        }
+    }
     Component { id: rangeSliderSample; MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 24; secondValue: 78 } }
     Component { id: quickControlSliderSample; MeoQuickControlSlider { width: 360 * MeoTheme.globalScale; iconName: "light_mode"; value: 72; detailsAvailable: true } }
     Component {
         id: quickSettingsTileSample
         Row {
             spacing: MeoTheme.space12
-            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Connected"; iconName: "wifi"; active: true; wide: true }
-            MeoQuickSettingsTile { title: "Bluetooth"; supportingText: "Off"; iconName: "bluetooth"; wide: true }
+            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Connected"; iconName: "wifi"; active: true; wide: true; visualStyle: "pixel" }
+            MeoQuickSettingsTile { title: "Bluetooth"; supportingText: "Off"; iconName: "bluetooth"; wide: true; visualStyle: "pixel" }
         }
     }
     Component { id: selectionGroupSample; MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": "Design", "checked": true }, { "label": "Code", "checked": false }] } }

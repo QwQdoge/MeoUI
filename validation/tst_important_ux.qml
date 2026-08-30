@@ -16,6 +16,7 @@ Item {
         iconName: "wifi"
         active: true
         wide: true
+        visualStyle: "pixel"
         detailsEnabled: true
     }
 
@@ -109,6 +110,7 @@ Item {
 
         function init() {
             tile.wide = true
+            tile.visualStyle = "pixel"
             tile.editMode = false
             tile.detailsEnabled = true
             tileTriggeredSpy.clear()
@@ -227,6 +229,8 @@ Item {
         }
 
         function test_pixelReferencePrimitivesKeepTheirContracts() {
+            compare(tile.visualHeight, 80 * MeoTheme.globalScale)
+            compare(tile.pixelStyle, true)
             // The Android 16 editor works on four logical columns: a wide
             // tile spans two, while a compact tile spans one.
             compare(pixelEditor.effectiveColumns, 4)
