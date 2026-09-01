@@ -67,12 +67,15 @@ Rectangle {
             anchors.left: parent.left
             anchors.verticalCenter: control.type === "small" || control.type === "center" ? parent.verticalCenter : undefined
             anchors.top: control.type === "medium" || control.type === "large" ? parent.top : undefined
+            anchors.topMargin: (control.type === "medium" || control.type === "large") ? 8 * control.themeGlobalScale : 0
             sourceComponent: control.navigationIcon
-            width: 48 * control.themeGlobalScale
-            height: 48 * control.themeGlobalScale
+            width: control.navigationIcon ? 48 * control.themeGlobalScale : 0
+            height: control.navigationIcon ? 48 * control.themeGlobalScale : 0
+            visible: width > 0
         }
 
         Text {
+            id: titleText
             text: isContextual ? (selectionCount > 0 ? selectionCount.toString() : "") : control.title
 
             readonly property real targetFontSize: {
@@ -92,23 +95,38 @@ Rectangle {
             font.letterSpacing: (fontTitleLarge.letterSpacing || 0) * control.themeGlobalScale
             lineHeight: fontTitleLarge.lineHeight ? (fontTitleLarge.lineHeight / fontTitleLarge.size) : 28 / 22
             color: isContextual ? control.themeOnPrimaryContainer : control.themeOnSurface
+
             anchors.horizontalCenter: (control.type === "center" && !isContextual) ? parent.horizontalCenter : undefined
-            anchors.left: (control.type === "center" && !isContextual) ? undefined : navIconLoader.right
-            anchors.leftMargin: (control.type === "center" && !isContextual) ? 0 : 4 * control.themeGlobalScale
+            anchors.left: (control.type === "center" && !isContextual) ? undefined : parent.left
+
+            anchors.leftMargin: {
+                if (control.type === "center" && !isContextual) return 0;
+                let collapsedMargin = navIconLoader.width > 0 ? (navIconLoader.width + 4 * control.themeGlobalScale) : 12 * control.themeGlobalScale;
+                let expandedMargin = 12 * control.themeGlobalScale; // typically 16dp from edge but parent has 4dp leftMargin
+                if (control.type === "large" || control.type === "medium") {
+                    return control.flexible ? (collapsedMargin + (expandedMargin - collapsedMargin) * control.scrollProgress) : expandedMargin;
+                }
+                return collapsedMargin;
+            }
 
             anchors.verticalCenter: {
-                if (control.flexible && (control.type === "medium" || control.type === "large")) return undefined;
-                return control.type === "small" || control.type === "center" ? parent.verticalCenter : undefined
+                return (control.type === "small" || control.type === "center") ? parent.verticalCenter : undefined
             }
 
             anchors.bottom: {
-                if (control.flexible && (control.type === "medium" || control.type === "large")) return parent.bottom;
-                return control.type === "medium" || control.type === "large" ? parent.bottom : undefined
+                return (control.type === "medium" || control.type === "large") ? parent.bottom : undefined
             }
 
             anchors.bottomMargin: {
-                if (control.flexible && (control.type === "medium" || control.type === "large")) {
-                    return (parent.height - fontTitleLarge.size * control.themeGlobalScale) / 2 * (1.0 - control.scrollProgress);
+                if (control.type === "large") {
+                    let maxBottomMargin = 28 * control.themeGlobalScale;
+                    let minBottomMargin = (64 * control.themeGlobalScale - height) / 2;
+                    return control.flexible ? (minBottomMargin + (maxBottomMargin - minBottomMargin) * control.scrollProgress) : maxBottomMargin;
+                }
+                if (control.type === "medium") {
+                    let maxBottomMargin = 24 * control.themeGlobalScale;
+                    let minBottomMargin = (64 * control.themeGlobalScale - height) / 2;
+                    return control.flexible ? (minBottomMargin + (maxBottomMargin - minBottomMargin) * control.scrollProgress) : maxBottomMargin;
                 }
                 return 0;
             }
