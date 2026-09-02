@@ -1,0 +1,42 @@
+name: Temporary docs dependency resolver
+
+on:
+  push:
+    branches:
+      - automation/docs-jest-env-30.5.1
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Resolve latest stable dependency
+        working-directory: docs
+        run: npm install --save-dev jest-environment-jsdom@30.5.1 --package-lock-only --ignore-scripts
+      - name: Install exact lockfile
+        working-directory: docs
+        run: npm ci --ignore-scripts
+      - name: Run docs tests
+        working-directory: docs
+        run: npm test -- --runInBand
+      - name: Audit production dependency graph
+        working-directory: docs
+        run: npm audit --omit=dev --audit-level=high
+      - name: Commit resolved manifests
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/package.json docs/package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(deps): update jest-environment-jsdom to 30.5.1'
+            git push
+          fi
