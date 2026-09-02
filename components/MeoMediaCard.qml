@@ -41,10 +41,16 @@ MeoCard {
     signal overflowClicked()
 
     readonly property real strokeWidthValue: {
-        if (thickness === "medium") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthMedium !== 'undefined') ? MeoTheme.strokeWidthMedium : 2 * themeGlobalScale;
-        if (thickness === "thick") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthThick !== 'undefined') ? MeoTheme.strokeWidthThick : 3 * themeGlobalScale;
-        return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthThin !== 'undefined') ? MeoTheme.strokeWidthThin : 1 * themeGlobalScale;
+        if (thickness === "medium") return MeoTheme.strokeWidthMedium
+        if (thickness === "thick") return MeoTheme.strokeWidthThick
+        return MeoTheme.strokeWidthThin
     }
+    readonly property color contentColor: control.selected
+                                        ? MeoTheme.contentOnPrimaryContainer
+                                        : MeoTheme.contentOnSurface
+    readonly property color supportingContentColor: control.selected
+                                                   ? MeoTheme.contentOnPrimaryContainer
+                                                   : MeoTheme.contentOnSurfaceVariant
 
     implicitWidth: {
         if (mediaPosition === "left" || mediaPosition === "right") {
@@ -73,39 +79,43 @@ MeoCard {
             id: shapeBg
             anchors.fill: parent
             type: control.shape
-            radius: (typeof mouseArea !== 'undefined' && mouseArea.pressed)
-                    ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeMedium) ? MeoTheme.shapeMedium : control.radius)
-                    : (typeof mouseArea !== 'undefined' && mouseArea.containsMouse) && control.interactive
-                      ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeLargeIncreased) ? MeoTheme.shapeLargeIncreased : control.radius)
+            radius: mouseArea.pressed
+                    ? MeoTheme.shapeMedium
+                    : mouseArea.containsMouse && control.interactive
+                      ? MeoTheme.shapeLargeIncreased
                     : control.selected
-                      ? ((typeof MeoTheme !== 'undefined' && MeoTheme.shapeLargeIncreased) ? MeoTheme.shapeLargeIncreased : control.radius)
+                      ? MeoTheme.shapeLargeIncreased
                       : control.radius
             color: {
-                if (control.selected) return (typeof MeoTheme !== 'undefined' && MeoTheme.primaryContainer) ? MeoTheme.primaryContainer : control.themeSurfaceContainerHighest
-                if (control.type === "filled") return control.themeSurfaceContainerHighest
+                if (control.selected) return MeoTheme.primaryContainer
+                if (control.type === "filled") return MeoTheme.surfaceContainerHighest
                 if (control.type === "elevated") return control.themeSurfaceContainerLow
                 return control.themeSurface
             }
-            strokeColor: control.selected ? ((typeof MeoTheme !== 'undefined' && MeoTheme.primary) ? MeoTheme.primary : control.themeOutlineVariant)
+            strokeColor: control.selected ? MeoTheme.primary
                                           : control.type === "outlined" ? control.themeOutlineVariant : "transparent"
-            strokeWidth: control.selected ? ((typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthMedium !== 'undefined') ? MeoTheme.strokeWidthMedium : 2 * control.themeGlobalScale)
+            strokeWidth: control.selected ? MeoTheme.strokeWidthMedium
                                           : control.type === "outlined" ? control.strokeWidthValue : 0
 
-            scale: control.interactive && control.bouncy ? ((typeof mouseArea !== 'undefined' && mouseArea.pressed) ? 0.97 : 1.0) : 1.0
+            scale: control.interactive && control.bouncy && !control.reducedMotion ? (mouseArea.pressed ? 0.97 : 1.0) : 1.0
 
             Behavior on scale {
+                enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionFast
-                    easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 1.56, 0.64, 1.0]
+                    easing.bezierCurve: MeoTheme.motionEasingSoul
                 }
             }
 
             // Surface Tint for Elevation
             Rectangle {
                 anchors.fill: parent
-                color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceTint !== 'undefined') ? MeoTheme.surfaceTint(control.level) : "transparent"
+                color: MeoTheme.surfaceTint(control.level)
                 visible: control.type === "elevated" && control.level > 0
-                Behavior on color { ColorAnimation { duration: control.motionFast } }
+                Behavior on color {
+                    enabled: !control.reducedMotion
+                    ColorAnimation { duration: control.motionFast }
+                }
 
                 layer.enabled: visible && control.visible
                 layer.effect: MultiEffect {
@@ -117,6 +127,7 @@ MeoCard {
                             anchors.fill: parent
                             type: control.shape
                             radius: control.radius
+                            color: "white"
                         }
                     }
                 }
@@ -129,7 +140,7 @@ MeoCard {
                 shadowBlur: control.elevation * 0.2
                 shadowVerticalOffset: control.elevation * 1.2 * control.themeGlobalScale
                 shadowOpacity: 0.2 + control.elevation * 0.02
-                shadowColor: Qt.rgba(0,0,0,0.2)
+                shadowColor: MeoTheme.shadow
             }
 
             MeoStateLayer {
@@ -138,18 +149,18 @@ MeoCard {
                 radius: shapeBg.radius
                 shape: shapeBg.type
                 visible: control.interactive
-                pressed: (typeof mouseArea !== 'undefined') ? mouseArea.pressed : false
-                hovered: (typeof mouseArea !== 'undefined') ? mouseArea.containsMouse : false
+                pressed: mouseArea.pressed
+                hovered: mouseArea.containsMouse
                 focused: control.activeFocus
-                pressX: (typeof mouseArea !== 'undefined') ? mouseArea.mouseX : width / 2
-                pressY: (typeof mouseArea !== 'undefined') ? mouseArea.mouseY : height / 2
-                color: control.isDarkMode ? "#FFFFFF" : "#000000"
+                pressX: mouseArea.mouseX
+                pressY: mouseArea.mouseY
+                color: control.themeOnSurface
             }
 
             MouseArea {
                 id: mouseArea
                 anchors.fill: parent
-                enabled: control.interactive
+                enabled: control.interactive && control.enabled
                 hoverEnabled: true
                 onClicked: {
                     control.forceActiveFocus(Qt.MouseFocusReason)
@@ -157,10 +168,14 @@ MeoCard {
                 }
             }
 
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color {
+                enabled: !control.reducedMotion
+                ColorAnimation { duration: control.motionFast }
+            }
             Behavior on radius {
+                enabled: !control.reducedMotion
                 NumberAnimation {
-                    duration: (typeof mouseArea !== 'undefined' && mouseArea.containsMouse) || (typeof mouseArea !== 'undefined' && mouseArea.pressed) ? MeoTheme.motionDurationShapeEnter : MeoTheme.motionDurationShapeSettle
+                    duration: mouseArea.containsMouse || mouseArea.pressed ? MeoTheme.motionDurationShapeEnter : MeoTheme.motionDurationShapeSettle
                     easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
@@ -227,6 +242,7 @@ MeoCard {
                         size: 40
                         source: control.avatarSource
                         initials: control.avatarInitials
+                        textColor: control.contentColor
                         visible: control.avatarSource !== "" || control.avatarInitials !== ""
                     }
 
@@ -239,13 +255,14 @@ MeoCard {
                             typeRole: "title"
                             typeSize: "small"
                             emphasized: true
+                            color: control.contentColor
                         }
                         MeoText {
                             Layout.fillWidth: true
                             text: control.headerSubtitle
                             typeRole: "body"
                             typeSize: "small"
-                            color: MeoTheme.contentOnSurfaceVariant
+                            color: control.supportingContentColor
                             visible: control.headerSubtitle !== ""
                         }
                     }
@@ -264,10 +281,12 @@ MeoCard {
             Item {
                 id: mediaTopContainer
                 Layout.fillWidth: true
-                Layout.preferredHeight: width / control.aspectRatio
+                Layout.preferredHeight: control.aspectRatio > 0 ? control.width / control.aspectRatio : 0
                 visible: control.mediaSource !== "" && control.mediaPosition === "top"
 
                 Image {
+                    id: mediaTopImage
+                    objectName: "meoMediaCardTopImage"
                     anchors.fill: parent
                     source: control.mediaSource
                     fillMode: Image.PreserveAspectCrop
@@ -280,21 +299,11 @@ MeoCard {
                     hovered: (typeof mouseArea !== 'undefined') ? mouseArea.containsMouse : false
                     focused: control.activeFocus
                     visible: control.interactive
-                }
-
-                // Masking to parent shape
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: mediaTopContainer.width
-                        height: mediaTopContainer.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                        }
-                    }
+                    radius: shapeBg.radius
+                    topLeftRadius: radius
+                    topRightRadius: radius
+                    bottomLeftRadius: 0
+                    bottomRightRadius: 0
                 }
             }
 
@@ -311,6 +320,7 @@ MeoCard {
                     typeRole: "title"
                     typeSize: control.cardSize === "l" ? "medium" : "small"
                     emphasized: true
+                    color: control.contentColor
                     visible: text !== ""
                 }
 
@@ -319,7 +329,7 @@ MeoCard {
                     text: control.supportingText
                     typeRole: "body"
                     typeSize: control.cardSize === "l" ? "medium" : "small"
-                    color: MeoTheme.contentOnSurfaceVariant
+                    color: control.supportingContentColor
                     visible: text !== ""
                     wrapMode: Text.WordWrap
                 }
@@ -329,10 +339,12 @@ MeoCard {
             Item {
                 id: mediaBottomContainer
                 Layout.fillWidth: true
-                Layout.preferredHeight: width / control.aspectRatio
+                Layout.preferredHeight: control.aspectRatio > 0 ? control.width / control.aspectRatio : 0
                 visible: control.mediaSource !== "" && control.mediaPosition === "bottom"
 
                 Image {
+                    id: mediaBottomImage
+                    objectName: "meoMediaCardBottomImage"
                     anchors.fill: parent
                     source: control.mediaSource
                     fillMode: Image.PreserveAspectCrop
@@ -345,20 +357,11 @@ MeoCard {
                     hovered: (typeof mouseArea !== 'undefined') ? mouseArea.containsMouse : false
                     focused: control.activeFocus
                     visible: control.interactive
-                }
-
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: mediaBottomContainer.width
-                        height: mediaBottomContainer.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                        }
-                    }
+                    radius: shapeBg.radius
+                    topLeftRadius: 0
+                    topRightRadius: 0
+                    bottomLeftRadius: radius
+                    bottomRightRadius: radius
                 }
             }
 
@@ -411,6 +414,8 @@ MeoCard {
                 visible: control.mediaSource !== "" && control.mediaPosition === "left"
 
                 Image {
+                    id: mediaLeftImage
+                    objectName: "meoMediaCardLeftImage"
                     anchors.fill: parent
                     source: control.mediaSource
                     fillMode: Image.PreserveAspectCrop
@@ -423,20 +428,11 @@ MeoCard {
                     hovered: (typeof mouseArea !== 'undefined') ? mouseArea.containsMouse : false
                     focused: control.activeFocus
                     visible: control.interactive
-                }
-
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: mediaLeftContainer.width
-                        height: mediaLeftContainer.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                        }
-                    }
+                    radius: shapeBg.radius
+                    topLeftRadius: radius
+                    topRightRadius: 0
+                    bottomLeftRadius: radius
+                    bottomRightRadius: 0
                 }
             }
 
@@ -464,25 +460,27 @@ MeoCard {
                             size: 32
                             source: control.avatarSource
                             initials: control.avatarInitials
+                            textColor: control.contentColor
                             visible: control.avatarSource !== "" || control.avatarInitials !== ""
                         }
 
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 1 * themeGlobalScale
-                            MeoText {
+                        MeoText {
                                 Layout.fillWidth: true
                                 text: control.headerTitle
                                 typeRole: "title"
                                 typeSize: "small"
-                                emphasized: true
+                            emphasized: true
+                            color: control.contentColor
                             }
                             MeoText {
                                 Layout.fillWidth: true
                                 text: control.headerSubtitle
                                 typeRole: "body"
                                 typeSize: "small"
-                                color: MeoTheme.contentOnSurfaceVariant
+                                color: control.supportingContentColor
                                 visible: control.headerSubtitle !== ""
                             }
                         }
@@ -511,6 +509,7 @@ MeoCard {
                         typeRole: "title"
                         typeSize: "small"
                         emphasized: true
+                        color: control.contentColor
                         visible: text !== ""
                     }
 
@@ -519,7 +518,7 @@ MeoCard {
                         text: control.supportingText
                         typeRole: "body"
                         typeSize: "small"
-                        color: MeoTheme.contentOnSurfaceVariant
+                        color: control.supportingContentColor
                         visible: text !== ""
                         wrapMode: Text.WordWrap
                         elide: Text.ElideRight
@@ -573,6 +572,8 @@ MeoCard {
                 visible: control.mediaSource !== "" && control.mediaPosition === "right"
 
                 Image {
+                    id: mediaRightImage
+                    objectName: "meoMediaCardRightImage"
                     anchors.fill: parent
                     source: control.mediaSource
                     fillMode: Image.PreserveAspectCrop
@@ -585,20 +586,11 @@ MeoCard {
                     hovered: (typeof mouseArea !== 'undefined') ? mouseArea.containsMouse : false
                     focused: control.activeFocus
                     visible: control.interactive
-                }
-
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: mediaRightContainer.width
-                        height: mediaRightContainer.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                        }
-                    }
+                    radius: shapeBg.radius
+                    topLeftRadius: 0
+                    topRightRadius: radius
+                    bottomLeftRadius: 0
+                    bottomRightRadius: radius
                 }
             }
         }

@@ -13,29 +13,41 @@ Item {
     property real leftPadding: 16 * themeGlobalScale
     property real rightPadding: 16 * themeGlobalScale
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontLabelLarge: MeoTheme.labelLarge
 
     implicitWidth: parent ? parent.width : 360 * themeGlobalScale
     implicitHeight: 40 * themeGlobalScale + topPadding + bottomPadding
+    width: implicitWidth
+    height: implicitHeight
+
+    Accessible.role: Accessible.StaticText
+    Accessible.name: text
 
     Text {
+        objectName: "meoListHeaderText"
         anchors.fill: parent
         anchors.leftMargin: control.leftPadding
         anchors.rightMargin: control.rightPadding
         anchors.topMargin: control.topPadding
         anchors.bottomMargin: control.bottomPadding
         text: control.text
+        textFormat: Text.PlainText
+        font.family: MeoTheme.typefacePlain
         font.pixelSize: fontLabelLarge.size * control.themeGlobalScale
         font.weight: fontLabelLarge.weight
         color: control.type === "emphasized" ? control.themePrimary : control.themeOnSurfaceVariant
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
 
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color {
+            enabled: !MeoTheme.reduceMotion
+            ColorAnimation {
+                duration: MeoTheme.motionDurationEffectDefault
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
     }
 }

@@ -14,8 +14,7 @@ Text {
     // it numeric lets selected icons morph instead of popping between glyphs.
     property real fillLevel: fill ? 100 : 0
 
-    // 🌟 作用域与主题安全防御
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
     FontLoader {
         id: materialSymbols
@@ -42,8 +41,8 @@ Text {
 
     Behavior on fillLevel {
         NumberAnimation {
-            duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
-            easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+            duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
+            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
 
@@ -51,12 +50,8 @@ Text {
     // icon in sync with the selected-glyph morph instead of snapping colors.
     Behavior on color {
         ColorAnimation {
-            duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.reduceMotion !== "undefined" && MeoTheme.reduceMotion)
-                      ? 0
-                      : ((typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined")
-                         ? MeoTheme.motionDurationSelection : 220)
-            easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined")
-                                ? MeoTheme.motionEasingEmphasized : [0.2, 0, 0, 1]
+            duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
+            easing.bezierCurve: MeoTheme.motionEasingEmphasized
         }
     }
 }

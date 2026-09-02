@@ -1,163 +1,212 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import MeoUI
 
+// Docked Material 3 date picker.  The calendar mechanics, keyboard model, and
+// day states live in MeoMonthCalendar so this surface does not fork them.
 MeoCard {
     id: control
-    type: "elevated"
-    padding: 0
 
-    // 🌟 核心属性
+    type: "filled"
+    padding: 24 * MeoTheme.globalScale
+    implicitWidth: 376 * MeoTheme.globalScale
+    implicitHeight: 540 * MeoTheme.globalScale
+
     property date selectedDate: new Date()
-    property date displayDate: new Date()
+    property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
+    property bool interactive: true
+    property string headline: "Select date"
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    signal dateSelected(date selected)
+    signal accepted(date selected)
+    signal rejected()
 
-    implicitWidth: 328 * themeGlobalScale
-    implicitHeight: 520 * themeGlobalScale
+    readonly property real themeScale: MeoTheme.globalScale
+    readonly property int motionFast: MeoTheme.motionDurationState
+    readonly property color headerTextColor: MeoTheme.contentOnSurface
+    readonly property color supportingTextColor: MeoTheme.contentOnSurfaceVariant
 
     onSelectedDateChanged: {
-        if (dateInput)
-            dateInput.value = control.selectedDate
+        if (!selectedDate || isNaN(selectedDate.getTime()))
+            return
+        if (dateInput && !dateInput.activeFocus)
+            dateInput.value = selectedDate
     }
 
-    Column {
+    function normalizedMonth(value) {
+        return new Date(value.getFullYear(), value.getMonth(), 1)
+    }
+
+    function moveMonth(offset) {
+        if (!interactive)
+            return
+        displayDate = new Date(displayDate.getFullYear(), displayDate.getMonth() + offset, 1)
+    }
+
+    function chooseMonth(month) {
+        if (!interactive)
+            return
+        displayDate = new Date(displayDate.getFullYear(), month, 1)
+    }
+
+    function chooseYear(year) {
+        if (!interactive)
+            return
+        displayDate = new Date(year, displayDate.getMonth(), 1)
+    }
+
+    function monthEntries() {
+        const months = []
+        for (let month = 0; month < 12; ++month) {
+            const label = Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), "MMMM")
+            months.push({
+                label: label,
+                selected: month === displayDate.getMonth(),
+                action: (function(value) { return function() { control.chooseMonth(value) } })(month)
+            })
+        }
+        return months
+    }
+
+    function yearEntries() {
+        const years = []
+        const start = displayDate.getFullYear() - 6
+        for (let offset = 0; offset < 13; ++offset) {
+            const year = start + offset
+            years.push({
+                label: year.toString(),
+                selected: year === displayDate.getFullYear(),
+                action: (function(value) { return function() { control.chooseYear(value) } })(year)
+            })
+        }
+        return years
+    }
+
+    ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12 * control.themeGlobalScale
-        spacing: 12 * control.themeGlobalScale
+        spacing: 16 * control.themeScale
+
+        MeoText {
+            Layout.fillWidth: true
+            text: control.headline
+            typeRole: "title"
+            typeSize: "large"
+            emphasized: true
+            color: control.headerTextColor
+        }
 
         MeoDateInput {
             id: dateInput
-            width: parent.width
-            height: 56 * control.themeGlobalScale
-            label: "Date"
+            Layout.fillWidth: true
+            label: qsTr("Date")
             format: "yyyy-MM-dd"
+            enabled: control.interactive
             value: control.selectedDate
             onDateAccepted: function(date) {
                 control.selectedDate = date
-                control.displayDate = date
+                control.displayDate = control.normalizedMonth(date)
+                control.dateSelected(date)
             }
         }
 
-        // Header: Month Selection
-        Item {
-            width: parent.width
-            height: 48 * control.themeGlobalScale
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 48 * control.themeScale
+            spacing: 4 * control.themeScale
 
-            Text {
-                text: Qt.formatDate(control.displayDate, "MMMM yyyy")
-                font.pixelSize: 14 * control.themeGlobalScale
-                font.weight: Font.Medium
-                color: control.themeOnSurfaceVariant
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 12 * control.themeGlobalScale
+            MeoButton {
+                id: monthButton
+                text: Qt.formatDate(control.displayDate, "MMMM")
+                type: "text"
+                size: "s"
+                icon.name: "arrow_drop_down"
+                enabled: control.interactive
+                Accessible.name: qsTr("Select month")
+                onClicked: monthMenu.openAt(monthButton, 0, monthButton.height)
             }
 
-            Row {
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-
-                MeoButton {
-                    text: "<"
-                    type: "text"
-                    onClicked: {
-                        let d = new Date(control.displayDate)
-                        d.setMonth(d.getMonth() - 1)
-                        control.displayDate = d
-                    }
-                }
-                MeoButton {
-                    text: ">"
-                    type: "text"
-                    onClicked: {
-                        let d = new Date(control.displayDate)
-                        d.setMonth(d.getMonth() + 1)
-                        control.displayDate = d
-                    }
-                }
+            MeoButton {
+                id: yearButton
+                text: control.displayDate.getFullYear().toString()
+                type: "text"
+                size: "s"
+                icon.name: "arrow_drop_down"
+                enabled: control.interactive
+                Accessible.name: qsTr("Select year")
+                onClicked: yearMenu.openAt(yearButton, 0, yearButton.height)
             }
-        }
 
-        // Weekday Labels
-        Row {
-            width: parent.width
-            Repeater {
-                model: ["S", "M", "T", "W", "T", "F", "S"]
-                delegate: Text {
-                    width: (parent.width) / 7
-                    text: modelData
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: 12 * control.themeGlobalScale
-                    color: control.themeOnSurfaceVariant
-                }
+            Item { Layout.fillWidth: true }
+
+            MeoIconButton {
+                type: "standard"
+                size: "s"
+                icon.name: "chevron_left"
+                enabled: control.interactive
+                Accessible.name: qsTr("Previous month")
+                onClicked: control.moveMonth(-1)
+            }
+            MeoIconButton {
+                type: "standard"
+                size: "s"
+                icon.name: "chevron_right"
+                enabled: control.interactive
+                Accessible.name: qsTr("Next month")
+                onClicked: control.moveMonth(1)
             }
         }
 
-        // Days Grid
-        Grid {
-            id: daysGrid
-            columns: 7
-            width: parent.width
+        MeoMonthCalendar {
+            id: calendar
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
+            selectedDate: control.selectedDate
+            displayDate: control.displayDate
+            interactive: control.interactive
+            showHeader: false
+            onDateSelected: function(date) {
+                control.selectedDate = date
+                control.displayDate = control.normalizedMonth(date)
+                control.dateSelected(date)
+            }
+            onDisplayDateChanged: {
+                const changed = displayDate.getFullYear() !== control.displayDate.getFullYear()
+                                || displayDate.getMonth() !== control.displayDate.getMonth()
+                if (changed)
+                    control.displayDate = control.normalizedMonth(displayDate)
+            }
+        }
 
-            Repeater {
-                model: 42 // 6 weeks
-                delegate: Item {
-                    width: daysGrid.width / 7
-                    height: width
+        RowLayout {
+            Layout.fillWidth: true
+            layoutDirection: Qt.RightToLeft
+            spacing: 8 * control.themeScale
 
-                    readonly property var dateInfo: getDateForIndex(index)
-                    readonly property bool isSelected: isSameDate(dateInfo.date, control.selectedDate)
-                    readonly property bool isCurrentMonth: dateInfo.date.getMonth() === control.displayDate.getMonth()
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: 32 * control.themeGlobalScale
-                        height: 32 * control.themeGlobalScale
-                        radius: 16 * control.themeGlobalScale
-                        color: isSelected ? control.themePrimary : "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: dateInfo.day
-                            font.pixelSize: 12 * control.themeGlobalScale
-                            color: isSelected ? control.themeOnPrimary : (isCurrentMonth ? control.themeOnSurface : control.themeOnSurfaceVariant)
-                            opacity: isCurrentMonth ? 1.0 : 0.4
-                        }
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            control.selectedDate = dateInfo.date
-                            if (!isCurrentMonth) control.displayDate = dateInfo.date
-                        }
-                    }
-                }
+            MeoButton {
+                text: qsTr("OK")
+                type: "text"
+                enabled: control.interactive
+                onClicked: control.accepted(control.selectedDate)
+            }
+            MeoButton {
+                text: qsTr("Cancel")
+                type: "text"
+                enabled: control.interactive
+                onClicked: control.rejected()
             }
         }
     }
 
-    function getDateForIndex(index) {
-        let firstDayOfMonth = new Date(control.displayDate.getFullYear(), control.displayDate.getMonth(), 1)
-        let startOffset = firstDayOfMonth.getDay()
-        let targetDate = new Date(firstDayOfMonth)
-        targetDate.setDate(1 - startOffset + index)
-        return {
-            day: targetDate.getDate(),
-            date: targetDate
-        }
+    MeoMenu {
+        id: monthMenu
+        model: control.monthEntries()
+        preferredMenuWidth: 180 * control.themeScale
     }
 
-    function isSameDate(d1, d2) {
-        return d1.getFullYear() === d2.getFullYear() &&
-               d1.getMonth() === d2.getMonth() &&
-               d1.getDate() === d2.getDate()
+    MeoMenu {
+        id: yearMenu
+        model: control.yearEntries()
+        preferredMenuWidth: 144 * control.themeScale
     }
-
 }

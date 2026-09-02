@@ -5,7 +5,6 @@ import MeoUI
 Item {
     id: control
 
-    // 🌟 核心属性
     property string icon: ""
     property string title: ""
     property string description: ""
@@ -14,13 +13,11 @@ Item {
 
     signal actionClicked()
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontHeadlineSmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.headlineSmall !== 'undefined') ? MeoTheme.headlineSmall : { "size": 24, "weight": Font.Normal }
-    readonly property var fontBodyMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyMedium !== 'undefined') ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal }
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontHeadlineSmall: MeoTheme.headlineSmall
+    readonly property var fontBodyMedium: MeoTheme.bodyMedium
 
     implicitWidth: 320 * themeGlobalScale
     implicitHeight: mainColumn.implicitHeight
@@ -35,7 +32,7 @@ Item {
         MeoIcon {
             icon: control.icon
             visible: icon !== ""
-            size: 64
+            size: 64 * control.themeGlobalScale
             color: control.themeOnSurfaceVariant
             anchors.horizontalCenter: parent.horizontalCenter
         }
@@ -71,6 +68,7 @@ Item {
         // Custom Content Slot
         Loader {
             id: customLoader
+            width: parent.width
             sourceComponent: control.customContent
             visible: control.customContent !== null
             anchors.horizontalCenter: parent.horizontalCenter
@@ -78,6 +76,7 @@ Item {
 
         // Primary Action
         MeoButton {
+            objectName: "meoEmptyStateAction"
             text: control.actionText
             type: "filled"
             visible: text !== ""

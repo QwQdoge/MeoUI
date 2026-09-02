@@ -3,368 +3,138 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
 import ".."
-import "../SettingsPreviewSchemes.js" as SettingsSchemes
 
+// This is intentionally an interaction lab, not a settings application or a
+// global token editor. Every public component remains documented in its own
+// canonical category; this page only compares related motion and surfaces.
 MeoPageLayout {
-    id: settingsPage
-    title: "Settings components"
-    subtitle: "Pixel / Material 3 Expressive settings primitives adapted for desktop applications."
-
-    property int previewSchemeIndex: -1
-    property var savedScheme: ({})
-    property bool savedDynamicAvailable: false
-    property bool savedDarkMode: false
-    property string savedSourceId: ""
-
-    function applyPreview(index) {
-        previewSchemeIndex = index
-        const preview = SettingsSchemes.catalog[index]
-        MeoTheme.applyDynamicColorScheme(MeoTheme.isDarkMode ? preview.dark : preview.light,
-                                         "showcase-seed:" + preview.seed)
-    }
-
-    function setDarkMode(dark) {
-        MeoTheme.isDarkMode = dark
-        if (previewSchemeIndex >= 0)
-            applyPreview(previewSchemeIndex)
-    }
-
-    function restoreTheme() {
-        MeoTheme.isDarkMode = savedDarkMode
-        if (savedDynamicAvailable)
-            MeoTheme.applyDynamicColorScheme(savedScheme, savedSourceId)
-        else
-            MeoTheme.clearDynamicColorScheme()
-        previewSchemeIndex = -1
-    }
-
-    Component.onCompleted: {
-        savedScheme = JSON.parse(JSON.stringify(MeoTheme.dynamicColorScheme || ({})))
-        savedDynamicAvailable = MeoTheme.dynamicColorsAvailable
-        savedDarkMode = MeoTheme.isDarkMode
-        savedSourceId = MeoTheme.dynamicColorSourceId
-    }
-    Component.onDestruction: restoreTheme()
+    id: labPage
+    title: "Interaction lab"
+    subtitle: "Compare component states together: stable selection, strong quick-control contrast, progress, loading, and continuous input."
 
     ShowcaseSection {
-        title: "Material 3 Expressive Settings system"
-        subtitle: "Reusable Search, Account, Row, and Group components. Hover, press, or use Tab; the focus action below exposes the 2 dp keyboard indicator."
-        width: parent.width
-
-        Column {
-            Layout.fillWidth: true
-            Layout.maximumWidth: MeoTheme.settingsContentMaxWidth
-            Layout.alignment: Qt.AlignLeft
-            width: Math.min(parent.width, MeoTheme.settingsContentMaxWidth)
-            spacing: MeoTheme.space16
-
-            Flow {
-                width: parent.width
-                spacing: MeoTheme.space8
-
-                MeoButton { text: "Light"; type: MeoTheme.isDarkMode ? "outlined" : "tonal"; onClicked: settingsPage.setDarkMode(false) }
-                MeoButton { text: "Dark"; type: MeoTheme.isDarkMode ? "tonal" : "outlined"; onClicked: settingsPage.setDarkMode(true) }
-
-                Repeater {
-                    model: SettingsSchemes.catalog
-                    delegate: MeoButton {
-                        text: modelData.name
-                        type: settingsPage.previewSchemeIndex === index ? "filled" : "outlined"
-                        onClicked: settingsPage.applyPreview(index)
-                    }
-                }
-
-                MeoButton { text: "Restore"; type: "text"; onClicked: settingsPage.restoreTheme() }
-            }
-
-            MeoText {
-                width: parent.width
-                text: "Dynamic scheme: " + MeoTheme.colorSchemeMode + " · " + (MeoTheme.dynamicColorSourceId || "fallback")
-                typeRole: "label"
-                typeSize: "medium"
-                color: MeoTheme.contentOnSurfaceVariant
-            }
-
-            MeoSearchBar {
-                width: parent.width
-                visualStyle: "settings"
-                placeholder: "Search settings"
-                trailingIcon: ""
-            }
-
-            MeoSettingsAccountCard {
-                width: parent.width
-                title: "Shekong"
-                subtitle: "Local session · shekong-laptop"
-                initials: "SH"
-            }
-
-            MeoSettingsRow {
-                id: focusDemoRow
-                width: parent.width
-                surfaceColor: MeoTheme.surfaceContainerLow
-                leadingIcon: "wifi"
-                leadingTone: "primary"
-                title: "Single settings row"
-                subtitle: "Hover, hold to press, or focus from the keyboard"
-                trailingKind: "navigation"
-            }
-
-            MeoButton {
-                text: "Show keyboard focus"
-                type: "text"
-                onClicked: focusDemoRow.forceActiveFocus(Qt.TabFocusReason)
-            }
-
-            MeoSettingsGroup {
-                width: parent.width
-                model: [
-                    { "title": "Network & Internet", "subtitle": "Meo Wi-Fi", "icon": "wifi", "tone": "primary" },
-                    { "title": "Connected devices", "subtitle": "Bluetooth on", "icon": "devices", "tone": "primary" },
-                    { "title": "Apps & notifications", "subtitle": "Notifications and default apps", "icon": "apps", "tone": "secondary" },
-                    { "title": "Display & touch", "subtitle": "Dark theme, font size, touch", "icon": "monitor", "tone": "tertiary" }
-                ]
-            }
-        }
-    }
-
-    // 🌟 1. App Settings & Live Token Tuner (设置与动态变量调节)
-    ShowcaseSection {
-        title: "Showcase Settings & Dynamic Variable Editor (设置与圆角/变量调节)"
-        subtitle: "Use the sliders and toggles below to dynamically modify corner radius, font scale, global scale, and motion speed across the entire MeoUI Showcase."
+        title: "Selection and click states"
+        subtitle: "Selection changes the surface and state layer; it does not reflow neighbouring controls."
         width: parent.width
 
         ColumnLayout {
             width: parent.width
             spacing: MeoTheme.space16
 
-            // Dark Mode & Motion Switches
-            RowLayout {
-                spacing: MeoTheme.space24
+            MeoButtonGroup {
                 Layout.fillWidth: true
-
-                MeoSwitch {
-                    label: "Dark Mode (深色/浅色模式切换)"
-                    checked: MeoTheme.isDarkMode
-                    onToggled: (val) => { MeoTheme.isDarkMode = val }
-                }
-
-                MeoSwitch {
-                    label: "Expressive Motion (M3E 微动效)"
-                    checked: MeoTheme.isExpressive
-                    onToggled: (val) => { MeoTheme.isExpressive = val }
-                }
-
-                MeoSwitch {
-                    label: "Reduced Motion (减弱动画模式)"
-                    checked: MeoTheme.reduceMotion
-                    onToggled: (val) => { MeoTheme.reduceMotion = val }
-                }
+                model: ["Day", "Week", "Month"]
+                type: "outlined"
             }
 
-            MeoDivider { Layout.fillWidth: true }
-
-            // Sliders Section Header
-            MeoText {
-                text: "Variable Sliders (滑块编辑各类设计 Token 与变量):"
-                typeRole: "title"
-                typeSize: "small"
-                emphasized: true
-            }
-
-            // Sliders Row 1: Corner Radius Scale & Global UI Scale
-            RowLayout {
-                spacing: MeoTheme.space24
+            MeoSegmentedButtons {
                 Layout.fillWidth: true
-
-                // Corner Radius Scale Slider
-                ColumnLayout {
-                    spacing: MeoTheme.space8
-                    Layout.fillWidth: true
-
-                    RowLayout {
-                        MeoText { text: "1. Corner Radius Scale (圆角大小倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                        MeoText { text: Math.round(MeoTheme.cornerScale * 100) + "% (" + Math.round(MeoTheme.shapeMedium) + "px medium)"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
-                    }
-
-                    MeoSlider {
-                        Layout.fillWidth: true
-                        from: 0.2
-                        to: 2.5
-                        value: MeoTheme.cornerScale
-                        leadingIcon: "rounded_corner"
-                        valueLabelEnabled: false
-                        onValueChanged: { MeoTheme.cornerScale = value }
-                    }
-                }
-
-                // Global UI Scale Slider
-                ColumnLayout {
-                    spacing: MeoTheme.space8
-                    Layout.fillWidth: true
-
-                    RowLayout {
-                        MeoText { text: "2. Global UI Scale (界面整体缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                        MeoText { text: Math.round(MeoTheme.globalScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
-                    }
-
-                    MeoSlider {
-                        Layout.fillWidth: true
-                        from: 0.8
-                        to: 1.5
-                        value: MeoTheme.globalScale
-                        leadingIcon: "zoom_out_map"
-                        valueLabelEnabled: false
-                        onValueChanged: { MeoTheme.globalScale = value }
-                    }
-                }
+                model: [
+                    { "label": "List", "icon": "view_list" },
+                    { "label": "Grid", "icon": "grid_view" },
+                    { "label": "Cards", "icon": "dashboard" }
+                ]
             }
+        }
+    }
 
-            // Sliders Row 2: Font Size Scale & Motion Speed Scale
-            RowLayout {
-                spacing: MeoTheme.space24
+    ShowcaseSection {
+        title: "Quick controls"
+        subtitle: "The active tile and active slider segment use primary/onPrimary; inactive surfaces stay neutral."
+        width: parent.width
+
+        Flow {
+            width: parent.width
+            spacing: MeoTheme.space12
+
+            MeoQuickSettingsTile {
+                title: "Internet"
+                supportingText: "Meo Wi-Fi"
+                iconName: "wifi"
+                active: true
+                wide: true
+                visualStyle: "pixel"
+            }
+            MeoQuickSettingsTile {
+                title: "Bluetooth"
+                iconName: "bluetooth"
+                visualStyle: "pixel"
+            }
+            MeoQuickSettingsTile {
+                title: "Flashlight"
+                iconName: "flashlight_on"
+                visualStyle: "pixel"
+            }
+        }
+
+        MeoQuickControlSlider {
+            width: parent.width
+            iconName: "light_mode"
+            label: "Brightness"
+            accessibleName: "Brightness"
+            value: 68
+        }
+    }
+
+    ShowcaseSection {
+        title: "Progress and loading"
+        subtitle: "Determinate states use a clear primary arc or segment. Indeterminate animation stops when reduced motion is enabled."
+        width: parent.width
+
+        ColumnLayout {
+            width: parent.width
+            spacing: MeoTheme.space24
+
+            MeoProgressBar {
                 Layout.fillWidth: true
-
-                // Font Size Scale Slider
-                ColumnLayout {
-                    spacing: MeoTheme.space8
-                    Layout.fillWidth: true
-
-                    RowLayout {
-                        MeoText { text: "3. Font Size Scale (字体大小缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                        MeoText { text: Math.round(MeoTheme.fontScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
-                    }
-
-                    MeoSlider {
-                        Layout.fillWidth: true
-                        from: 0.8
-                        to: 1.4
-                        value: MeoTheme.fontScale
-                        leadingIcon: "text_fields"
-                        valueLabelEnabled: false
-                        onValueChanged: { MeoTheme.fontScale = value }
-                    }
-                }
-
-                // Motion Duration Scale Slider
-                ColumnLayout {
-                    spacing: MeoTheme.space8
-                    Layout.fillWidth: true
-
-                    RowLayout {
-                        MeoText { text: "4. Motion Speed Scale (动画速率倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                        MeoText { text: Math.round(MeoTheme.motionScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
-                    }
-
-                    MeoSlider {
-                        Layout.fillWidth: true
-                        from: 0.5
-                        to: 2.0
-                        value: MeoTheme.motionScale
-                        leadingIcon: "animation"
-                        valueLabelEnabled: false
-                        onValueChanged: { MeoTheme.motionScale = value }
-                    }
-                }
+                value: 0.62
+                isThick: true
+                linearStyle: "pill"
+                leadingIcon: "pause"
             }
 
-            // Sliders Row 3: Mouse Wheel Scroll Speed
             RowLayout {
-                spacing: MeoTheme.space24
                 Layout.fillWidth: true
+                spacing: MeoTheme.space24
+
+                MeoProgressBar {
+                    Layout.preferredWidth: 152 * MeoTheme.globalScale
+                    Layout.preferredHeight: width
+                    type: "circular"
+                    value: 0.76
+                    isThick: true
+                }
 
                 ColumnLayout {
-                    spacing: MeoTheme.space8
                     Layout.fillWidth: true
+                    spacing: MeoTheme.space12
 
-                    RowLayout {
-                        MeoText { text: "5. Mouse Wheel Scroll Speed (鼠标滚轮滚动速率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                        MeoText { text: Math.round(MeoTheme.scrollSpeedScale * 100) + "% (" + Math.round(140 * MeoTheme.scrollSpeedScale) + "px/step)"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
+                    MeoLoadingIndicator {
+                        size: "m"
+                        withContainer: true
                     }
-
-                    MeoSlider {
+                    MeoProgressBar {
                         Layout.fillWidth: true
-                        from: 0.3
-                        to: 3.5
-                        value: MeoTheme.scrollSpeedScale
-                        leadingIcon: "mouse"
-                        valueLabelEnabled: false
-                        onValueChanged: { MeoTheme.scrollSpeedScale = value }
+                        indeterminate: true
                     }
-                }
-            }
-
-            // Reset Button
-            MeoButton {
-                text: "Reset All Variables to Default (恢复默认设置)"
-                type: "tonal"
-                icon.name: "refresh"
-                onClicked: {
-                    MeoTheme.cornerScale = 1.0
-                    MeoTheme.globalScale = 1.0
-                    MeoTheme.fontScale = 1.0
-                    MeoTheme.motionScale = 1.0
-                    MeoTheme.scrollSpeedScale = 1.0
-                    MeoTheme.isDarkMode = false
-                    MeoTheme.reduceMotion = false
                 }
             }
         }
     }
 
-    // 🌟 2. Realtime Component Preview Area (组件实时反馈区域)
     ShowcaseSection {
-        title: "Live Component Corner Reaction (组件圆角实时变化对比)"
-        subtitle: "Watch how all UI components instantly transform as you drag the sliders above."
+        title: "Continuous input"
+        subtitle: "The split slider keeps a clear primary active rail, neutral inactive rail, and a thin draggable divider."
         width: parent.width
 
-        Flow {
+        MeoSlider {
             width: parent.width
-            spacing: MeoTheme.space16
-
-            MeoButton {
-                text: "Filled Button"
-                type: "filled"
-                size: "m"
-            }
-
-            MeoButton {
-                text: "Tonal Button"
-                type: "tonal"
-                size: "m"
-            }
-
-            MeoButton {
-                text: "Outlined Button"
-                type: "outlined"
-                size: "m"
-            }
-
-            MeoChip {
-                label: "Filter Chip"
-                icon: "filter_list"
-                selected: true
-            }
-
-            MeoTextField {
-                placeholder: "Type text..."
-                width: 220 * MeoTheme.globalScale
-            }
-
-            MeoCard {
-                width: 240 * MeoTheme.globalScale
-                height: 90 * MeoTheme.globalScale
-                type: "elevated"
-                interactive: true
-                bouncy: true
-
-                Column {
-                    anchors.centerIn: parent
-                    spacing: MeoTheme.space4
-                    MeoText { text: "Dynamic Shape Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Radius: " + Math.round(MeoTheme.shapeLarge) + "px"; typeRole: "body"; typeSize: "small" }
-                }
-            }
+            from: 0
+            to: 100
+            value: 58
+            size: "m"
+            trackStyle: "split"
+            leadingIcon: "volume_up"
         }
     }
 }

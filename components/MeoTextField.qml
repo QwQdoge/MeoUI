@@ -43,24 +43,22 @@ TextField {
             error = isError
     }
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOutline: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outline !== "undefined") ? MeoTheme.outline : "#79747E"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeError: (typeof MeoTheme !== "undefined" && typeof MeoTheme.error !== "undefined") ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themeError: MeoTheme.error
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionFast: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
+    readonly property bool mirrored: LayoutMirroring.enabled
 
     readonly property var fontBody: {
-        if (typeof MeoTheme === "undefined") return ({ "size": 16, "weight": Font.Normal })
-        if (size === "xs" && typeof MeoTheme.bodySmall !== "undefined") return MeoTheme.bodySmall
-        if (size === "s" && typeof MeoTheme.bodyMedium !== "undefined") return MeoTheme.bodyMedium
-        return typeof MeoTheme.bodyLarge !== "undefined" ? MeoTheme.bodyLarge : ({ "size": 16, "weight": Font.Normal })
+        if (size === "xs") return MeoTheme.bodySmall
+        if (size === "s") return MeoTheme.bodyMedium
+        return MeoTheme.bodyLarge
     }
-    readonly property var fontLabel: (typeof MeoTheme !== "undefined" && typeof MeoTheme.labelSmall !== "undefined") ? MeoTheme.labelSmall : ({ "size": 11, "weight": Font.Medium })
+    readonly property var fontLabel: MeoTheme.labelSmall
 
     readonly property real containerHeight: {
         if (size === "xs") return 40 * themeGlobalScale
@@ -75,13 +73,23 @@ TextField {
         if (size === "xl") return 24 * themeGlobalScale
         return 20 * themeGlobalScale
     }
-    readonly property real sidePadding: (size === "xs" ? 12 : size === "s" ? 14 : 16) * themeGlobalScale
+    // M3 fields use 16dp side padding without icons and 12dp with one.
+    // Explicit compact/expressive sizes retain their existing side insets.
+    readonly property real sidePadding: {
+        if (size === "xs") return 12 * themeGlobalScale
+        if (size === "s") return 14 * themeGlobalScale
+        return (leadingIcon !== "" || hasTrailingAction) ? 12 * themeGlobalScale : 16 * themeGlobalScale
+    }
     readonly property real iconSizePx: (size === "xs" ? 18 : size === "s" ? 20 : 24) * themeGlobalScale
     readonly property bool hasSupportingLine: (isError && errorText !== "") || helperText !== "" || showCounter
     readonly property real supportingHeight: hasSupportingLine ? 24 * themeGlobalScale : 0
-    readonly property bool labelRaised: label !== "" && (activeFocus || text !== "" || placeholder !== "")
+    readonly property bool labelRaised: label !== "" && (activeFocus || text !== "")
     readonly property bool hasLeading: leadingIcon !== "" || prefixText !== ""
-    readonly property bool hasTrailing: trailingIcon !== "" || suffixText !== "" || isPassword || (showClearButton && text !== "")
+    readonly property bool hasTrailingAction: trailingIcon !== "" || isPassword || (showClearButton && text !== "")
+    readonly property real leadingContentWidth: (leadingIcon !== "" ? iconSizePx + 16 * themeGlobalScale : 0)
+                                                + (prefixText !== "" ? prefixLabel.implicitWidth + 6 * themeGlobalScale : 0)
+    readonly property real trailingContentWidth: (suffixText !== "" ? suffixLabel.implicitWidth + 6 * themeGlobalScale : 0)
+                                                 + (hasTrailingAction ? 34 * themeGlobalScale : 0)
 
     implicitWidth: 280 * themeGlobalScale
     implicitHeight: containerHeight + supportingHeight
@@ -90,10 +98,12 @@ TextField {
     echoMode: isPassword && !passwordVisible ? TextInput.Password : TextInput.Normal
     selectByMouse: true
 
-    font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+    font.family: MeoTheme.typefacePlain
     font.pixelSize: fontBody.size * themeGlobalScale
     font.weight: fontBody.weight
-    color: enabled ? (isError ? themeError : themeOnSurface)
+    // Error is communicated by indicator, label, and supporting text; entered
+    // content stays on-surface so it remains readable and selectable.
+    color: enabled ? themeOnSurface
                    : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
     selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.28)
     selectedTextColor: themeOnSurface
@@ -101,12 +111,8 @@ TextField {
     placeholderText: labelRaised ? placeholder : (label !== "" ? label : placeholder)
     placeholderTextColor: enabled ? themeOnSurfaceVariant : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
 
-    leftPadding: sidePadding
-                 + (leadingIcon !== "" ? iconSizePx + 10 * themeGlobalScale : 0)
-                 + (prefixText !== "" ? prefixLabel.implicitWidth + 6 * themeGlobalScale : 0)
-    rightPadding: sidePadding
-                  + (suffixText !== "" ? suffixLabel.implicitWidth + 6 * themeGlobalScale : 0)
-                  + (hasTrailing ? 34 * themeGlobalScale : 0)
+    leftPadding: sidePadding + (mirrored ? trailingContentWidth : leadingContentWidth)
+    rightPadding: sidePadding + (mirrored ? leadingContentWidth : trailingContentWidth)
     topPadding: labelRaised ? 18 * themeGlobalScale : 0
     bottomPadding: supportingHeight + (labelRaised ? 2 * themeGlobalScale : 0)
     verticalAlignment: TextInput.AlignVCenter
@@ -114,6 +120,7 @@ TextField {
     background: Item {
         Rectangle {
             id: fieldContainer
+            objectName: "meoTextFieldContainer"
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
@@ -146,13 +153,33 @@ TextField {
             Behavior on border.width { NumberAnimation { duration: control.motionFast } }
         }
 
+        Rectangle {
+            id: activeIndicator
+            objectName: "meoTextFieldActiveIndicator"
+            visible: control.type === "filled"
+            anchors.left: fieldContainer.left
+            anchors.right: fieldContainer.right
+            anchors.bottom: fieldContainer.bottom
+            height: control.activeFocus ? 2 * control.themeGlobalScale : 1 * control.themeGlobalScale
+            color: {
+                if (!control.enabled)
+                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12)
+                if (control.isError) return control.themeError
+                if (control.activeFocus) return control.themePrimary
+                return control.themeOnSurfaceVariant
+            }
+            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on height { NumberAnimation { duration: control.motionFast } }
+        }
+
         Text {
             visible: control.labelRaised
             text: control.label
-            anchors.left: fieldContainer.left
-            anchors.leftMargin: control.sidePadding + (control.leadingIcon !== "" ? control.iconSizePx + 10 * control.themeGlobalScale : 0)
             anchors.top: fieldContainer.top
             anchors.topMargin: 7 * control.themeGlobalScale
+            x: control.mirrored
+               ? fieldContainer.width - width - control.sidePadding - (control.leadingIcon !== "" ? control.iconSizePx + 10 * control.themeGlobalScale : 0)
+               : control.sidePadding + (control.leadingIcon !== "" ? control.iconSizePx + 10 * control.themeGlobalScale : 0)
             font.family: control.font.family
             font.pixelSize: control.fontLabel.size * control.themeGlobalScale
             font.weight: control.fontLabel.weight
@@ -161,11 +188,12 @@ TextField {
         }
 
         Row {
-            anchors.left: fieldContainer.left
-            anchors.leftMargin: control.sidePadding
+            width: implicitWidth
+            x: control.mirrored ? fieldContainer.width - width - control.sidePadding : control.sidePadding
             anchors.verticalCenter: fieldContainer.verticalCenter
             anchors.verticalCenterOffset: control.labelRaised ? 6 * control.themeGlobalScale : 0
             spacing: 8 * control.themeGlobalScale
+            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
             visible: control.hasLeading
 
             MeoIcon {
@@ -186,11 +214,12 @@ TextField {
         }
 
         Row {
-            anchors.right: fieldContainer.right
-            anchors.rightMargin: control.sidePadding
+            width: implicitWidth
+            x: control.mirrored ? control.sidePadding : fieldContainer.width - width - control.sidePadding
             anchors.verticalCenter: fieldContainer.verticalCenter
             anchors.verticalCenterOffset: control.labelRaised ? 6 * control.themeGlobalScale : 0
             spacing: 6 * control.themeGlobalScale
+            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
             Text {
                 id: suffixLabel
@@ -208,6 +237,7 @@ TextField {
                 type: "standard"
                 width: 32 * control.themeGlobalScale
                 height: width
+                Accessible.name: control.passwordVisible ? qsTr("Hide password") : qsTr("Show password")
                 onClicked: control.passwordVisible = !control.passwordVisible
             }
 
@@ -218,6 +248,7 @@ TextField {
                 type: "standard"
                 width: 32 * control.themeGlobalScale
                 height: width
+                Accessible.name: qsTr("Clear text")
                 onClicked: {
                     control.clear()
                     control.forceActiveFocus()
@@ -231,6 +262,7 @@ TextField {
                 type: "standard"
                 width: 32 * control.themeGlobalScale
                 height: width
+                Accessible.name: control.trailingIcon
                 onClicked: control.trailingIconClicked()
             }
         }
@@ -244,6 +276,7 @@ TextField {
             anchors.topMargin: 4 * control.themeGlobalScale
             height: control.supportingHeight
             visible: control.hasSupportingLine
+            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
             Text {
                 width: Math.max(0, parent.width - counterText.width - 8 * control.themeGlobalScale)

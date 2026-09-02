@@ -29,12 +29,11 @@ Control {
 
     implicitWidth: 320 * uiScale
     implicitHeight: sliderColumn.implicitHeight
-    Accessible.role: Accessible.Slider
-    Accessible.name: title
-    // Qt Quick's Accessible attached type does not expose the native
-    // minimum/maximum/value fields. Keep the announced value in the semantic
-    // description rather than assigning unsupported attached properties.
-    Accessible.description: {
+    // The embedded MeoSlider is the only adjustable semantic node.  Keeping
+    // this labelled composition ignored avoids duplicate slider announcements.
+    Accessible.ignored: true
+
+    function accessibleValueDescription() {
         const visibleValue = valueText !== "" ? valueText
                                                : Math.round(value) + valueSuffix
         return supportingText !== "" ? supportingText + ". " + visibleValue
@@ -57,7 +56,11 @@ Control {
     }
 
     function adjust(direction) {
-        setValue(value + direction * Math.max(stepSize, 1))
+        // A non-discrete slider still needs a predictable keyboard/button
+        // increment. Prefer its declared step; otherwise use 1% of the range.
+        const range = upperBound - lowerBound
+        const increment = stepSize > 0 ? stepSize : (range > 0 ? range / 100 : 1)
+        setValue(value + direction * increment)
     }
 
     contentItem: ColumnLayout {
@@ -80,6 +83,7 @@ Control {
                     typeSize: "medium"
                     emphasized: true
                     color: MeoTheme.contentOnSurface
+                    opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
                     elide: Text.ElideRight
                 }
 
@@ -90,6 +94,7 @@ Control {
                     typeRole: "body"
                     typeSize: "small"
                     color: MeoTheme.contentOnSurfaceVariant
+                    opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
                     elide: Text.ElideRight
                 }
             }
@@ -101,6 +106,7 @@ Control {
                 typeRole: "label"
                 typeSize: "medium"
                 color: MeoTheme.contentOnSurfaceVariant
+                opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
             }
         }
 
@@ -119,6 +125,7 @@ Control {
 
             MeoSlider {
                 id: slider
+                objectName: "meoSteppedSliderTrack"
                 Layout.fillWidth: true
                 from: control.from
                 to: control.to
@@ -128,6 +135,9 @@ Control {
                 snapMode: control.discrete
                 tickMarksEnabled: control.discrete
                 valueLabelEnabled: false
+                enabled: control.enabled
+                accessibleName: control.title !== "" ? control.title : qsTr("Slider")
+                accessibleDescription: control.accessibleValueDescription()
                 size: "s"
                 trackStyle: "standard"
                 onMoved: control.setValue(value)

@@ -9,52 +9,56 @@ Item {
     property string name: "User Name"
     property string email: "user@example.com"
     property string avatarSource: ""
+    property string avatarInitials: ""
     property bool showDropdown: true
+    property bool interactive: true
 
     signal clicked()
     signal dropdownClicked()
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    // Reuse the shared color, typography, and density contracts.
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeOnSecondaryContainer: MeoTheme.contentOnSecondaryContainer
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
-    readonly property var fontTitleMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleMedium !== 'undefined') ? MeoTheme.titleMedium : { "size": 16, "weight": Font.Medium }
-    readonly property var fontBodySmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodySmall !== 'undefined') ? MeoTheme.bodySmall : { "size": 12, "weight": Font.Normal }
+    readonly property var fontTitleMedium: MeoTheme.titleMedium
+    readonly property var fontBodySmall: MeoTheme.bodySmall
 
-    implicitWidth: parent ? parent.width : 360 * themeGlobalScale
+    implicitWidth: 360 * themeGlobalScale
     implicitHeight: 72 * themeGlobalScale
+    activeFocusOnTab: enabled && interactive
+    Accessible.role: Accessible.Button
+    Accessible.name: email !== "" ? qsTr("%1, %2").arg(name).arg(email) : name
+    Accessible.focusable: activeFocusOnTab
+    Accessible.onPressAction: activate()
+    Keys.onReturnPressed: activate()
+    Keys.onEnterPressed: activate()
+    Keys.onSpacePressed: activate()
+
+    function activate() {
+        if (enabled && interactive)
+            clicked()
+    }
 
     Row {
+        z: 1
         anchors.fill: parent
         anchors.leftMargin: 16 * control.themeGlobalScale
         anchors.rightMargin: 16 * control.themeGlobalScale
         spacing: 16 * control.themeGlobalScale
 
         // 🖼️ Avatar
-        Rectangle {
+        MeoAvatar {
             width: 40 * control.themeGlobalScale
             height: 40 * control.themeGlobalScale
-            radius: width / 2
+            size: 40
             color: control.themeSecondaryContainer
-            clip: true
+            textColor: control.themeOnSecondaryContainer
+            source: control.avatarSource
+            initials: control.avatarInitials
             anchors.verticalCenter: parent.verticalCenter
-
-            Image {
-                anchors.fill: parent
-                source: control.avatarSource
-                visible: control.avatarSource !== ""
-                fillMode: Image.PreserveAspectCrop
-            }
-
-            MeoIcon {
-                anchors.centerIn: parent
-                icon: "person"
-                visible: control.avatarSource === ""
-                size: 24
-                color: control.themeOnSurfaceVariant
-            }
         }
 
         // 🔤 Info
@@ -94,7 +98,8 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        onClicked: control.clicked()
-        z: -1
+        enabled: control.enabled && control.interactive
+        onClicked: control.activate()
+        z: 0
     }
 }

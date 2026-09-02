@@ -12,16 +12,24 @@ SpinBox {
     value: 0
     editable: true
 
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOutline: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outline !== "undefined") ? MeoTheme.outline : "#79747E"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    // This is a MeoUI numeric-input primitive, not an M3 component port. The
+    // native Qt SpinBox remains the only range/edit semantic owner.
+    property string accessibleName: qsTr("Numeric value")
+    property string accessibleDescription: qsTr("Current value %1. Range %2 to %3.")
+                                           .arg(value).arg(Math.min(from, to)).arg(Math.max(from, to))
+    property string increaseAccessibleName: qsTr("Increase %1").arg(accessibleName)
+    property string decreaseAccessibleName: qsTr("Decrease %1").arg(accessibleName)
 
-    readonly property var fontBodyLarge: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyLarge !== "undefined") ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal }
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontBodyLarge: MeoTheme.bodyLarge
 
     implicitWidth: 144 * themeGlobalScale
-    implicitHeight: 48 * themeGlobalScale // Standard MD3 target size
+    implicitHeight: 48 * themeGlobalScale
+    Accessible.name: accessibleName
+    Accessible.description: accessibleDescription
 
     // Format display text if necessary
     textFromValue: function(value, locale) {
@@ -33,14 +41,17 @@ SpinBox {
     }
 
     contentItem: TextInput {
+        objectName: "meoSpinBoxInput"
         z: 2
         text: control.textFromValue(control.value, control.locale)
-        font.family: (typeof MeoTheme !== "undefined" && typeof MeoTheme.typefacePlain !== "undefined") ? MeoTheme.typefacePlain : "Roboto"
+        font.family: MeoTheme.typefacePlain
         font.pixelSize: control.fontBodyLarge.size * control.themeGlobalScale
         font.weight: control.fontBodyLarge.weight
-        color: control.enabled ? control.themeOnSurface : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.38)
+        color: control.enabled ? control.themeOnSurface
+                               : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g,
+                                         control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
         selectionColor: control.themePrimary
-        selectedTextColor: (typeof MeoTheme !== "undefined" && typeof MeoTheme.onPrimary !== "undefined") ? MeoTheme.onPrimary : "#FFFFFF"
+        selectedTextColor: MeoTheme.contentOnPrimary
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
         readOnly: !control.editable
@@ -56,29 +67,13 @@ SpinBox {
         implicitHeight: 48 * control.themeGlobalScale
 
         MeoIconButton {
+            objectName: "meoSpinBoxIncrement"
             anchors.centerIn: parent
             size: "s"
             icon.name: "add"
-            enabled: control.value < control.to
+            enabled: control.enabled && control.up.enabled
+            Accessible.name: control.increaseAccessibleName
             onClicked: control.increase()
-            onPressAndHold: {
-                control.increase()
-                upHoldTimer.start()
-            }
-            onReleased: upHoldTimer.stop()
-        }
-
-        Timer {
-            id: upHoldTimer
-            interval: 50
-            repeat: true
-            onTriggered: {
-                if (control.value < control.to) {
-                    control.increase()
-                } else {
-                    stop()
-                }
-            }
         }
     }
 
@@ -89,48 +84,38 @@ SpinBox {
         implicitHeight: 48 * control.themeGlobalScale
 
         MeoIconButton {
+            objectName: "meoSpinBoxDecrement"
             anchors.centerIn: parent
             size: "s"
             icon.name: "remove"
-            enabled: control.value > control.from
+            enabled: control.enabled && control.down.enabled
+            Accessible.name: control.decreaseAccessibleName
             onClicked: control.decrease()
-            onPressAndHold: {
-                control.decrease()
-                downHoldTimer.start()
-            }
-            onReleased: downHoldTimer.stop()
-        }
-
-        Timer {
-            id: downHoldTimer
-            interval: 50
-            repeat: true
-            onTriggered: {
-                if (control.value > control.from) {
-                    control.decrease()
-                } else {
-                    stop()
-                }
-            }
         }
     }
 
     background: Rectangle {
         implicitWidth: 144 * control.themeGlobalScale
         implicitHeight: 48 * control.themeGlobalScale
-        // Use the shared shape token so this compact numeric control responds
-        // to the same dynamic corner scale as the Pixel shell surfaces.
+        // Shared shape and semantic roles keep this product primitive aligned
+        // with the rest of the MeoUI field vocabulary.
         radius: MeoTheme.shapeSmall
         color: "transparent"
-        border.color: control.activeFocus ? control.themePrimary : (control.enabled ? control.themeOutline : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12))
+        border.color: control.activeFocus ? control.themePrimary
+                                          : (control.enabled ? control.themeOutline
+                                                             : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g,
+                                                                       control.themeOnSurface.b,
+                                                                       MeoTheme.disabledContainerOpacity))
         border.width: (control.activeFocus ? 2 : 1) * control.themeGlobalScale
 
         Behavior on border.color {
+            enabled: !MeoTheme.reduceMotion
             ColorAnimation {
-                duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 150
+                duration: MeoTheme.motionDurationState
             }
         }
         Behavior on radius {
+            enabled: !MeoTheme.reduceMotion
             NumberAnimation {
                 duration: MeoTheme.motionDurationShapeSettle
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate

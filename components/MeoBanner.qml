@@ -14,6 +14,10 @@ Control {
     signal confirmed()
     signal cancelled()
 
+    Accessible.role: Accessible.AlertMessage
+    Accessible.name: title.length > 0 ? title : text
+    Accessible.description: title.length > 0 ? text : ""
+
     readonly property color containerColor: tone === "error" ? MeoTheme.errorContainer
                                               : tone === "success" ? MeoTheme.successContainer
                                               : MeoTheme.secondaryContainer
@@ -27,16 +31,28 @@ Control {
     padding: 12 * themeGlobalScale
     scale: visible ? 1 : 0.98
     opacity: visible ? 1 : 0
-    Behavior on scale { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-    Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationShort3 } }
+    Behavior on scale {
+        enabled: !MeoTheme.reduceMotion
+        NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+    }
+    Behavior on opacity {
+        enabled: !MeoTheme.reduceMotion
+        NumberAnimation { duration: MeoTheme.motionDurationShort3 }
+    }
 
     background: Rectangle {
         radius: MeoTheme.shapeLargeIncreased
         color: control.containerColor
         border.width: 1
         border.color: Qt.rgba(control.contentColor.r, control.contentColor.g, control.contentColor.b, 0.16)
-        Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationMedium1 } }
-        Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+        Behavior on color {
+            enabled: !MeoTheme.reduceMotion
+            ColorAnimation { duration: MeoTheme.motionDurationMedium1 }
+        }
+        Behavior on radius {
+            enabled: !MeoTheme.reduceMotion
+            NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+        }
     }
 
     contentItem: Row {
@@ -48,7 +64,10 @@ Control {
             color: Qt.rgba(control.contentColor.r, control.contentColor.g, control.contentColor.b, 0.10)
             anchors.verticalCenter: parent.verticalCenter
             MeoIcon { anchors.centerIn: parent; icon: control.icon; size: 22; color: control.contentColor }
-            Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on radius {
+                enabled: !MeoTheme.reduceMotion
+                NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+            }
         }
         Column {
             width: parent.width - 52 * control.themeGlobalScale - actions.implicitWidth
@@ -61,8 +80,8 @@ Control {
             id: actions
             spacing: 4 * control.themeGlobalScale
             anchors.verticalCenter: parent.verticalCenter
-            MeoButton { text: control.cancelText; type: "text"; visible: text.length > 0; onClicked: control.cancelled() }
-            MeoButton { text: control.confirmText; type: "text"; visible: text.length > 0; onClicked: control.confirmed() }
+            MeoButton { objectName: "meoBannerCancel"; text: control.cancelText; type: "text"; visible: text.length > 0; onClicked: control.cancelled() }
+            MeoButton { objectName: "meoBannerConfirm"; text: control.confirmText; type: "text"; visible: text.length > 0; onClicked: control.confirmed() }
         }
     }
 }

@@ -169,6 +169,7 @@ Control {
     }
 
     MeoStateLayer {
+        objectName: "exposedDropdownStateLayer"
         anchors.left: textField.left
         anchors.right: textField.right
         anchors.top: textField.top
@@ -181,6 +182,7 @@ Control {
     }
 
     MeoShape {
+        objectName: "exposedDropdownFocusRing"
         anchors.left: textField.left
         anchors.right: textField.right
         anchors.top: textField.top
@@ -194,6 +196,7 @@ Control {
 
     MouseArea {
         id: pointer
+        objectName: "exposedDropdownPointer"
         anchors.left: textField.left
         anchors.right: textField.right
         anchors.top: textField.top
@@ -209,6 +212,7 @@ Control {
     MeoMotionPopup {
         id: menu
         objectName: "exposedDropdownMenu"
+        z: 1000
         presentation: MeoMotionPopup.Menu
         width: control.width
         implicitHeight: Math.min(optionList.contentHeight, 280 * control.themeGlobalScale)

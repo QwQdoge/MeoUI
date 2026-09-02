@@ -13,7 +13,7 @@ Item {
     property real strokeWidth: 0
     property real rotationAngle: 0.0
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
     // Debounce repaint to avoid excessive canvas updates when many shapes change
     Timer {
@@ -28,10 +28,13 @@ Item {
     onStrokeColorChanged: repaintTimer.restart()
     onStrokeWidthChanged: repaintTimer.restart()
     onRotationAngleChanged: repaintTimer.restart()
+    onWidthChanged: repaintTimer.restart()
+    onHeightChanged: repaintTimer.restart()
 
     Canvas {
         id: canvas
         anchors.fill: parent
+        antialiasing: true
 
         function tracePath(ctx, inset) {
             var w = Math.max(0, width - inset * 2);
@@ -41,16 +44,14 @@ Item {
 
             ctx.beginPath();
 
-            if (control.type === "rect" || control.type === "round" || control.type === "squircle") {
+            var simpleType = String(control.type).toLowerCase();
+            if (simpleType === "rect" || simpleType === "round" || simpleType === "squircle") {
                 // Semantic Radius Calculation: min(radius, w/2, h/2)
                 var r = Math.max(0, Math.min(control.radius - inset, Math.min(w, h) / 2));
                 ctx.roundedRect(ox, oy, w, h, r, r);
-            } else if (control.type === "pill") {
-                var pr = Math.min(w, h) / 2;
-                ctx.roundedRect(ox, oy, w, h, pr, pr);
-            } else if (control.type === "circle" || control.type === "Circle") {
-                var cr = Math.min(w, h) / 2;
-                ctx.arc(ox + w / 2, oy + h / 2, cr, 0, 2 * Math.PI);
+            } else if (simpleType === "circle") {
+                var circleRadius = Math.min(w, h) / 2;
+                ctx.arc(ox + w / 2, oy + h / 2, circleRadius, 0, 2 * Math.PI);
             } else {
                 // Render from M3E 35 Normalized Geometry Vector Engine
                 var pts = ShapesEngine.getNormalizedPathPoints(control.type);

@@ -9,35 +9,43 @@ Item {
     // 🌟 核心对外属性
     property Component content: null
     property bool isOpen: false
-    property real peekHeight: 80 * themeGlobalScale
-    property real expandedHeight: 400 * themeGlobalScale
+    // AndroidX BottomSheetDefaults.SheetPeekHeight is 56dp. The expanded
+    // height remains caller-controlled because this QML primitive is not a
+    // full BottomSheetScaffold state machine.
+    property real peekHeight: 56 * MeoTheme.globalScale
+    property real expandedHeight: 400 * MeoTheme.globalScale
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#C4C7C5"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    implicitWidth: parent ? parent.width : 360 * MeoTheme.globalScale
+    implicitHeight: isOpen ? resolvedExpandedHeight : peekHeight
 
-    implicitWidth: parent ? parent.width : 360 * themeGlobalScale
-    implicitHeight: isOpen ? expandedHeight : peekHeight
+    // A standard sheet cannot extend outside its scaffold viewport. The old
+    // fixed 400dp background overflowed small hosts such as the Showcase
+    // sample instead of behaving like BottomSheetScaffold's constrained sheet.
+    readonly property real availableHeight: parent ? parent.height : expandedHeight
+    readonly property real resolvedExpandedHeight: Math.min(expandedHeight, availableHeight)
+    readonly property real resolvedPeekHeight: Math.min(peekHeight, resolvedExpandedHeight)
 
-    z: 10 // Ensure it's above other content if needed
+    z: 10
+    clip: true
 
-    readonly property real targetY: control.isOpen ? (parent.height - expandedHeight) : (parent.height - peekHeight)
+    readonly property real targetY: control.isOpen
+                                  ? Math.max(0, control.availableHeight - control.resolvedExpandedHeight)
+                                  : Math.max(0, control.availableHeight - control.resolvedPeekHeight)
 
     Rectangle {
         id: sheetBackground
         width: parent.width
-        height: control.expandedHeight + 100 // Extra height for over-scroll/safety
+        height: control.resolvedExpandedHeight
         y: targetY
 
-        color: control.themeSurfaceContainerLow
-        radius: 28 * control.themeGlobalScale
+        color: MeoTheme.surfaceContainerLow
+        radius: MeoTheme.shapeExtraLarge
 
         // Ensure bottom corners are not rounded for persistent sheet
         Rectangle {
             anchors.bottom: parent.bottom
             width: parent.width
-            height: 28 * control.themeGlobalScale
+            height: Math.min(MeoTheme.shapeExtraLarge, parent.height)
             color: parent.color
         }
 
@@ -46,15 +54,15 @@ Item {
         layer.effect: MultiEffect {
             shadowEnabled: true
             shadowBlur: 0.2
-            shadowVerticalOffset: -2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(0,0,0,0.1)
+            shadowVerticalOffset: -2 * MeoTheme.globalScale
+            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.10)
         }
 
         Behavior on y {
             id: yBehavior
             NumberAnimation {
-                duration: 300
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1.0]
+                duration: MeoTheme.motionDurationSheetEnter
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 
@@ -62,15 +70,15 @@ Item {
         Item {
             id: handleArea
             width: parent.width
-            height: 32 * control.themeGlobalScale
+            height: 32 * MeoTheme.globalScale
             anchors.top: parent.top
 
             Rectangle {
                 anchors.centerIn: parent
-                width: 32 * control.themeGlobalScale
-                height: 4 * control.themeGlobalScale
-                radius: 2 * control.themeGlobalScale
-                color: control.themeOutlineVariant
+                width: 32 * MeoTheme.globalScale
+                height: 4 * MeoTheme.globalScale
+                radius: 2 * MeoTheme.globalScale
+                color: MeoTheme.contentOnSurfaceVariant
             }
 
             MouseArea {
@@ -81,7 +89,8 @@ Item {
                 onPressed: (mouse) => startY = mouse.y
                 onReleased: {
                     yBehavior.enabled = true
-                    let threshold = (parent.height - control.expandedHeight + parent.height - control.peekHeight) / 2
+                        let threshold = (control.availableHeight - control.resolvedExpandedHeight
+                                         + control.availableHeight - control.resolvedPeekHeight) / 2
                     control.isOpen = sheetBackground.y < threshold
                     sheetBackground.y = control.targetY // Re-bind to target
                 }
@@ -89,7 +98,9 @@ Item {
                     if (pressed) {
                         yBehavior.enabled = false
                         let delta = mouse.y - startY
-                        sheetBackground.y = Math.max(parent.height - control.expandedHeight, Math.min(parent.height - control.peekHeight + 50, sheetBackground.y + delta))
+                        sheetBackground.y = Math.max(control.availableHeight - control.resolvedExpandedHeight,
+                                                     Math.min(control.availableHeight - control.resolvedPeekHeight,
+                                                              sheetBackground.y + delta))
                     }
                 }
                 onClicked: control.isOpen = !control.isOpen
@@ -103,10 +114,13 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: 100 // Match the safety extra height
+            anchors.bottomMargin: 0
             sourceComponent: control.content
             clip: true
-            opacity: (parent.height - sheetBackground.y - control.peekHeight) / (control.expandedHeight - control.peekHeight)
+            opacity: control.resolvedExpandedHeight > control.resolvedPeekHeight
+                     ? (control.availableHeight - sheetBackground.y - control.resolvedPeekHeight)
+                       / (control.resolvedExpandedHeight - control.resolvedPeekHeight)
+                     : 1
         }
     }
 }

@@ -5,9 +5,13 @@ It reads public exports from `qmldir`, requires every one to appear in
 `ShowcaseCatalog.qml`, and requires every catalog entry to have a direct,
 non-fallback sample in `ShowcaseSampleDelegate.qml`.
 
-This is a strict 100% gate for the public **QML exports named by `qmldir`**.
-It does not mechanically determine coverage of theme tokens, C++ runtime APIs,
-assets, or behavior quality. Each Showcase refresh must therefore add a
+This is a strict one-to-one gate for the public **QML exports named by
+`qmldir`**: every export has exactly one canonical `ShowcaseCatalog.qml`
+entry, and every catalog entry is a public export with a direct sample. Labs
+and visual-mode studies must reference canonical exports instead of adding
+aliases such as a second “Expressive button” entry. It does not mechanically
+determine coverage of theme tokens, C++ runtime APIs, assets, or behavior
+quality. Each Showcase refresh must therefore add a
 reader-facing delivery checklist to its validation run for changed non-QML
 items, stating how each is represented in the Showcase or separately evidenced
 and why any item has no visual sample.

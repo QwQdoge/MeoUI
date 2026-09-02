@@ -1,5 +1,6 @@
 pragma Singleton
 import QtQuick
+import QtQuick.Controls
 
 QtObject {
     id: theme
@@ -10,7 +11,8 @@ QtObject {
     property real scrollSpeedScale: 1.0
 
     // 🌟 主题模式开关
-    property bool isDarkMode: false
+    // Follow KDE's scheme until a host intentionally assigns a theme override.
+    property bool isDarkMode: Application.styleHints.colorScheme === Qt.Dark
     property bool isExpressive: false
     property bool isBouncy: true
     property bool reduceMotion: false
@@ -24,8 +26,9 @@ QtObject {
     readonly property real windowHeightBreakpointMedium: 480
     readonly property real windowHeightBreakpointExpanded: 900
 
-    function windowWidthSizeClass(availableWidth) {
-        const effectiveWidth = Math.max(0, availableWidth) / Math.max(0.1, globalScale)
+    function windowWidthSizeClass(availableWidth, scaleOverride) {
+        const effectiveScale = scaleOverride === undefined ? globalScale : scaleOverride
+        const effectiveWidth = Math.max(0, availableWidth) / Math.max(0.1, effectiveScale)
         if (effectiveWidth < windowBreakpointMedium) return "compact"
         if (effectiveWidth < windowBreakpointExpanded) return "medium"
         if (effectiveWidth < windowBreakpointLarge) return "expanded"
@@ -33,19 +36,21 @@ QtObject {
         return "extraLarge"
     }
 
-    function windowHeightSizeClass(availableHeight) {
-        const effectiveHeight = Math.max(0, availableHeight) / Math.max(0.1, globalScale)
+    function windowHeightSizeClass(availableHeight, scaleOverride) {
+        const effectiveScale = scaleOverride === undefined ? globalScale : scaleOverride
+        const effectiveHeight = Math.max(0, availableHeight) / Math.max(0.1, effectiveScale)
         if (effectiveHeight < windowHeightBreakpointMedium) return "compact"
         if (effectiveHeight < windowHeightBreakpointExpanded) return "medium"
         return "expanded"
     }
 
-    function windowPageMargin(availableWidth) {
-        const sizeClass = windowWidthSizeClass(availableWidth)
-        if (sizeClass === "compact") return 16 * globalScale
-        if (sizeClass === "medium" || sizeClass === "expanded") return 24 * globalScale
-        if (sizeClass === "large") return 32 * globalScale
-        return 40 * globalScale
+    function windowPageMargin(availableWidth, scaleOverride) {
+        const effectiveScale = scaleOverride === undefined ? globalScale : scaleOverride
+        const sizeClass = windowWidthSizeClass(availableWidth, effectiveScale)
+        if (sizeClass === "compact") return 16 * effectiveScale
+        if (sizeClass === "medium" || sizeClass === "expanded") return 24 * effectiveScale
+        if (sizeClass === "large") return 32 * effectiveScale
+        return 40 * effectiveScale
     }
 
     // The C++ token singleton is the canonical metric source.  Plasma can keep
@@ -180,7 +185,13 @@ QtObject {
     // ship a mixed theme.
     readonly property var requiredDynamicColorRoles: Object.keys(fallbackLightColorScheme)
     property bool dynamicColorsAvailable: false
+    // Keep a light/dark pair when the platform can provide one.  A legacy
+    // single scheme remains supported, but only for the appearance mode in
+    // which it was received; it must never recolor the opposite mode.
     property var dynamicColorScheme: ({})
+    property var dynamicLightColorScheme: ({})
+    property var dynamicDarkColorScheme: ({})
+    property bool dynamicColorSchemeIsDark: false
     property string colorSchemeMode: "fallback" // dynamic | fallback | invalid
     property string dynamicColorSourceId: ""
     property string dynamicColorError: ""
@@ -198,12 +209,28 @@ QtObject {
         return true
     }
 
+    function dynamicSchemeForMode(darkMode) {
+        const pairedScheme = darkMode ? dynamicDarkColorScheme : dynamicLightColorScheme
+        if (hasCompleteColorScheme(pairedScheme))
+            return pairedScheme
+        if (dynamicColorsAvailable
+                && dynamicColorSchemeIsDark === darkMode
+                && hasCompleteColorScheme(dynamicColorScheme)) {
+            return dynamicColorScheme
+        }
+        return ({})
+    }
+
+    readonly property bool hasActiveDynamicColorScheme: hasCompleteColorScheme(dynamicSchemeForMode(isDarkMode))
+
     // Returns true only when the entire MD3 role table has been installed.
     // `sourceId` is diagnostic metadata; MeoUI deliberately does not know how
     // a platform generated the table.
-    function applyDynamicColorScheme(scheme, sourceId) {
+    function applyDynamicColorScheme(scheme, sourceId, darkMode) {
         if (!hasCompleteColorScheme(scheme)) {
             dynamicColorScheme = ({})
+            dynamicLightColorScheme = ({})
+            dynamicDarkColorScheme = ({})
             dynamicColorsAvailable = false
             colorSchemeMode = "invalid"
             dynamicColorSourceId = ""
@@ -213,6 +240,40 @@ QtObject {
         }
 
         dynamicColorScheme = scheme
+        // A legacy one-table update cannot prove that an already cached table
+        // belongs to the same dynamic-color revision.  Drop the pair and use
+        // this table only for its matching appearance; callers with both
+        // tables must use applyDynamicColorSchemes().
+        dynamicLightColorScheme = ({})
+        dynamicDarkColorScheme = ({})
+        dynamicColorSchemeIsDark = typeof darkMode === "boolean" ? darkMode : isDarkMode
+        if (dynamicColorSchemeIsDark)
+            dynamicDarkColorScheme = scheme
+        else
+            dynamicLightColorScheme = scheme
+        dynamicColorsAvailable = true
+        colorSchemeMode = "dynamic"
+        dynamicColorSourceId = sourceId || "external"
+        dynamicColorError = ""
+        colorSchemeRevision += 1
+        return true
+    }
+
+    // Install both schemes as one transaction.  Dynamic-color bridges should
+    // prefer this when they can calculate light and dark roles together.
+    function applyDynamicColorSchemes(lightScheme, darkScheme, sourceId) {
+        if (!hasCompleteColorScheme(lightScheme) || !hasCompleteColorScheme(darkScheme)) {
+            clearDynamicColorScheme()
+            colorSchemeMode = "invalid"
+            dynamicColorError = "Complete light and dark Material color-role tables are required."
+            colorSchemeRevision += 1
+            return false
+        }
+
+        dynamicLightColorScheme = lightScheme
+        dynamicDarkColorScheme = darkScheme
+        dynamicColorScheme = isDarkMode ? darkScheme : lightScheme
+        dynamicColorSchemeIsDark = isDarkMode
         dynamicColorsAvailable = true
         colorSchemeMode = "dynamic"
         dynamicColorSourceId = sourceId || "external"
@@ -224,6 +285,9 @@ QtObject {
     function clearDynamicColorScheme() {
         dynamicColorsAvailable = false
         dynamicColorScheme = ({})
+        dynamicLightColorScheme = ({})
+        dynamicDarkColorScheme = ({})
+        dynamicColorSchemeIsDark = false
         colorSchemeMode = "fallback"
         dynamicColorSourceId = ""
         dynamicColorError = ""
@@ -243,14 +307,47 @@ QtObject {
     }
 
     function dynamicOrFallback(role) {
-        if (dynamicColorsAvailable
-                && dynamicColorScheme
-                && typeof dynamicColorScheme[role] !== "undefined"
-                && dynamicColorScheme[role] !== null
-                && dynamicColorScheme[role] !== "") {
-            return dynamicColorScheme[role]
+        const activeScheme = dynamicSchemeForMode(isDarkMode)
+        if (hasCompleteColorScheme(activeScheme)
+                && typeof activeScheme[role] !== "undefined"
+                && activeScheme[role] !== null
+                && activeScheme[role] !== "") {
+            return activeScheme[role]
         }
         return isDarkMode ? fallbackDarkColorScheme[role] : fallbackLightColorScheme[role]
+    }
+
+    // Material does not standardise a success role.  Keep it a semantic token
+    // in one place and allow a dynamic provider to supply it without making a
+    // partial table valid for the core M3 roles.
+    readonly property var fallbackLightSemanticColorScheme: ({
+        "success": "#256D3A",
+        "successContainer": "#D8F3DC",
+        "onSuccessContainer": "#123C20"
+    })
+    readonly property var fallbackDarkSemanticColorScheme: ({
+        "success": "#8ED6A0",
+        "successContainer": "#164A27",
+        "onSuccessContainer": "#C1F1CB"
+    })
+
+    function semanticColorForRole(role) {
+        const activeScheme = dynamicSchemeForMode(isDarkMode)
+        if (hasCompleteColorScheme(activeScheme)
+                && typeof activeScheme[role] !== "undefined"
+                && activeScheme[role] !== null
+                && activeScheme[role] !== "") {
+            return activeScheme[role]
+        }
+        const fallbackScheme = isDarkMode ? fallbackDarkSemanticColorScheme : fallbackLightSemanticColorScheme
+        return fallbackScheme[role]
+    }
+
+    onIsDarkModeChanged: {
+        const modeScheme = dynamicSchemeForMode(isDarkMode)
+        if (hasCompleteColorScheme(modeScheme))
+            dynamicColorScheme = modeScheme
+        colorSchemeRevision += 1
     }
 
     // 🎨 Active MD3 roles. Content roles use a non-`onXxx` public name because
@@ -425,9 +522,9 @@ QtObject {
     readonly property real elevationLevel5: 12 * globalScale
 
     // MD3 state-layer opacity tokens.
-    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.10)
-    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.12)
-    readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.14)
+    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08)
+    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10)
+    readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.10)
     readonly property real stateOpacityDragged: metricToken("stateOpacityDragged", 0.16)
 
     // Semantic feedback and surface roles used by products consuming MeoUI.
@@ -437,9 +534,9 @@ QtObject {
     readonly property color shadow: dynamicOrFallback("shadow")
     readonly property color inverseSurface: dynamicOrFallback("inverseSurface")
     readonly property color contentOnInverseSurface: dynamicOrFallback("onInverseSurface")
-    readonly property color success: isDarkMode ? "#8ED6A0" : "#256D3A"
-    readonly property color successContainer: isDarkMode ? "#164A27" : "#D8F3DC"
-    readonly property color contentOnSuccessContainer: isDarkMode ? "#C1F1CB" : "#123C20"
+    readonly property color success: semanticColorForRole("success")
+    readonly property color successContainer: semanticColorForRole("successContainer")
+    readonly property color contentOnSuccessContainer: semanticColorForRole("onSuccessContainer")
 
     property color outlineVariant: dynamicOrFallback("outlineVariant")
 
@@ -479,9 +576,9 @@ QtObject {
     // 🌟 MD3 Expressive Dimension Tokens
     readonly property real buttonHeightXS: metricToken("buttonHeightXS", 32) * globalScale
     readonly property real buttonHeightS: metricToken("buttonHeightS", 40) * globalScale
-    readonly property real buttonHeightM: metricToken("buttonHeightM", 48) * globalScale
-    readonly property real buttonHeightL: metricToken("buttonHeightL", 56) * globalScale
-    readonly property real buttonHeightXL: metricToken("buttonHeightXL", 72) * globalScale
+    readonly property real buttonHeightM: metricToken("buttonHeightM", 56) * globalScale
+    readonly property real buttonHeightL: metricToken("buttonHeightL", 96) * globalScale
+    readonly property real buttonHeightXL: metricToken("buttonHeightXL", 136) * globalScale
 
     // Semantic control geometry shared by MeoUI, native Qt/KDE styling and
     // the Plasma shell.  Raw shape tokens remain available for illustration;
@@ -495,10 +592,10 @@ QtObject {
     readonly property real focusRingWidth: metricToken("focusRingWidth", 2) * globalScale
 
     readonly property real iconButtonSizeXS: metricToken("iconButtonSizeXS", 32) * globalScale
-    readonly property real iconButtonSizeS: metricToken("iconButtonSizeS", 36) * globalScale
-    readonly property real iconButtonSizeM: metricToken("iconButtonSizeM", 40) * globalScale
-    readonly property real iconButtonSizeL: metricToken("iconButtonSizeL", 48) * globalScale
-    readonly property real iconButtonSizeXL: metricToken("iconButtonSizeXL", 56) * globalScale
+    readonly property real iconButtonSizeS: metricToken("iconButtonSizeS", 40) * globalScale
+    readonly property real iconButtonSizeM: metricToken("iconButtonSizeM", 56) * globalScale
+    readonly property real iconButtonSizeL: metricToken("iconButtonSizeL", 96) * globalScale
+    readonly property real iconButtonSizeXL: metricToken("iconButtonSizeXL", 136) * globalScale
 
     function buttonHeightForSize(size) {
         if (size === "xs") return buttonHeightXS
@@ -516,6 +613,21 @@ QtObject {
         return iconButtonSizeM
     }
 
+    // M3 Expressive icon buttons provide narrow, uniform, and wide visual
+    // containers. Keep the public QML strings aligned with AndroidX's
+    // IconButtonWidthOption without leaking toolkit enums into QML.
+    function iconButtonWidthForSize(size, widthOption) {
+        const option = widthOption || "uniform"
+        const widths = {
+            "xs": option === "narrow" ? 28 : option === "wide" ? 40 : 32,
+            "s": option === "narrow" ? 32 : option === "wide" ? 52 : 40,
+            "m": option === "narrow" ? 48 : option === "wide" ? 72 : 56,
+            "l": option === "narrow" ? 64 : option === "wide" ? 128 : 96,
+            "xl": option === "narrow" ? 104 : option === "wide" ? 184 : 136
+        }
+        return (widths[size] || widths.m) * globalScale
+    }
+
     function buttonRadiusForHeight(height, pressed) {
         if (!pressed) return height / 2
         return Math.min(height / 2,
@@ -523,14 +635,22 @@ QtObject {
                                  Math.min(controlRadius, height / 2 - space8)))
     }
 
-    readonly property real sliderTrackHeightXS: 4 * globalScale
-    readonly property real sliderTrackHeightS: 16 * globalScale
-    readonly property real sliderTrackHeightM: 28 * globalScale
-    readonly property real sliderTrackHeightL: 36 * globalScale
-    readonly property real sliderTrackHeightXL: 44 * globalScale
+    // M3 Expressive Slider size tokens. The default is XS; larger sizes use
+    // their own track and handle dimensions instead of proportional scaling.
+    readonly property real sliderTrackHeightXS: 16 * globalScale
+    readonly property real sliderTrackHeightS: 24 * globalScale
+    readonly property real sliderTrackHeightM: 40 * globalScale
+    readonly property real sliderTrackHeightL: 56 * globalScale
+    readonly property real sliderTrackHeightXL: 96 * globalScale
 
     readonly property real sliderThumbWidthExpressive: 4 * globalScale
-    readonly property real sliderThumbHeightExpressive: 44 * globalScale
+    readonly property real sliderThumbHeightXS: 44 * globalScale
+    readonly property real sliderThumbHeightS: 44 * globalScale
+    readonly property real sliderThumbHeightM: 52 * globalScale
+    readonly property real sliderThumbHeightL: 68 * globalScale
+    readonly property real sliderThumbHeightXL: 108 * globalScale
+    // Compatibility alias for callers that did not select an explicit size.
+    readonly property real sliderThumbHeightExpressive: sliderThumbHeightXS
     readonly property real sliderThumbGapExpressive: 6 * globalScale
 
     readonly property real shapeSquareRadius: 4 * globalScale

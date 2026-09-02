@@ -9,143 +9,175 @@ Item {
     property string subtitle: ""
     property string icon: ""
     property bool expanded: false
+    property bool interactive: true
     property Component contentItem: null
-    property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && MeoTheme.globalScale !== undefined) ? MeoTheme.globalScale : 1.0
+    readonly property bool isMirrored: LayoutMirroring.enabled
 
-    implicitWidth: parent ? parent.width : 360 * themeGlobalScale
-    implicitHeight: header.height + (expanded ? contentArea.height : 0)
+    signal toggled(bool expanded)
 
-    Behavior on implicitHeight {
-        NumberAnimation {
-            duration: MeoTheme.motionDurationMedium
-            easing.bezierCurve: MeoTheme.motionEasingEmphasized
+    function toggle() {
+        if (!interactive || !enabled)
+            return false
+        expanded = !expanded
+        toggled(expanded)
+        return true
+    }
+
+    implicitWidth: parent ? parent.width : 420 * MeoTheme.globalScale
+    implicitHeight: header.implicitHeight + contentClip.height
+    activeFocusOnTab: interactive && enabled
+
+    Accessible.role: Accessible.Button
+    Accessible.name: title
+    Accessible.description: subtitle
+    Accessible.focusable: interactive && enabled
+    Accessible.onPressAction: toggle()
+    Keys.onReturnPressed: toggle()
+    Keys.onEnterPressed: toggle()
+    Keys.onSpacePressed: toggle()
+
+    Rectangle {
+        id: panelBackground
+        anchors.fill: parent
+        color: control.expanded ? MeoTheme.surfaceContainerLow : MeoTheme.surfaceContainerLowest
+        radius: MeoTheme.shapeLarge
+        border.width: 1 * MeoTheme.globalScale
+        border.color: control.expanded ? "transparent" : MeoTheme.outlineVariant
+
+        Behavior on color {
+            enabled: !MeoTheme.reduceMotion
+            ColorAnimation {
+                duration: MeoTheme.motionDurationSelection
+                easing.bezierCurve: MeoTheme.motionEasingEmphasized
+            }
         }
     }
 
-    Rectangle {
-        id: background
-        anchors.fill: parent
-        color: expanded ? MeoTheme.surfaceContainerLow : MeoTheme.surface
-        radius: MeoTheme.shapeMedium * themeGlobalScale
+    Column {
+        id: layout
+        width: control.width
+        spacing: 0
 
-        Behavior on color {
-            ColorAnimation {
-                duration: MeoTheme.motionDurationMedium
-                easing.bezierCurve: MeoTheme.motionEasingStandard
-            }
-        }
-
-        Rectangle {
+        Item {
             id: header
             width: parent.width
-            height: Math.max(56 * themeGlobalScale, headerContent.implicitHeight + 16 * themeGlobalScale)
-            color: "transparent"
-            radius: background.radius
-
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: control.expanded = !control.expanded
-            }
-
-            MeoStateLayer {
-                anchors.fill: parent
-                radius: parent.radius
-                pressed: mouseArea.pressed
-                hovered: mouseArea.containsMouse
-                pressX: mouseArea.mouseX
-                pressY: mouseArea.mouseY
-                color: MeoTheme.contentOnSurface
-            }
+            implicitHeight: Math.max(56 * MeoTheme.globalScale, headerContent.implicitHeight + 24 * MeoTheme.globalScale)
 
             Row {
                 id: headerContent
                 anchors.left: parent.left
-                anchors.right: expandIcon.left
+                anchors.right: expansionIcon.left
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.leftMargin: 16 * themeGlobalScale
-                anchors.rightMargin: 16 * themeGlobalScale
-                spacing: 16 * themeGlobalScale
+                anchors.leftMargin: 16 * MeoTheme.globalScale
+                anchors.rightMargin: 12 * MeoTheme.globalScale
+                spacing: 16 * MeoTheme.globalScale
+                layoutDirection: control.isMirrored ? Qt.RightToLeft : Qt.LeftToRight
 
                 MeoIcon {
                     visible: control.icon !== ""
                     icon: control.icon
-                    size: 24 * themeGlobalScale
+                    size: 24 * MeoTheme.globalScale
                     color: MeoTheme.contentOnSurfaceVariant
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
                 Column {
-                    width: parent.width - (control.icon !== "" ? (24 + 16) * themeGlobalScale : 0)
+                    width: parent.width - (control.icon !== "" ? 40 * MeoTheme.globalScale : 0)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 4 * themeGlobalScale
+                    spacing: 2 * MeoTheme.globalScale
 
                     MeoText {
+                        width: parent.width
                         text: control.title
                         typeRole: "title"
                         typeSize: "small"
+                        emphasized: true
                         color: MeoTheme.contentOnSurface
-                        width: parent.width
-                        wrapMode: Text.Wrap
+                        wrapMode: Text.WordWrap
                     }
 
                     MeoText {
-                        visible: control.subtitle !== ""
+                        width: parent.width
+                        visible: text !== ""
                         text: control.subtitle
                         typeRole: "body"
                         typeSize: "small"
                         color: MeoTheme.contentOnSurfaceVariant
-                        width: parent.width
-                        wrapMode: Text.Wrap
+                        wrapMode: Text.WordWrap
                     }
                 }
             }
 
             MeoIcon {
-                id: expandIcon
+                id: expansionIcon
                 icon: "expand_more"
-                size: 24 * themeGlobalScale
+                size: 24 * MeoTheme.globalScale
                 color: MeoTheme.contentOnSurfaceVariant
                 anchors.right: parent.right
-                anchors.rightMargin: 16 * themeGlobalScale
+                anchors.rightMargin: 16 * MeoTheme.globalScale
                 anchors.verticalCenter: parent.verticalCenter
                 rotation: control.expanded ? 180 : 0
 
                 Behavior on rotation {
+                    enabled: !MeoTheme.reduceMotion
                     NumberAnimation {
-                        duration: MeoTheme.motionDurationMedium
+                        duration: MeoTheme.motionDurationSelection
                         easing.bezierCurve: MeoTheme.motionEasingEmphasized
                     }
+                }
+            }
+
+            MeoStateLayer {
+                anchors.fill: parent
+                radius: MeoTheme.shapeLarge
+                pressed: headerPointer.pressed
+                hovered: headerPointer.containsMouse && control.interactive && control.enabled
+                focused: control.activeFocus && control.interactive && control.enabled
+                pressX: headerPointer.mouseX
+                pressY: headerPointer.mouseY
+                color: MeoTheme.contentOnSurface
+            }
+
+            MouseArea {
+                id: headerPointer
+                anchors.fill: parent
+                enabled: control.interactive && control.enabled
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    control.forceActiveFocus(Qt.MouseFocusReason)
+                    control.toggle()
                 }
             }
         }
 
         Item {
-            id: contentContainer
+            id: contentClip
             width: parent.width
-            anchors.top: header.bottom
-            height: control.expanded ? contentArea.height : 0
+            readonly property real loadedHeight: contentLoader.item
+                                              ? Math.max(contentLoader.item.implicitHeight, contentLoader.item.height) : 0
+            height: control.expanded ? loadedHeight + 16 * MeoTheme.globalScale : 0
             clip: true
 
             Behavior on height {
+                enabled: !MeoTheme.reduceMotion
                 NumberAnimation {
-                    duration: MeoTheme.motionDurationMedium
+                    duration: MeoTheme.motionDurationSelection
                     easing.bezierCurve: MeoTheme.motionEasingEmphasized
                 }
             }
 
             Loader {
-                id: contentArea
-                width: parent.width
+                id: contentLoader
+                x: 16 * MeoTheme.globalScale
+                y: 0
+                width: Math.max(0, parent.width - 32 * MeoTheme.globalScale)
                 sourceComponent: control.contentItem
                 opacity: control.expanded ? 1.0 : 0.0
 
                 Behavior on opacity {
-                    NumberAnimation {
-                        duration: MeoTheme.motionDurationMedium
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
-                    }
+                    enabled: !MeoTheme.reduceMotion
+                    NumberAnimation { duration: MeoTheme.motionDurationState }
                 }
             }
         }

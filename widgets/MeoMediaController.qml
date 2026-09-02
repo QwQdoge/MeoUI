@@ -48,27 +48,58 @@ Control {
     signal likedRequested(bool liked)
     signal outputRequested()
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimaryContainer !== "undefined") ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property color themeSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surface !== "undefined") ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
-    readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHigh !== "undefined") ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
-    readonly property int motionPage: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationPage !== "undefined") ? MeoTheme.motionDurationPage : 320
+    readonly property bool isDarkMode: MeoTheme.isDarkMode
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnPrimaryContainer: MeoTheme.contentOnPrimaryContainer
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeSurfaceContainer: MeoTheme.surfaceContainer
+    readonly property color themeSurfaceContainerHigh: MeoTheme.surfaceContainerHigh
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property int motionFast: MeoTheme.motionDurationState
+    readonly property int motionMedium: MeoTheme.motionDurationSelection
+    readonly property int motionPage: MeoTheme.motionDurationPage
+    readonly property bool reducedMotion: MeoTheme.reduceMotion
 
     readonly property bool hasArtworkAccent: useArtworkAccent && artworkAccentColor.a > 0.001
     readonly property color mediaAccent: hasArtworkAccent ? artworkAccentColor : themePrimary
     readonly property color mediaAccentContainer: hasArtworkAccent ? artworkAccentColor : themePrimaryContainer
     readonly property color mediaOnAccent: hasArtworkAccent ? artworkOnAccentColor : themeOnPrimaryContainer
     readonly property color mediaTrackColor: Qt.rgba(themeOnSurfaceVariant.r, themeOnSurfaceVariant.g, themeOnSurfaceVariant.b, isDarkMode ? 0.24 : 0.16)
+
+    onDurationChanged: {
+        if (duration < 0) {
+            duration = 0
+            return
+        }
+        if (position > duration)
+            position = duration
+        if (bufferedPosition > duration)
+            bufferedPosition = duration
+    }
+    onPositionChanged: {
+        var normalized = Math.max(0, Math.min(duration, position))
+        if (position !== normalized)
+            position = normalized
+    }
+    onBufferedPositionChanged: {
+        var normalized = Math.max(0, Math.min(duration, bufferedPosition))
+        if (bufferedPosition !== normalized)
+            bufferedPosition = normalized
+    }
+    onVolumeChanged: {
+        var normalized = Math.max(0, Math.min(1, volume))
+        if (volume !== normalized)
+            volume = normalized
+    }
+    onRepeatModeChanged: {
+        if (repeatMode !== "off" && repeatMode !== "all" && repeatMode !== "one")
+            repeatMode = "off"
+    }
 
     function tintedSurface(base, strength) {
         return Qt.tint(base, Qt.rgba(mediaAccent.r, mediaAccent.g, mediaAccent.b, strength))
@@ -126,6 +157,8 @@ Control {
 
     padding: 0
     hoverEnabled: true
+    Accessible.role: Accessible.Pane
+    Accessible.name: qsTr("%1 by %2").arg(title).arg(artist)
 
     background: Rectangle {
         radius: control.cornerRadius
@@ -133,12 +166,13 @@ Control {
         border.width: control.activeFocus ? 2 * control.themeGlobalScale : 0
         border.color: control.mediaAccent
         Behavior on radius {
+            enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionMedium
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
-        Behavior on color { ColorAnimation { duration: control.motionPage } }
+        Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionPage } }
     }
 
     contentItem: Loader {
@@ -186,9 +220,10 @@ Control {
 
         scale: control.isPlaying ? 1.0 : 0.97
         Behavior on scale {
+            enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionMedium
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -220,8 +255,8 @@ Control {
                     return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
                 return "transparent"
             }
-            Behavior on radius { NumberAnimation { duration: control.motionFast } }
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on radius { enabled: !control.reducedMotion; NumberAnimation { duration: control.motionFast } }
+            Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionFast } }
         }
 
         contentItem: MeoIcon {
@@ -234,9 +269,10 @@ Control {
 
         scale: pressed ? 0.94 : hovered ? 1.025 : 1.0
         Behavior on scale {
+            enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionFast
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -251,7 +287,7 @@ Control {
         Text {
             width: parent.width
             text: control.title
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (metadataRoot.large ? 28 : 16) * control.themeGlobalScale
             font.weight: Font.DemiBold
             color: control.themeOnSurface
@@ -261,7 +297,7 @@ Control {
         Text {
             width: parent.width
             text: control.artist
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (metadataRoot.large ? 16 : 14) * control.themeGlobalScale
             color: control.themeOnSurfaceVariant
             elide: Text.ElideRight
@@ -271,7 +307,7 @@ Control {
             width: parent.width
             text: control.album !== "" ? control.album : control.sourceName
             visible: metadataRoot.showAlbum && text !== ""
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (metadataRoot.large ? 13 : 12) * control.themeGlobalScale
             color: control.themeOnSurfaceVariant
             opacity: 0.78

@@ -5,64 +5,163 @@ import MeoUI
 Column {
     id: control
 
-    // 🌟 核心属性
     property string title: ""
+    property string subtitle: ""
     property var model: []
+    // Custom delegates may declare optional `modelData` and `index` properties;
+    // they are assigned after creation alongside the rounding contract.
     property Component delegate: null
     property bool isSegmented: true
-    property real itemSpacing: 2 * themeGlobalScale
+    property real itemSpacing: 0
+    property int selectedIndex: -1
+    property color containerColor: MeoTheme.surfaceContainerLowest
+    readonly property bool isMirrored: LayoutMirroring.enabled
 
-    // 🌟 作用域与主题安全防御
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property var fontTitleSmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleSmall !== 'undefined') ? MeoTheme.titleSmall : { "size": 14, "weight": Font.Medium }
+    signal clicked(int index)
 
-    width: parent ? parent.width : 360 * themeGlobalScale
-    spacing: 0
-
-    // Header Title for the list group
-    MeoText {
-        text: control.title
-        visible: text !== ""
-        typeRole: "label"
-        typeSize: "large"
-        emphasized: true
-        color: control.themeOnSurface
-        leftPadding: 16 * control.themeGlobalScale
-        bottomPadding: 8 * control.themeGlobalScale
+    function labelFor(item) {
+        return item && typeof item === "object" ? (item.label || item.title || "") : String(item || "")
     }
 
+    function supportingFor(item) {
+        return item && typeof item === "object" ? (item.supportingText || item.subtitle || "") : ""
+    }
+
+    function iconFor(item) {
+        return item && typeof item === "object" ? (item.icon || "") : ""
+    }
+
+    function enabledFor(item) {
+        return !item || typeof item !== "object" || item.enabled === undefined ? true : item.enabled
+    }
+
+    function roundingFor(index) {
+        if (model.length === 1)
+            return "all"
+        if (index === 0)
+            return "top"
+        if (index === model.length - 1)
+            return "bottom"
+        return "middle"
+    }
+
+    function activate(index) {
+        if (index < 0 || index >= model.length || !enabledFor(model[index]))
+            return false
+        selectedIndex = index
+        clicked(index)
+        return true
+    }
+
+    width: parent ? parent.width : 420 * MeoTheme.globalScale
+    spacing: 8 * MeoTheme.globalScale
+
     Column {
-        id: itemsColumn
         width: parent.width
-        spacing: control.itemSpacing
+        visible: control.title !== "" || control.subtitle !== ""
+        spacing: 2 * MeoTheme.globalScale
 
-        Repeater {
-            model: control.model
-            delegate: Loader {
-                id: itemLoader
-                width: itemsColumn.width
-                sourceComponent: control.delegate
+        MeoText {
+            width: parent.width
+            text: control.title
+            visible: text !== ""
+            typeRole: "title"
+            typeSize: "small"
+            emphasized: true
+            color: MeoTheme.contentOnSurface
+        }
+        MeoText {
+            width: parent.width
+            text: control.subtitle
+            visible: text !== ""
+            typeRole: "body"
+            typeSize: "medium"
+            color: MeoTheme.contentOnSurfaceVariant
+            wrapMode: Text.WordWrap
+        }
+    }
 
-                // Pass roundingStrategy to the delegate if it's a MeoListItem or supports it
-                onLoaded: {
-                    if (item && item.hasOwnProperty("roundingStrategy")) {
-                        if (control.model.length === 1) {
-                            item.roundingStrategy = "all";
-                        } else if (index === 0) {
-                            item.roundingStrategy = "top";
-                        } else if (index === control.model.length - 1) {
-                            item.roundingStrategy = "bottom";
-                        } else {
-                            item.roundingStrategy = "middle";
+    Item {
+        width: parent.width
+        implicitHeight: itemsColumn.implicitHeight
+        visible: control.model.length > 0
+
+        Rectangle {
+            anchors.fill: parent
+            radius: MeoTheme.shapeLarge
+            color: control.containerColor
+        }
+
+        Column {
+            id: itemsColumn
+            width: parent.width
+            spacing: control.itemSpacing
+
+            Repeater {
+                model: control.model
+
+                delegate: Loader {
+                    id: itemLoader
+                    required property int index
+                    required property var modelData
+                    objectName: "meoSegmentedListItem_" + index
+                    width: itemsColumn.width
+                    sourceComponent: control.delegate || defaultItemComponent
+
+                    function applyListContract() {
+                        if (!item)
+                            return
+                        item.width = itemLoader.width
+                        if (item.hasOwnProperty("modelData"))
+                            item.modelData = itemLoader.modelData
+                        if (item.hasOwnProperty("index"))
+                            item.index = itemLoader.index
+                        if (item.hasOwnProperty("roundingStrategy"))
+                            item.roundingStrategy = control.roundingFor(itemLoader.index)
+                        if (item.hasOwnProperty("isSegmented"))
+                            item.isSegmented = control.isSegmented
+                        if (item.hasOwnProperty("selected"))
+                            item.selected = control.selectedIndex === itemLoader.index
+                        if (item.hasOwnProperty("enabled"))
+                            item.enabled = control.enabledFor(itemLoader.modelData)
+                    }
+
+                    onLoaded: applyListContract()
+                    onWidthChanged: applyListContract()
+                    onModelDataChanged: applyListContract()
+
+                    Connections {
+                        target: itemLoader.item
+                        function onClicked() {
+                            control.activate(itemLoader.index)
+                        }
+                    }
+
+                    Connections {
+                        target: control
+
+                        function onSelectedIndexChanged() {
+                            itemLoader.applyListContract()
                         }
 
-                        if (item.hasOwnProperty("isSegmented")) {
-                            item.isSegmented = control.isSegmented;
+                        function onIsSegmentedChanged() {
+                            itemLoader.applyListContract()
                         }
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: defaultItemComponent
+        MeoListItem {
+            property var modelData: null
+            property int index: -1
+            headline: control.labelFor(modelData)
+            supportingText: control.supportingFor(modelData)
+            leadingIcon: control.iconFor(modelData)
+            interactive: enabled
         }
     }
 }

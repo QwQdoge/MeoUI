@@ -12,8 +12,8 @@ QtObject {
 
     readonly property real effectiveWidth: Math.max(0, availableWidth) / Math.max(0.1, scale)
     readonly property real effectiveHeight: Math.max(0, availableHeight) / Math.max(0.1, scale)
-    readonly property string widthSizeClass: MeoTheme.windowWidthSizeClass(availableWidth)
-    readonly property string heightSizeClass: MeoTheme.windowHeightSizeClass(availableHeight)
+    readonly property string widthSizeClass: MeoTheme.windowWidthSizeClass(availableWidth, scale)
+    readonly property string heightSizeClass: MeoTheme.windowHeightSizeClass(availableHeight, scale)
     readonly property bool isCompactWidth: widthSizeClass === "compact"
     readonly property bool isMediumWidth: widthSizeClass === "medium"
     readonly property bool isExpandedWidth: widthSizeClass === "expanded"
@@ -23,7 +23,7 @@ QtObject {
     readonly property bool isMediumHeight: heightSizeClass === "medium"
     readonly property bool isExpandedHeight: heightSizeClass === "expanded"
 
-    readonly property real pageMargin: MeoTheme.windowPageMargin(availableWidth)
+    readonly property real pageMargin: MeoTheme.windowPageMargin(availableWidth, scale)
     readonly property real sectionSpacing: (isCompactWidth ? 16 : 24) * scale
     readonly property real controlSpacing: (isCompactWidth ? 8 : 12) * scale
     readonly property real paneWidth: (isCompactWidth ? Math.min(360, effectiveWidth)

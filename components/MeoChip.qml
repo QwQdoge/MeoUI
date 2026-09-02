@@ -10,53 +10,69 @@ Control {
     property string icon: ""
     property string leadingIcon: icon
     property string avatarSource: ""
-    property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
+    // Avatar initials provide a local fallback when an entity has no image.
+    // This keeps Input and Filter chips useful without introducing image assets.
+    property string avatarInitials: ""
+    // M3 chips default to the 32dp XS container; larger values remain the
+    // existing explicit Expressive extension.
+    property string size: "xs" // "xs" | "s" | "m" | "l" | "xl"
     property bool selected: false
     property bool closable: type === "input"
     property bool elevated: false
     property bool isEmphasized: false
-    property string shape: "pill" // "pill" | "rounded"
+    property string shape: "rounded" // "pill" | "rounded"
     property string visualStyle: "tonal" // "tonal" | "outlined"
 
     property color selectedContainerColor: themeSecondaryContainer
     property color selectedContentColor: themeOnSecondaryContainer
-    property color contentColor: selected ? selectedContentColor : themeOnSurfaceVariant
-    property color outlineColor: themeOutline
+    property color contentColor: selected ? selectedContentColor
+                                          : (type === "assist" ? themeOnSurface : themeOnSurfaceVariant)
+    property color outlineColor: themeOutlineVariant
 
     signal clicked()
     signal closed()
     signal deleted()
 
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutline: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outline !== "undefined") ? MeoTheme.outline : "#79747E"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.secondaryContainer !== "undefined") ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSecondaryContainer !== "undefined") ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property real themeFontScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.fontScale !== "undefined") ? MeoTheme.fontScale : 1.0
-    readonly property string themeFontFamily: (typeof MeoTheme !== "undefined" && typeof MeoTheme.fontFamily !== "undefined") ? MeoTheme.fontFamily : "Roboto"
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property int motionSelection: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOutlineVariant: MeoTheme.outlineVariant
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeOnSecondaryContainer: MeoTheme.contentOnSecondaryContainer
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeSurfaceContainer: MeoTheme.surfaceContainer
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property real themeFontScale: MeoTheme.fontScale
+    readonly property string themeFontFamily: MeoTheme.fontFamily
+    readonly property int motionFast: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
+    readonly property int motionSelection: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
 
     readonly property var fontToken: {
-        if (typeof MeoTheme === "undefined") return ({ "size": 14, "weight": Font.Medium })
-        var token = typeof MeoTheme.labelLarge !== "undefined" ? MeoTheme.labelLarge : ({ "size": 14, "weight": Font.Medium })
-        if (size === "xs" && typeof MeoTheme.labelSmall !== "undefined") token = MeoTheme.labelSmall
-        else if (size === "s" && typeof MeoTheme.labelMedium !== "undefined") token = MeoTheme.labelMedium
-        else if (size === "l" && typeof MeoTheme.labelLarge !== "undefined") token = MeoTheme.labelLarge
-        else if (size === "xl" && typeof MeoTheme.titleSmall !== "undefined") token = MeoTheme.titleSmall
+        var token = MeoTheme.labelLarge
+        if (size === "xs") token = MeoTheme.labelSmall
+        else if (size === "s") token = MeoTheme.labelMedium
+        else if (size === "xl") token = MeoTheme.titleSmall
         if (!isEmphasized) return token
         return ({ "size": token.size, "weight": Font.DemiBold, "lineHeight": token.lineHeight || 20, "letterSpacing": token.letterSpacing || 0 })
     }
 
     readonly property string effectiveLeadingIcon: leadingIcon !== "" ? leadingIcon : icon
+    readonly property bool hasAvatar: avatarSource !== "" || avatarInitials !== ""
     readonly property string activeIcon: {
         if (type === "filter" && selected) return "check"
         return effectiveLeadingIcon
     }
+    readonly property color leadingIconColor: {
+        // Input chips intentionally retain a primary leading icon when
+        // selected; their trailing remove affordance uses contentColor.
+        if (type === "input") return selected ? themePrimary : contentColor
+        return selected ? selectedContentColor
+                        : (type === "assist" || type === "filter" || type === "suggestion")
+                          ? themePrimary : contentColor
+    }
+    // Elevated chips use their own filled surface treatment even when the
+    // baseline wrapper defaults to the outlined variant.
+    readonly property bool usesOutlinedContainer: visualStyle === "outlined" && !elevated
     readonly property real chipHeight: {
         if (size === "xs") return 32 * themeGlobalScale
         if (size === "s") return 36 * themeGlobalScale
@@ -64,14 +80,16 @@ Control {
         if (size === "xl") return 52 * themeGlobalScale
         return 40 * themeGlobalScale
     }
-    readonly property real chipRadius: shape === "pill" ? chipHeight / 2 : Math.min(16 * themeGlobalScale, chipHeight * 0.36)
+    readonly property real chipRadius: shape === "pill" ? chipHeight / 2 : 8 * themeGlobalScale
 
     implicitHeight: chipHeight
     implicitWidth: Math.max(48 * themeGlobalScale, contentRow.implicitWidth + leftPadding + rightPadding)
     activeFocusOnTab: enabled
     padding: 0
-    leftPadding: (activeIcon !== "" || avatarSource !== "" ? 10 : 18) * themeGlobalScale
-    rightPadding: (closable ? 10 : 18) * themeGlobalScale
+    leftPadding: hasAvatar ? 4 * themeGlobalScale
+                                      : (activeIcon !== "" ? 8 : 16) * themeGlobalScale
+    rightPadding: closable ? 8 * themeGlobalScale
+                           : ((activeIcon !== "" || hasAvatar) ? 8 : 16) * themeGlobalScale
     opacity: enabled ? 1.0 : 0.38
 
     Accessible.role: Accessible.Button
@@ -92,15 +110,16 @@ Control {
 
     background: Rectangle {
         id: chipBg
+        objectName: "meoChipBackground"
         radius: control.chipRadius
         color: {
             if (control.selected) return control.selectedContainerColor
-            if (control.visualStyle === "outlined") return "transparent"
+            if (control.usesOutlinedContainer) return "transparent"
             return control.elevated ? control.themeSurfaceContainer : control.themeSurfaceContainerLow
         }
         border.width: {
             if (control.activeFocus) return 2 * control.themeGlobalScale
-            if (control.visualStyle === "outlined" && !control.selected) return 1 * control.themeGlobalScale
+            if (control.usesOutlinedContainer && !control.selected) return 1 * control.themeGlobalScale
             return 0
         }
         border.color: control.activeFocus ? control.themePrimary : control.outlineColor
@@ -110,7 +129,7 @@ Control {
         Behavior on scale {
             NumberAnimation {
                 duration: control.motionFast
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 
@@ -145,7 +164,7 @@ Control {
         anchors.verticalCenter: parent.verticalCenter
 
         Rectangle {
-            visible: control.avatarSource !== ""
+            visible: control.hasAvatar
             width: (control.size === "xl" ? 32 : 24) * control.themeGlobalScale
             height: width
             radius: width / 2
@@ -156,6 +175,16 @@ Control {
                 anchors.fill: parent
                 source: control.avatarSource
                 fillMode: Image.PreserveAspectCrop
+                visible: source !== ""
+            }
+            Text {
+                anchors.centerIn: parent
+                visible: control.avatarSource === "" && control.avatarInitials !== ""
+                text: control.avatarInitials.slice(0, 2).toUpperCase()
+                font.family: control.themeFontFamily
+                font.pixelSize: (control.size === "xl" ? 14 : 12) * control.themeFontScale * control.themeGlobalScale
+                font.weight: Font.DemiBold
+                color: control.contentColor
             }
         }
 
@@ -163,9 +192,9 @@ Control {
             id: leadingGlyph
             icon: control.activeIcon
             fill: control.selected
-            visible: icon !== "" && control.avatarSource === ""
+            visible: icon !== "" && !control.hasAvatar
             size: control.size === "xl" ? 24 : control.size === "xs" ? 18 : 20
-            color: control.contentColor
+            color: control.leadingIconColor
             anchors.verticalCenter: parent.verticalCenter
 
             Behavior on scale {
@@ -181,7 +210,7 @@ Control {
                 property: "scale"
                 to: 1.0
                 duration: control.motionSelection
-                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 
@@ -196,6 +225,7 @@ Control {
         }
 
         Item {
+            objectName: "meoChipCloseButton"
             visible: control.closable
             width: 24 * control.themeGlobalScale
             height: width
@@ -209,7 +239,10 @@ Control {
             }
             MouseArea {
                 id: closeMouse
-                anchors.fill: parent
+                objectName: "meoChipCloseTarget"
+                width: 48 * control.themeGlobalScale
+                height: width
+                anchors.centerIn: parent
                 hoverEnabled: true
                 enabled: control.enabled
                 cursorShape: Qt.PointingHandCursor

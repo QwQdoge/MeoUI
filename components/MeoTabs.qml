@@ -5,50 +5,83 @@ import MeoUI
 Control {
     id: control
 
-    property var model: []
+    // Standard Material tabs are the default. The expressive pill is opt-in so
+    // ordinary application navigation does not turn into a quick-settings row.
+    property var model: [] // strings or { label/text, icon, badgeText, badgeDot, enabled }
     property int currentIndex: 0
     property string type: "primary" // "primary" | "secondary"
-    property string style: "expressive" // "expressive" | "underline"
+    property string style: "standard" // "standard" | "expressive"; "underline" remains a standard alias
     property bool isScrollable: false
 
     signal clicked(int index)
 
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimaryContainer !== "undefined") ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outlineVariant !== "undefined") ? MeoTheme.outlineVariant : "#CAC4D0"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property int motionSelection: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
-    readonly property int motionState: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property var fontTitleSmall: (typeof MeoTheme !== "undefined" && typeof MeoTheme.titleSmall !== "undefined") ? MeoTheme.titleSmall : ({ "size": 14, "weight": Font.Medium })
-
-    readonly property bool useExpressivePills: style === "expressive" && type === "primary"
+    readonly property bool expressive: style === "expressive" && type === "primary"
     readonly property bool hasIcons: {
-        for (var i = 0; i < model.length; ++i) {
-            if (typeof model[i] === "object" && model[i].icon)
+        for (let index = 0; index < model.length; ++index) {
+            if (tabIcon(model[index]) !== "")
                 return true
         }
         return false
     }
-    readonly property real edgeInset: useExpressivePills ? 4 * themeGlobalScale : 0
+    // AndroidX TabRowDefaults.ScrollableTabRowEdgeStartPadding = 52dp.
+    readonly property real edgeInset: isScrollable
+                                      ? (expressive ? 4 : 52) * MeoTheme.globalScale
+                                      : 0
+    // AndroidX TabBaselineLayout uses 72dp when a standard primary tab stacks
+    // an icon above its label; 48dp remains the text-only/icon-only height.
+    readonly property real tabHeight: expressive ? (hasIcons ? 72 : 56) * MeoTheme.globalScale
+                                                 : (type === "primary" && hasIcons ? 72 : 48) * MeoTheme.globalScale
 
-    implicitWidth: 360 * themeGlobalScale
-    implicitHeight: useExpressivePills ? (hasIcons ? 72 : 56) * themeGlobalScale
-                                       : (hasIcons && type === "primary" ? 72 : 48) * themeGlobalScale
+    function tabLabel(item) {
+        return item && typeof item === "object" ? (item.label || item.text || "") : String(item || "")
+    }
+
+    function tabIcon(item) {
+        return item && typeof item === "object" ? (item.icon || "") : ""
+    }
+
+    function tabEnabled(item) {
+        return !item || typeof item !== "object" || item.enabled === undefined ? true : item.enabled
+    }
+
+    function activate(index) {
+        if (index < 0 || index >= model.length || !tabEnabled(model[index]))
+            return false
+        currentIndex = index
+        clicked(index)
+        return true
+    }
+
+    function focusTab(startIndex, direction) {
+        if (tabRepeater.count <= 0)
+            return false
+        const step = direction < 0 ? -1 : 1
+        let candidate = startIndex
+        for (let attempt = 0; attempt < tabRepeater.count; ++attempt) {
+            candidate = (candidate + step + tabRepeater.count) % tabRepeater.count
+            const tab = tabRepeater.itemAt(candidate)
+            if (tab && tab.enabled) {
+                tab.forceActiveFocus(Qt.TabFocusReason)
+                return activate(candidate)
+            }
+        }
+        return false
+    }
+
+    implicitWidth: 360 * MeoTheme.globalScale
+    implicitHeight: tabHeight
+    padding: 0
 
     background: Rectangle {
-        radius: control.useExpressivePills ? 24 * control.themeGlobalScale : 0
-        color: control.useExpressivePills ? control.themeSurfaceContainerLow : "transparent"
+        color: control.expressive ? MeoTheme.surfaceContainerLow : MeoTheme.surface
+        radius: control.expressive ? MeoTheme.shapeFull : 0
 
         Rectangle {
-            visible: !control.useExpressivePills && control.type === "secondary"
+            visible: !control.expressive
             anchors.bottom: parent.bottom
             width: parent.width
-            height: 1 * control.themeGlobalScale
-            color: control.themeOutlineVariant
+            height: Math.max(1, MeoTheme.globalScale)
+            color: MeoTheme.outlineVariant
         }
     }
 
@@ -64,80 +97,83 @@ Control {
             x: control.edgeInset
             height: control.availableHeight
             width: control.isScrollable ? implicitWidth : Math.max(0, control.availableWidth - control.edgeInset * 2)
-            spacing: control.useExpressivePills ? 4 * control.themeGlobalScale : 0
+            spacing: control.expressive ? 4 * MeoTheme.globalScale : 0
+            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
             Repeater {
+                id: tabRepeater
                 model: control.model
 
                 delegate: Item {
                     id: tabItem
                     required property int index
                     required property var modelData
+                    objectName: "meoTab_" + index
 
-                    readonly property var itemData: modelData
-                    readonly property string label: typeof itemData === "string" ? itemData : (itemData.label || itemData.text || "")
-                    readonly property string icon: typeof itemData === "object" ? (itemData.icon || "") : ""
-                    readonly property string badgeText: typeof itemData === "object" ? (itemData.badgeText || "") : ""
-                    readonly property bool badgeDot: typeof itemData === "object" ? (itemData.badgeDot || false) : false
-                    readonly property bool isSelected: control.currentIndex === index
-
+                    readonly property string label: control.tabLabel(modelData)
+                    readonly property string iconName: control.tabIcon(modelData)
+                    readonly property string badgeText: modelData && typeof modelData === "object" ? (modelData.badgeText || "") : ""
+                    readonly property bool badgeDot: !!(modelData && typeof modelData === "object" && modelData.badgeDot)
+                    readonly property bool selected: control.currentIndex === index
+                    readonly property bool interactionEmphasis: tabPointer.containsMouse || tabPointer.pressed || activeFocus
+                    readonly property color selectedContentColor: control.expressive
+                                                                 ? MeoTheme.contentOnSecondaryContainer
+                                                                 : (control.type === "secondary"
+                                                                    ? MeoTheme.contentOnSurface
+                                                                    : MeoTheme.primary)
+                    readonly property color unselectedContentColor: interactionEmphasis
+                                                                   ? MeoTheme.contentOnSurface
+                                                                   : MeoTheme.contentOnSurfaceVariant
+                    enabled: control.tabEnabled(modelData)
+                    activeFocusOnTab: enabled
+                    opacity: enabled ? 1.0 : 0.38
                     width: control.isScrollable
-                           ? Math.max(96 * control.themeGlobalScale, contentColumn.implicitWidth + 36 * control.themeGlobalScale)
+                           ? Math.max(90 * MeoTheme.globalScale, tabContent.implicitWidth + 32 * MeoTheme.globalScale)
                            : Math.max(0, (tabsRow.width - tabsRow.spacing * Math.max(0, control.model.length - 1)) / Math.max(1, control.model.length))
                     height: tabsRow.height
-                    activeFocusOnTab: true
 
                     Accessible.role: Accessible.PageTab
                     Accessible.name: label
-                    Accessible.selected: isSelected
-                    Accessible.onPressAction: activate()
-
-                    function activate() {
-                        control.currentIndex = index
-                        control.clicked(index)
-                    }
+                    Accessible.selected: selected
+                    Accessible.onPressAction: control.activate(index)
 
                     Rectangle {
-                        id: pill
-                        visible: control.useExpressivePills
+                        visible: control.expressive && tabItem.selected
                         anchors.centerIn: parent
-                        width: tabItem.isSelected ? Math.max(64 * control.themeGlobalScale, contentColumn.implicitWidth + 28 * control.themeGlobalScale)
-                                                   : hitArea.containsMouse ? Math.max(56 * control.themeGlobalScale, contentColumn.implicitWidth + 20 * control.themeGlobalScale)
-                                                                           : Math.max(48 * control.themeGlobalScale, contentColumn.implicitWidth + 12 * control.themeGlobalScale)
-                        height: control.hasIcons ? 58 * control.themeGlobalScale : 44 * control.themeGlobalScale
-                        radius: height / 2
-                        color: tabItem.isSelected ? control.themePrimaryContainer
-                                                  : hitArea.containsMouse ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
-                                                                          : "transparent"
+                        width: Math.min(parent.width - 8 * MeoTheme.globalScale,
+                                        Math.max(64 * MeoTheme.globalScale, tabContent.implicitWidth + 28 * MeoTheme.globalScale))
+                        height: control.hasIcons ? 56 * MeoTheme.globalScale : 40 * MeoTheme.globalScale
+                        radius: MeoTheme.shapeFull
+                        color: MeoTheme.secondaryContainer
 
                         Behavior on width {
+                            enabled: !MeoTheme.reduceMotion
                             NumberAnimation {
-                                duration: control.motionSelection
-                                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                                duration: MeoTheme.motionDurationSelection
+                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
-                        Behavior on color { ColorAnimation { duration: control.motionState } }
                     }
 
                     Column {
-                        id: contentColumn
+                        id: tabContent
                         anchors.centerIn: parent
-                        spacing: 3 * control.themeGlobalScale
+                        spacing: tabItem.iconName === "" ? 0 : 2 * MeoTheme.globalScale
 
                         Item {
-                            visible: tabItem.icon !== ""
-                            width: 28 * control.themeGlobalScale
-                            height: 26 * control.themeGlobalScale
+                            visible: tabItem.iconName !== ""
+                            width: 28 * MeoTheme.globalScale
+                            height: 26 * MeoTheme.globalScale
                             anchors.horizontalCenter: parent.horizontalCenter
 
                             MeoIcon {
                                 anchors.centerIn: parent
-                                icon: tabItem.icon
-                                fill: tabItem.isSelected
-                                size: 24
-                                color: tabItem.isSelected
-                                       ? (control.useExpressivePills ? control.themeOnPrimaryContainer : control.themePrimary)
-                                       : control.themeOnSurfaceVariant
+                                icon: tabItem.iconName
+                                fill: tabItem.selected
+                                size: 24 * MeoTheme.globalScale
+                                color: tabItem.selected
+                                       ? tabItem.selectedContentColor
+                                       : tabItem.unselectedContentColor
                             }
 
                             MeoBadge {
@@ -146,28 +182,32 @@ Control {
                                 visible: text !== "" || isDot
                                 anchors.top: parent.top
                                 anchors.right: parent.right
-                                anchors.topMargin: -3 * control.themeGlobalScale
-                                anchors.rightMargin: -3 * control.themeGlobalScale
+                                anchors.topMargin: -3 * MeoTheme.globalScale
+                                anchors.rightMargin: -3 * MeoTheme.globalScale
                             }
                         }
 
                         Row {
                             anchors.horizontalCenter: parent.horizontalCenter
-                            spacing: 4 * control.themeGlobalScale
+                            spacing: 4 * MeoTheme.globalScale
+                            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
                             Text {
                                 text: tabItem.label
-                                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-                                font.pixelSize: control.fontTitleSmall.size * control.themeGlobalScale
-                                font.weight: tabItem.isSelected ? Font.DemiBold : control.fontTitleSmall.weight
-                                color: tabItem.isSelected
-                                       ? (control.useExpressivePills ? control.themeOnPrimaryContainer : control.themePrimary)
-                                       : control.themeOnSurfaceVariant
-                                Behavior on color { ColorAnimation { duration: control.motionState } }
+                                font.family: MeoTheme.typefacePlain
+                                font.pixelSize: MeoTheme.titleSmall.size * MeoTheme.fontScale * MeoTheme.globalScale
+                                font.weight: MeoTheme.titleSmall.weight
+                                color: tabItem.selected
+                                       ? tabItem.selectedContentColor
+                                       : tabItem.unselectedContentColor
+                                Behavior on color {
+                                    enabled: !MeoTheme.reduceMotion
+                                    ColorAnimation { duration: MeoTheme.motionDurationState }
+                                }
                             }
 
                             MeoBadge {
-                                visible: tabItem.icon === "" && (tabItem.badgeText !== "" || tabItem.badgeDot)
+                                visible: tabItem.iconName === "" && (tabItem.badgeText !== "" || tabItem.badgeDot)
                                 text: tabItem.badgeText
                                 isDot: tabItem.badgeDot
                                 anchors.verticalCenter: parent.verticalCenter
@@ -176,46 +216,61 @@ Control {
                     }
 
                     Rectangle {
-                        visible: !control.useExpressivePills && tabItem.isSelected
+                        visible: !control.expressive && tabItem.selected
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
-                        width: control.type === "secondary" ? parent.width : Math.max(32 * control.themeGlobalScale, contentColumn.implicitWidth)
-                        height: control.type === "secondary" ? 2 * control.themeGlobalScale : 3 * control.themeGlobalScale
-                        radius: height / 2
-                        color: control.themePrimary
+                        width: control.type === "secondary" ? parent.width : Math.max(24 * MeoTheme.globalScale, tabContent.implicitWidth)
+                        height: 3 * MeoTheme.globalScale
+                        radius: 3 * MeoTheme.globalScale
+                        color: MeoTheme.primary
+
                         Behavior on width {
+                            enabled: !MeoTheme.reduceMotion
                             NumberAnimation {
-                                duration: control.motionSelection
-                                easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                                duration: MeoTheme.motionDurationSelection
+                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
                     }
 
                     MeoStateLayer {
                         anchors.fill: parent
-                        anchors.margins: control.useExpressivePills ? 4 * control.themeGlobalScale : 0
-                        radius: control.useExpressivePills ? 24 * control.themeGlobalScale : 8 * control.themeGlobalScale
-                        pressed: hitArea.pressed
-                        hovered: hitArea.containsMouse
+                        anchors.margins: control.expressive ? 4 * MeoTheme.globalScale : 0
+                        radius: control.expressive ? MeoTheme.shapeFull : 8 * MeoTheme.globalScale
+                        pressed: tabPointer.pressed
+                        hovered: tabPointer.containsMouse
                         focused: tabItem.activeFocus
-                        pressX: hitArea.mouseX
-                        pressY: hitArea.mouseY
-                        color: tabItem.isSelected ? control.themePrimary : control.themeOnSurfaceVariant
+                        pressX: tabPointer.mouseX
+                        pressY: tabPointer.mouseY
+                        color: tabItem.selected && control.expressive ? MeoTheme.contentOnSecondaryContainer : MeoTheme.contentOnSurface
                     }
 
                     MouseArea {
-                        id: hitArea
+                        id: tabPointer
                         anchors.fill: parent
                         hoverEnabled: true
+                        enabled: tabItem.enabled
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             tabItem.forceActiveFocus(Qt.MouseFocusReason)
-                            tabItem.activate()
+                            control.activate(index)
                         }
                     }
-                    Keys.onReturnPressed: activate()
-                    Keys.onEnterPressed: activate()
-                    Keys.onSpacePressed: activate()
+
+                    Keys.onLeftPressed: control.focusTab(index, control.mirrored ? 1 : -1)
+                    Keys.onRightPressed: control.focusTab(index, control.mirrored ? -1 : 1)
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Home) {
+                            control.focusTab(-1, 1)
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_End) {
+                            control.focusTab(0, -1)
+                            event.accepted = true
+                        }
+                    }
+                    Keys.onReturnPressed: control.activate(index)
+                    Keys.onEnterPressed: control.activate(index)
+                    Keys.onSpacePressed: control.activate(index)
                 }
             }
         }

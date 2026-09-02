@@ -8,6 +8,9 @@ MeoMotionSurface {
     property Component notificationContent: null
 
     property date currentDateTime: new Date()
+    // Keep the live desktop clock current without overwriting applications
+    // that supply a fixed date for a preview, history view, or test.
+    property bool updateTimeAutomatically: true
     property string timeText: Qt.formatTime(currentDateTime, Qt.DefaultLocaleShortDate)
     property string dateText: Qt.formatDate(currentDateTime, Qt.DefaultLocaleLongDate)
     property int unreadCount: 0
@@ -22,6 +25,14 @@ MeoMotionSurface {
     elevation: 3
     implicitWidth: 720 * MeoTheme.globalScale
     implicitHeight: 432 * MeoTheme.globalScale
+
+    Timer {
+        interval: 60000
+        repeat: true
+        running: control.updateTimeAutomatically
+        triggeredOnStart: false
+        onTriggered: control.currentDateTime = new Date()
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -41,7 +52,7 @@ MeoMotionSurface {
                     typeRole: "title"
                     typeSize: "large"
                     emphasized: true
-                    color: MeoTheme.onSurface
+                    color: MeoTheme.contentOnSurface
                 }
 
                 MeoText {
@@ -49,7 +60,7 @@ MeoMotionSurface {
                     text: control.dateText
                     typeRole: "body"
                     typeSize: "medium"
-                    color: MeoTheme.onSurfaceVariant
+                    color: MeoTheme.contentOnSurfaceVariant
                     elide: Text.ElideRight
                 }
             }
@@ -100,7 +111,7 @@ MeoMotionSurface {
                     typeRole: "title"
                     typeSize: "medium"
                     emphasized: true
-                    color: MeoTheme.onSurface
+                    color: MeoTheme.contentOnSurface
                 }
 
                 Item {

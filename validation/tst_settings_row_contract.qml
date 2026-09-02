@@ -218,6 +218,14 @@ Item {
             compare(actionSpy.count, 1)
         }
 
+        function test_disabledInteractiveRowIsNotAccessibilityFocusable() {
+            navigationRow.enabled = false
+            verify(!navigationRow.isInteractive)
+            verify(!navigationRow.Accessible.focusable)
+            navigationRow.enabled = true
+            verify(navigationRow.isInteractive)
+        }
+
         function test_groupForwardsExtendedModelData() {
             const groupSlider = findChild(modelGroup, "group-slider")
             const groupDropdown = findChild(modelGroup, "group-dropdown")

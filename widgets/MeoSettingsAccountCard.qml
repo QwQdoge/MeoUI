@@ -12,6 +12,8 @@ Control {
     property string avatarSource: ""
     property string initials: ""
     property bool showChevron: true
+    // Allows settings pages to reuse the identity surface as a read-only summary.
+    property bool interactive: true
     property color avatarColor: MeoTheme.primaryContainer
     property color avatarContentColor: MeoTheme.contentOnPrimaryContainer
 
@@ -20,6 +22,7 @@ Control {
     readonly property bool pressed: hitArea.pressed
     readonly property bool focusVisible: activeFocus
     readonly property real scale: MeoTheme.globalScale
+    readonly property bool reducedMotion: MeoTheme.reduceMotion
 
     implicitWidth: 480 * scale
     implicitHeight: MeoTheme.settingsAccountHeight
@@ -27,17 +30,17 @@ Control {
     rightPadding: 20 * scale
     topPadding: 0
     bottomPadding: 0
-    activeFocusOnTab: enabled
-    hoverEnabled: enabled
+    activeFocusOnTab: enabled && interactive
+    hoverEnabled: enabled && interactive
 
     Accessible.role: Accessible.Button
     Accessible.name: title
     Accessible.description: subtitle
-    Accessible.focusable: true
+    Accessible.focusable: enabled && interactive
     Accessible.onPressAction: activate()
 
     function activate() {
-        if (!enabled)
+        if (!enabled || !interactive)
             return
         forceActiveFocus(Qt.MouseFocusReason)
         clicked()
@@ -54,6 +57,7 @@ Control {
             color: MeoTheme.surfaceContainerLow
 
             Behavior on color {
+                enabled: !control.reducedMotion
                 ColorAnimation {
                     duration: MeoTheme.motionDurationEffectDefault
                     easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -82,21 +86,27 @@ Control {
             border.color: MeoTheme.primary
             opacity: control.activeFocus ? 1 : 0
 
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationEffectDefault } }
+            Behavior on opacity { enabled: !control.reducedMotion; NumberAnimation { duration: MeoTheme.motionDurationEffectDefault } }
         }
 
         MouseArea {
             id: hitArea
             anchors.fill: parent
-            enabled: control.enabled
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
+            enabled: control.enabled && control.interactive
+            hoverEnabled: control.interactive
+            cursorShape: control.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
             onClicked: control.activate()
         }
     }
 
     contentItem: Row {
         spacing: MeoTheme.settingsIconTextGap
+        opacity: control.enabled ? 1 : 0.38
+
+        Behavior on opacity {
+            enabled: !control.reducedMotion
+            NumberAnimation { duration: MeoTheme.motionDurationEffectDefault }
+        }
 
         MeoAvatar {
             anchors.verticalCenter: parent.verticalCenter

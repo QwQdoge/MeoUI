@@ -9,6 +9,9 @@ Rectangle {
     // 🌟 核心属性
     property var model: []
     property int currentIndex: 0
+    // Stable destination identity is additive for legacy callers and matches
+    // the M3 Expressive rail replacement's selection contract.
+    property string currentId: ""
     property bool isModal: false
     property string title: ""
     property Component header: null
@@ -16,19 +19,64 @@ Rectangle {
     property string visualStyle: "standard" // standard | settings
 
     signal clicked(int index)
+    signal activated(var item, int index)
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    // This is retained as a permanent-drawer compatibility surface. New M3
+    // Expressive work should use MeoNavigationRail { isExpanded: true }.
+    readonly property bool isDarkMode: MeoTheme.isDarkMode
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
-    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
+    readonly property var fontTitleSmall: MeoTheme.titleSmall
 
     implicitWidth: visualStyle === "settings" ? MeoTheme.settingsSidebarWidth
-                                               : 280 * themeGlobalScale
+                                               : 360 * themeGlobalScale
     width: implicitWidth
     height: parent ? parent.height : 600 * themeGlobalScale
-    color: themeSurfaceContainerLow
+    // AndroidX NavigationDrawerTokens use Surface for persistent/dismissible
+    // drawers and SurfaceContainerLow only for modal sheets. `isModal` is a
+    // compatibility API, so preserve it while making the default permanent
+    // drawer match the source token.
+    // Source: androidx-main NavigationDrawer.kt 8f8c02618f5d29d9ae6fb71c949ebe0a7290cd0a
+    // and NavigationDrawerTokens.kt acff122169a9156381ab51e9a579eec8beff3b69
+    // (Apache-2.0); mapped only through existing semantic MeoTheme roles.
+    color: isModal ? themeSurfaceContainerLow : themeSurface
+
+    function destinationAt(index) {
+        if (!model || index < 0)
+            return null
+        const count = typeof model.count === "number" ? model.count
+                                                   : (typeof model.length === "number" ? model.length : 0)
+        if (index >= count)
+            return null
+        return typeof model.get === "function" ? model.get(index) : model[index]
+    }
+
+    function syncCurrentId() {
+        const item = destinationAt(currentIndex)
+        if (!item || item.type === "header" || item.id === undefined || item.id === null)
+            return
+        currentId = String(item.id)
+    }
+
+    onCurrentIndexChanged: syncCurrentId()
+    onModelChanged: syncCurrentId()
+    onCurrentIdChanged: {
+        if (currentId === "")
+            return
+        const count = typeof model.count === "number" ? model.count
+                                                   : (typeof model.length === "number" ? model.length : 0)
+        for (let index = 0; index < count; ++index) {
+            const item = destinationAt(index)
+            if (item && item.type !== "header" && item.id !== undefined
+                    && String(item.id) === currentId) {
+                if (currentIndex !== index)
+                    currentIndex = index
+                return
+            }
+        }
+    }
 
     // Drawer Content Layout
     ColumnLayout {
@@ -54,9 +102,9 @@ Rectangle {
             rightPadding: 28 * control.themeGlobalScale
             topPadding: 12 * control.themeGlobalScale
             bottomPadding: 12 * control.themeGlobalScale
-            font.pixelSize: fontLabelLarge.size * control.themeGlobalScale
-            font.weight: fontLabelLarge.weight
-            color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+            font.pixelSize: fontTitleSmall.size * control.themeGlobalScale
+            font.weight: fontTitleSmall.weight
+            color: MeoTheme.contentOnSurfaceVariant
         }
 
         ScrollView {
@@ -98,6 +146,7 @@ Rectangle {
                                 onClicked: {
                                     control.currentIndex = index
                                     control.clicked(index)
+                                    control.activated(control.destinationAt(index), index)
                                 }
                             }
                         }

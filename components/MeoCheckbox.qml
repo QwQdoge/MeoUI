@@ -28,17 +28,44 @@ Control {
             text = label
     }
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionStateDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationShort2 !== 'undefined') ? MeoTheme.motionDurationShort2 : 100
-    readonly property int motionCheckDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium1 !== 'undefined') ? MeoTheme.motionDurationMedium1 : 250
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themeOnError: MeoTheme.contentOnError
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeError: MeoTheme.error
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionStateDuration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationShort2
+    readonly property int motionCheckDuration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationMedium1
+    // CheckboxTokens distinguishes the resting unselected outline
+    // (OnSurfaceVariant) from hover/focus/pressed (OnSurface). Selected
+    // containers remain Primary in all enabled interaction states.
+    // Source: androidx-main Checkbox.kt fc0c51a91b9b4ab680d987a08b939e7907cd4e6f
+    // and CheckboxTokens.kt 2e134988e3b23bb08dd846f449cc5c2e82c6ccba
+    // (Apache-2.0); mapped only through existing semantic MeoTheme roles.
+    readonly property bool hasInteractiveState: enabled
+                                                && (activeFocus || mouseArea.containsMouse || mouseArea.pressed)
+    // AndroidX CheckboxTokens: selected error marks use OnError; disabled
+    // selected marks use Surface rather than a translucent content role.
+    readonly property color checkmarkColor: !enabled ? themeSurface
+                                             : isError ? themeOnError
+                                             : themeOnPrimary
+    // M3 Checkbox specs: a visual 18dp control sits in a 48dp target with a
+    // 40dp state layer. Keep custom indicator-size variants while preserving
+    // the standard target at the default scale.
+    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real stateLayerSize: 40 * themeGlobalScale
+
+    Accessible.role: Accessible.CheckBox
+    Accessible.name: label
+    Accessible.description: isError && errorText !== "" ? errorText : helperText
+    Accessible.checkable: true
+    Accessible.checked: checked
+    Accessible.checkStateMixed: indeterminate
+    Accessible.focusable: enabled && activeFocusOnTab
+    Accessible.onPressAction: toggleSelection()
 
     // 📐 尺寸与比例自适应 (Sizes and Proportions)
     readonly property real checkboxSize: {
@@ -51,16 +78,14 @@ Control {
     }
 
     readonly property real checkboxBorderWidth: {
-        const borderVal = (thickness === "thin" ? (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthThin : 1 * themeGlobalScale) :
-                           (thickness === "thick" ? (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthThick : 3 * themeGlobalScale) :
-                           (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthMedium : 2 * themeGlobalScale)))
+        const borderVal = (thickness === "thin" ? MeoTheme.strokeWidthThin :
+                           (thickness === "thick" ? MeoTheme.strokeWidthThick : MeoTheme.strokeWidthMedium))
         if (size === "xs") return Math.max(1, borderVal * 0.75)
         if (size === "xl") return borderVal * 1.5
         return borderVal
     }
 
     readonly property var fontLabel: {
-        if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Medium }
         if (size === "xs") return MeoTheme.labelSmallUi
         if (size === "s") return MeoTheme.labelMediumUi
         if (size === "m") return MeoTheme.labelBig
@@ -69,11 +94,30 @@ Control {
         return MeoTheme.labelBig
     }
 
-    implicitWidth: Math.max(checkboxRect.width + (label !== "" ? spacing + labelText.implicitWidth : 0), 40 * themeGlobalScale)
-    implicitHeight: Math.max(checkboxRect.height, 40 * themeGlobalScale) + ((errorText !== "" && isError) || helperText !== "" ? 20 * themeGlobalScale : 0)
+    implicitWidth: Math.max(checkboxRect.width + (label !== "" ? spacing + labelText.implicitWidth : 0), minimumTargetSize)
+    implicitHeight: minimumTargetSize + ((errorText !== "" && isError) || helperText !== "" ? 20 * themeGlobalScale : 0)
 
-    padding: 8 * themeGlobalScale
+    padding: 0
     spacing: 12 * themeGlobalScale
+
+    function toggleSelection() {
+        if (!enabled)
+            return
+        if (indeterminate) {
+            indeterminate = false
+            checked = true
+        } else {
+            checked = !checked
+        }
+        toggled(checked)
+    }
+
+    Keys.onPressed: function(event) {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            toggleSelection()
+            event.accepted = true
+        }
+    }
 
     // 点击交互
     MouseArea {
@@ -81,44 +125,55 @@ Control {
         anchors.fill: parent
         hoverEnabled: true
         enabled: control.enabled
-        onClicked: {
-            control.checked = !control.checked
-            control.toggled(control.checked)
-        }
+        onClicked: control.toggleSelection()
     }
 
     contentItem: Column {
         spacing: 4 * control.themeGlobalScale
 
         Row {
+            objectName: "meoCheckboxRow"
+            height: control.minimumTargetSize
             spacing: control.spacing
+            layoutDirection: control.LayoutMirroring.enabled ? Qt.RightToLeft : Qt.LeftToRight
 
             // 🎨 复选框容器 (Checkbox container)
             Rectangle {
                 id: checkboxRect
+                objectName: "meoCheckboxIndicator"
                 width: control.checkboxSize
                 height: control.checkboxSize
                 anchors.verticalCenter: parent.verticalCenter
                 radius: 2 * control.themeGlobalScale
 
                 color: {
-                    if (!control.enabled) return "transparent"
+                    if (!control.enabled)
+                        return (control.checked || control.indeterminate)
+                                ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
+                                : "transparent"
                     if (control.checked || control.indeterminate) return control.isError ? control.themeError : control.themePrimary
                     return "transparent"
                 }
 
                 border.color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38)
+                    if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                     if (control.checked || control.indeterminate) return control.isError ? control.themeError : control.themePrimary
-                    return control.isError ? control.themeError : control.themeOutline
+                    if (control.isError)
+                        return control.themeError
+                    return control.hasInteractiveState
+                           ? control.themeOnSurface
+                           : control.themeOnSurfaceVariant
                 }
-                border.width: control.checkboxBorderWidth
+                // CheckboxTokens selected states have no separate outline.
+                // The unselected/error outline remains the 2dp token (or the
+                // existing explicit thickness compatibility setting).
+                border.width: (control.checked || control.indeterminate) ? 0 : control.checkboxBorderWidth
 
                 // 🌟 状态层反馈 (Hover/Pressed/Focused states)
                 Item {
                     anchors.centerIn: parent
-                    width: control.checkboxSize + 22 * control.themeGlobalScale
-                    height: control.checkboxSize + 22 * control.themeGlobalScale
+                    width: control.stateLayerSize
+                    height: control.stateLayerSize
                     z: -1
 
                     MeoStateLayer {
@@ -136,11 +191,17 @@ Control {
                 // 🌟 对勾/不确定态图标 (Animated Canvas Path)
                 Canvas {
                     id: checkmarkCanvas
+                    objectName: "meoCheckboxMark"
                     anchors.fill: parent
                     anchors.margins: Math.max(1, 2 * control.themeGlobalScale)
                     property real animationProgress: (control.checked || control.indeterminate) ? 1.0 : 0.0
+                    // AndroidX morphs an indeterminate dash into the check by
+                    // gravitating its centre and right endpoint. Off-to-on is
+                    // still controlled by the drawing fraction above.
+                    property real indeterminateMorph: control.indeterminate ? 1.0 : 0.0
 
                     onAnimationProgressChanged: requestPaint()
+                    onIndeterminateMorphChanged: requestPaint()
 
                     Connections {
                         target: control
@@ -148,16 +209,21 @@ Control {
                     }
 
                     Behavior on animationProgress {
-                        NumberAnimation { duration: control.motionCheckDuration; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] }
+                        NumberAnimation { duration: control.motionCheckDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    }
+                    Behavior on indeterminateMorph {
+                        NumberAnimation { duration: control.motionCheckDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
                     }
 
                     onPaint: {
                         var ctx = getContext("2d");
                         ctx.reset();
-                        ctx.strokeStyle = control.themeOnPrimary;
-                        ctx.lineWidth = Math.max(1.5, 2.5 * control.themeGlobalScale * (control.size === "xs" ? 0.75 : (control.size === "xl" ? 1.5 : 1.0)));
-                        ctx.lineCap = "round";
-                        ctx.lineJoin = "round";
+                        ctx.strokeStyle = control.checkmarkColor;
+                        // CheckboxDefaults.StrokeWidth is 2dp. Custom
+                        // thicknesses remain a MeoUI compatibility extension.
+                        ctx.lineWidth = Math.max(1, control.checkboxBorderWidth);
+                        ctx.lineCap = "square";
+                        ctx.lineJoin = "miter";
 
                         var w = width;
                         var h = height;
@@ -165,14 +231,17 @@ Control {
                         if (control.indeterminate) {
                             // Horizontal line for indeterminate
                             ctx.beginPath();
-                            ctx.moveTo(w * 0.2, h * 0.5);
-                            ctx.lineTo(w * 0.2 + (w * 0.6) * animationProgress, h * 0.5);
+                            ctx.moveTo(w * 0.25, h * 0.5);
+                            ctx.lineTo(w * (0.25 + 0.5 * animationProgress), h * 0.5);
                             ctx.stroke();
                         } else {
                             // Checkmark points
-                            var p1 = { x: w * 0.15, y: h * 0.5 };
-                            var p2 = { x: w * 0.4, y: h * 0.75 };
-                            var p3 = { x: w * 0.85, y: h * 0.2 };
+                            var indeterminateProgress = checkmarkCanvas.indeterminateMorph;
+                            var p1 = { x: w * 0.25, y: h * 0.5 };
+                            var p2 = { x: w * (0.4 + 0.1 * indeterminateProgress),
+                                       y: h * (0.65 - 0.15 * indeterminateProgress) };
+                            var p3 = { x: w * 0.75,
+                                       y: h * (0.3 + 0.2 * indeterminateProgress) };
 
                             ctx.beginPath();
                             if (animationProgress > 0) {
@@ -191,20 +260,19 @@ Control {
                     }
                 }
 
-                Behavior on color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
-                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+                Behavior on color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // 🔤 标签文本
             Text {
                 id: labelText
                 text: control.label
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: control.fontLabel.size * control.themeGlobalScale
                 font.weight: control.fontLabel.weight
                 color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38)
-                    if (control.isError) return control.themeError
+                    if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                     return control.themeOnSurface
                 }
                 anchors.verticalCenter: parent.verticalCenter
@@ -217,7 +285,7 @@ Control {
             id: feedbackText
             visible: (control.isError && control.errorText !== "") || control.helperText !== ""
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (control.fontLabel.size - 2) * control.themeGlobalScale
             color: control.isError ? control.themeError : control.themeOnSurfaceVariant
             leftPadding: control.checkboxSize + control.spacing

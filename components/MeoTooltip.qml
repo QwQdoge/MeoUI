@@ -1,65 +1,89 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 ToolTip {
     id: control
 
-    // 🌟 MD3 Plain Tooltip Specification
-    readonly property color themeInverseSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.inverseSurface !== 'undefined') ? MeoTheme.inverseSurface : "#313033"
-    readonly property color themeInverseOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnInverseSurface !== 'undefined') ? MeoTheme.contentOnInverseSurface : "#F4F0F4"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property real themeFontScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined') ? MeoTheme.fontScale : 1.0
-    readonly property string themeFontFamily: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
-    readonly property int motionDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
-    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
+    // AndroidX PlainTooltipTokens: inverse roles, CornerExtraSmall and BodySmall.
+    readonly property color themeInverseSurface: MeoTheme.inverseSurface
+    readonly property color themeInverseOnSurface: MeoTheme.contentOnInverseSurface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property real themeFontScale: MeoTheme.fontScale
+    readonly property string themeFontFamily: MeoTheme.typefacePlain
+    readonly property int motionSpatialFast: MeoTheme.motionDurationSpatialFast
+    readonly property int motionEffectFast: MeoTheme.motionDurationEffectFast
+    readonly property var fontBodySmall: MeoTheme.bodySmall
 
-    padding: 8 * themeGlobalScale
-    leftPadding: 12 * themeGlobalScale
-    rightPadding: 12 * themeGlobalScale
+    padding: 4 * themeGlobalScale
+    leftPadding: 8 * themeGlobalScale
+    rightPadding: 8 * themeGlobalScale
+    implicitWidth: Math.min(200 * themeGlobalScale,
+                            Math.max(40 * themeGlobalScale,
+                                     contentItem.implicitWidth + leftPadding + rightPadding))
+    implicitHeight: Math.max(24 * themeGlobalScale,
+                             contentItem.implicitHeight + topPadding + bottomPadding)
+
+    Accessible.role: Accessible.ToolTip
+    Accessible.name: text
 
     contentItem: Text {
+        objectName: "meoTooltipText"
         text: control.text
         font.family: control.themeFontFamily
-        font.pixelSize: control.fontLabelLarge.size * control.themeFontScale * control.themeGlobalScale
-        font.weight: control.fontLabelLarge.weight
-        font.letterSpacing: (control.fontLabelLarge.letterSpacing || 0) * control.themeGlobalScale
+        font.pixelSize: control.fontBodySmall.size * control.themeFontScale * control.themeGlobalScale
+        font.weight: control.fontBodySmall.weight
+        font.letterSpacing: control.fontBodySmall.letterSpacing * control.themeGlobalScale
         color: control.themeInverseOnSurface
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
     }
 
     background: Rectangle {
+        objectName: "meoTooltipBackground"
+        implicitWidth: 40 * control.themeGlobalScale
         implicitHeight: 24 * control.themeGlobalScale
         color: control.themeInverseSurface
-        radius: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeExtraSmall !== 'undefined') ? MeoTheme.shapeExtraSmall : 8 * control.themeGlobalScale
-
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.15
-            shadowVerticalOffset: 2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(0, 0, 0, 0.2)
-        }
+        radius: MeoTheme.shapeExtraSmall
     }
 
     enter: Transition {
-        NumberAnimation {
-            property: "opacity"
-            from: 0.0
-            to: 1.0
-            duration: control.motionDuration
-            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]
+        enabled: !MeoTheme.reduceMotion
+        ParallelAnimation {
+            NumberAnimation {
+                property: "opacity"
+                from: 0.0
+                to: 1.0
+                duration: control.motionEffectFast
+                easing.type: Easing.OutCubic
+            }
+            NumberAnimation {
+                property: "scale"
+                from: 0.8
+                to: 1.0
+                duration: control.motionSpatialFast
+                easing.type: Easing.OutCubic
+            }
         }
     }
     exit: Transition {
-        NumberAnimation {
-            property: "opacity"
-            from: 1.0
-            to: 0.0
-            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationTooltipExit !== 'undefined') ? MeoTheme.motionDurationTooltipExit : 100
-            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandardAccelerate !== 'undefined') ? MeoTheme.motionEasingStandardAccelerate : [0.3, 0, 1, 1]
+        enabled: !MeoTheme.reduceMotion
+        ParallelAnimation {
+            NumberAnimation {
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: control.motionEffectFast
+                easing.type: Easing.InCubic
+            }
+            NumberAnimation {
+                property: "scale"
+                from: 1.0
+                to: 0.8
+                duration: control.motionSpatialFast
+                easing.type: Easing.InCubic
+            }
         }
     }
 }

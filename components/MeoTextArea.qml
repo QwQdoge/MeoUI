@@ -14,19 +14,20 @@ TextArea {
     property int maxLength: -1
     property bool showCounter: false
 
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOutline: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outline !== "undefined") ? MeoTheme.outline : "#79747E"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeError: (typeof MeoTheme !== "undefined" && typeof MeoTheme.error !== "undefined") ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property var fontBody: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyLarge !== "undefined") ? MeoTheme.bodyLarge : ({ "size": 16, "weight": Font.Normal })
-    readonly property var fontLabel: (typeof MeoTheme !== "undefined" && typeof MeoTheme.labelSmall !== "undefined") ? MeoTheme.labelSmall : ({ "size": 11, "weight": Font.Medium })
-    readonly property var fontSupporting: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodySmall !== "undefined") ? MeoTheme.bodySmall : ({ "size": 12, "weight": Font.Normal })
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themeError: MeoTheme.error
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionFast: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
+    readonly property var fontBody: MeoTheme.bodyLarge
+    readonly property var fontLabel: MeoTheme.labelSmall
+    readonly property var fontSupporting: MeoTheme.bodySmall
 
-    readonly property bool labelRaised: label !== "" && (activeFocus || text !== "" || placeholder !== "")
+    readonly property bool mirrored: LayoutMirroring.enabled
+    readonly property bool labelRaised: label !== "" && (activeFocus || text !== "")
     readonly property bool hasSupportingLine: helperText !== "" || (isError && errorText !== "") || showCounter
     readonly property real supportingHeight: hasSupportingLine ? 24 * themeGlobalScale : 0
     readonly property real containerRadius: 20 * themeGlobalScale
@@ -39,11 +40,13 @@ TextArea {
     topPadding: labelRaised ? 32 * themeGlobalScale : 16 * themeGlobalScale
     bottomPadding: 16 * themeGlobalScale + supportingHeight
 
-    color: enabled ? (isError ? themeError : themeOnSurface)
-                   : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
+    // Error is carried by the field indicator, label, and supporting line;
+    // entered multiline content remains readable on-surface.
+    color: enabled ? themeOnSurface
+                   : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, MeoTheme.disabledContentOpacity)
     selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.28)
     selectedTextColor: themeOnSurface
-    font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+    font.family: MeoTheme.typefacePlain
     font.pixelSize: fontBody.size * themeGlobalScale
     font.weight: fontBody.weight
     selectByMouse: true
@@ -51,7 +54,9 @@ TextArea {
 
     placeholderText: labelRaised ? placeholder : (label !== "" ? label : placeholder)
     placeholderTextColor: enabled ? themeOnSurfaceVariant
-                                  : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.38)
+                                  : Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, MeoTheme.disabledContentOpacity)
+    hoverEnabled: true
+    Accessible.name: label !== "" ? label : placeholder
 
     onTextChanged: {
         if (maxLength > 0 && text.length > maxLength) {
@@ -64,6 +69,7 @@ TextArea {
     background: Item {
         Rectangle {
             id: areaContainer
+            objectName: "meoTextAreaContainer"
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
@@ -72,7 +78,7 @@ TextArea {
             radius: control.containerRadius
             color: {
                 if (control.type === "outlined") return "transparent"
-                if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.04)
+                if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContainerOpacity)
                 var base = control.themeSurfaceContainerHighest
                 if (control.hovered)
                     return Qt.tint(base, Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06))
@@ -94,13 +100,34 @@ TextArea {
             Behavior on border.width { NumberAnimation { duration: control.motionFast } }
         }
 
+        Rectangle {
+            id: activeIndicator
+            objectName: "meoTextAreaActiveIndicator"
+            visible: control.type === "filled"
+            anchors.left: areaContainer.left
+            anchors.right: areaContainer.right
+            anchors.bottom: areaContainer.bottom
+            height: control.activeFocus ? 2 * control.themeGlobalScale : 1 * control.themeGlobalScale
+            color: {
+                if (!control.enabled)
+                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContainerOpacity)
+                if (control.isError) return control.themeError
+                if (control.activeFocus) return control.themePrimary
+                return control.themeOnSurfaceVariant
+            }
+            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on height { NumberAnimation { duration: control.motionFast } }
+        }
+
         Text {
+            objectName: "meoTextAreaLabel"
             visible: control.labelRaised
             text: control.label
-            anchors.left: areaContainer.left
-            anchors.leftMargin: 16 * control.themeGlobalScale
             anchors.top: areaContainer.top
             anchors.topMargin: 9 * control.themeGlobalScale
+            x: control.mirrored
+               ? areaContainer.width - width - 16 * control.themeGlobalScale
+               : 16 * control.themeGlobalScale
             font.family: control.font.family
             font.pixelSize: control.fontLabel.size * control.themeGlobalScale
             font.weight: control.fontLabel.weight
@@ -110,6 +137,7 @@ TextArea {
 
         Row {
             id: supportingRow
+            objectName: "meoTextAreaSupportingRow"
             anchors.left: parent.left
             anchors.leftMargin: 16 * control.themeGlobalScale
             anchors.right: parent.right
@@ -117,6 +145,7 @@ TextArea {
             anchors.bottom: parent.bottom
             height: control.supportingHeight
             visible: control.hasSupportingLine
+            layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
             Text {
                 width: Math.max(0, parent.width - counterLabel.width - 12 * control.themeGlobalScale)

@@ -18,7 +18,7 @@ Control {
 
     // Trailing Area Properties
     property string badgeText: ""
-    property color badgeColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
+    property color badgeColor: MeoTheme.error
     property Component leadingComponent: null
     property Component trailingComponent: null
     property list<Component> actions
@@ -35,31 +35,38 @@ Control {
 
     signal clicked()
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontBodyLarge: {
-        if (typeof MeoTheme === 'undefined') return { "size": 16, "weight": Font.Normal };
-        return isEmphasized ? (MeoTheme.bodyLargeEmphasized || MeoTheme.bodyLarge) : MeoTheme.bodyLarge;
-    }
-    readonly property var fontBodyMedium: {
-        if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Normal };
-        return isEmphasized ? (MeoTheme.bodyMediumEmphasized || MeoTheme.bodyMedium) : MeoTheme.bodyMedium;
-    }
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeOnSecondaryContainer: MeoTheme.contentOnSecondaryContainer
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnPrimaryContainer: MeoTheme.contentOnPrimaryContainer
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool usesVibrantPrimary: vibrant && MeoTheme.isExpressive
+    readonly property color selectedContainerColor: usesVibrantPrimary ? themePrimary
+                                                                        : (vibrant ? themePrimaryContainer : themeSecondaryContainer)
+    readonly property color selectedContentColor: usesVibrantPrimary ? themeOnPrimary
+                                                                      : (vibrant ? themeOnPrimaryContainer : themeOnSecondaryContainer)
+    // AndroidX ListTokens resolves a disabled selected item from OnSurface at
+    // the shared disabled-content opacity, instead of retaining the enabled
+    // secondary/primary container. Keep that state semantic and centralised.
+    readonly property color resolvedSelectedContainerColor: !enabled ? themeOnSurface : selectedContainerColor
+    readonly property real resolvedSelectedContainerOpacity: !enabled ? MeoTheme.disabledContentOpacity : 1.0
+    readonly property var fontBodyLarge: isEmphasized ? MeoTheme.bodyLargeEmphasized : MeoTheme.bodyLarge
+    readonly property var fontBodyMedium: isEmphasized ? MeoTheme.bodyMediumEmphasized : MeoTheme.bodyMedium
 
     implicitWidth: 360 * themeGlobalScale
     // MD3 Heights: 1-line (56/72), 2-line (72/88), 3-line (88)
     implicitHeight: {
         let h = isDense ? 48 : 56;
-        if (supportingText !== "") {
-            h = (supportingTextLines > 1 || overline !== "") ? (isDense ? 72 : 88) : (isDense ? 64 : 72);
+        // AndroidX ListItem treats either an overline or supporting text as a
+        // two-line template. Both together form the three-line template.
+        if (overline !== "" || supportingText !== "") {
+            const hasThreeLines = overline !== "" && supportingText !== ""
+                                  || (supportingText !== "" && supportingTextLines > 1)
+            h = hasThreeLines ? (isDense ? 72 : 88) : (isDense ? 64 : 72);
         }
         if (leadingImage !== "" && leadingImageSize > 40) h = Math.max(h, leadingImageSize + (isDense ? 8 : 16));
         if (isSegmented) h += 8;
@@ -71,16 +78,16 @@ Control {
         return isSegmented ? 12 * themeGlobalScale : 16 * themeGlobalScale;
     }
     spacing: 16 * themeGlobalScale // Standardized MD3 spacing
-    activeFocusOnTab: interactive
+    activeFocusOnTab: interactive && enabled
     Accessible.role: Accessible.ListItem
     Accessible.name: headline
     Accessible.description: supportingText
     Accessible.selected: selected
-    Accessible.focusable: interactive
-    Accessible.onPressAction: if (interactive) control.clicked()
-    Keys.onReturnPressed: if (interactive) control.clicked()
-    Keys.onEnterPressed: if (interactive) control.clicked()
-    Keys.onSpacePressed: if (interactive) control.clicked()
+    Accessible.focusable: interactive && enabled
+    Accessible.onPressAction: if (interactive && enabled) control.clicked()
+    Keys.onReturnPressed: if (interactive && enabled) control.clicked()
+    Keys.onEnterPressed: if (interactive && enabled) control.clicked()
+    Keys.onSpacePressed: if (interactive && enabled) control.clicked()
 
     background: Item {
         width: control.width - (control.isSegmented ? 16 * control.themeGlobalScale : 0)
@@ -89,17 +96,19 @@ Control {
 
         Rectangle {
             id: shapeBg
+            objectName: "meoListItemSurface"
             anchors.fill: parent
             radius: {
                 if (!isSegmented) return 0;
-                if (typeof MeoTheme !== 'undefined' && MeoTheme.isExpressive && selected) return MeoTheme.shapeLargeIncreased;
-                return (typeof MeoTheme !== 'undefined' ? MeoTheme.shapeLarge : 16 * themeGlobalScale);
+                if (MeoTheme.isExpressive && selected) return MeoTheme.shapeLargeIncreased;
+                return MeoTheme.shapeLarge;
             }
             color: {
                 if (!isSegmented || !selected) return "transparent";
-                if (vibrant && typeof MeoTheme !== 'undefined' && MeoTheme.isExpressive) return themePrimary;
-                return vibrant ? themePrimaryContainer : themeSecondaryContainer;
+                return control.resolvedSelectedContainerColor;
             }
+            opacity: control.isSegmented && control.selected
+                     ? control.resolvedSelectedContainerOpacity : 1.0
 
             // MD3 Expressive: Rounding strategies for connected items in a group
             topLeftRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : 0
@@ -110,20 +119,20 @@ Control {
             MeoStateLayer {
                 anchors.fill: parent
                 visible: control.interactive
+                enabled: control.enabled
                 pressed: mouseArea.pressed
                 hovered: mouseArea.containsMouse
                 focused: control.activeFocus
                 pressX: mouseArea.mouseX
                 pressY: mouseArea.mouseY
                 radius: (control.isSegmented && control.roundingStrategy === "all" && control.shape === "rect") ? shapeBg.radius : 0
-                color: {
-                    if (vibrant && selected) return control.themeOnPrimaryContainer;
-                    if (selected) return control.themeOnSecondaryContainer;
-                    return control.themeOnSurface;
-                }
+                color: selected ? control.selectedContentColor : control.themeOnSurface
             }
 
-            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on color {
+                enabled: !MeoTheme.reduceMotion
+                ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+            }
         }
 
         // Overlay for complex shapes if using MeoShape (Note: MeoShape doesn't support partial rounding as easily as Rectangle)
@@ -140,7 +149,7 @@ Control {
     MouseArea {
         id: mouseArea
         anchors.fill: parent
-        enabled: control.interactive
+        enabled: control.interactive && control.enabled
         hoverEnabled: true
         onClicked: {
             control.forceActiveFocus(Qt.MouseFocusReason)
@@ -153,6 +162,8 @@ Control {
         spacing: control.spacing
         width: control.availableWidth
         height: control.availableHeight
+        layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
+        opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
 
         // 🖼️ Leading Visuals Area
         Item {
@@ -175,7 +186,8 @@ Control {
                 anchors.centerIn: parent
                 icon: control.leadingIcon
                 size: isDense ? 20 : 24
-                color: control.themeOnSurfaceVariant
+                color: control.selected && control.isSegmented
+                       ? control.selectedContentColor : control.themeOnSurfaceVariant
                 visible: control.leadingIcon !== "" && control.leadingComponent === null && control.leadingImage === ""
             }
 
@@ -204,8 +216,8 @@ Control {
             Text {
                 text: control.overline
                 width: parent.width
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-                font.pixelSize: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelSmall !== 'undefined' ? MeoTheme.labelSmall.size : 11) * control.themeGlobalScale
+                font.family: MeoTheme.typefacePlain
+                font.pixelSize: MeoTheme.labelSmall.size * control.themeGlobalScale
                 font.weight: Font.Normal
                 color: control.themeOnSurfaceVariant
                 visible: text !== ""
@@ -216,19 +228,19 @@ Control {
             Text {
                 text: control.headline
                 width: parent.width
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: fontBodyLarge.size * control.themeGlobalScale
                 font.weight: (control.selected && !isSegmented) ? Font.Bold : fontBodyLarge.weight
                 font.letterSpacing: (fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
                 lineHeight: (fontBodyLarge.lineHeight ? (fontBodyLarge.lineHeight / fontBodyLarge.size) : 1.2)
                 color: {
-                    if (control.selected && isSegmented) {
-                        return vibrant ? control.themeOnPrimaryContainer : control.themeOnSecondaryContainer;
-                    }
+                    if (control.selected && isSegmented)
+                        return control.selectedContentColor;
                     return control.themeOnSurface;
                 }
                 elide: Text.ElideRight
                 Behavior on color {
+                    enabled: !MeoTheme.reduceMotion
                     ColorAnimation {
                         duration: MeoTheme.motionDurationEffectDefault
                         easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -239,12 +251,13 @@ Control {
             Text {
                 text: control.supportingText
                 width: parent.width
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: fontBodyMedium.size * control.themeGlobalScale
                 font.weight: fontBodyMedium.weight
                 font.letterSpacing: (fontBodyMedium.letterSpacing || 0) * control.themeGlobalScale
                 lineHeight: (fontBodyMedium.lineHeight ? (fontBodyMedium.lineHeight / fontBodyMedium.size) : 1.2)
-                color: control.themeOnSurfaceVariant
+                color: control.selected && control.isSegmented
+                       ? control.selectedContentColor : control.themeOnSurfaceVariant
                 visible: text !== ""
                 elide: Text.ElideRight
                 wrapMode: Text.WordWrap

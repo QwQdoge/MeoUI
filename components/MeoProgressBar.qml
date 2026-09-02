@@ -5,188 +5,280 @@ import MeoUI
 Control {
     id: control
 
-    // Progress model
-    property real value: 0.0 // 0.0 ~ 1.0
+    // Public progress model. Values outside the range remain accepted at the
+    // API boundary but are clamped by the visual contract.
+    property real value: 0.0
     property bool indeterminate: false
     property string type: "linear" // "linear" | "circular"
-    property bool wavy: false
-    property bool isThick: false
-    property bool vibrant: false
     property bool showTrack: true
+    property bool isThick: false
 
-    // Linear presentation. Thick indicators opt into the Android 16-style
-    // split pill by default, while thin indicators stay backwards compatible.
-    property string linearStyle: isThick ? "pill" : "standard" // "standard" | "pill"
+    // Expressive variants are opt-in. isThick changes stroke thickness only;
+    // it must not silently turn a normal progress bar into a different shape.
+    property string linearStyle: "standard" // "standard" | "pill"
     property string leadingIcon: ""
-    property bool leadingIconEnabled: leadingIcon.length > 0
+    readonly property bool leadingIconEnabled: leadingIcon.length > 0
+    property bool wavy: false
 
-    property color activeColor: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined")
-                                ? MeoTheme.primary : "#6750A4"
-    property color trackColor: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined")
-                               ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    property color pillActiveColor: vibrant ? activeColor : (themeIsDarkMode ? themePrimary : themePrimaryContainer)
-    property color pillTrackColor: themeIsDarkMode ? themeSurfaceContainerLow : themeSurfaceContainerHighest
-    property color pillMarkerColor: pillActiveColor
+    // Kept so existing callers keep loading. M3 progress uses the same token
+    // set regardless of this historical flag, so it intentionally has no
+    // separate palette effect.
+    property bool vibrant: false
 
-    readonly property bool themeIsDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined")
-                                            ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined")
-                                          ? MeoTheme.primary : "#6750A4"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined")
-                                                   ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimary !== "undefined")
-                                            ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimaryContainer !== "undefined")
-                                                     ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined")
-                                                      ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined")
-                                                          ? MeoTheme.surfaceContainerHighest : "#E6E0E9"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined")
-                                             ? MeoTheme.globalScale : 1.0
-    readonly property real themeMotionScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionScale !== "undefined")
-                                             ? MeoTheme.motionScale : 1.0
-    readonly property bool reduceMotion: (typeof MeoTheme !== "undefined" && typeof MeoTheme.reduceMotion !== "undefined")
-                                         ? MeoTheme.reduceMotion : false
-    readonly property int motionDuration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationEffectDefault !== "undefined")
-                                          ? MeoTheme.motionDurationEffectDefault : 150
-    readonly property var motionEasing: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined")
-                                        ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+    property color activeColor: MeoTheme.primary
+    // ProgressIndicatorTokens.TrackColor is SecondaryContainer.
+    property color trackColor: MeoTheme.secondaryContainer
+    property color pillActiveColor: activeColor
+    property color pillTrackColor: trackColor
+    property color pillMarkerColor: activeColor
 
     readonly property real clampedValue: Math.max(0, Math.min(1, value))
-    readonly property real linearWavelength: 40 * themeGlobalScale
-    readonly property real linearAmplitude: reduceMotion ? 0 : 3 * themeGlobalScale
-    readonly property real circularWavelengthTarget: 15 * themeGlobalScale
-    readonly property real circularAmplitude: reduceMotion ? 0 : 2 * themeGlobalScale
-    readonly property real strokeThickness: 4 * themeGlobalScale
-
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool reduceMotion: MeoTheme.reduceMotion
+    readonly property int motionDuration: MeoTheme.motionDurationEffectDefault
+    readonly property var motionEasing: MeoTheme.motionEasingStandard
+    // M3 keeps inactive tracks at 4dp while the active indicator may expand
+    // to 8dp for the thick configurations.
+    readonly property real trackThickness: 4 * themeGlobalScale
+    readonly property real strokeThickness: (isThick ? 8 : 4) * themeGlobalScale
     readonly property real pillHeight: (isThick ? 28 : 24) * themeGlobalScale
     readonly property real pillGap: 6 * themeGlobalScale
     readonly property real pillMarkerWidth: 4 * themeGlobalScale
     readonly property real pillMarkerHeight: pillHeight + 8 * themeGlobalScale
+    readonly property real linearWavelength: 40 * themeGlobalScale
+    readonly property real indeterminateLinearWavelength: 20 * themeGlobalScale
+    // M3 Expressive keeps the wavy silhouette when motion is reduced; only
+    // phase movement stops. 4/8dp tracks with a 3dp amplitude produce the
+    // specified 10/14dp bounds and 40dp wavelength.
+    readonly property real linearAmplitude: 3 * themeGlobalScale
+    readonly property real circularWavelengthTarget: 15 * themeGlobalScale
+    // CircularProgressIndicatorTokens.ActiveWaveAmplitude = 1.6dp. The
+    // waveform is a visual configuration, so reduced motion freezes phase
+    // rather than changing the selected configuration's geometry.
+    readonly property real circularAmplitude: 1.6 * themeGlobalScale
+    readonly property bool isPill: type === "linear" && linearStyle === "pill" && !wavy
+    readonly property string accessibleProgress: Math.round(clampedValue * 100) + "%"
+    readonly property real wavyReferenceWidth: width > 0 ? width : implicitWidth
+    readonly property real wavyActiveWidth: type === "linear"
+                                           ? wavyReferenceWidth * (indeterminate ? 0.42 : clampedValue)
+                                           : 0
+    // The quiet track begins after the same 4dp active/track gap as the
+    // standard M3 linear indicator. Keeping this observable makes the
+    // renderer's geometry independently testable.
+    readonly property real wavyTrackStart: Math.min(wavyReferenceWidth,
+                                                    wavyActiveWidth + Math.min(wavyActiveWidth,
+                                                                               4 * themeGlobalScale))
+
+    // AndroidX uses a 1750ms two-line indeterminate cycle. A linear clock is
+    // deliberately separated from the segment easing so each of the four
+    // head/tail positions can follow the source delays and durations.
+    property real indeterminateLinearPhase: 0.0
+    readonly property real effectiveIndeterminateLinearPhase: reduceMotion ? 0.75 : indeterminateLinearPhase
+    readonly property real indeterminateLinearElapsed: effectiveIndeterminateLinearPhase * 1750
+
+    function cubicBezierCoordinate(t, first, second) {
+        const inverse = 1 - t
+        return 3 * inverse * inverse * t * first
+               + 3 * inverse * t * t * second
+               + t * t * t
+    }
+
+    function emphasizedAccelerateFraction(fraction) {
+        const target = Math.max(0, Math.min(1, fraction))
+        const curve = MeoTheme.motionEasingEmphasizedAccelerate
+        let low = 0
+        let high = 1
+        for (let iteration = 0; iteration < 16; ++iteration) {
+            const candidate = (low + high) / 2
+            if (cubicBezierCoordinate(candidate, curve[0], curve[2]) < target)
+                low = candidate
+            else
+                high = candidate
+        }
+        return cubicBezierCoordinate((low + high) / 2, curve[1], curve[3])
+    }
+
+    function indeterminateLinePosition(delay, duration) {
+        const elapsed = indeterminateLinearElapsed
+        if (elapsed <= delay)
+            return 0
+        if (elapsed >= delay + duration)
+            return 1
+        return emphasizedAccelerateFraction((elapsed - delay) / duration)
+    }
+
+    readonly property real firstLineHead: indeterminateLinePosition(0, 1000)
+    readonly property real firstLineTail: indeterminateLinePosition(250, 1000)
+    readonly property real secondLineHead: indeterminateLinePosition(650, 850)
+    readonly property real secondLineTail: indeterminateLinePosition(900, 850)
+
+    // AndroidX CircularProgressIndicator compensates the supplied 4dp gap
+    // for round stroke caps, then reserves that space on both sides of the
+    // determinate active arc. The helper keeps the source formula in one
+    // place for Canvas rendering and focused geometry checks.
+    function circularTrackGapSweepDegrees(diameter, stroke) {
+        if (diameter <= 0)
+            return 0
+        return ((4 * themeGlobalScale + stroke) / (Math.PI * diameter)) * 360
+    }
+
+    function circularDeterminateTrackSweepDegrees(diameter, stroke) {
+        const activeSweep = clampedValue * 360
+        const gapSweep = circularTrackGapSweepDegrees(diameter, stroke)
+        return Math.max(0, 360 - activeSweep - 2 * Math.min(activeSweep, gapSweep))
+    }
 
     implicitWidth: type === "linear"
                    ? 240 * themeGlobalScale
-                   : (wavy ? 48 * themeGlobalScale : 40 * themeGlobalScale)
+                   : (wavy ? (isThick ? 52 : 48) * themeGlobalScale
+                           : (isThick ? 44 : 40) * themeGlobalScale)
     implicitHeight: type === "linear"
-                    ? (wavy
-                       ? 10 * themeGlobalScale
-                       : (linearStyle === "pill"
-                          ? pillMarkerHeight
-                          : (isThick ? 8 : 4) * themeGlobalScale))
-                    : (wavy ? 48 * themeGlobalScale : 40 * themeGlobalScale)
+                    ? (wavy ? strokeThickness + 2 * linearAmplitude
+                            : (isPill ? pillMarkerHeight : strokeThickness))
+                    : (wavy ? (isThick ? 52 : 48) * themeGlobalScale
+                            : (isThick ? 44 : 40) * themeGlobalScale)
 
-    // One wavelength per second. Reduced motion freezes the waveform without
-    // changing geometry.
+    opacity: enabled ? 1 : MeoTheme.disabledContentOpacity
+    Accessible.role: Accessible.ProgressBar
+    Accessible.name: indeterminate
+                     ? qsTr("Loading progress")
+                     : qsTr("Progress %1").arg(accessibleProgress)
+
+    // A contained waveform is an M3 Expressive treatment. It is not used for
+    // the default indicator and reduced motion deliberately freezes its pose.
     property real wavePhase: 0.0
     NumberAnimation on wavePhase {
         running: control.wavy && control.visible && !control.reduceMotion
         loops: Animation.Infinite
         from: 0.0
         to: 1.0
-        duration: Math.max(1, Math.round(1000 * control.themeMotionScale))
+        duration: Math.max(1, Math.round(1000 * MeoTheme.effectiveMotionScale))
+    }
+
+    NumberAnimation on indeterminateLinearPhase {
+        running: control.indeterminate && control.visible && !control.reduceMotion
+                 && control.type === "linear" && !control.wavy && !control.isPill
+        loops: Animation.Infinite
+        from: 0.0
+        to: 1.0
+        duration: Math.max(1, Math.round(1750 * MeoTheme.effectiveMotionScale))
+        easing.type: Easing.Linear
     }
 
     Canvas {
         id: wavyCanvas
+        objectName: "meoProgressWavyCanvas"
         anchors.fill: parent
         visible: control.wavy
 
         onPaint: {
-            var ctx = getContext("2d")
+            const ctx = getContext("2d")
             ctx.reset()
 
-            var w = width
-            var h = height
+            const w = width
+            const h = height
             if (w <= 0 || h <= 0)
                 return
 
-            var stroke = control.strokeThickness
-            var phase = control.wavePhase
+            const stroke = control.strokeThickness
+            const phase = control.wavePhase
 
             if (control.type === "linear") {
-                var centerY = h / 2
-                var linearAmp = control.linearAmplitude
-                var wl = control.linearWavelength
+                const centerY = h / 2
+                const activeW = w * (control.indeterminate ? 0.42 : control.clampedValue)
+                const trackStart = Math.min(w, activeW + Math.min(activeW, 4 * control.themeGlobalScale))
+                const wavelength = control.indeterminate
+                                 ? control.indeterminateLinearWavelength
+                                 : control.linearWavelength
 
-                if (control.showTrack) {
-                    ctx.strokeStyle = control.trackColor
-                    ctx.lineWidth = stroke
-                    ctx.lineCap = "round"
-                    ctx.beginPath()
-                    ctx.moveTo(0, centerY)
-                    ctx.lineTo(w, centerY)
-                    ctx.stroke()
+                // The source implementation draws from inline start. Mirror
+                // the whole geometry once for RTL so active segment, gap,
+                // track, and stop all remain internally consistent.
+                ctx.save()
+                if (control.mirrored) {
+                    ctx.translate(w, 0)
+                    ctx.scale(-1, 1)
                 }
 
-                var activeW = w * (control.indeterminate ? 0.6 : control.clampedValue)
-                if (activeW > 0) {
-                    ctx.strokeStyle = control.activeColor
-                    ctx.lineWidth = stroke
+                if (control.showTrack && trackStart < w) {
+                    ctx.strokeStyle = control.trackColor
+                    ctx.lineWidth = control.trackThickness
                     ctx.lineCap = "round"
                     ctx.beginPath()
-
-                    for (var x = 0; x <= activeW; x += 2) {
-                        var y = centerY + linearAmp * Math.sin(2 * Math.PI * (x / wl - phase))
-                        if (x === 0)
-                            ctx.moveTo(x, y)
-                        else
-                            ctx.lineTo(x, y)
-                    }
+                    ctx.moveTo(trackStart, centerY)
+                    ctx.lineTo(w, centerY)
                     ctx.stroke()
 
                     ctx.fillStyle = control.activeColor
                     ctx.beginPath()
-                    ctx.arc(activeW, centerY, stroke / 2, 0, 2 * Math.PI)
+                    ctx.arc(w - 2 * control.themeGlobalScale,
+                            centerY, 2 * control.themeGlobalScale, 0, 2 * Math.PI)
                     ctx.fill()
                 }
-            } else {
-                var circularAmp = control.circularAmplitude
-                var radius = (Math.min(w, h) - stroke - circularAmp * 2) / 2
-                var cx = w / 2
-                var cy = h / 2
-                var circumference = 2 * Math.PI * radius
-                var waveCount = Math.max(3, Math.round(circumference / control.circularWavelengthTarget))
 
-                if (control.showTrack) {
-                    ctx.strokeStyle = control.trackColor
-                    ctx.lineWidth = stroke
-                    ctx.beginPath()
-                    ctx.arc(cx, cy, radius, 0, 2 * Math.PI)
-                    ctx.stroke()
+                if (activeW <= 0) {
+                    ctx.restore()
+                    return
                 }
 
-                var activeAngle = 2 * Math.PI * (control.indeterminate ? 0.75 : control.clampedValue)
-                if (activeAngle > 0) {
-                    ctx.strokeStyle = control.activeColor
-                    ctx.lineWidth = stroke
-                    ctx.lineCap = "round"
-                    ctx.beginPath()
-
-                    var step = Math.PI / 60
-                    for (var angle = -Math.PI / 2;
-                         angle <= -Math.PI / 2 + activeAngle;
-                         angle += step) {
-                        var currentRadius = radius
-                                + circularAmp * Math.sin(waveCount * angle - 2 * Math.PI * phase)
-                        var px = cx + currentRadius * Math.cos(angle)
-                        var py = cy + currentRadius * Math.sin(angle)
-
-                        if (angle === -Math.PI / 2)
-                            ctx.moveTo(px, py)
-                        else
-                            ctx.lineTo(px, py)
-                    }
-                    ctx.stroke()
+                ctx.strokeStyle = control.activeColor
+                ctx.lineWidth = stroke
+                ctx.lineCap = "round"
+                ctx.beginPath()
+                for (let x = 0; x <= activeW; x += 2) {
+                    const y = centerY + control.linearAmplitude
+                            * Math.sin(2 * Math.PI * (x / wavelength - phase))
+                    if (x === 0)
+                        ctx.moveTo(x, y)
+                    else
+                        ctx.lineTo(x, y)
                 }
+                ctx.stroke()
+                ctx.restore()
+                return
             }
+
+            const radius = (Math.min(w, h) - stroke - control.circularAmplitude * 2) / 2
+            const cx = w / 2
+            const cy = h / 2
+            const circumference = 2 * Math.PI * radius
+            const waveCount = Math.max(3, Math.round(circumference / control.circularWavelengthTarget))
+
+            if (control.showTrack) {
+                ctx.strokeStyle = control.trackColor
+                ctx.lineWidth = control.trackThickness
+                ctx.beginPath()
+                ctx.arc(cx, cy, radius, 0, 2 * Math.PI)
+                ctx.stroke()
+            }
+
+            const activeAngle = 2 * Math.PI * (control.indeterminate ? 0.30 : control.clampedValue)
+            if (activeAngle <= 0)
+                return
+
+            ctx.strokeStyle = control.activeColor
+            ctx.lineWidth = stroke
+            ctx.lineCap = "round"
+            ctx.beginPath()
+            for (let angle = -Math.PI / 2;
+                 angle <= -Math.PI / 2 + activeAngle;
+                 angle += Math.PI / 60) {
+                const currentRadius = radius + control.circularAmplitude
+                        * Math.sin(waveCount * angle - 2 * Math.PI * phase)
+                const px = cx + currentRadius * Math.cos(angle)
+                const py = cy + currentRadius * Math.sin(angle)
+                if (angle === -Math.PI / 2)
+                    ctx.moveTo(px, py)
+                else
+                    ctx.lineTo(px, py)
+            }
+            ctx.stroke()
         }
 
         onWidthChanged: requestPaint()
         onHeightChanged: requestPaint()
     }
 
-    // Keep Canvas-based variants in sync with dynamic theme changes.
     onWavePhaseChanged: if (wavy) wavyCanvas.requestPaint()
     onValueChanged: {
         if (wavy)
@@ -203,87 +295,172 @@ Control {
             wavyCanvas.requestPaint()
         circularCanvas.requestPaint()
     }
+    onIndeterminateChanged: {
+        if (wavy)
+            wavyCanvas.requestPaint()
+        circularCanvas.requestPaint()
+    }
     onShowTrackChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
         circularCanvas.requestPaint()
     }
-    onIsThickChanged: circularCanvas.requestPaint()
-    onTypeChanged: {
-        if (wavy)
-            wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
-    }
 
-    // Standard thin linear progress.
+    // Default M3 progress: one continuous active segment over a quiet track.
     Rectangle {
         id: standardLinear
-        visible: control.type === "linear"
-                 && !control.wavy
-                 && control.linearStyle !== "pill"
+        objectName: "meoProgressStandardLinear"
+        visible: control.type === "linear" && !control.wavy && !control.isPill
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
-        height: control.isThick ? 8 * control.themeGlobalScale : 4 * control.themeGlobalScale
-        color: control.showTrack ? control.trackColor : "transparent"
+        height: Math.max(control.strokeThickness, control.trackThickness)
         radius: height / 2
+        color: "transparent"
         clip: true
 
         Rectangle {
-            visible: !control.indeterminate
-            height: parent.height
-            x: 0
+            id: standardTrack
+            objectName: "meoProgressStandardTrack"
+            visible: control.showTrack && !control.indeterminate
+            anchors.verticalCenter: parent.verticalCenter
+            // ProgressIndicatorDefaults keeps a 4dp TrackActiveSpace after a
+            // determinate active segment. At zero progress the gap collapses
+            // with the active segment, matching the AndroidX draw contract.
+            readonly property real activeGap: !control.indeterminate
+                                              ? Math.min(parent.width * control.clampedValue,
+                                                         4 * control.themeGlobalScale)
+                                              : 0
+            width: Math.max(0, parent.width
+                                  - parent.width * control.clampedValue
+                                  - activeGap)
+            x: control.mirrored ? 0 : parent.width - width
+            height: control.trackThickness
+            radius: height / 2
+            color: control.trackColor
+        }
+
+        Rectangle {
+            id: determinateSegment
+            objectName: "meoProgressDeterminateSegment"
+            visible: !control.indeterminate && control.clampedValue > 0
+            anchors.verticalCenter: parent.verticalCenter
             width: parent.width * control.clampedValue
+            height: parent.height
+            x: control.mirrored ? parent.width - width : 0
             radius: height / 2
             color: control.activeColor
 
-            Behavior on width {
-                enabled: !control.indeterminate
-                NumberAnimation {
-                    duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
-                }
-            }
+            // AndroidX progress indicators apply the supplied determinate
+            // value directly. Hosts that need interpolation should animate
+            // their own value with ProgressAnimationSpec-equivalent motion.
         }
 
-        Repeater {
-            model: 2
+        Rectangle {
+            id: indeterminateSegment
+            objectName: "meoProgressIndeterminateSegment"
+            visible: control.indeterminate
+            anchors.verticalCenter: parent.verticalCenter
+            readonly property real startFraction: control.firstLineTail
+            readonly property real endFraction: control.firstLineHead
+            width: Math.max(0, (endFraction - startFraction) * parent.width)
+            height: parent.height
+            x: control.mirrored ? parent.width - endFraction * parent.width
+                                : startFraction * parent.width
+            radius: height / 2
+            color: control.activeColor
+        }
 
-            delegate: Rectangle {
-                required property int index
-                visible: control.indeterminate
-                height: parent.height
-                radius: height / 2
-                color: control.activeColor
-                x: -width
-                width: parent.width * (index === 0 ? 0.4 : 0.25)
+        Rectangle {
+            id: indeterminateSegment2
+            objectName: "meoProgressIndeterminateSegment2"
+            visible: control.indeterminate
+            anchors.verticalCenter: parent.verticalCenter
+            readonly property real startFraction: control.secondLineTail
+            readonly property real endFraction: control.secondLineHead
+            width: Math.max(0, (endFraction - startFraction) * parent.width)
+            height: parent.height
+            x: control.mirrored ? parent.width - endFraction * parent.width
+                                : startFraction * parent.width
+            radius: height / 2
+            color: control.activeColor
+        }
 
-                SequentialAnimation on x {
-                    running: control.indeterminate
-                             && control.type === "linear"
-                             && !control.wavy
-                             && control.linearStyle !== "pill"
-                             && control.visible
-                    loops: Animation.Infinite
-                    PauseAnimation { duration: index === 0 ? 0 : 500 }
-                    NumberAnimation {
-                        from: -width
-                        to: parent ? parent.width : 240
-                        duration: Math.max(1, Math.round(1200 * control.themeMotionScale))
-                        easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined")
-                                            ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]
-                    }
-                }
-            }
+        // The indeterminate source implementation draws separated track
+        // sections around two moving active segments. These three pieces keep
+        // the 4dp active/track gap visible instead of painting a track below
+        // either segment.
+        Rectangle {
+            id: indeterminateTrackAfterFirst
+            objectName: "meoProgressIndeterminateTrackAfterFirst"
+            visible: control.showTrack && control.indeterminate
+            anchors.verticalCenter: parent.verticalCenter
+            readonly property real startFraction: control.firstLineHead > 0
+                                                  ? Math.min(1, control.firstLineHead + 4 * control.themeGlobalScale / parent.width)
+                                                  : 0
+            width: Math.max(0, parent.width * (1 - startFraction))
+            height: control.trackThickness
+            x: control.mirrored ? 0 : startFraction * parent.width
+            radius: height / 2
+            color: control.trackColor
+        }
+
+        Rectangle {
+            id: indeterminateTrackBetween
+            objectName: "meoProgressIndeterminateTrackBetween"
+            visible: control.showTrack && control.indeterminate
+                     && control.firstLineTail > 4 * control.themeGlobalScale / parent.width
+            anchors.verticalCenter: parent.verticalCenter
+            readonly property real startFraction: control.secondLineHead > 0
+                                                  ? Math.min(1, control.secondLineHead + 4 * control.themeGlobalScale / parent.width)
+                                                  : 0
+            readonly property real endFraction: control.firstLineTail < 1
+                                                ? Math.max(0, control.firstLineTail - 4 * control.themeGlobalScale / parent.width)
+                                                : 1
+            width: Math.max(0, parent.width * (endFraction - startFraction))
+            x: control.mirrored ? parent.width - endFraction * parent.width
+                                : startFraction * parent.width
+            height: control.trackThickness
+            radius: height / 2
+            color: control.trackColor
+        }
+
+        Rectangle {
+            id: indeterminateTrackBeforeSecond
+            objectName: "meoProgressIndeterminateTrackBeforeSecond"
+            visible: control.showTrack && control.indeterminate
+                     && control.secondLineTail > 4 * control.themeGlobalScale / parent.width
+            anchors.verticalCenter: parent.verticalCenter
+            readonly property real endFraction: control.secondLineTail < 1
+                                                ? Math.max(0, control.secondLineTail - 4 * control.themeGlobalScale / parent.width)
+                                                : 1
+            width: Math.max(0, endFraction * parent.width)
+            x: control.mirrored ? parent.width - width : 0
+            height: control.trackThickness
+            radius: height / 2
+            color: control.trackColor
+        }
+
+        // A fixed 4dp end stop preserves contrast at the far end of the
+        // quiet track, matching the M3 progress indicator specification.
+        Rectangle {
+            id: linearEndStop
+            objectName: "meoProgressLinearEndStop"
+            visible: control.showTrack && !control.indeterminate
+            width: 4 * control.themeGlobalScale
+            height: width
+            radius: width / 2
+            anchors.verticalCenter: parent.verticalCenter
+            x: control.mirrored ? 0 : parent.width - width
+            color: control.activeColor
         }
     }
 
-    // Android 16-style split pill determinate progress.
+    // Expressive split pill. Its gap and marker describe the current position
+    // but the external bounds never pulse or change with pointer state.
     Item {
         id: pillLinear
-        visible: control.type === "linear"
-                 && !control.wavy
-                 && control.linearStyle === "pill"
-                 && !control.indeterminate
+        objectName: "meoProgressPill"
+        visible: control.isPill && !control.indeterminate
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
         height: control.pillMarkerHeight
@@ -292,21 +469,23 @@ Control {
         readonly property real activeWidth: control.clampedValue >= 0.999
                                             ? width
                                             : Math.max(0, progressX - control.pillGap)
-        readonly property real inactiveX: control.clampedValue <= 0.001
-                                          ? 0
-                                          : Math.min(width, progressX + control.pillGap)
+        readonly property real inactiveWidth: control.clampedValue <= 0.001
+                                              ? width
+                                              : Math.max(0, width - progressX - control.pillGap)
 
         Rectangle {
             id: pillActiveTrack
+            objectName: "meoProgressPillActive"
             visible: control.clampedValue > 0
             anchors.verticalCenter: parent.verticalCenter
-            x: 0
             width: pillLinear.activeWidth
             height: control.pillHeight
+            x: control.mirrored ? parent.width - width : 0
             radius: height / 2
             color: control.pillActiveColor
 
             Behavior on width {
+                enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
                     easing.bezierCurve: control.motionEasing
@@ -315,21 +494,18 @@ Control {
         }
 
         Rectangle {
+            id: pillInactiveTrack
+            objectName: "meoProgressPillTrack"
             visible: control.showTrack && control.clampedValue < 1
             anchors.verticalCenter: parent.verticalCenter
-            x: pillLinear.inactiveX
-            width: Math.max(0, parent.width - x)
+            width: pillLinear.inactiveWidth
             height: control.pillHeight
+            x: control.mirrored ? 0 : parent.width - width
             radius: height / 2
             color: control.pillTrackColor
 
-            Behavior on x {
-                NumberAnimation {
-                    duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
-                }
-            }
             Behavior on width {
+                enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
                     easing.bezierCurve: control.motionEasing
@@ -338,46 +514,48 @@ Control {
         }
 
         MeoIcon {
-            visible: pillActiveTrack.visible
-                     && control.leadingIconEnabled
+            visible: pillActiveTrack.visible && control.leadingIconEnabled
                      && pillActiveTrack.width >= 48 * control.themeGlobalScale
-            anchors.left: pillActiveTrack.left
-            anchors.leftMargin: 12 * control.themeGlobalScale
+            anchors.left: control.mirrored ? undefined : pillActiveTrack.left
+            anchors.right: control.mirrored ? pillActiveTrack.right : undefined
+            anchors.leftMargin: control.mirrored ? 0 : 12 * control.themeGlobalScale
+            anchors.rightMargin: control.mirrored ? 12 * control.themeGlobalScale : 0
             anchors.verticalCenter: pillActiveTrack.verticalCenter
             icon: control.leadingIcon
-            size: Math.min(24,
-                           Math.max(16,
+            size: Math.min(MeoTheme.iconSizeM,
+                           Math.max(MeoTheme.iconSizeS,
                                     control.pillHeight / control.themeGlobalScale - 8))
-            color: control.themeIsDarkMode ? control.themeOnPrimary : control.themeOnPrimaryContainer
+            color: MeoTheme.contentOnPrimary
         }
 
         Rectangle {
+            id: pillMarker
+            objectName: "meoProgressPillMarker"
             visible: control.clampedValue > 0.001 && control.clampedValue < 0.999
             anchors.verticalCenter: parent.verticalCenter
-            x: Math.max(0,
-                        Math.min(parent.width - width,
-                                 pillLinear.progressX - width / 2))
             width: control.pillMarkerWidth
             height: control.pillMarkerHeight
+            x: Math.max(0, Math.min(parent.width - width,
+                                    (control.mirrored ? parent.width - pillLinear.progressX
+                                                      : pillLinear.progressX) - width / 2))
             radius: width / 2
             color: control.pillMarkerColor
 
             Behavior on x {
+                enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
                     easing.bezierCurve: control.motionEasing
                 }
             }
         }
+
     }
 
-    // Indeterminate pill keeps the same large rounded surface while moving two
-    // independent segments through it.
     Rectangle {
-        visible: control.type === "linear"
-                 && !control.wavy
-                 && control.linearStyle === "pill"
-                 && control.indeterminate
+        id: indeterminatePill
+        objectName: "meoProgressIndeterminatePill"
+        visible: control.isPill && control.indeterminate
         anchors.verticalCenter: parent.verticalCenter
         width: parent.width
         height: control.pillHeight
@@ -385,64 +563,45 @@ Control {
         color: control.showTrack ? control.pillTrackColor : "transparent"
         clip: true
 
-        Repeater {
-            model: 2
+        Rectangle {
+            objectName: "meoProgressIndeterminatePillSegment"
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width * 0.34
+            height: parent.height
+            x: control.reduceMotion ? (parent.width - width) / 2
+                                    : (control.mirrored ? parent.width : -width)
+            radius: height / 2
+            color: control.pillActiveColor
 
-            delegate: Rectangle {
-                required property int index
-                height: parent.height
-                radius: height / 2
-                color: control.pillActiveColor
-                x: -width
-                width: parent.width * (index === 0 ? 0.34 : 0.20)
-
-                SequentialAnimation on x {
-                    running: control.indeterminate
-                             && control.type === "linear"
-                             && !control.wavy
-                             && control.linearStyle === "pill"
-                             && control.visible
-                    loops: Animation.Infinite
-                    PauseAnimation { duration: index === 0 ? 0 : 420 }
-                    NumberAnimation {
-                        from: -width
-                        to: parent ? parent.width : 240
-                        duration: Math.max(1, Math.round(1100 * control.themeMotionScale))
-                        easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined")
-                                            ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]
-                    }
-                }
+            NumberAnimation on x {
+                running: control.indeterminate && !control.reduceMotion
+                         && control.isPill && control.visible
+                loops: Animation.Infinite
+                from: control.mirrored ? (parent ? parent.width : 240) : -width
+                to: control.mirrored ? -width : (parent ? parent.width : 240)
+                duration: Math.max(1, Math.round(1100 * MeoTheme.effectiveMotionScale))
+                easing.bezierCurve: MeoTheme.motionEasingEmphasized
             }
         }
     }
 
-    // Circular progress.
     Item {
         id: classicCircular
+        objectName: "meoProgressCircular"
         visible: control.type === "circular" && !control.wavy
         anchors.centerIn: parent
         width: Math.min(parent.width, parent.height)
         height: width
-
-        RotationAnimation on rotation {
-            running: control.indeterminate
-                     && control.type === "circular"
-                     && !control.wavy
-                     && control.visible
-            loops: Animation.Infinite
-            from: 0
-            to: 360
-            duration: Math.max(1, Math.round(1568 * control.themeMotionScale))
-        }
+        readonly property bool sourceDrawsTrack: control.showTrack && !control.indeterminate
 
         Canvas {
             id: circularCanvas
+            objectName: "meoProgressCircularCanvas"
             anchors.fill: parent
             visible: parent.visible
-
             property real determinateValue: control.clampedValue
             property real indeterminateArcStart: -90
-            property real indeterminateArcLength: 10
+            property real indeterminateArcLength: 90
 
             onDeterminateValueChanged: requestPaint()
             onIndeterminateArcStartChanged: requestPaint()
@@ -451,9 +610,8 @@ Control {
             onHeightChanged: requestPaint()
 
             SequentialAnimation {
-                running: control.indeterminate
-                         && control.type === "circular"
-                         && !control.wavy
+                running: control.indeterminate && !control.reduceMotion
+                         && control.type === "circular" && !control.wavy
                          && control.visible
                 loops: Animation.Infinite
 
@@ -461,67 +619,67 @@ Control {
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcLength"
-                        from: 10
+                        from: 30
                         to: 270
-                        duration: Math.max(1, Math.round(1333 * control.themeMotionScale))
-                        easing.bezierCurve: control.motionEasing
+                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcStart"
                         from: -90
                         to: 45
-                        duration: Math.max(1, Math.round(1333 * control.themeMotionScale))
-                        easing.bezierCurve: control.motionEasing
+                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
-
                 ParallelAnimation {
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcLength"
                         from: 270
-                        to: 10
-                        duration: Math.max(1, Math.round(1333 * control.themeMotionScale))
-                        easing.bezierCurve: control.motionEasing
+                        to: 30
+                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcStart"
                         from: 45
                         to: 270
-                        duration: Math.max(1, Math.round(1333 * control.themeMotionScale))
-                        easing.bezierCurve: control.motionEasing
+                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
-
-                ScriptAction {
-                    script: circularCanvas.indeterminateArcStart = -90
-                }
-            }
-
-            Behavior on determinateValue {
-                enabled: !control.indeterminate
-                NumberAnimation {
-                    duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
-                }
+                ScriptAction { script: circularCanvas.indeterminateArcStart = -90 }
             }
 
             onPaint: {
-                var ctx = getContext("2d")
+                const ctx = getContext("2d")
                 ctx.reset()
+                const stroke = control.strokeThickness
+                const radius = (Math.min(width, height) - stroke) / 2
+                const cx = width / 2
+                const cy = height / 2
 
-                var stroke = (control.isThick ? 8 : 4) * control.themeGlobalScale
-                var radius = (Math.min(width, height) - stroke) / 2
-                var cx = width / 2
-                var cy = height / 2
-
-                if (control.showTrack) {
+                // The default circular indeterminate source token is
+                // transparent. Determinate circular progress instead keeps a
+                // SecondaryContainer track, separated from both active arc
+                // ends by the source's cap-compensated 4dp gap.
+                if (classicCircular.sourceDrawsTrack) {
+                    const diameter = Math.min(width, height)
+                    const activeSweep = control.clampedValue * 360
+                    const gapSweep = control.circularTrackGapSweepDegrees(diameter, stroke)
+                    const adjustedGapSweep = Math.min(activeSweep, gapSweep)
+                    const trackSweep = control.circularDeterminateTrackSweepDegrees(diameter, stroke)
                     ctx.strokeStyle = control.trackColor
-                    ctx.lineWidth = stroke
+                    ctx.lineWidth = control.trackThickness
+                    ctx.lineCap = "round"
                     ctx.beginPath()
-                    ctx.arc(cx, cy, radius, 0, 2 * Math.PI)
+                    if (trackSweep > 0)
+                        ctx.arc(cx, cy, radius,
+                                -Math.PI / 2 + (activeSweep + adjustedGapSweep) * Math.PI / 180,
+                                -Math.PI / 2 + (activeSweep + adjustedGapSweep + trackSweep) * Math.PI / 180)
                     ctx.stroke()
                 }
 
@@ -529,18 +687,15 @@ Control {
                 ctx.lineWidth = stroke
                 ctx.lineCap = "round"
                 ctx.beginPath()
-
                 if (control.indeterminate) {
-                    var startRad = indeterminateArcStart * Math.PI / 180
-                    var endRad = (indeterminateArcStart + indeterminateArcLength) * Math.PI / 180
-                    ctx.arc(cx, cy, radius, startRad, endRad)
-                    ctx.stroke()
+                    const start = indeterminateArcStart * Math.PI / 180
+                    const end = (indeterminateArcStart + indeterminateArcLength) * Math.PI / 180
+                    ctx.arc(cx, cy, radius, start, end)
                 } else if (determinateValue > 0) {
-                    var detStartRad = -Math.PI / 2
-                    var detEndRad = detStartRad + determinateValue * 2 * Math.PI
-                    ctx.arc(cx, cy, radius, detStartRad, detEndRad)
-                    ctx.stroke()
+                    ctx.arc(cx, cy, radius, -Math.PI / 2,
+                            -Math.PI / 2 + determinateValue * 2 * Math.PI)
                 }
+                ctx.stroke()
             }
         }
     }

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Verify that every public MeoUI export is represented by the Showcase.
+"""Verify the one-to-one public API catalog used by the MeoUI Showcase.
 
-The Showcase catalog deliberately also contains a few non-exported comparison
-entries (for example, "Expressive buttons").  They are allowed, but every
-catalog entry must have a direct ``sampleFor()`` branch that returns a real
-``Component`` rather than the generic fallback.  Keep component names as
-literal strings in ``ShowcaseCatalog.qml`` and ``ShowcaseSampleDelegate.qml``
-so this check can catch omissions before the Showcase is configured or built.
+Every public ``qmldir`` export must have exactly one canonical catalog entry
+and every catalog entry must be a public export.  Scenario/experimental pages
+are deliberately outside this catalog: they may reuse components, but must not
+create aliases such as a second "Expressive button" entry.  Keep component
+names as literal strings in ``ShowcaseCatalog.qml`` and
+``ShowcaseSampleDelegate.qml`` so this check can catch omissions before the
+Showcase is configured or built.
 """
 
 from __future__ import annotations
@@ -21,6 +22,10 @@ from pathlib import Path
 VERSION_RE = re.compile(r"^\d+(?:\.\d+)+$")
 IDENTIFIER_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 CATALOG_ENTRY_RE = re.compile(r'\bcomponent\s*\(\s*"([^"\n]+)"')
+CATALOG_VARIANT_RE = re.compile(
+    r'\bcomponent\s*\(\s*"([^"\n]+)"\s*,\s*"[^"\n]*"\s*,\s*"[^"\n]*"\s*,\s*"([^"\n]*)"',
+    re.DOTALL,
+)
 SAMPLE_BRANCH_RE = re.compile(
     r"\bif\s*\(\s*(.*?)\s*\)\s*return\s+([A-Za-z_][A-Za-z0-9_]*)\s*;?",
     re.DOTALL,
@@ -153,6 +158,28 @@ def parse_catalog_entries(path: Path) -> list[str]:
     return entries
 
 
+def parse_five_configuration_entries(path: Path) -> set[str]:
+    """Return catalog entries that explicitly advertise five visible configurations.
+
+    The Showcase is a visual contract, so a component can meet the threshold
+    either by listing at least five comma-separated configurations or by using
+    an explicit ``five`` / ``at least five`` declaration.  Components whose
+    official M3 surface genuinely offers fewer configurations stay catalogued,
+    but do not inflate this aggregate expressive-coverage gate.
+    """
+
+    matches = CATALOG_VARIANT_RE.findall(strip_qml_comments(read_text(path)))
+    if not matches:
+        fail(f"no catalog variant metadata found in {path}")
+
+    qualified: set[str] = set()
+    for name, variants in matches:
+        declared_count = len([part for part in variants.split(",") if part.strip()])
+        if declared_count >= 5 or "five" in variants.lower() or "at least five" in variants.lower():
+            qualified.add(name)
+    return qualified
+
+
 def extract_sample_function(delegate: str, path: Path) -> str:
     match = re.search(r"\bfunction\s+sampleFor\s*\(\s*name\s*\)", delegate)
     if not match:
@@ -206,11 +233,13 @@ def main() -> int:
 
     exports = parse_qmldir(arguments.qmldir)
     catalog_entries = parse_catalog_entries(arguments.catalog)
+    five_configuration_entries = parse_five_configuration_entries(arguments.catalog)
     catalog_counts = Counter(catalog_entries)
     catalog_names = set(catalog_entries)
     sample_branches, component_ids = parse_sample_branches(arguments.delegate)
 
     missing_catalog = sorted(exports - catalog_names)
+    non_export_catalog = sorted(catalog_names - exports)
     duplicate_catalog = sorted(name for name, count in catalog_counts.items() if count > 1)
     missing_samples = sorted(name for name in catalog_names if name not in sample_branches)
     ambiguous_samples = sorted(
@@ -229,27 +258,29 @@ def main() -> int:
 
     problems: list[str] = []
     problems.extend(format_group("public qmldir exports missing from ShowcaseCatalog", missing_catalog))
+    problems.extend(format_group("non-export ShowcaseCatalog entries", non_export_catalog))
     problems.extend(format_group("duplicate ShowcaseCatalog entries", duplicate_catalog))
     problems.extend(format_group("catalog entries without a direct sampleFor() branch", missing_samples))
     problems.extend(format_group("catalog entries with ambiguous sampleFor() branches", ambiguous_samples))
     problems.extend(format_group("catalog entries mapped to a fallback sample", fallback_samples))
     problems.extend(format_group("catalog entries mapped to an undefined Component ID", undefined_samples))
+    if len(five_configuration_entries) < 80:
+        problems.append(
+            "  expressive configuration coverage: expected at least 80 catalog entries "
+            f"with five declared visible configurations, found {len(five_configuration_entries)}"
+        )
 
     if problems:
         print("Showcase coverage check failed:", file=sys.stderr)
         print("\n".join(problems), file=sys.stderr)
         return 1
 
-    supplemental_entries = sorted(catalog_names - exports)
     print(
         "Showcase coverage OK: "
-        f"{len(exports)} public exports, {len(catalog_entries)} catalog entries, "
-        f"{len(catalog_entries)} entries with explicit non-fallback samples."
+        f"{len(exports)} public exports, {len(catalog_entries)} canonical catalog entries, "
+        f"{len(catalog_entries)} entries with explicit non-fallback samples, "
+        f"{len(five_configuration_entries)} entries with five declared visible configurations."
     )
-    if arguments.verbose and supplemental_entries:
-        print("Supplemental catalog entries (intentional non-export comparison demos):")
-        for entry in supplemental_entries:
-            print(f"  - {entry}")
     return 0
 
 

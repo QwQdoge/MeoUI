@@ -20,31 +20,37 @@ Control {
 
     signal clicked()
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceContainerLowest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLowest !== 'undefined') ? MeoTheme.surfaceContainerLowest : "#FFFFFF"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#C4C7C5"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
+    // The item is retained for legacy drawer callers. Its colors and motion
+    // still come from the same dynamic role table as the Expressive rail.
+    readonly property bool isDarkMode: MeoTheme.isDarkMode
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeSurfaceContainerLowest: MeoTheme.surfaceContainerLowest
+    readonly property color themeOutlineVariant: MeoTheme.outlineVariant
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeOnSecondaryContainer: MeoTheme.contentOnSecondaryContainer
     readonly property bool settingsStyle: visualStyle === "settings"
     readonly property color selectedContainerColor: settingsStyle ? MeoTheme.primaryContainer : themeSecondaryContainer
     readonly property color selectedContentColor: settingsStyle ? MeoTheme.contentOnPrimaryContainer : themeOnSecondaryContainer
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
-    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
-    readonly property var fontBodyLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyLarge !== 'undefined') ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal, "lineHeight": 24, "letterSpacing": 0.5 }
-    readonly property var fontBodyMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyMedium !== 'undefined') ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal, "lineHeight": 20, "letterSpacing": 0.25 }
-    readonly property int animationDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationMedium2 !== 'undefined') ? MeoTheme.motionDurationMedium2 : 300
-    readonly property var emphasizedCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasized !== 'undefined') ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]
+    readonly property var fontLabelLarge: MeoTheme.labelLarge
+    readonly property var fontBodyLarge: MeoTheme.bodyLarge
+    readonly property var fontBodyMedium: MeoTheme.bodyMedium
+    readonly property int animationDuration: MeoTheme.motionDurationSelection
+    readonly property var emphasizedCurve: MeoTheme.motionEasingEmphasized
 
     implicitWidth: 336 * themeGlobalScale
     implicitHeight: mode === "group" && supportingText !== ""
                     ? MeoTheme.settingsRowHeight : MeoTheme.settingsSidebarItemHeight
     activeFocusOnTab: enabled
-    Accessible.role: Accessible.Button
+    // AndroidX NavigationDrawerItem exposes a tab role because each row is a
+    // destination, not a transient command. Reuse QML's matching PageTab
+    // role so assistive technologies receive the same relationship.
+    // Source: androidx-main NavigationDrawer.kt 8f8c02618f5d29d9ae6fb71c949ebe0a7290cd0a
+    // (Apache-2.0).
+    Accessible.role: Accessible.PageTab
     Accessible.name: label
     Accessible.focusable: true
     Accessible.selected: selected
@@ -146,7 +152,7 @@ Control {
             Text {
                 text: control.label
                 width: parent.width
-                font.family: (typeof MeoTheme !== 'undefined' && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: (control.mode === "group" ? fontBodyLarge.size : fontLabelLarge.size) * control.themeGlobalScale
                 font.weight: control.mode === "group" ? fontBodyLarge.weight : (control.selected ? Font.DemiBold : fontLabelLarge.weight)
                 lineHeightMode: Text.FixedHeight
@@ -167,7 +173,7 @@ Control {
                 text: control.supportingText
                 width: parent.width
                 visible: text !== ""
-                font.family: (typeof MeoTheme !== 'undefined' && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: fontBodyMedium.size * control.themeGlobalScale
                 font.weight: fontBodyMedium.weight
                 lineHeightMode: Text.FixedHeight

@@ -39,9 +39,13 @@ public:
 
     static constexpr qreal buttonHeightXS() { return 32.0; }
     static constexpr qreal buttonHeightS() { return 40.0; }
-    static constexpr qreal buttonHeightM() { return 48.0; }
-    static constexpr qreal buttonHeightL() { return 56.0; }
-    static constexpr qreal buttonHeightXL() { return 72.0; }
+    // Material 3 Expressive button size tokens (AndroidX Material 3,
+    // Button{XSmall,Small,Medium,Large,XLarge}Tokens).  These are shared
+    // across QML controls so the same named size never means different
+    // geometry in a button, group, or split button.
+    static constexpr qreal buttonHeightM() { return 56.0; }
+    static constexpr qreal buttonHeightL() { return 96.0; }
+    static constexpr qreal buttonHeightXL() { return 136.0; }
 
     // Cross-toolkit control semantics.  QML controls, the Plasma shell and
     // the native Qt style consume these aliases instead of independently
@@ -54,15 +58,23 @@ public:
     static constexpr qreal windowRadius() { return shapeLarge(); }
     static constexpr qreal focusRingWidth() { return space2(); }
 
+    // Material 3 Expressive icon-button container heights (AndroidX Material
+    // 3, {XSmall,Small,Medium,Large,XLarge}IconButtonTokens). The visual
+    // container remains separate from the 48dp minimum interactive target in
+    // MeoIconButton.
     static constexpr qreal iconButtonSizeXS() { return 32.0; }
-    static constexpr qreal iconButtonSizeS() { return 36.0; }
-    static constexpr qreal iconButtonSizeM() { return 40.0; }
-    static constexpr qreal iconButtonSizeL() { return 48.0; }
-    static constexpr qreal iconButtonSizeXL() { return 56.0; }
+    static constexpr qreal iconButtonSizeS() { return 40.0; }
+    static constexpr qreal iconButtonSizeM() { return 56.0; }
+    static constexpr qreal iconButtonSizeL() { return 96.0; }
+    static constexpr qreal iconButtonSizeXL() { return 136.0; }
 
-    static constexpr qreal stateOpacityHover() { return 0.10; }
-    static constexpr qreal stateOpacityFocus() { return 0.12; }
-    static constexpr qreal stateOpacityPressed() { return 0.14; }
+    // AndroidX Material 3 StateTokens (v0_210, Apache-2.0):
+    // https://android.googlesource.com/platform/frameworks/support/+/64212d2a7941fd734599a75b73fc3750e8bb1cb3/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/StateTokens.kt
+    // Keep the native singleton and QML fallback on the same state-layer
+    // values. Only token values were transcribed; no upstream code was copied.
+    static constexpr qreal stateOpacityHover() { return 0.08; }
+    static constexpr qreal stateOpacityFocus() { return 0.10; }
+    static constexpr qreal stateOpacityPressed() { return 0.10; }
     static constexpr qreal stateOpacityDragged() { return 0.16; }
 };
 

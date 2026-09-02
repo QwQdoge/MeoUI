@@ -7,81 +7,121 @@ Button {
     id: control
 
     // 🌟 核心属性
-    property string type: "standard" // "standard" | "filled" | "tonal" | "outlined"
-    property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
+    property string type: "filled" // "standard" | "filled" | "tonal" | "outlined"
+    property string size: "s" // "xs" | "s" | "m" | "l" | "xl"
+    property string widthOption: "uniform" // "narrow" | "uniform" | "wide"
     property string shape: "circle" // "circle" | "square" | "squircle" | "hexagon" | ...
+    // Set this for a controllable selection. A selected button is always
+    // treated as a toggle, which preserves existing selected-only callers.
+    property bool toggle: false
     property bool selected: false
     property string selectedIcon: ""
     property string badgeText: ""
     property bool badgeDot: false
     readonly property string effectiveType: type === "filledTonal" ? "tonal" : type
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.secondaryContainer !== 'undefined') ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSecondaryContainer !== 'undefined') ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeOnSecondaryContainer: MeoTheme.contentOnSecondaryContainer
+    readonly property color themeSecondary: MeoTheme.secondary
+    readonly property color themeOnSecondary: MeoTheme.contentOnSecondary
+    readonly property color themeSurfaceContainer: MeoTheme.surfaceContainer
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOutlineVariant: MeoTheme.outlineVariant
+    readonly property color themeInverseSurface: MeoTheme.inverseSurface
+    readonly property color themeOnInverseSurface: MeoTheme.contentOnInverseSurface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool isSelected: selected || checked
+    readonly property bool isToggle: toggle || checkable || isSelected
 
-    readonly property int iconSize: {
-        if (size === "xs" || size === "s") return 18;
-        if (size === "xl") return 40;
-        return 24; // m, l
-    }
+    readonly property int iconSize: size === "xs" ? 20
+                                  : (size === "l" ? 32 : size === "xl" ? 40 : 24)
+    readonly property real containerWidth: MeoTheme.iconButtonWidthForSize(size, widthOption)
+    readonly property real containerHeight: MeoTheme.iconButtonSizeForSize(size)
+    readonly property real minimumTouchTarget: 48 * themeGlobalScale
 
-    implicitWidth: (typeof MeoTheme !== "undefined" && typeof MeoTheme.iconButtonSizeForSize === "function")
-                   ? MeoTheme.iconButtonSizeForSize(size)
-                   : (size === "xs" ? 32 : size === "s" ? 36 : size === "l" ? 48 : size === "xl" ? 56 : 40) * themeGlobalScale
-    implicitHeight: implicitWidth
+    // AndroidX keeps the visual container independent from the accessibility
+    // target. XS and S therefore retain their 32/40dp appearance inside a
+    // 48dp target instead of visually growing to meet that requirement.
+    implicitWidth: Math.max(containerWidth, minimumTouchTarget)
+    implicitHeight: Math.max(containerHeight, minimumTouchTarget)
 
     padding: 0
+    Accessible.name: isSelected && selectedIcon !== "" ? selectedIcon
+                                                         : (icon.name || icon.source.toString())
+    Accessible.role: isToggle ? Accessible.CheckBox : Accessible.Button
+    Accessible.checked: isToggle ? isSelected : false
 
     background: Item {
+        objectName: "meoIconButtonBackground"
+        width: control.containerWidth
+        height: control.containerHeight
+        anchors.centerIn: parent
 
-        readonly property real baseRadius: {
-            if (control.pressed)
-                return (typeof MeoTheme !== "undefined" && typeof MeoTheme.buttonRadiusForHeight === "function")
-                        ? MeoTheme.buttonRadiusForHeight(height, true) : 8 * control.themeGlobalScale;
-            if (control.hovered && shape === "square")
-                return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeLargeIncreased !== 'undefined') ? MeoTheme.shapeLargeIncreased : 20 * control.themeGlobalScale;
-            if (shape === "square") {
-                if (size === "xs" || size === "s") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.controlRadius !== 'undefined') ? MeoTheme.controlRadius : 12 * control.themeGlobalScale;
-                return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.windowRadius !== 'undefined') ? MeoTheme.windowRadius : 16 * control.themeGlobalScale;
-            }
-            return height / 2;
+        readonly property bool usesRoundSquareShape: control.shape === "circle" || control.shape === "square"
+        readonly property bool selectedSquare: control.shape === "circle" ? control.isSelected
+                                               : control.shape === "square" ? !control.isSelected
+                                                                            : false
+        readonly property real squareRadius: {
+            if (control.size === "xs" || control.size === "s") return 12 * control.themeGlobalScale
+            if (control.size === "l" || control.size === "xl") return 28 * control.themeGlobalScale
+            return 16 * control.themeGlobalScale
+        }
+        readonly property real pressedRadius: {
+            if (control.size === "xs" || control.size === "s") return 8 * control.themeGlobalScale
+            if (control.size === "l" || control.size === "xl") return 16 * control.themeGlobalScale
+            return 12 * control.themeGlobalScale
         }
 
         MeoShape {
             id: shapeBg
+            objectName: "meoIconButtonShape"
             anchors.fill: parent
             type: (control.shape === "circle" || control.shape === "square") ? "rect" : control.shape
-            radius: parent.baseRadius
+            radius: parent.usesRoundSquareShape
+                    ? (control.pressed ? parent.pressedRadius
+                                       : (parent.selectedSquare ? parent.squareRadius : height / 2))
+                    : height / 2
             color: {
-                if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
-                if (control.selected) {
-                    if (type === "standard") return "transparent";
-                    return control.themeSecondaryContainer;
+                if (!control.enabled) {
+                    if (control.effectiveType === "standard" || control.effectiveType === "outlined")
+                        return "transparent";
+                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.10);
                 }
-                if (control.effectiveType === "filled") return control.themePrimary;
+                if (control.isSelected) {
+                    if (control.effectiveType === "filled") return control.themePrimary;
+                    if (control.effectiveType === "tonal") return control.themeSecondary;
+                    if (control.effectiveType === "outlined") return control.themeInverseSurface;
+                    return "transparent";
+                }
+                if (control.effectiveType === "filled") {
+                    return control.isToggle ? control.themeSurfaceContainer : control.themePrimary;
+                }
                 if (control.effectiveType === "tonal") return control.themeSecondaryContainer;
                 return "transparent";
             }
 
             strokeColor: {
                 if (control.effectiveType !== "outlined") return "transparent";
-                if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
-                return control.themeOutline;
+                if (control.isSelected) return "transparent";
+                if (!control.enabled) return Qt.rgba(control.themeOutlineVariant.r, control.themeOutlineVariant.g, control.themeOutlineVariant.b, 0.10);
+                return control.themeOutlineVariant;
             }
-            strokeWidth: control.effectiveType === "outlined" ? ((typeof MeoTheme !== 'undefined' && typeof MeoTheme.strokeWidthThin !== 'undefined') ? MeoTheme.strokeWidthThin : 1 * themeGlobalScale) : 0
+            strokeWidth: control.effectiveType === "outlined" && !control.isSelected
+                         ? MeoTheme.strokeWidthThin : 0
 
             Behavior on radius {
+                enabled: !MeoTheme.reduceMotion
                 NumberAnimation {
-                    duration: control.hovered || control.pressed ? MeoTheme.motionDurationShapeEnter : MeoTheme.motionDurationShapeSettle
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1])
+                    duration: MeoTheme.motionDurationShapeEnter
+                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
+            }
+            Behavior on color {
+                enabled: !MeoTheme.reduceMotion
+                ColorAnimation { duration: MeoTheme.motionDurationSelection }
             }
 
             MeoStateLayer {
@@ -91,9 +131,17 @@ Button {
                 hovered: control.hovered
                 focused: control.visualFocus
                 color: {
-                    if (control.selected) return control.themeOnSecondaryContainer;
-                    if (control.effectiveType === "filled") return control.themeOnPrimary;
-                    return control.themeOnSurface;
+                    if (control.isSelected) {
+                        if (control.effectiveType === "filled") return control.themeOnPrimary;
+                        if (control.effectiveType === "tonal") return control.themeOnSecondary;
+                        if (control.effectiveType === "outlined") return control.themeOnInverseSurface;
+                        return control.themePrimary;
+                    }
+                    if (control.effectiveType === "filled") return control.isToggle
+                                                                  ? control.themeOnSurfaceVariant
+                                                                  : control.themeOnPrimary;
+                    if (control.effectiveType === "tonal") return control.themeOnSecondaryContainer;
+                    return control.themeOnSurfaceVariant;
                 }
 
                 layer.enabled: control.shape !== "circle" && control.shape !== "square" && control.shape !== "rect"
@@ -112,41 +160,42 @@ Button {
             }
         }
 
-        scale: control.pressed ? 0.96 : 1.0
-        Behavior on scale {
-            NumberAnimation {
-                duration: control.pressed ? MeoTheme.motionDurationFast : MeoTheme.motionDurationShapeEnter
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-            }
-        }
     }
 
     contentItem: Item {
-        scale: control.pressed ? 0.94 : 1.0
-        Behavior on scale { NumberAnimation { duration: (typeof MeoTheme !== "undefined" ? MeoTheme.motionDurationFast : 120); easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]) } }
+        objectName: "meoIconButtonContent"
         MeoIcon {
             anchors.centerIn: parent
-            icon: control.selected ? (control.selectedIcon || control.icon.name || control.icon.source.toString()) : (control.icon.name || control.icon.source.toString())
-            fill: control.selected
+            icon: control.isSelected ? (control.selectedIcon || control.icon.name || control.icon.source.toString()) : (control.icon.name || control.icon.source.toString())
+            fill: control.isSelected
             size: control.iconSize
             color: {
-                if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
-                if (control.selected) return control.themePrimary;
-                if (control.effectiveType === "filled") return control.themeOnPrimary;
+                if (!control.enabled) {
+                    const disabledRole = control.effectiveType === "tonal"
+                                         ? control.themeOnSurface : control.themeOnSurfaceVariant;
+                    return Qt.rgba(disabledRole.r, disabledRole.g, disabledRole.b, 0.38);
+                }
+                if (control.isSelected) {
+                    if (control.effectiveType === "filled") return control.themeOnPrimary;
+                    if (control.effectiveType === "tonal") return control.themeOnSecondary;
+                    if (control.effectiveType === "outlined") return control.themeOnInverseSurface;
+                    return control.themePrimary;
+                }
+                if (control.effectiveType === "filled") {
+                    return control.isToggle ? control.themeOnSurfaceVariant : control.themeOnPrimary;
+                }
                 if (control.effectiveType === "tonal") return control.themeOnSecondaryContainer;
                 return control.themeOnSurfaceVariant;
             }
-            Behavior on color { ColorAnimation { duration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120 } }
+            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationFast } }
         }
 
         MeoBadge {
             text: control.badgeText
             isDot: control.badgeDot
             visible: text !== "" || isDot
-            anchors.horizontalCenter: parent.right
-            anchors.verticalCenter: parent.top
-            anchors.horizontalCenterOffset: -4 * control.themeGlobalScale
-            anchors.verticalCenterOffset: 4 * control.themeGlobalScale
+            x: (parent.width + control.containerWidth - width) / 2 - 4 * control.themeGlobalScale
+            y: (parent.height - control.containerHeight - height) / 2 + 4 * control.themeGlobalScale
         }
     }
 }

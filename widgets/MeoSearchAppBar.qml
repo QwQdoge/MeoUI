@@ -5,7 +5,6 @@ import MeoUI
 Rectangle {
     id: control
 
-    // 🌟 核心属性
     property string text: ""
     property string placeholder: "Search..."
     property bool active: false
@@ -14,25 +13,31 @@ Rectangle {
     property Component menuIcon: null
     property list<Component> actions
 
-    // 🌟 样式与主题
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property real horizontalPadding: 16 * themeGlobalScale
+    readonly property real actionReservation: !active && actionRow.visible
+                                              ? actionRow.width + 8 * themeGlobalScale : 0
+    readonly property bool reducedMotion: MeoTheme.reduceMotion
 
-    width: parent ? parent.width : 360 * themeGlobalScale
-    height: 64 * themeGlobalScale
+    implicitWidth: 360 * themeGlobalScale
+    implicitHeight: 64 * themeGlobalScale
     color: themeSurface
+    Accessible.role: Accessible.Pane
+    Accessible.name: active ? qsTr("Active search") : qsTr("Search")
 
-    // MD3 Search App Bar Anatomy:
-    // When inactive, it looks like a standard Search Bar but placed in the App Bar position.
-    // When active, it morphs into a full Search View.
+    // This is a compact app-bar search affordance. Full-screen search results
+    // belong to MeoSearchView, which owns its modal and dismiss behaviour.
 
     MeoSearchBar {
         id: searchBar
-        anchors.centerIn: parent
-        width: control.active ? parent.width : Math.min(720 * control.themeGlobalScale, parent.width - 32 * control.themeGlobalScale)
-        height: control.active ? parent.height : 56 * control.themeGlobalScale
+        anchors.left: parent.left
+        anchors.leftMargin: control.horizontalPadding
+        anchors.verticalCenter: parent.verticalCenter
+        width: Math.max(0, Math.min(720 * control.themeGlobalScale,
+                                    parent.width - control.horizontalPadding * 2
+                                    - control.actionReservation))
+        height: 56 * control.themeGlobalScale
         active: control.active
         placeholder: control.placeholder
         text: control.text
@@ -43,14 +48,19 @@ Rectangle {
         onActiveChanged: control.active = active
         onTextChanged: control.text = text
 
-        Behavior on width { NumberAnimation { duration: 300; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined") ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1] } }
-        Behavior on height { NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+        Behavior on width {
+            enabled: !control.reducedMotion
+            NumberAnimation {
+                duration: MeoTheme.motionDurationSelection
+                easing.bezierCurve: MeoTheme.motionEasingEmphasized
+            }
+        }
     }
 
-    // Optional Top App Bar level actions when inactive
     Row {
+        id: actionRow
         anchors.right: parent.right
-        anchors.rightMargin: 16 * control.themeGlobalScale
+        anchors.rightMargin: control.horizontalPadding
         anchors.verticalCenter: parent.verticalCenter
         spacing: 4 * control.themeGlobalScale
         visible: !control.active && control.actions.length > 0

@@ -4,4 +4,5 @@ import MeoUI
 MeoChip {
     type: "input"
     closable: true
+    visualStyle: "outlined"
 }

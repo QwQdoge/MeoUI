@@ -17,14 +17,15 @@ MeoTextField {
     label: "Date"
     placeholder: format
     leadingIcon: "calendar_today"
+    // M3 date input is composed from an outlined text field in both docked
+    // and modal date-picker configurations.
+    type: "outlined"
 
     inputMask: format.indexOf("/") !== -1 ? "9999/99/99" : "9999-99-99"
 
     validator: RegularExpressionValidator {
         regularExpression: control.format.indexOf("/") !== -1 ? /^\d{4}\/\d{2}\/\d{2}$/ : /^\d{4}-\d{2}-\d{2}$/
     }
-
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
 
     Component.onCompleted: syncTextFromValue()
 
@@ -64,7 +65,8 @@ MeoTextField {
         if (!d) {
             isError = true
             errorText = "Invalid date"
-            text = allowEmpty ? "" : formatDate(value)
+            // Preserve invalid input so the error stays visible and the user
+            // can correct the exact value rather than re-entering it.
             return
         }
 
@@ -98,7 +100,10 @@ MeoTextField {
 
     function parseDate(valueText) {
         const sep = format.indexOf("/") !== -1 ? "\\/" : "-"
-        const match = new RegExp("^(\\d{4})" + sep + "(\\d{1,2})" + sep + "(\\d{1,2})$").exec(valueText.trim())
+        // Keep parsing aligned with the input mask and validator: dates are
+        // always emitted and accepted as yyyy-MM-dd or yyyy/MM/dd, never as
+        // a permissive one-digit month or day.
+        const match = new RegExp("^(\\d{4})" + sep + "(\\d{2})" + sep + "(\\d{2})$").exec(valueText.trim())
         if (!match)
             return null
 

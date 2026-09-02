@@ -5,19 +5,15 @@ import MeoUI
 MeoMotionPopup {
     id: control
 
-    // 🌟 核心属性
     property string title: ""
     property Component content: null
     property bool showCloseButton: true
     property bool dismissible: true
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontTitleLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleLarge !== 'undefined') ? MeoTheme.titleLarge : { "size": 22, "weight": Font.Normal }
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontTitleLarge: MeoTheme.titleLarge
 
     x: parent ? parent.width - width : 0
     y: 0

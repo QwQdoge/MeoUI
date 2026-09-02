@@ -376,6 +376,7 @@ Control {
             bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
 
             Behavior on color {
+                enabled: !MeoTheme.reduceMotion
                 ColorAnimation {
                     duration: MeoTheme.motionDurationSelection
                     easing.bezierCurve: MeoTheme.motionEasingEmphasized
@@ -416,6 +417,7 @@ Control {
             opacity: control.activeFocus ? 1 : 0
 
             Behavior on opacity {
+                enabled: !MeoTheme.reduceMotion
                 NumberAnimation {
                     duration: MeoTheme.motionDurationEffectDefault
                     easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -563,7 +565,7 @@ Control {
                     MeoIcon {
                         id: trailingChevron
                         icon: "chevron_right"
-                        size: 20
+                        size: 20 * control.scale
                         color: control.trailingContentColor
                         visible: control.hasChevron
                     }

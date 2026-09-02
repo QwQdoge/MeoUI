@@ -17,17 +17,18 @@ Rectangle {
     property bool isContextual: false
     property int selectionCount: 0
 
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerLow !== 'undefined') ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnPrimaryContainer: MeoTheme.contentOnPrimaryContainer
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionFast: MeoTheme.motionDurationState
+    readonly property int motionMedium: MeoTheme.motionDurationShapeSettle
+    readonly property bool hasNavigation: navigationIcon !== null
 
-    readonly property var fontTitleLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleLarge !== 'undefined') ? MeoTheme.titleLarge : { "size": 22, "weight": Font.Normal }
-    readonly property var fontHeadlineMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.headlineMedium !== 'undefined') ? MeoTheme.headlineMedium : { "size": 28, "weight": Font.Normal }
-    readonly property var fontHeadlineLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.headlineLarge !== 'undefined') ? MeoTheme.headlineLarge : { "size": 32, "weight": Font.Normal }
+    readonly property var fontTitleLarge: MeoTheme.titleLarge
+    readonly property var fontHeadlineMedium: MeoTheme.headlineMedium
+    readonly property var fontHeadlineLarge: MeoTheme.headlineLarge
 
     width: parent ? parent.width : 360 * themeGlobalScale
     height: {
@@ -40,12 +41,24 @@ Rectangle {
         }
         return baseHeight * themeGlobalScale;
     }
+    // Top app bars are regularly placed in ColumnLayout/Scaffold slots. Give
+    // those parents the same M3 size contract as direct users of `height`.
+    implicitWidth: 360 * themeGlobalScale
+    implicitHeight: height
+    Accessible.role: Accessible.Pane
+    Accessible.name: isContextual ? qsTr("%1 selected").arg(selectionCount) : title
 
     // Background color transition for Contextual Mode
     color: isContextual ? themePrimaryContainer : themeSurface
-    Behavior on color { ColorAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+    Behavior on color {
+        enabled: !MeoTheme.reduceMotion
+        ColorAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+    }
 
-    Behavior on height { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+    Behavior on height {
+        enabled: !MeoTheme.reduceMotion
+        NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+    }
 
     Rectangle {
         id: stateLayer
@@ -58,7 +71,7 @@ Rectangle {
     Item {
         anchors.fill: parent
         anchors.leftMargin: 4 * control.themeGlobalScale
-        anchors.rightMargin: 16 * control.themeGlobalScale
+        anchors.rightMargin: 4 * control.themeGlobalScale
         anchors.topMargin: 0
         anchors.bottomMargin: 0
 
@@ -68,7 +81,8 @@ Rectangle {
             anchors.verticalCenter: control.type === "small" || control.type === "center" ? parent.verticalCenter : undefined
             anchors.top: control.type === "medium" || control.type === "large" ? parent.top : undefined
             sourceComponent: control.navigationIcon
-            width: 48 * control.themeGlobalScale
+            visible: control.hasNavigation
+            width: visible ? 48 * control.themeGlobalScale : 0
             height: 48 * control.themeGlobalScale
         }
 
@@ -93,8 +107,15 @@ Rectangle {
             lineHeight: fontTitleLarge.lineHeight ? (fontTitleLarge.lineHeight / fontTitleLarge.size) : 28 / 22
             color: isContextual ? control.themeOnPrimaryContainer : control.themeOnSurface
             anchors.horizontalCenter: (control.type === "center" && !isContextual) ? parent.horizontalCenter : undefined
-            anchors.left: (control.type === "center" && !isContextual) ? undefined : navIconLoader.right
-            anchors.leftMargin: (control.type === "center" && !isContextual) ? 0 : 4 * control.themeGlobalScale
+            anchors.left: (control.type === "center" && !isContextual) ? undefined : (control.hasNavigation ? navIconLoader.right : parent.left)
+            anchors.leftMargin: (control.type === "center" && !isContextual) ? 0 : (control.hasNavigation ? 16 : 12) * control.themeGlobalScale
+            anchors.right: (control.type === "center" && !isContextual) ? undefined
+                          : ((control.type === "small" || control.type === "center") ? actionRow.left : parent.right)
+            anchors.rightMargin: (control.type === "small" || control.type === "center") ? 12 * control.themeGlobalScale : 16 * control.themeGlobalScale
+            width: (control.type === "center" && !isContextual)
+                   ? Math.max(0, parent.width - Math.max(navIconLoader.width, actionRow.width) * 2 - 24 * control.themeGlobalScale)
+                   : undefined
+            elide: Text.ElideRight
 
             anchors.verticalCenter: {
                 if (control.flexible && (control.type === "medium" || control.type === "large")) return undefined;
@@ -114,13 +135,14 @@ Rectangle {
             }
 
             Behavior on font.pixelSize {
-                enabled: !control.flexible
-                NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== 'undefined' ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]) }
+                enabled: !control.flexible && !MeoTheme.reduceMotion
+                NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
             }
             Behavior on color { ColorAnimation { duration: control.motionFast } }
         }
 
         Row {
+            id: actionRow
             anchors.right: parent.right
             anchors.verticalCenter: control.type === "small" || control.type === "center" ? parent.verticalCenter : undefined
             anchors.top: control.type === "medium" || control.type === "large" ? parent.top : undefined

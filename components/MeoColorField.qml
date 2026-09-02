@@ -11,7 +11,9 @@ Control {
     property color color: "#6750a4"
     property string label: ""
     property string helperText: ""
-    property string text: colorField.text
+    // Expose the actual editable field rather than a one-way snapshot binding,
+    // so callers can prefill or correct text before calling commit().
+    property alias text: colorField.text
     readonly property bool valid: validHex(colorField.text)
     readonly property string normalizedText: normalizedHex(colorField.text)
 

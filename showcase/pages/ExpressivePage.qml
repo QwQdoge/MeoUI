@@ -211,7 +211,7 @@ ShowcaseCategoryPage {
                     spacing: MeoTheme.space8
                     Layout.alignment: Qt.AlignHCenter
                     MeoLoadingIndicator {
-                        variant: "uncontained"
+                        variant: "default"
                         size: "m"
                         Layout.alignment: Qt.AlignHCenter
                     }

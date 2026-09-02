@@ -13,14 +13,26 @@ Control {
     spacing: (type === "multi-browse" || type === "uncontained") ? 8 * themeGlobalScale : 16 * themeGlobalScale
     clip: true
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool reducedMotion: MeoTheme.reduceMotion
+    readonly property int currentIndex: listView.currentIndex
 
     implicitWidth: parent ? parent.width : 400 * themeGlobalScale
     implicitHeight: itemHeight + (showPageIndicator ? 36 * themeGlobalScale : 0)
+    activeFocusOnTab: true
+    Accessible.role: Accessible.Pane
+    Accessible.name: qsTr("Carousel")
 
     property bool showPageIndicator: true
     property bool autoScroll: false
     property int interval: 5000
+
+    function goTo(index) {
+        if (listView.count <= 0)
+            return
+        listView.currentIndex = Math.max(0, Math.min(listView.count - 1, index))
+        listView.positionViewAtIndex(listView.currentIndex, ListView.Center)
+    }
 
     Timer {
         interval: control.interval
@@ -28,8 +40,7 @@ Control {
         repeat: true
         onTriggered: {
             if (listView.count > 0) {
-                listView.currentIndex = (listView.currentIndex + 1) % listView.count
-                listView.positionViewAtIndex(listView.currentIndex, ListView.Center)
+                control.goTo((listView.currentIndex + 1) % listView.count)
             }
         }
     }
@@ -66,8 +77,17 @@ Control {
             scale: control.type === "hero" ? (listView.currentIndex === index ? 1.0 : 0.92) : 1.0
             opacity: control.type === "hero" ? (listView.currentIndex === index ? 1.0 : 0.65) : 1.0
 
-            Behavior on scale { NumberAnimation { duration: 250; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
-            Behavior on opacity { NumberAnimation { duration: 250 } }
+            Behavior on scale {
+                enabled: !control.reducedMotion
+                NumberAnimation {
+                    duration: MeoTheme.motionDurationSelection
+                    easing.bezierCurve: MeoTheme.motionEasingSoul
+                }
+            }
+            Behavior on opacity {
+                enabled: !control.reducedMotion
+                NumberAnimation { duration: MeoTheme.motionDurationState }
+            }
 
             Loader {
                 id: delegateLoader
@@ -78,11 +98,22 @@ Control {
             }
         }
         snapMode: (control.type === "uncontained" || control.type === "full-screen") ? ListView.NoSnap : ListView.SnapToItem
-        highlightMoveDuration: (typeof MeoTheme !== 'undefined' && MeoTheme.isExpressive) ? 400 : 250
+        highlightMoveDuration: control.reducedMotion ? 0 : (MeoTheme.isExpressive
+                                                             ? MeoTheme.motionDurationLong2
+                                                             : MeoTheme.motionDurationSelection)
         preferredHighlightBegin: (control.type === "hero" || control.type === "uncontained") ? 16 * control.themeGlobalScale : 0
         preferredHighlightEnd: (control.type === "hero" || control.type === "uncontained") ? width - 16 * control.themeGlobalScale : width
         highlightRangeMode: (control.type === "hero" || control.type === "uncontained") ? ListView.ApplyRange : ListView.NoHighlightRange
+
+        onMovementEnded: {
+            const index = indexAt(contentX + width / 2, height / 2)
+            if (index >= 0)
+                currentIndex = index
+        }
     }
+
+    Keys.onLeftPressed: control.goTo(listView.currentIndex - 1)
+    Keys.onRightPressed: control.goTo(listView.currentIndex + 1)
 
     MeoPageIndicator {
         id: pageIndicator

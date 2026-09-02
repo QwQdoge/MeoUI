@@ -5,7 +5,8 @@ import MeoUI
 Rectangle {
     id: control
 
-    // 🌟 核心属性
+    // Search is an input surface, not a compact page transition.  Its bounds
+    // and pill silhouette stay stable while focus and query state change.
     property string text: ""
     property string placeholder: "Search..."
     property string leadingIcon: "search"
@@ -18,27 +19,25 @@ Rectangle {
     readonly property bool settingsStyle: visualStyle === "settings"
     readonly property bool pixelStyle: visualStyle === "pixel" || settingsStyle || visualStyle === "launcher"
     readonly property bool launcherStyle: visualStyle === "launcher"
+    readonly property bool mirrored: LayoutMirroring.enabled
     readonly property bool focusVisible: textField.activeFocus
 
     signal activated()
     signal accepted(string text)
 
     // 🌟 作用域与主题安全防御
-    readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHigh !== 'undefined') ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property var fontBodyLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyLarge !== 'undefined') ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal, "lineHeight": 24, "letterSpacing": 0.5 }
+    readonly property color themeSurfaceContainerHigh: MeoTheme.surfaceContainerHigh
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontBodyLarge: MeoTheme.bodyLarge
+    readonly property color themeSurface: MeoTheme.surface
 
     implicitWidth: Math.min(720 * themeGlobalScale, parent ? parent.width : 720 * themeGlobalScale)
     // Pixel Settings uses a 56dp field, while the Chromium launcher reference
     // uses a 48dp field.  Both retain the same semantic border/surface roles.
     implicitHeight: settingsStyle ? MeoTheme.settingsSearchHeight
                                   : (launcherStyle ? 48 : 56) * themeGlobalScale
-
-    // 📐 Expressive Expansion Logic
-    readonly property bool isWide: parent && parent.width >= MeoTheme.windowBreakpointMedium
 
     function activateSearch() {
         if (!active) {
@@ -52,33 +51,31 @@ Rectangle {
         textField.forceActiveFocus()
     }
 
-    radius: settingsStyle ? MeoTheme.settingsSearchRadius
-                          : pixelStyle ? height / 2
-                       : (active ? (isWide ? 16 * themeGlobalScale : 0) : 28 * themeGlobalScale)
+    radius: settingsStyle ? MeoTheme.settingsSearchRadius : height / 2
     color: settingsStyle ? MeoTheme.surfaceContainer
-                         : pixelStyle ? (active ? themeSurface : MeoTheme.surfaceContainerLowest)
-                      : (active ? themeSurface : themeSurfaceContainerHigh)
-    border.width: settingsStyle && focusVisible ? MeoTheme.strokeWidthMedium
+                         : pixelStyle ? MeoTheme.surfaceContainerLowest
+                                      : themeSurfaceContainerHigh
+    border.width: focusVisible ? MeoTheme.strokeWidthMedium
                   : pixelStyle && !settingsStyle ? MeoTheme.strokeWidthThin : 0
-    border.color: settingsStyle ? MeoTheme.primary
-                                : pixelStyle ? MeoTheme.outlineVariant : "transparent"
+    border.color: focusVisible ? MeoTheme.primary
+                               : pixelStyle ? MeoTheme.outlineVariant : "transparent"
 
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-
-    Behavior on width { NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
-    Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-    Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+    Behavior on border.color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+    Behavior on border.width { NumberAnimation { duration: MeoTheme.motionDurationState; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
     Row {
         anchors.fill: parent
         anchors.leftMargin: 4 * control.themeGlobalScale
         anchors.rightMargin: 4 * control.themeGlobalScale
         spacing: 4 * control.themeGlobalScale
+        layoutDirection: control.mirrored ? Qt.RightToLeft : Qt.LeftToRight
 
         MeoIconButton {
             id: leadingButton
             icon.name: control.active ? "arrow_back" : control.leadingIcon
             type: "standard"
+            width: 40 * control.themeGlobalScale
+            height: width
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
                 if (control.active) {
@@ -89,26 +86,14 @@ Rectangle {
                 }
             }
 
-            // 🌟 MD3 Expressive: Fluid icon rotation/swap
-            contentItem: MeoIcon {
-                icon: leadingButton.icon.name
-                size: 24
-                color: control.settingsStyle ? control.themeOnSurfaceVariant : leadingButton.icon.color
-                rotation: control.settingsStyle ? 0 : (control.active ? 0 : -90)
-                Behavior on rotation { NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
-                Behavior on icon {
-                    SequentialAnimation {
-                        NumberAnimation { target: parent; property: "opacity"; to: 0; duration: MeoTheme.motionDurationShort2 }
-                        PropertyAction { property: "icon" }
-                        NumberAnimation { target: parent; property: "opacity"; to: 1; duration: MeoTheme.motionDurationShort2 }
-                    }
-                }
-            }
+            Accessible.name: control.active ? qsTr("Exit search") : qsTr("Search")
         }
 
         TextField {
             id: textField
-            width: parent.width - 48 * control.themeGlobalScale - (trailingButton.visible ? 48 * control.themeGlobalScale : 0) - parent.spacing * 2
+            width: Math.max(0, parent.width - leadingButton.width
+                            - (trailingButton.visible ? trailingButton.width : 0)
+                            - parent.spacing * (trailingButton.visible ? 2 : 1))
             height: parent.height
             background: null
             placeholderText: control.placeholder
@@ -130,6 +115,8 @@ Rectangle {
             id: trailingButton
             icon.name: control.active && control.text !== "" ? "close" : control.trailingIcon
             type: "standard"
+            width: 40 * control.themeGlobalScale
+            height: width
             anchors.verticalCenter: parent.verticalCenter
             visible: icon.name !== ""
             opacity: visible ? 1.0 : 0.0
@@ -143,18 +130,7 @@ Rectangle {
                 }
             }
 
-            contentItem: MeoIcon {
-                icon: trailingButton.icon.name
-                size: 24
-                color: trailingButton.icon.color
-                Behavior on icon {
-                    SequentialAnimation {
-                        NumberAnimation { target: parent; property: "scale"; to: 0.5; duration: MeoTheme.motionDurationShort2 }
-                        PropertyAction { property: "icon" }
-                        NumberAnimation { target: parent; property: "scale"; to: 1.0; duration: MeoTheme.motionDurationShort2 }
-                    }
-                }
-            }
+            Accessible.name: control.active && control.text !== "" ? qsTr("Clear search") : control.trailingIcon
         }
     }
 

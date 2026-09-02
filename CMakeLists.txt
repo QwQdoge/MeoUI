@@ -34,7 +34,7 @@ if(COMMAND qt_policy)
     endif()
 endif()
 
-set_source_files_properties(MeoTheme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(MeoTheme.qml MeoMotion.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 # MeoUI is a separately loadable runtime module.  Applications must import it
 # through the QML import path instead of embedding a private static copy.  This
@@ -76,7 +76,8 @@ qt_add_qml_module(meoui_module
         showcase/ShowcaseStateGrid.qml
         showcase/ShowcaseVariantRow.qml
         showcase/SettingsPreviewSchemes.js
-MeoTheme.qml
+        MeoTheme.qml
+        MeoMotion.qml
         MeoWindowMetrics.qml
         components/MeoScrollBar.qml
         components/MeoSpinBox.qml
@@ -151,6 +152,7 @@ MeoTheme.qml
         widgets/MeoDateRangePicker.qml
         widgets/MeoTimePicker.qml
         widgets/MeoNavigationRail.qml
+        widgets/MeoNavigationRailModal.qml
         widgets/MeoNavigationDrawer.qml
         widgets/MeoBottomSheet.qml
         widgets/MeoActionSheet.qml
@@ -245,7 +247,7 @@ install(FILES
 # Keep source QML beside the plugin for qmllint, IDE tooling, and transparent
 # debugging.  The generated qmldir prefers the compiled qrc payload, so runtime
 # applications still load the versioned shared module.
-install(FILES MeoTheme.qml MeoWindowMetrics.qml
+install(FILES MeoTheme.qml MeoMotion.qml MeoWindowMetrics.qml
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
 )
 install(DIRECTORY components patterns widgets showcase

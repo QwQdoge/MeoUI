@@ -14,20 +14,32 @@ Popup {
     property string shape: "rect" // 🌟 MD3 Expressive Shape
     property var actions: [] // Array of { text: "", action: function }
 
-    readonly property color themeSurfaceContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainer !== 'undefined') ? MeoTheme.surfaceContainer : "#F3EDF7"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    // AndroidX RichTooltipTokens; icon/image/shape remain explicit MeoUI extensions.
+    readonly property color themeSurfaceContainer: MeoTheme.surfaceContainer
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontTitleSmall: MeoTheme.titleSmall
+    readonly property var fontBodyMedium: MeoTheme.bodyMedium
+
+    Accessible.role: Accessible.ToolTip
+    Accessible.name: title.length > 0 ? title : text
+    Accessible.description: title.length > 0 ? text : ""
 
     padding: 0
-    width: Math.min(320 * themeGlobalScale, (parent ? parent.width - 48 * themeGlobalScale : 320 * themeGlobalScale))
+    // Rich tooltips use the Material maximum as their preferred surface width.
+    // A Popup's immediate parent can be a small trigger item, so sizing from it
+    // makes the text wrap into an unusable narrow column.
+    readonly property real maximumWidth: 320 * themeGlobalScale
+    width: maximumWidth
+    focus: actions.length > 0
+    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
     background: MeoShape {
         id: shapeBg
         type: control.shape
         color: control.themeSurfaceContainer
-        radius: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.shapeMedium !== 'undefined') ? MeoTheme.shapeMedium : 12 * control.themeGlobalScale
-        // MD3 Elevation 2
+        radius: MeoTheme.shapeMedium
+        // AndroidX RichTooltipTokens.ContainerElevation = Level2.
 
         layer.enabled: control.visible
         layer.effect: MultiEffect {
@@ -87,45 +99,64 @@ Popup {
             spacing: 12 * control.themeGlobalScale
 
             Text {
-            text: control.title
-            visible: text !== ""
-            width: parent.width - 32 * control.themeGlobalScale
-            font.pixelSize: 16 * control.themeGlobalScale
-            font.weight: Font.Medium
-            color: control.themeOnSurface
-            wrapMode: Text.WordWrap
-        }
+                objectName: "meoRichTooltipTitle"
+                text: control.title
+                visible: text !== ""
+                width: parent.width - 32 * control.themeGlobalScale
+                font.family: MeoTheme.typefacePlain
+                font.pixelSize: control.fontTitleSmall.size * control.themeGlobalScale
+                font.weight: control.fontTitleSmall.weight
+                font.letterSpacing: control.fontTitleSmall.letterSpacing * control.themeGlobalScale
+                color: control.themeOnSurfaceVariant
+                wrapMode: Text.WordWrap
+            }
 
-        Text {
-            text: control.text
-            width: parent.width - 32 * control.themeGlobalScale
-            font.pixelSize: 14 * control.themeGlobalScale
-            color: control.themeOnSurfaceVariant
-            wrapMode: Text.WordWrap
-        }
+            Text {
+                objectName: "meoRichTooltipText"
+                text: control.text
+                width: parent.width - 32 * control.themeGlobalScale
+                font.family: MeoTheme.typefacePlain
+                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.weight: control.fontBodyMedium.weight
+                font.letterSpacing: control.fontBodyMedium.letterSpacing * control.themeGlobalScale
+                color: control.themeOnSurfaceVariant
+                wrapMode: Text.WordWrap
+            }
 
-        Row {
-            visible: control.actions.length > 0
-            width: parent.width - 32 * control.themeGlobalScale
-            layoutDirection: Qt.RightToLeft
-            spacing: 8 * control.themeGlobalScale
+            Row {
+                visible: control.actions.length > 0
+                width: parent.width - 32 * control.themeGlobalScale
+                layoutDirection: Qt.RightToLeft
+                spacing: 8 * control.themeGlobalScale
 
-            Repeater {
-                model: control.actions
-                MeoButton {
-                    text: modelData.text
-                    type: "text"
-                    onClicked: {
-                        if (modelData.action) modelData.action()
-                        control.close()
+                Repeater {
+                    model: control.actions
+                    MeoButton {
+                        objectName: "meoRichTooltipAction_" + index
+                        text: modelData.text
+                        type: "text"
+                        onClicked: {
+                            if (modelData.action) modelData.action()
+                            control.close()
+                        }
                     }
                 }
             }
         }
     }
-    }
 
     enter: Transition {
-        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 150 }
+        enabled: !MeoTheme.reduceMotion
+        ParallelAnimation {
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.OutCubic }
+        }
+    }
+    exit: Transition {
+        enabled: !MeoTheme.reduceMotion
+        ParallelAnimation {
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.InCubic }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.8; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.InCubic }
+        }
     }
 }

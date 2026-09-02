@@ -10,13 +10,19 @@ Item {
     property string initials: "" // Fallback initials (e.g. "JD")
     property real size: 40 // MD3 Standard: 40dp
     property string variant: "circle" // "circle" | "square" | "squircle" | "hexagon" | ...
-    property color color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    property color textColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
+    property color color: MeoTheme.primaryContainer
+    property color textColor: MeoTheme.contentOnPrimaryContainer
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
     implicitWidth: size * themeGlobalScale
     implicitHeight: size * themeGlobalScale
+    width: implicitWidth
+    height: implicitHeight
+    readonly property bool hasLoadedImage: source !== "" && avatarImage.status === Image.Ready
+
+    Accessible.role: Accessible.Graphic
+    Accessible.name: initials !== "" ? qsTr("Avatar for %1").arg(initials.toUpperCase()) : qsTr("Avatar")
 
     Item {
         anchors.fill: parent
@@ -32,9 +38,12 @@ Item {
 
         // Initial fallback
         Text {
+            objectName: "meoAvatarInitials"
             anchors.centerIn: parent
             text: control.initials.toUpperCase()
-            visible: control.source === "" && control.initials !== ""
+            visible: !control.hasLoadedImage && control.initials !== ""
+            textFormat: Text.PlainText
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (control.size * 0.4) * themeGlobalScale
             font.weight: Font.Medium
             color: control.textColor
@@ -42,13 +51,13 @@ Item {
 
         // Image (with clipping to shape via OpacityMask)
         Image {
-            id: img
+            id: avatarImage
             anchors.fill: parent
             source: control.source
             visible: control.source !== ""
             fillMode: Image.PreserveAspectCrop
 
-            layer.enabled: img.visible
+            layer.enabled: avatarImage.visible
             layer.effect: MultiEffect {
                 maskEnabled: true
                 maskSource: shapeBg
@@ -57,9 +66,10 @@ Item {
 
         // Icon fallback if no source and no initials
         MeoIcon {
+            objectName: "meoAvatarFallbackIcon"
             anchors.centerIn: parent
             icon: "person"
-            visible: control.source === "" && control.initials === ""
+            visible: !control.hasLoadedImage && control.initials === ""
             size: control.size * 0.6
             color: control.textColor
         }

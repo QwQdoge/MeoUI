@@ -24,35 +24,32 @@ Control {
             error = isError
     }
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationFast !== "undefined") ? MeoTheme.motionDurationFast : 120
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
-
-    // 安全的主题属性转发
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainerHighest !== 'undefined') ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    // Typography
-    readonly property var fontBodyLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyLarge !== 'undefined') ? MeoTheme.bodyLarge : { "size": 16, "weight": Font.Normal }
-    readonly property var fontBodyMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodyMedium !== 'undefined') ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal }
-    readonly property var fontBodySmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.bodySmall !== 'undefined') ? MeoTheme.bodySmall : { "size": 12, "weight": Font.Normal }
-    readonly property var fontLabelSmall: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelSmall !== 'undefined') ? MeoTheme.labelSmall : { "size": 11, "weight": Font.Medium }
+    // This composite deliberately reuses the shared theme, motion, chip, and
+    // menu primitives. It must not carry a local fallback palette or motion
+    // system, because its selected seeds need to follow dynamic color updates.
+    readonly property int motionFast: MeoTheme.motionDurationState
+    readonly property int motionMedium: MeoTheme.motionDurationSelection
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themeError: MeoTheme.error
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontBodyLarge: MeoTheme.bodyLarge
+    readonly property var fontBodyMedium: MeoTheme.bodyMedium
+    readonly property var fontBodySmall: MeoTheme.bodySmall
+    readonly property var fontLabelSmall: MeoTheme.labelSmall
 
     // 🌟 尺寸定义
     readonly property real containerHeight: {
-        if (size === "xs") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.buttonHeightXS !== 'undefined') ? MeoTheme.buttonHeightXS : 32 * themeGlobalScale;
-        if (size === "s") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.buttonHeightS !== 'undefined') ? MeoTheme.buttonHeightS : 40 * themeGlobalScale;
-        if (size === "m") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.buttonHeightM !== 'undefined') ? MeoTheme.buttonHeightM : 48 * themeGlobalScale;
-        if (size === "l") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.buttonHeightL !== 'undefined') ? MeoTheme.buttonHeightL : 56 * themeGlobalScale;
-        if (size === "xl") return (typeof MeoTheme !== 'undefined' && typeof MeoTheme.buttonHeightXL !== 'undefined') ? MeoTheme.buttonHeightXL : 72 * themeGlobalScale;
-        return 56 * themeGlobalScale;
+        if (size === "xs") return MeoTheme.buttonHeightXS;
+        if (size === "s") return MeoTheme.buttonHeightS;
+        if (size === "m") return MeoTheme.buttonHeightM;
+        if (size === "l") return MeoTheme.buttonHeightL;
+        if (size === "xl") return MeoTheme.buttonHeightXL;
+        return MeoTheme.buttonHeightM;
     }
     readonly property real helperSpace: (helperText !== "" || (isError && errorText !== "") || showCounter) ? 20 * themeGlobalScale : 0
 
@@ -60,7 +57,7 @@ Control {
     implicitWidth: 280 * themeGlobalScale
     implicitHeight: Math.max(control.containerHeight, contentFlow.implicitHeight + (control.type === "filled" ? (control.label !== "" ? 28 : 16) : 16) * themeGlobalScale) + (size === "xs" ? 0 : helperSpace)
 
-    opacity: control.enabled ? 1.0 : 0.62
+    opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
     Behavior on opacity { NumberAnimation { duration: control.motionFast } }
 
     readonly property var currentFont: {
@@ -79,12 +76,12 @@ Control {
     readonly property color transparentBg: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0)
 
     readonly property color containerColor: {
-        if (!control.enabled) return type === "filled" ? Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, 0.04) : transparentBg;
+        if (!control.enabled) return type === "filled" ? Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, MeoTheme.disabledContainerOpacity) : transparentBg;
         return type === "filled" ? themeSurfaceContainerHighest : transparentBg;
     }
 
     readonly property color indicatorColor: {
-        if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.12);
+        if (!control.enabled) return Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, MeoTheme.disabledContainerOpacity);
         if (isError) return themeError;
         if (control.activeFocus) return themePrimary;
         if (bgMouseArea.containsMouse) return themeOnSurface;
@@ -132,15 +129,15 @@ Control {
                 visible: control.type === "filled"
             }
 
-            Behavior on color { ColorAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             border.color: control.type === "outlined" ? control.indicatorColor : "transparent"
             border.width: control.type === "outlined" ? (control.activeFocus ? 2 : 1) : 0
 
             Behavior on border.color { ColorAnimation { duration: control.motionFast } }
-            Behavior on radius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]) } }
-            Behavior on topLeftRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]) } }
-            Behavior on topRightRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== "undefined" ? MeoTheme.motionEasingEmphasized : [0.05, 0.7, 0.1, 1]) } }
+            Behavior on radius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on topLeftRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on topRightRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
 
             Rectangle {
                 id: activeIndicator
@@ -151,7 +148,7 @@ Control {
                 color: control.indicatorColor
                 visible: control.type === "filled"
 
-                Behavior on height { NumberAnimation { duration: control.motionFast; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+                Behavior on height { NumberAnimation { duration: control.motionFast; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 Behavior on color { ColorAnimation { duration: control.motionFast } }
             }
         }
@@ -192,7 +189,6 @@ Control {
                         }
                     }
                     control.selectedIndices = arr
-                    control.selectedIndicesChanged()
                 }
             }
         }
@@ -242,15 +238,15 @@ Control {
             width: labelText.implicitWidth
             height: labelText.implicitHeight
             scale: {
-                let targetSize = overlayLayer.isCollapsed ? (MeoTheme.labelSmallEmphasized ? MeoTheme.labelSmallEmphasized.size : control.fontLabelSmall.size) : control.currentFont.size;
+                let targetSize = overlayLayer.isCollapsed ? MeoTheme.labelSmallEmphasized.size : control.currentFont.size;
                 return targetSize / control.currentFont.size;
             }
             transformOrigin: Item.Left
 
-            readonly property var labelFont: overlayLayer.isCollapsed ? (MeoTheme.labelSmallEmphasized || control.fontLabelSmall) : control.currentFont
+            readonly property var labelFont: overlayLayer.isCollapsed ? MeoTheme.labelSmallEmphasized : control.currentFont
 
-            Behavior on y { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
-            Behavior on scale { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1] } }
+            Behavior on y { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on scale { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             Rectangle {
                 anchors.fill: parent
@@ -266,9 +262,9 @@ Control {
                 anchors.fill: parent
                 font.pixelSize: control.currentFont.size * control.themeGlobalScale
                 font.weight: labelContainer.labelFont.weight
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
+                    if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity);
                     if (control.isError) return control.themeError;
                     if (control.activeFocus) return control.themePrimary;
                     return control.themeOnSurfaceVariant;
@@ -297,9 +293,9 @@ Control {
             anchors.rightMargin: 16 * control.themeGlobalScale
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
             font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             color: {
-                if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38);
+                if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity);
                 return control.isError ? control.themeError : control.themeOnSurfaceVariant;
             }
             elide: Text.ElideRight
@@ -312,7 +308,7 @@ Control {
             visible: control.showCounter
             text: control.selectedIndices ? (control.selectedIndices.length + " selected") : "0 selected"
             font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             color: control.themeOnSurfaceVariant
         }
     }
@@ -345,7 +341,6 @@ Control {
                                 arr = sel.concat([idx])
                             }
                             control.selectedIndices = arr
-                            control.selectedIndicesChanged()
                         }
                     })(i)
                 })

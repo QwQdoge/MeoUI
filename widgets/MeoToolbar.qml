@@ -10,15 +10,18 @@ Rectangle {
     property list<Component> actions
     property bool isCompact: false
 
-    // 🌟 样式与主题
-    readonly property color themeSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property var fontTitleMedium: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleMedium !== 'undefined') ? MeoTheme.titleMedium : { "size": 16, "weight": Font.Medium }
+    // Reuse the library's semantic surface, type, and density contracts.
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontTitleMedium: MeoTheme.titleMedium
 
-    width: parent ? parent.width : 360 * themeGlobalScale
-    height: (isCompact ? 48 : 56) * themeGlobalScale
+    implicitWidth: Math.max(160 * themeGlobalScale,
+                            titleText.implicitWidth + actionsRow.implicitWidth + 48 * themeGlobalScale)
+    implicitHeight: (isCompact ? 48 : 56) * themeGlobalScale
     color: themeSurface
+    Accessible.role: Accessible.ToolBar
+    Accessible.name: title !== "" ? title : qsTr("Toolbar")
 
     // Implementation using anchors for better reliability without RowLayout
     Row {

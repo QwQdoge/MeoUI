@@ -15,17 +15,15 @@ Popup {
     signal actionClicked()
     signal dismissed()
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    // Inverse roles are semantic Material roles.  They must follow the active
-    // dynamic scheme instead of reconstructing an old static palette here.
-    readonly property color themeInverseSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.inverseSurface !== "undefined") ? MeoTheme.inverseSurface : (isDarkMode ? "#E6E1E5" : "#313033")
-    readonly property color themeInverseOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnInverseSurface !== "undefined") ? MeoTheme.contentOnInverseSurface : (isDarkMode ? "#313033" : "#F4F0F4")
-    readonly property color themeInversePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.inversePrimary !== "undefined") ? MeoTheme.inversePrimary : "#D0BCFF"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property int motionEnter: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSheetEnter !== "undefined") ? MeoTheme.motionDurationSheetEnter : 320
-    readonly property int motionExit: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSheetExit !== "undefined") ? MeoTheme.motionDurationSheetExit : 220
-    readonly property var fontBodyMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyMedium !== "undefined") ? MeoTheme.bodyMedium : ({ "size": 14, "weight": Font.Normal })
-    readonly property var fontLabelLarge: (typeof MeoTheme !== "undefined" && typeof MeoTheme.labelLarge !== "undefined") ? MeoTheme.labelLarge : ({ "size": 14, "weight": Font.Medium })
+    // These roles and dimensions map directly to AndroidX SnackbarTokens.
+    readonly property color themeInverseSurface: MeoTheme.inverseSurface
+    readonly property color themeInverseOnSurface: MeoTheme.contentOnInverseSurface
+    readonly property color themeInversePrimary: MeoTheme.inversePrimary
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionEnter: MeoTheme.motionDurationSheetEnter
+    readonly property int motionExit: MeoTheme.motionDurationSheetExit
+    readonly property var fontBodyMedium: MeoTheme.bodyMedium
+    readonly property var fontLabelLarge: MeoTheme.labelLarge
 
     x: parent ? Math.max(edgeMargin, (parent.width - width) / 2) : 0
     y: parent ? Math.max(edgeMargin, parent.height - height - edgeMargin) : 0
@@ -34,7 +32,7 @@ Popup {
     closePolicy: dismissible ? Popup.CloseOnEscape | Popup.CloseOnPressOutside : Popup.NoAutoClose
 
     background: Rectangle {
-        radius: 20 * control.themeGlobalScale
+        radius: MeoTheme.shapeExtraSmall
         color: control.themeInverseSurface
     }
 
@@ -64,7 +62,7 @@ Popup {
                                 - (control.actionText !== "" ? actionButton.implicitWidth + 12 * control.themeGlobalScale : 0)
                                 - (control.dismissible ? dismissButton.width + 8 * control.themeGlobalScale : 0))
                 text: control.message
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
                 font.weight: control.fontBodyMedium.weight
                 color: control.themeInverseOnSurface
@@ -94,7 +92,7 @@ Popup {
                 contentItem: Text {
                     text: actionButton.text
                     color: control.themeInversePrimary
-                    font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                    font.family: MeoTheme.typefacePlain
                     font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
                     font.weight: control.fontLabelLarge.weight
                     horizontalAlignment: Text.AlignHCenter
@@ -121,20 +119,30 @@ Popup {
 
     Timer {
         id: autoCloseTimer
+        objectName: "meoSnackbarAutoCloseTimer"
         interval: Math.max(1000, control.duration)
         onTriggered: control.close()
     }
 
-    onOpened: autoCloseTimer.restart()
+    // AndroidX/M3 treats an available action as user-controlled: it must not
+    // disappear before the user has had a chance to act.
+    onOpened: {
+        if (control.actionText === "")
+            autoCloseTimer.restart()
+        else
+            autoCloseTimer.stop()
+    }
     onClosed: autoCloseTimer.stop()
 
     enter: Transition {
+        enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
             NumberAnimation { property: "opacity"; from: 0; to: 1; duration: control.motionEnter }
             NumberAnimation { property: "scale"; from: 0.94; to: 1; duration: control.motionEnter; easing.type: Easing.OutCubic }
         }
     }
     exit: Transition {
+        enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
             NumberAnimation { property: "opacity"; from: 1; to: 0; duration: control.motionExit }
             NumberAnimation { property: "scale"; from: 1; to: 0.97; duration: control.motionExit; easing.type: Easing.InCubic }

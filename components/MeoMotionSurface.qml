@@ -14,14 +14,54 @@ Item {
     property bool animateOnCompleted: false
     property int entranceDirection: 1
     property real motionOffset: 0
+    property real entranceStartedAt: 0
+    property real entranceOpacityStart: 1
+    property real entranceScaleStart: 1
+    property real entranceOffsetStart: 0
+
+    readonly property var entranceSpatialSpec: MeoMotion.defaultSpatial
+    readonly property var entranceEffectsSpec: MeoMotion.defaultEffects
 
     function reveal(direction) {
         entranceDirection = direction === 0 ? 1 : direction
-        entrance.stop()
+        entranceDriver.stop()
         opacity = 0
         scale = 0.985
         motionOffset = entranceDistance * entranceDirection
-        entrance.start()
+        if (MeoTheme.reduceMotion) {
+            opacity = 1
+            scale = 1
+            motionOffset = 0
+            return
+        }
+        entranceOpacityStart = opacity
+        entranceScaleStart = scale
+        entranceOffsetStart = motionOffset
+        entranceStartedAt = Date.now()
+        advanceEntrance()
+        entranceDriver.start()
+    }
+
+    function advanceEntrance() {
+        const elapsed = Math.max(0, Date.now() - entranceStartedAt)
+        const opacityState = MeoMotion.stateAt(entranceEffectsSpec,
+                                               entranceOpacityStart, 0, 1, elapsed)
+        const scaleState = MeoMotion.stateAt(entranceSpatialSpec,
+                                             entranceScaleStart, 0, 1, elapsed)
+        const offsetState = MeoMotion.stateAt(entranceSpatialSpec,
+                                              entranceOffsetStart, 0, 0, elapsed)
+        opacity = opacityState.value
+        scale = scaleState.value
+        motionOffset = offsetState.value
+
+        if (MeoMotion.isAtRest(opacityState, 1, 0.005, 0.005)
+                && MeoMotion.isAtRest(scaleState, 1, 0.002, 0.01)
+                && MeoMotion.isAtRest(offsetState, 0, 0.25, 0.25)) {
+            opacity = 1
+            scale = 1
+            motionOffset = 0
+            entranceDriver.stop()
+        }
     }
 
     transform: Translate { x: control.motionOffset }
@@ -74,10 +114,10 @@ Item {
     Item { id: contentLayer; anchors.fill: parent }
 
     Component.onCompleted: if (animateOnCompleted) reveal(entranceDirection)
-    ParallelAnimation {
-        id: entrance
-        NumberAnimation { target: control; property: "opacity"; to: 1; duration: MeoTheme.motionDurationMedium2; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
-        NumberAnimation { target: control; property: "scale"; to: 1; duration: MeoTheme.motionDurationMedium3; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
-        NumberAnimation { target: control; property: "motionOffset"; to: 0; duration: MeoTheme.motionDurationMedium3; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+    Timer {
+        id: entranceDriver
+        interval: 16
+        repeat: true
+        onTriggered: control.advanceEntrance()
     }
 }

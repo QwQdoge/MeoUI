@@ -7,173 +7,153 @@ Column {
 
     property string title: ""
     property string subtitle: ""
-    property var model: []
+    property var model: [] // strings or { label/title, supportingText/subtitle, icon, trailingText, badgeText, enabled }
     property int selectedIndex: -1
     property bool showDividers: true
     property bool showChevron: true
-    property real dividerInset: 72 * themeGlobalScale
-    property real containerRadius: 24 * themeGlobalScale
+    property real dividerInset: 56 * MeoTheme.globalScale
+    property real containerRadius: MeoTheme.shapeLarge
+    property color containerColor: MeoTheme.surfaceContainerLowest
+    readonly property bool isMirrored: LayoutMirroring.enabled
 
     signal clicked(int index)
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outlineVariant !== "undefined") ? MeoTheme.outlineVariant : "#C4C7C5"
-    readonly property color themeSurfaceContainerLowest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLowest !== "undefined") ? MeoTheme.surfaceContainerLowest : "#FFFFFF"
-    readonly property color themeSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.secondaryContainer !== "undefined") ? MeoTheme.secondaryContainer : "#E8DEF8"
-    readonly property color themeOnSecondaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSecondaryContainer !== "undefined") ? MeoTheme.contentOnSecondaryContainer : "#1D192B"
-    readonly property var fontTitleMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.titleMedium !== "undefined") ? MeoTheme.titleMedium : { "size": 16, "weight": Font.Medium, "lineHeight": 24, "letterSpacing": 0.15 }
-    readonly property var fontBodyMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyMedium !== "undefined") ? MeoTheme.bodyMedium : { "size": 14, "weight": Font.Normal, "lineHeight": 20, "letterSpacing": 0.25 }
-    readonly property int animationDuration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium2 !== "undefined") ? MeoTheme.motionDurationMedium2 : 250
-    readonly property var emphasizedCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasized !== "undefined") ? MeoTheme.motionEasingEmphasized : [0.2, 0.0, 0.0, 1.0]
+    function labelFor(item) {
+        return item && typeof item === "object" ? (item.label || item.title || "") : String(item || "")
+    }
 
-    width: parent ? parent.width : 680 * themeGlobalScale
-    spacing: 12 * themeGlobalScale
+    function supportingFor(item) {
+        return item && typeof item === "object" ? (item.supportingText || item.subtitle || "") : ""
+    }
+
+    function iconFor(item) {
+        return item && typeof item === "object" ? (item.icon || "") : ""
+    }
+
+    function enabledFor(item) {
+        return !item || typeof item !== "object" || item.enabled === undefined ? true : item.enabled
+    }
+
+    function activate(index) {
+        if (index < 0 || index >= model.length || !enabledFor(model[index]))
+            return false
+        selectedIndex = index
+        clicked(index)
+        return true
+    }
+
+    width: parent ? parent.width : 420 * MeoTheme.globalScale
+    spacing: 8 * MeoTheme.globalScale
 
     Column {
         width: parent.width
-        spacing: 2 * control.themeGlobalScale
         visible: control.title !== "" || control.subtitle !== ""
+        spacing: 2 * MeoTheme.globalScale
 
         MeoText {
             width: parent.width
             text: control.title
+            visible: text !== ""
             typeRole: "title"
             typeSize: "small"
             emphasized: true
-            visible: text !== ""
+            color: MeoTheme.contentOnSurface
         }
 
         MeoText {
             width: parent.width
             text: control.subtitle
+            visible: text !== ""
             typeRole: "body"
             typeSize: "medium"
-            color: control.themeOnSurfaceVariant
-            visible: text !== ""
+            color: MeoTheme.contentOnSurfaceVariant
+            wrapMode: Text.WordWrap
         }
     }
 
-    Column {
+    Item {
+        id: listSurface
         width: parent.width
-        spacing: 0
+        implicitHeight: rows.implicitHeight
+        visible: control.model.length > 0
 
-        Repeater {
-            model: control.model
+        Rectangle {
+            anchors.fill: parent
+            radius: control.containerRadius
+            color: control.containerColor
+        }
 
-            delegate: MeoListItem {
-                id: rowItem
+        Column {
+            id: rows
+            width: parent.width
+            spacing: 0
 
-                readonly property bool isFirst: index === 0
-                readonly property bool isLast: index === control.model.length - 1
+            Repeater {
+                model: control.model
 
-                width: control.width
-                headline: modelData.label || modelData.title || ""
-                supportingText: modelData.supportingText || modelData.subtitle || ""
-                leadingIcon: modelData.icon || ""
-                selected: control.selectedIndex === index
-                isSegmented: true
-                roundingStrategy: isFirst && isLast ? "all" : (isFirst ? "top" : (isLast ? "bottom" : "none"))
+                delegate: MeoListItem {
+                    id: rowItem
+                    required property int index
+                    required property var modelData
+                    objectName: "meoGroupedListItem_" + index
+                    width: rows.width
+                    headline: control.labelFor(modelData)
+                    supportingText: control.supportingFor(modelData)
+                    leadingIcon: control.iconFor(modelData)
+                    selected: control.selectedIndex === index
+                    enabled: control.enabledFor(modelData)
+                    interactive: enabled
+                    isSegmented: true
+                    roundingStrategy: control.model.length === 1 ? "all"
+                                      : index === 0 ? "top"
+                                      : index === control.model.length - 1 ? "bottom" : "middle"
 
-                // Use default background radius logic from MeoListItem which now supports roundingStrategy
-                // But we want the GroupedList surface to be unified
+                    trailingComponent: Component {
+                        Row {
+                            spacing: 8 * MeoTheme.globalScale
+                            layoutDirection: control.isMirrored ? Qt.RightToLeft : Qt.LeftToRight
+                            visible: !!(modelData && typeof modelData === "object"
+                                        && (modelData.badgeText || modelData.trailingText)) || control.showChevron
 
-                background: Item {
-                    width: rowItem.width
-                    height: rowItem.height
+                            MeoBadge {
+                                text: modelData && typeof modelData === "object" ? (modelData.badgeText || "") : ""
+                                visible: text !== ""
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            MeoText {
+                                text: modelData && typeof modelData === "object" ? (modelData.trailingText || "") : ""
+                                visible: text !== ""
+                                typeRole: "label"
+                                typeSize: "medium"
+                                color: rowItem.selected ? MeoTheme.contentOnSecondaryContainer : MeoTheme.contentOnSurfaceVariant
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+
+                            MeoIcon {
+                                visible: control.showChevron
+                                icon: control.isMirrored ? "chevron_left" : "chevron_right"
+                                size: 20 * MeoTheme.globalScale
+                                color: rowItem.selected ? MeoTheme.contentOnSecondaryContainer : MeoTheme.contentOnSurfaceVariant
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                    }
+
+                    onClicked: control.activate(index)
 
                     Rectangle {
-                        id: groupSurface
-                        anchors.fill: parent
-                        color: control.themeSurfaceContainerLowest
-                        radius: control.containerRadius
-
-                        topLeftRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "top") ? radius : 0
-                        topRightRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "top") ? radius : 0
-                        bottomLeftRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "bottom") ? radius : 0
-                        bottomRightRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "bottom") ? radius : 0
+                        visible: control.showDividers && index < control.model.length - 1
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.leftMargin: control.isMirrored ? 0 : control.dividerInset
+                        anchors.rightMargin: control.isMirrored ? control.dividerInset : 0
+                        height: Math.max(1, MeoTheme.globalScale)
+                        color: MeoTheme.outlineVariant
                     }
-
-                    Rectangle {
-                        id: selectedLayer
-                        anchors.fill: parent
-                        anchors.margins: 4 * control.themeGlobalScale
-                        radius: groupSurface.radius - 4 * control.themeGlobalScale
-                        color: rowItem.selected ? control.themeSecondaryContainer : "transparent"
-
-                        topLeftRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "top") ? radius : 0
-                        topRightRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "top") ? radius : 0
-                        bottomLeftRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "bottom") ? radius : 0
-                        bottomRightRadius: (rowItem.roundingStrategy === "all" || rowItem.roundingStrategy === "bottom") ? radius : 0
-
-                        MeoStateLayer {
-                            anchors.fill: parent
-                            radius: parent.radius
-                            hovered: rowItem.hovered || false
-                            pressed: rowItem.pressed || false
-                            color: rowItem.selected ? control.themeOnSecondaryContainer : control.themeOnSurface
-                        }
-
-                        Behavior on color { ColorAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
-                    }
-                }
-
-                trailingComponent: Component {
-                    Row {
-                        spacing: 8 * control.themeGlobalScale
-                        visible: (modelData.badgeText || modelData.trailingText || "") !== "" || control.showChevron
-
-                        MeoBadge {
-                            text: modelData.badgeText || ""
-                            visible: text !== ""
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        Text {
-                            text: modelData.trailingText || ""
-                            visible: text !== ""
-                            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
-                            font.pixelSize: (typeof MeoTheme !== "undefined" && typeof MeoTheme.bodyMedium !== "undefined" ? MeoTheme.bodyMedium.size : 14) * control.themeGlobalScale
-                            color: control.themeOnSurfaceVariant
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        MeoIcon {
-                            icon: "chevron_right"
-                            size: 24
-                            color: control.themeOnSurfaceVariant
-                            visible: control.showChevron
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-                    }
-                }
-
-                onClicked: {
-                    control.selectedIndex = index
-                    control.clicked(index)
-                }
-
-                // Divider implementation within delegate
-                Rectangle {
-                    visible: control.showDividers && !rowItem.isLast
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.bottom: parent.bottom
-                    anchors.leftMargin: control.dividerInset
-                    height: Math.max(1, 1 * control.themeGlobalScale)
-                    color: control.themeOutlineVariant
                 }
             }
-        }
-    }
-
-    Component {
-        id: chevronComp
-        MeoIcon {
-            icon: "chevron_right"
-            size: 24
-            color: control.themeOnSurfaceVariant
         }
     }
 }

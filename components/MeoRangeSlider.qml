@@ -12,49 +12,68 @@ Control {
     property bool discrete: false
     property real stepSize: 1.0
     property bool isThick: false
-    property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
+    property bool expressive: false
+    property string size: expressive ? "m" : "xs" // "xs" | "s" | "m" | "l" | "xl"
     property bool wavy: false
-    property bool valueLabelEnabled: true
-    property string trackStyle: size === "xs" ? "standard" : "split" // "standard" | "split"
+    property bool valueLabelEnabled: false
+    property string trackStyle: expressive && size !== "xs" ? "split" : "standard" // "standard" | "split"
 
-    property color activeTrackColor: trackStyle === "split"
-                                     ? (isDarkMode ? themePrimary : themePrimaryContainer)
-                                     : themePrimary
-    property color inactiveTrackColor: trackStyle === "split"
-                                       ? (isDarkMode ? themeSurfaceContainerLow : themeSurfaceContainerHighest)
-                                       : Qt.rgba(themeOnSurfaceVariant.r, themeOnSurfaceVariant.g, themeOnSurfaceVariant.b, 0.12)
-    property color thumbColor: trackStyle === "split" ? activeTrackColor : (size === "xs" ? themePrimary : themeOnPrimary)
+    // Expressive range selection follows the same primary/neutral pair as the
+    // standard slider. The prior primary-container treatment lost contrast in
+    // light schemes and did not match the shared slider contract.
+    property color activeTrackColor: themePrimary
+    property color inactiveTrackColor: themeSecondaryContainer
+    property color thumbColor: themePrimary
 
     signal moved()
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnPrimary !== "undefined") ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainerHighest: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHighest !== "undefined") ? MeoTheme.surfaceContainerHighest : "#E6E1E5"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property bool reduceMotion: (typeof MeoTheme !== "undefined" && typeof MeoTheme.reduceMotion !== "undefined") ? MeoTheme.reduceMotion : false
-    readonly property int motionStateDuration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property int motionTrackDuration: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationSelection !== "undefined") ? MeoTheme.motionDurationSelection : 220
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeSecondaryContainer: MeoTheme.secondaryContainer
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeInverseSurface: MeoTheme.inverseSurface
+    readonly property color themeOnInverseSurface: MeoTheme.contentOnInverseSurface
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool reduceMotion: MeoTheme.reduceMotion
+    readonly property int motionStateDuration: MeoTheme.motionDurationState
+    readonly property int motionTrackDuration: MeoTheme.motionDurationSelection
     readonly property int motionWaveDuration: reduceMotion ? 0 : 720
 
+    function compositeColor(foreground, opacity, background) {
+        return Qt.rgba(foreground.r * opacity + background.r * (1 - opacity),
+                       foreground.g * opacity + background.g * (1 - opacity),
+                       foreground.b * opacity + background.b * (1 - opacity),
+                       1)
+    }
+    readonly property color resolvedActiveTrackColor: enabled ? activeTrackColor
+                                                       : compositeColor(themeOnSurface, MeoTheme.disabledContentOpacity, themeSurface)
+    readonly property color resolvedInactiveTrackColor: enabled ? inactiveTrackColor
+                                                         : compositeColor(themeOnSurface, MeoTheme.disabledContainerOpacity, themeSurface)
+    readonly property color resolvedThumbColor: enabled ? thumbColor
+                                                  : compositeColor(themeOnSurface, MeoTheme.disabledContentOpacity, themeSurface)
+
     readonly property real trackHeight: {
-        if (size === "xs") return 4 * themeGlobalScale
-        if (size === "s") return 16 * themeGlobalScale
-        if (size === "m") return 28 * themeGlobalScale
-        if (size === "l") return 36 * themeGlobalScale
-        if (size === "xl") return 44 * themeGlobalScale
-        return 28 * themeGlobalScale
+        if (size === "xs") return MeoTheme.sliderTrackHeightXS
+        if (size === "s") return MeoTheme.sliderTrackHeightS
+        if (size === "m") return MeoTheme.sliderTrackHeightM
+        if (size === "l") return MeoTheme.sliderTrackHeightL
+        if (size === "xl") return MeoTheme.sliderTrackHeightXL
+        return MeoTheme.sliderTrackHeightXS
     }
     readonly property real renderedTrackHeight: isThick ? Math.max(trackHeight, 16 * themeGlobalScale) : trackHeight
-    readonly property real thumbWidth: size === "xs" ? 20 * themeGlobalScale
-                                                      : ((typeof MeoTheme !== "undefined" && typeof MeoTheme.sliderThumbWidthExpressive !== "undefined") ? MeoTheme.sliderThumbWidthExpressive : 4 * themeGlobalScale)
-    readonly property real thumbHeight: size === "xs" ? 20 * themeGlobalScale
-                                                       : Math.max((typeof MeoTheme !== "undefined" && typeof MeoTheme.sliderThumbHeightExpressive !== "undefined") ? MeoTheme.sliderThumbHeightExpressive : 44 * themeGlobalScale,
-                                                                  renderedTrackHeight + 8 * themeGlobalScale)
-    readonly property real thumbGap: (typeof MeoTheme !== "undefined" && typeof MeoTheme.sliderThumbGapExpressive !== "undefined") ? MeoTheme.sliderThumbGapExpressive : 6 * themeGlobalScale
+    readonly property real expressiveThumbHeight: {
+        if (size === "s") return MeoTheme.sliderThumbHeightS
+        if (size === "m") return MeoTheme.sliderThumbHeightM
+        if (size === "l") return MeoTheme.sliderThumbHeightL
+        if (size === "xl") return MeoTheme.sliderThumbHeightXL
+        return MeoTheme.sliderThumbHeightXS
+    }
+    readonly property real thumbWidth: MeoTheme.sliderThumbWidthExpressive
+    readonly property real thumbHeight: expressiveThumbHeight
+    readonly property real thumbGap: MeoTheme.sliderThumbGapExpressive
     readonly property real firstTrackX: internalSlider.first.visualPosition * internalSlider.availableWidth
     readonly property real secondTrackX: internalSlider.second.visualPosition * internalSlider.availableWidth
     readonly property real lowerTrackX: Math.min(firstTrackX, secondTrackX)
@@ -65,9 +84,8 @@ Control {
                                                     || internalSlider.activeFocus)
 
     implicitWidth: 220 * themeGlobalScale
-    implicitHeight: Math.max(thumbHeight + 8 * themeGlobalScale, 52 * themeGlobalScale)
-    opacity: enabled ? 1.0 : 0.38
-    Behavior on opacity { NumberAnimation { duration: control.motionStateDuration } }
+    implicitHeight: Math.max(thumbHeight, 48 * themeGlobalScale)
+    Accessible.ignored: true
 
     RangeSlider {
         id: internalSlider
@@ -79,6 +97,7 @@ Control {
         stepSize: control.discrete ? control.stepSize : 0.0
         live: true
         enabled: control.enabled
+        Accessible.name: qsTr("Range from %1 to %2").arg(Math.round(control.firstValue)).arg(Math.round(control.secondValue))
 
         first.onMoved: {
             control.firstValue = first.value
@@ -99,58 +118,67 @@ Control {
             // Classic range track retained for compact/legacy use.
             Rectangle {
                 id: standardTrack
+                objectName: "meoRangeSliderStandardTrack"
                 visible: !control.wavy && control.trackStyle !== "split"
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
                 height: control.renderedTrackHeight
                 radius: height / 2
-                color: control.inactiveTrackColor
+                color: control.resolvedInactiveTrackColor
             }
 
             Rectangle {
+                id: activeRangeTrack
+                objectName: "meoRangeSliderActiveTrack"
                 visible: standardTrack.visible
                 anchors.verticalCenter: parent.verticalCenter
                 x: control.lowerTrackX
                 width: Math.max(0, control.upperTrackX - control.lowerTrackX)
                 height: standardTrack.height
                 radius: height / 2
-                color: control.activeTrackColor
+                color: control.resolvedActiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
             }
 
             // Android 16 / Pixel expressive range track: three independent pills.
             Rectangle {
+                id: splitRangeLeadingTrack
+                objectName: "meoRangeSliderSplitLeadingTrack"
                 visible: !control.wavy && control.trackStyle === "split"
                 anchors.verticalCenter: parent.verticalCenter
                 x: 0
                 width: Math.max(0, control.lowerTrackX - control.thumbGap)
                 height: control.renderedTrackHeight
                 radius: height / 2
-                color: control.inactiveTrackColor
+                color: control.resolvedInactiveTrackColor
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
             }
 
             Rectangle {
+                id: splitRangeActiveTrack
+                objectName: "meoRangeSliderSplitActiveTrack"
                 visible: !control.wavy && control.trackStyle === "split"
                 anchors.verticalCenter: parent.verticalCenter
                 x: Math.min(parent.width, control.lowerTrackX + control.thumbGap)
                 width: Math.max(0, control.upperTrackX - control.lowerTrackX - control.thumbGap * 2)
                 height: control.renderedTrackHeight
                 radius: height / 2
-                color: control.activeTrackColor
+                color: control.resolvedActiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
             }
 
             Rectangle {
+                id: splitRangeTrailingTrack
+                objectName: "meoRangeSliderSplitTrailingTrack"
                 visible: !control.wavy && control.trackStyle === "split"
                 anchors.verticalCenter: parent.verticalCenter
                 x: Math.min(parent.width, control.upperTrackX + control.thumbGap)
                 width: Math.max(0, parent.width - x)
                 height: control.renderedTrackHeight
                 radius: height / 2
-                color: control.inactiveTrackColor
+                color: control.resolvedInactiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
             }
@@ -168,8 +196,10 @@ Control {
                     width: 2 * control.themeGlobalScale
                     height: width
                     radius: width / 2
-                    color: control.themeOnSurfaceVariant
-                    opacity: 0.38
+                    readonly property real tickValue: control.from + index * control.stepSize
+                    color: tickValue >= control.firstValue
+                           && tickValue <= control.secondValue
+                           ? control.themeSecondaryContainer : control.themePrimary
                 }
             }
 
@@ -197,14 +227,14 @@ Control {
                     ctx.lineJoin = "round"
                     ctx.lineWidth = strokeWidth
 
-                    ctx.strokeStyle = control.inactiveTrackColor
+                    ctx.strokeStyle = control.resolvedInactiveTrackColor
                     ctx.beginPath()
                     ctx.moveTo(0, mid)
                     ctx.lineTo(width, mid)
                     ctx.stroke()
 
                     if (endX > startX) {
-                        ctx.strokeStyle = control.activeTrackColor
+                        ctx.strokeStyle = control.resolvedActiveTrackColor
                         ctx.beginPath()
                         for (var x = startX; x < endX; x += sampleStep) {
                             var y = mid + Math.sin((x + phase) / wavelength * Math.PI * 2) * amp
@@ -263,20 +293,13 @@ Control {
 
         Rectangle {
             id: thumb
+            objectName: "meoRangeSliderThumb"
             anchors.centerIn: parent
-            width: rangeThumb.sliderHandle.pressed ? 2 * control.themeGlobalScale : control.thumbWidth
-            height: control.trackStyle === "split" ? control.thumbHeight : (control.size === "xs" ? control.thumbWidth : control.thumbHeight)
+            width: control.thumbWidth
+            height: control.thumbHeight
             radius: width / 2
-            color: control.thumbColor
-            border.color: control.trackStyle === "split" ? "transparent" : (control.size !== "xs" ? control.themePrimary : "transparent")
-            border.width: control.trackStyle === "split" ? 0 : (control.size !== "xs" ? 1 * control.themeGlobalScale : 0)
-
-            Behavior on width {
-                NumberAnimation {
-                    duration: control.motionStateDuration
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
-                }
-            }
+            color: control.resolvedThumbColor
+            border.width: 0
         }
 
         Rectangle {
@@ -287,30 +310,36 @@ Control {
             width: Math.max(36 * control.themeGlobalScale, valueText.implicitWidth + 18 * control.themeGlobalScale)
             height: 32 * control.themeGlobalScale
             radius: height / 2
-            color: control.themePrimary
+            color: control.themeInverseSurface
 
             Text {
                 id: valueText
                 anchors.centerIn: parent
                 text: control.discrete ? Math.round(rangeThumb.displayValue).toString() : rangeThumb.displayValue.toFixed(1)
-                color: control.themeOnPrimary
+                color: control.themeOnInverseSurface
                 font.pixelSize: 12 * control.themeGlobalScale
                 font.weight: Font.Medium
             }
         }
 
         Rectangle {
+            objectName: "meoRangeSliderStateLayer"
             anchors.centerIn: parent
             width: 40 * control.themeGlobalScale
             height: width
             radius: width / 2
             z: -1
             color: rangeThumb.sliderHandle.pressed
-                   ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.12)
+                   ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
+                             MeoTheme.stateOpacityPressed)
                    : rangeThumb.sliderHandle.hovered
-                     ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b, 0.08)
+                     ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
+                               MeoTheme.stateOpacityHover)
                      : "transparent"
-            Behavior on color { ColorAnimation { duration: control.motionStateDuration } }
+            Behavior on color {
+                enabled: !control.reduceMotion
+                ColorAnimation { duration: control.motionStateDuration }
+            }
         }
     }
 }

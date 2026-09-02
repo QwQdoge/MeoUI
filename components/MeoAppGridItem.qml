@@ -26,6 +26,7 @@ Control {
 
     implicitWidth: tileWidth
     implicitHeight: tileHeight
+    opacity: enabled ? 1.0 : MeoTheme.disabledContentOpacity
     hoverEnabled: true
     activeFocusOnTab: enabled
     Accessible.role: Accessible.Button
@@ -84,7 +85,7 @@ Control {
                 anchors.centerIn: parent
                 icon: control.iconName
                 size: control.iconExtent
-                color: MeoTheme.contentOnSurface
+                color: control.selected ? MeoTheme.contentOnSecondaryContainer : MeoTheme.contentOnSurface
             }
         }
 

@@ -6,6 +6,9 @@ Item {
 
     property var model: []
     property int currentIndex: 0
+    // Keep selection stable if destinations are reordered across adaptive
+    // presentations. This is the same identity contract as bar and rail.
+    property string currentId: ""
     // Retained for source compatibility. Size classes now choose the actual
     // navigation primitive instead of treating every desktop width as a rail.
     property bool expandedRail: false
@@ -15,31 +18,34 @@ Item {
     property real availableWidth: parent ? parent.width : width
     property int compactNavigationLimit: 5
     // Most applications use the compact bottom bar. Information-dense shells
-    // such as Settings use a searchable index and a temporary category drawer
-    // instead, so their category hierarchy is not hidden behind five tabs.
-    property string compactPresentation: "bottomBar" // bottomBar | drawer
+    // can open a temporary expanded rail for categories rather than falling
+    // back to the M3 Expressive-deprecated navigation drawer. "drawer" stays
+    // accepted as the established API spelling for this compact presentation.
+    property string compactPresentation: "bottomBar" // bottomBar | drawer (modal rail)
     property bool windowResizeActive: false
     property bool preferPersistentDrawer: false
     property string navigationVisualStyle: "standard"
 
     signal clicked(int index)
+    signal activated(var item, int index)
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
     readonly property bool isCompact: windowMetrics.isCompactWidth
     readonly property bool isMedium: windowMetrics.isMediumWidth
     readonly property bool isExpanded: windowMetrics.isExpandedWidth
     readonly property bool isLarge: windowMetrics.isLargeWidth
     readonly property bool isExtraLarge: windowMetrics.isExtraLargeWidth
     readonly property string windowSizeClass: windowMetrics.widthSizeClass
-    // Expanded is a stable docked pane, while Large and Extra Large share the
-    // permanent drawer width unless an application deliberately composes more
-    // drawer content through its header/footer slots.
-    readonly property real expandedRailWidth: 240 * themeGlobalScale
+    // M3 Expressive keeps one rail family across non-compact breakpoints.
+    // The expanded rail replaces the default permanent navigation drawer.
+    readonly property real expandedRailWidth: 280 * themeGlobalScale
     readonly property real drawerWidth: navigationVisualStyle === "settings"
                                         ? MeoTheme.settingsSidebarWidth
                                         : 280 * themeGlobalScale
     readonly property bool usesPersistentDrawer: preferPersistentDrawer
                                                  && (isExpanded || isLarge || isExtraLarge)
+    readonly property bool usesExpandedRail: !usesPersistentDrawer
+                                             && (isExpanded || isLarge || isExtraLarge)
     readonly property int compactDirectCount: Math.min(model.length,
                                                        Math.max(1, compactNavigationLimit - (model.length > compactNavigationLimit ? 1 : 0)))
     readonly property bool hasCompactOverflow: model.length > compactDirectCount
@@ -60,17 +66,35 @@ Item {
     readonly property bool motionEnabled: !MeoTheme.reduceMotion && !windowResizeActive
 
     implicitWidth: isCompact ? (parent ? parent.width : 360 * themeGlobalScale)
-                             : isMedium ? 80 * themeGlobalScale
-                                        : isExpanded && !usesPersistentDrawer ? expandedRailWidth
-                                                     : drawerWidth
+                             : isMedium ? 96 * themeGlobalScale
+                                        : usesExpandedRail ? expandedRailWidth
+                                                           : drawerWidth
     implicitHeight: isCompact ? bottomNavigation.implicitHeight : 600 * themeGlobalScale
     width: implicitWidth
     clip: true
 
-    function select(index) {
-        if (index < 0 || index >= model.length)
+    function destinationAt(index) {
+        if (!model || index < 0 || index >= model.length)
+            return null
+        return model[index]
+    }
+
+    function syncCurrentId() {
+        const item = destinationAt(currentIndex)
+        if (!item || item.type === "header" || item.id === undefined || item.id === null)
             return
+        currentId = String(item.id)
+    }
+
+    function select(index) {
+        const item = destinationAt(index)
+        if (!item || item.type === "header" || item.enabled === false)
+            return
+        currentIndex = index
+        if (item.id !== undefined && item.id !== null)
+            currentId = String(item.id)
         clicked(index)
+        activated(item, index)
     }
 
     function openOverflow() {
@@ -85,6 +109,21 @@ Item {
 
     onAvailableWidthChanged: markResizeActive()
     onHeightChanged: markResizeActive()
+    onCurrentIndexChanged: syncCurrentId()
+    onModelChanged: syncCurrentId()
+    onCurrentIdChanged: {
+        if (currentId === "")
+            return
+        for (let index = 0; index < model.length; ++index) {
+            const item = destinationAt(index)
+            if (item && item.type !== "header" && item.id !== undefined
+                    && String(item.id) === currentId) {
+                if (currentIndex !== index)
+                    currentIndex = index
+                return
+            }
+        }
+    }
 
     Timer {
         id: resizeSettled
@@ -114,6 +153,7 @@ Item {
         visible: control.usesCompactBottomBar
         model: control.compactNavigationModel
         currentIndex: control.compactCurrentIndex
+        currentId: control.currentId
         labelType: control.labelType
         onClicked: (index) => {
             if (control.hasCompactOverflow && index === control.compactDirectCount)
@@ -128,13 +168,15 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: control.isMedium ? 80 * control.themeGlobalScale
-                                : control.isExpanded && !control.usesPersistentDrawer ? control.expandedRailWidth : 0
+        width: control.isMedium ? 96 * control.themeGlobalScale
+                                : control.usesExpandedRail ? control.expandedRailWidth : 0
         visible: width > 0
-        opacity: control.isMedium || (control.isExpanded && !control.usesPersistentDrawer) ? 1 : 0
+        opacity: control.isMedium || control.usesExpandedRail ? 1 : 0
         model: control.model
         currentIndex: control.currentIndex
-        isExpanded: control.isExpanded
+        currentId: control.currentId
+        isExpanded: control.usesExpandedRail
+        expandedWidth: control.expandedRailWidth
         resizeInstantly: control.windowResizeActive
         header: control.header
         footer: control.footer
@@ -160,11 +202,12 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        width: control.usesPersistentDrawer || control.isLarge || control.isExtraLarge ? control.drawerWidth : 0
+        width: control.usesPersistentDrawer ? control.drawerWidth : 0
         visible: width > 0
-        opacity: control.usesPersistentDrawer || control.isLarge || control.isExtraLarge ? 1 : 0
+        opacity: control.usesPersistentDrawer ? 1 : 0
         model: control.model
         currentIndex: control.currentIndex
+        currentId: control.currentId
         header: control.header
         footer: control.footer
         visualStyle: control.navigationVisualStyle
@@ -184,14 +227,17 @@ Item {
         }
     }
 
-    MeoNavigationDrawerModal {
+    MeoNavigationRailModal {
         id: overflowDrawer
+        objectName: "meoNavigationSuiteOverflowRail"
         model: control.model
         currentIndex: control.currentIndex
+        currentId: control.currentId
         header: control.header
+        footer: control.footer
+        closeOnDestination: true
         onClicked: (index) => {
             control.select(index)
-            overflowDrawer.close()
         }
     }
 }

@@ -33,6 +33,9 @@ Usage: tools/run-showcase-linux.sh [options] [-- <MeoShowcaseDemo arguments>]
 
 Arguments after -- are passed to MeoShowcaseDemo. A relative --screenshot path
 is placed in the selected validation directory by the application.
+
+Useful Showcase arguments include `--page=N`, `--component=PublicExport`,
+`--light`/`--dark`, and `--screenshot=name.png`.
 EOF
 }
 

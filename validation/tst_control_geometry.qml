@@ -52,11 +52,24 @@ Item {
         }
 
         function test_iconButtonTargetScale() {
-            compare(iconXs.implicitWidth, MeoTheme.iconButtonSizeXS)
-            compare(iconS.implicitWidth, MeoTheme.iconButtonSizeS)
-            compare(iconM.implicitWidth, MeoTheme.iconButtonSizeM)
-            compare(iconL.implicitWidth, MeoTheme.iconButtonSizeL)
-            compare(iconXl.implicitWidth, MeoTheme.iconButtonSizeXL)
+            compare(iconXs.implicitWidth, Math.max(MeoTheme.iconButtonSizeXS, 48 * MeoTheme.globalScale))
+            compare(iconS.implicitWidth, Math.max(MeoTheme.iconButtonSizeS, 48 * MeoTheme.globalScale))
+            compare(iconM.implicitWidth, Math.max(MeoTheme.iconButtonSizeM, 48 * MeoTheme.globalScale))
+            compare(iconL.implicitWidth, Math.max(MeoTheme.iconButtonSizeL, 48 * MeoTheme.globalScale))
+            compare(iconXl.implicitWidth, Math.max(MeoTheme.iconButtonSizeXL, 48 * MeoTheme.globalScale))
+        }
+
+        function test_iconButtonExpressiveWidths() {
+            iconS.widthOption = "narrow"
+            compare(iconS.containerWidth, 32 * MeoTheme.globalScale)
+            iconS.widthOption = "wide"
+            compare(iconS.containerWidth, 52 * MeoTheme.globalScale)
+            iconS.widthOption = "uniform"
+            compare(iconS.containerWidth, 40 * MeoTheme.globalScale)
+            compare(iconXs.iconSize, 20)
+            compare(iconS.iconSize, 24)
+            compare(iconL.iconSize, 32)
+            compare(iconXl.iconSize, 40)
         }
 
         function test_surfaceRole() {

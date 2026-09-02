@@ -8,43 +8,69 @@ Frame {
 
     property string type: "elevated" // "elevated" | "filled" | "outlined"
     property int level: type === "elevated" ? 1 : 0
-    property real radius: (typeof MeoTheme !== "undefined" && typeof MeoTheme.cardRadius !== "undefined") ? MeoTheme.cardRadius : 20 * themeGlobalScale
+    property real radius: MeoTheme.cardRadius
     property string shape: "rect"
     property bool interactive: false
     property bool selected: false
-    property bool bouncy: true
+    // Baseline M3 cards use state/elevation feedback rather than a scale
+    // transform. Keep the earlier MeoUI treatment available as an opt-in.
+    property bool bouncy: false
     property bool compact: false
 
     signal clicked()
 
-    readonly property bool isDarkMode: (typeof MeoTheme !== "undefined" && typeof MeoTheme.isDarkMode !== "undefined") ? MeoTheme.isDarkMode : false
-    readonly property color themeSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surface !== "undefined") ? MeoTheme.surface : "#FFFBFE"
-    readonly property color themeSurfaceContainerLow: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerLow !== "undefined") ? MeoTheme.surfaceContainerLow : "#F7F2FA"
-    readonly property color themeSurfaceContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainer !== "undefined") ? MeoTheme.surfaceContainer : "#F3EDF7"
-    readonly property color themeSurfaceContainerHigh: (typeof MeoTheme !== "undefined" && typeof MeoTheme.surfaceContainerHigh !== "undefined") ? MeoTheme.surfaceContainerHigh : "#ECE6F0"
-    readonly property color themePrimary: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primary !== "undefined") ? MeoTheme.primary : "#6750A4"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== "undefined" && typeof MeoTheme.primaryContainer !== "undefined") ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnSurface: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOutlineVariant: (typeof MeoTheme !== "undefined" && typeof MeoTheme.outlineVariant !== "undefined") ? MeoTheme.outlineVariant : "#CAC4D0"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== "undefined" && typeof MeoTheme.globalScale !== "undefined") ? MeoTheme.globalScale : 1.0
-    readonly property int motionFast: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationState !== "undefined") ? MeoTheme.motionDurationState : 100
-    readonly property int motionShape: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationShapeSettle !== "undefined") ? MeoTheme.motionDurationShapeSettle : 220
+    readonly property bool isDarkMode: MeoTheme.isDarkMode
+    readonly property color themeSurface: MeoTheme.surface
+    readonly property color themeSurfaceVariant: MeoTheme.surfaceVariant
+    readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeSurfaceContainerHighest: MeoTheme.surfaceContainerHighest
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeOutlineVariant: MeoTheme.outlineVariant
+    readonly property color themeShadow: MeoTheme.shadow
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionFast: MeoTheme.motionDurationState
+    readonly property int motionShape: MeoTheme.motionDurationShapeSettle
+    readonly property bool reducedMotion: MeoTheme.reduceMotion
 
     readonly property real effectiveRadius: compact ? Math.min(radius, 20 * themeGlobalScale) : radius
+    function compositeColor(foreground, opacity, background) {
+        // AndroidX resolves disabled Card tokens by compositing a translucent
+        // token over the card surface. Theme colors are opaque, so the result
+        // is an opaque color suitable for MeoShape and MultiEffect.
+        return Qt.rgba(foreground.r * opacity + background.r * (1 - opacity),
+                       foreground.g * opacity + background.g * (1 - opacity),
+                       foreground.b * opacity + background.b * (1 - opacity),
+                       1)
+    }
     readonly property color containerColor: {
         if (selected) return themePrimaryContainer
-        if (type === "filled") return themeSurfaceContainerHigh
+        if (!enabled) {
+            if (type === "filled")
+                return compositeColor(themeSurfaceVariant, MeoTheme.disabledContentOpacity, themeSurfaceContainerHighest)
+            if (type === "elevated")
+                return compositeColor(themeSurface, MeoTheme.disabledContentOpacity, themeSurface)
+            return themeSurface
+        }
+        if (type === "filled") return themeSurfaceContainerHighest
         if (type === "elevated") return themeSurfaceContainerLow
         return themeSurface
     }
     readonly property real elevation: {
-        if (type !== "elevated" || !enabled) return 0
-        if (interactive && hitArea.pressed) return 0
-        if (interactive && hitArea.containsMouse) return 2
-        return Math.max(0, Math.min(2, level))
+        if (type === "elevated") {
+            const baseElevation = Math.max(0, level) * themeGlobalScale
+            if (interactive && enabled && hitArea.containsMouse)
+                return Math.max(2 * themeGlobalScale, baseElevation)
+            return baseElevation
+        }
+        if (interactive && enabled && hitArea.containsMouse)
+            return 1 * themeGlobalScale
+        return 0
     }
 
-    padding: (compact ? 12 : 20) * themeGlobalScale
+    padding: (compact ? 12 : 16) * themeGlobalScale
     activeFocusOnTab: interactive
     Accessible.role: interactive ? Accessible.Button : Accessible.Pane
     Accessible.focusable: interactive
@@ -63,6 +89,7 @@ Frame {
     background: Item {
         MeoShape {
             id: shapeBg
+            objectName: "meoCardShape"
             anchors.fill: parent
             type: control.shape
             radius: {
@@ -73,13 +100,19 @@ Frame {
             color: control.containerColor
             strokeColor: {
                 if (control.selected) return control.themePrimary
-                if (control.type === "outlined") return control.themeOutlineVariant
+                if (control.type === "outlined") {
+                    if (!control.enabled)
+                        return control.compositeColor(control.themeOutline,
+                                                      MeoTheme.disabledContainerOpacity,
+                                                      control.themeSurfaceContainerLow)
+                    return control.themeOutlineVariant
+                }
                 return "transparent"
             }
             strokeWidth: control.selected ? 2 * control.themeGlobalScale
                                           : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
-            scale: control.interactive && control.bouncy ? (hitArea.pressed ? 0.985 : 1.0) : 1.0
+            scale: control.interactive && control.bouncy && !control.reducedMotion ? (hitArea.pressed ? 0.985 : 1.0) : 1.0
 
             layer.enabled: control.visible && control.elevation > 0
             layer.effect: MultiEffect {
@@ -87,7 +120,7 @@ Frame {
                 shadowBlur: control.elevation * 0.12
                 shadowVerticalOffset: control.elevation * control.themeGlobalScale
                 shadowOpacity: control.isDarkMode ? 0.18 : 0.12
-                shadowColor: Qt.rgba(0, 0, 0, 0.22)
+                shadowColor: control.themeShadow
             }
 
             MeoStateLayer {
@@ -103,17 +136,22 @@ Frame {
                 color: control.themeOnSurface
             }
 
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color {
+                enabled: !control.reducedMotion
+                ColorAnimation { duration: control.motionFast }
+            }
             Behavior on radius {
+                enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionShape
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
             Behavior on scale {
+                enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionFast
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
         }

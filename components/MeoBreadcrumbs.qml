@@ -8,22 +8,32 @@ Control {
     // 🌟 核心属性
     property var model: [] // Array of { label: "", value: any, icon: "" }
     property string separator: "chevron_right"
+    // -1 maintains the normal breadcrumb convention: the final item is the
+    // current, non-interactive page. Hosts can point at an earlier item while
+    // building a path progressively.
+    property int currentIndex: -1
     spacing: 4 * themeGlobalScale
 
     signal clicked(int index, var data)
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    readonly property var fontLabelLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.labelLarge !== 'undefined') ? MeoTheme.labelLarge : { "size": 14, "weight": Font.Medium }
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontLabelLarge: MeoTheme.labelLarge
 
     implicitHeight: 48 * themeGlobalScale
     implicitWidth: contentRow.implicitWidth + leftPadding + rightPadding
 
     padding: 8 * themeGlobalScale
+
+    function resolvedCurrentIndex() {
+        return currentIndex >= 0 && currentIndex < model.length ? currentIndex : model.length - 1
+    }
+
+    function crumbEnabled(item) {
+        return !item || item.enabled === undefined || item.enabled
+    }
 
     contentItem: Row {
         id: contentRow
@@ -33,27 +43,38 @@ Control {
         Repeater {
             model: control.model
             delegate: Row {
+                id: crumbDelegate
                 required property int index
                 required property var modelData
                 spacing: control.spacing
                 anchors.verticalCenter: parent.verticalCenter
 
+                readonly property bool isCurrent: index === control.resolvedCurrentIndex()
+                readonly property bool isEnabled: control.crumbEnabled(modelData)
+
                 // Breadcrumb Item
                 Item {
+                    id: crumbTarget
                     width: breadcrumbRow.implicitWidth + 16 * control.themeGlobalScale
                     height: 32 * control.themeGlobalScale
                     anchors.verticalCenter: parent.verticalCenter
+                    activeFocusOnTab: crumbDelegate.isEnabled && !crumbDelegate.isCurrent
+                    opacity: crumbDelegate.isEnabled ? 1.0 : MeoTheme.disabledContentOpacity
+                    objectName: "meoBreadcrumb_" + index
 
-                    Rectangle {
-                        id: stateLayer
+                    Accessible.role: crumbDelegate.isCurrent ? Accessible.StaticText : Accessible.Link
+                    Accessible.name: modelData.label || ""
+                    Accessible.focusable: activeFocusOnTab
+
+                    MeoStateLayer {
                         anchors.fill: parent
                         radius: 8 * control.themeGlobalScale
-                        color: {
-                            if (mouseArea.pressed) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.12)
-                            if (mouseArea.containsMouse) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
-                            return "transparent"
-                        }
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                        hovered: mouseArea.containsMouse
+                        pressed: mouseArea.pressed
+                        focused: crumbTarget.activeFocus
+                        pressX: mouseArea.mouseX
+                        pressY: mouseArea.mouseY
+                        color: control.themePrimary
                     }
 
                     Row {
@@ -64,15 +85,21 @@ Control {
                         MeoIcon {
                             icon: modelData.icon || ""
                             visible: icon !== ""
-                            size: 18
-                            color: index === control.model.length - 1 ? control.themeOnSurface : control.themeOnSurfaceVariant
+                            size: 18 * control.themeGlobalScale
+                            color: crumbDelegate.isCurrent ? control.themeOnSurface
+                                                            : crumbDelegate.isEnabled ? control.themePrimary
+                                                                                     : control.themeOnSurfaceVariant
                         }
 
                         Text {
                             text: modelData.label
+                            textFormat: Text.PlainText
+                            font.family: MeoTheme.typefacePlain
                             font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
-                            font.weight: index === control.model.length - 1 ? Font.Bold : control.fontLabelLarge.weight
-                            color: index === control.model.length - 1 ? control.themeOnSurface : control.themeOnSurfaceVariant
+                            font.weight: crumbDelegate.isCurrent ? Font.Bold : control.fontLabelLarge.weight
+                            color: crumbDelegate.isCurrent ? control.themeOnSurface
+                                                            : crumbDelegate.isEnabled ? control.themePrimary
+                                                                                     : control.themeOnSurfaceVariant
                         }
                     }
 
@@ -80,8 +107,17 @@ Control {
                         id: mouseArea
                         anchors.fill: parent
                         hoverEnabled: true
-                        onClicked: control.clicked(index, modelData)
+                        enabled: crumbDelegate.isEnabled && !crumbDelegate.isCurrent
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                        onClicked: {
+                            parent.forceActiveFocus(Qt.MouseFocusReason)
+                            control.clicked(index, modelData)
+                        }
                     }
+
+                    Keys.onReturnPressed: if (mouseArea.enabled) control.clicked(index, modelData)
+                    Keys.onEnterPressed: if (mouseArea.enabled) control.clicked(index, modelData)
+                    Keys.onSpacePressed: if (mouseArea.enabled) control.clicked(index, modelData)
                 }
 
                 // Separator

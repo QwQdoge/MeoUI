@@ -50,14 +50,41 @@ Flickable {
         availableHeight: control.height
     }
 
+    // Keep the conversion independently testable. Pixel deltas come from a
+    // precision touchpad and must stay untouched; angle deltas are mouse-wheel
+    // notches and follow the Qt/KDE wheel-line preference.
+    function wheelDeltaFor(pixelX, pixelY, angleX, angleY) {
+        const pixelDelta = pixelY !== 0 ? pixelY : pixelX
+        const angleDelta = angleY !== 0 ? angleY : angleX
+        return pixelDelta !== 0
+                ? pixelDelta
+                : (angleDelta / 120.0) * wheelHandler.systemWheelStep
+    }
+
+    function scrollForWheelDelta(delta) {
+        if (delta === 0)
+            return contentY
+        const maximumContentY = Math.max(0, contentHeight - height)
+        contentY = Math.max(0, Math.min(maximumContentY, contentY - delta))
+        return contentY
+    }
+
     WheelHandler {
         id: wheelHandler
         target: control
-        property real stepSize: 140 * control.themeGlobalScale * (typeof MeoTheme !== 'undefined' && typeof MeoTheme.scrollSpeedScale !== 'undefined' ? MeoTheme.scrollSpeedScale : 1.0)
+        // Preserve the operating system's scroll contract. Touchpads provide
+        // high-resolution pixel deltas; mouse wheels provide notches whose
+        // size follows Qt/KDE's configured wheelScrollLines value.
+        property real systemWheelStep: Math.max(1, Application.styleHints.wheelScrollLines) * 20
         onWheel: (event) => {
-            let dy = event.angleDelta.y !== 0 ? event.angleDelta.y : event.angleDelta.x
-            let scrollY = control.contentY - (dy / 120.0) * stepSize
-            control.contentY = Math.max(0, Math.min(Math.max(0, control.contentHeight - control.height), scrollY))
+            const delta = control.wheelDeltaFor(event.pixelDelta.x, event.pixelDelta.y,
+                                                event.angleDelta.x, event.angleDelta.y)
+            if (delta === 0) {
+                event.accepted = false
+                return
+            }
+            control.scrollForWheelDelta(delta)
+            event.accepted = true
         }
     }
 

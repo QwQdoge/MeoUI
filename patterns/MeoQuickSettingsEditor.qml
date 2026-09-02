@@ -58,6 +58,34 @@ Control {
         return String(tileValue(tile, "supportingText", tileValue(tile, "subtitle", "")))
     }
 
+    function tilePlacement(index) {
+        let row = 0
+        let column = 0
+        for (let i = 0; i < index; ++i) {
+            const span = Math.min(effectiveColumns, tileSpan(tiles[i]))
+            if (column + span > effectiveColumns) {
+                ++row
+                column = 0
+            }
+            column += span
+            if (column >= effectiveColumns) {
+                ++row
+                column = 0
+            }
+        }
+
+        const currentSpan = Math.min(effectiveColumns, tileSpan(tiles[index]))
+        if (column + currentSpan > effectiveColumns) {
+            ++row
+            column = 0
+        }
+        return { "row": row, "column": column }
+    }
+
+    function tileRowCount() {
+        return tiles && tiles.length > 0 ? tilePlacement(tiles.length - 1).row + 1 : 0
+    }
+
     implicitWidth: 512 * uiScale
     implicitHeight: editorContent.implicitHeight
     padding: 0
@@ -75,8 +103,11 @@ Control {
             spacing: MeoTheme.space16
 
             MeoIconButton {
-                type: "tonal"
-                size: "xl"
+                // The SystemUI customizer keeps its navigation affordance in a
+                // compact toolbar target. Do not use an expressive XL action
+                // here: it steals the title's usable width on a 512dp editor.
+                type: "standard"
+                size: "s"
                 icon.name: "arrow_back"
                 Accessible.name: qsTr("Back")
                 onClicked: control.backRequested()
@@ -86,15 +117,17 @@ Control {
                 Layout.fillWidth: true
                 text: control.title
                 typeRole: "title"
-                typeSize: "big"
+                typeSize: "medium"
                 emphasized: true
                 color: MeoTheme.contentOnSurface
                 elide: Text.ElideRight
             }
 
             MeoButton {
-                type: "filled"
-                size: "l"
+                // Undo is a secondary editor action, analogous to the reset
+                // action exposed by the SystemUI customizer toolbar.
+                type: "text"
+                size: "s"
                 icon.name: "undo"
                 text: qsTr("Undo")
                 enabled: control.undoEnabled
@@ -106,8 +139,9 @@ Control {
         MeoText {
             Layout.fillWidth: true
             text: control.subtitle
-            typeRole: "title"
-            typeSize: "medium"
+            typeRole: "body"
+            typeSize: "large"
+            emphasized: true
             color: MeoTheme.contentOnSurfaceVariant
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
@@ -115,6 +149,7 @@ Control {
 
         Rectangle {
             id: selectionFrame
+            objectName: "meoQuickSettingsSelectionFrame"
             Layout.fillWidth: true
             implicitHeight: tileGrid.implicitHeight + 2 * MeoTheme.space12
             color: control.containerColor
@@ -122,14 +157,16 @@ Control {
             border.width: control.showSelectionFrame ? MeoTheme.strokeWidthMedium : 0
             border.color: MeoTheme.primary
 
-            GridLayout {
+            Item {
                 id: tileGrid
+                objectName: "meoQuickSettingsTileGrid"
                 anchors.fill: parent
                 anchors.margins: MeoTheme.space12
-                columns: control.effectiveColumns
-                columnSpacing: MeoTheme.space8
-                rowSpacing: MeoTheme.space8
-                uniformCellWidths: true
+                readonly property real tileSpacing: MeoTheme.space8
+                readonly property real cellWidth: (width - (control.effectiveColumns - 1) * tileSpacing)
+                                                  / control.effectiveColumns
+                implicitHeight: control.tileRowCount() * 80 * control.uiScale
+                                + Math.max(0, control.tileRowCount() - 1) * tileSpacing
 
                 Repeater {
                     model: control.tiles
@@ -138,13 +175,19 @@ Control {
                         id: tileSlot
                         required property int index
                         required property var modelData
+                        objectName: "meoQuickSettingsTileSlot-" + index
                         readonly property var tile: modelData || ({})
                         readonly property int span: control.tileSpan(tile)
+                        readonly property var placement: control.tilePlacement(index)
 
-                        Layout.columnSpan: Math.min(control.effectiveColumns, span)
-                        Layout.fillWidth: true
-                        implicitHeight: 80 * control.uiScale
-                        Layout.preferredHeight: implicitHeight
+                        // Keep span placement explicit. Qt's GridLayout
+                        // cannot infer a delegate's desired width from its
+                        // anchored child, which made equal wide tiles unequal.
+                        x: placement.column * (tileGrid.cellWidth + tileGrid.tileSpacing)
+                        y: placement.row * (height + tileGrid.tileSpacing)
+                        width: span * tileGrid.cellWidth + (span - 1) * tileGrid.tileSpacing
+                        height: 80 * control.uiScale
+                        implicitWidth: (span === 2 ? 224 : 108) * control.uiScale
 
                         DropArea {
                             anchors.fill: parent

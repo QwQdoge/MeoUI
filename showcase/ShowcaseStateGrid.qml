@@ -5,9 +5,18 @@ import MeoUI
 Flow {
     id: control
 
-    property var labels: ["Normal", "Disabled", "Selected", "Error", "Loading", "Focused"]
+    // State labels are supplied by the canonical catalog entry.  Do not add a
+    // generic disabled/error/loading matrix to components that do not expose
+    // those semantics.  Five is the review ceiling for one component card;
+    // richer combinations belong in its purpose-built live sample.
+    property string stateSummary: ""
+    readonly property var labels: stateSummary.length === 0 ? [] : stateSummary.split(",")
+        .map(function(label) { return label.trim() })
+        .filter(function(label) { return label.length > 0 })
+        .slice(0, 5)
 
     width: parent ? parent.width : implicitWidth
+    height: labels.length > 0 ? childrenRect.height : 0
     spacing: MeoTheme.space8
 
     Repeater {

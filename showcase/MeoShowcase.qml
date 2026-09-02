@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
-import "pages"
 
 ApplicationWindow {
     id: window
@@ -13,6 +12,43 @@ ApplicationWindow {
     visible: true
     title: "MeoUI MD3 Expressive Showcase"
     color: MeoTheme.background
+    property string componentFilter: commandLineValue("--component=")
+
+    function commandLineValue(prefix) {
+        for (let index = 0; index < Qt.application.arguments.length; ++index) {
+            const argument = Qt.application.arguments[index]
+            if (argument.indexOf(prefix) === 0)
+                return argument.substring(prefix.length)
+        }
+        return ""
+    }
+
+    readonly property int requestedPage: {
+        const value = commandLineValue("--page=")
+        return value === "" ? 0 : Math.max(0, Math.min(categories.length - 1, Number(value)))
+    }
+
+    // Resolve a validation filter before the first page is constructed.  This
+    // prevents a transient Foundations frame from contaminating a component
+    // screenshot while still leaving normal interactive navigation untouched.
+    readonly property int initialPageIndex: {
+        if (componentFilter === "")
+            return requestedPage
+        for (let pageIndex = 0; pageIndex < categories.length; ++pageIndex) {
+            const categoryIds = categories[pageIndex].categoryIds || []
+            for (let categoryIndex = 0; categoryIndex < categoryIds.length; ++categoryIndex) {
+                const entries = catalog.categoryById(categoryIds[categoryIndex]).components
+                for (let entryIndex = 0; entryIndex < entries.length; ++entryIndex) {
+                    if (entries[entryIndex].name === componentFilter)
+                        return pageIndex
+                }
+            }
+        }
+        return requestedPage
+    }
+    ShowcaseCatalog {
+        id: catalog
+    }
     Component.onCompleted: {
         for (let index = 0; index < Qt.application.arguments.length; ++index) {
             const argument = Qt.application.arguments[index]
@@ -20,51 +56,61 @@ ApplicationWindow {
                 width = Math.max(minimumWidth, Number(argument.substring(8)))
             else if (argument.indexOf("--height=") === 0)
                 height = Math.max(minimumHeight, Number(argument.substring(9)))
-            else if (argument.indexOf("--page=") === 0)
-                appLayout.currentIndex = Math.max(0, Math.min(categories.length - 1, Number(argument.substring(7))))
+            else if (argument === "--dark")
+                MeoTheme.isDarkMode = true
+            else if (argument === "--light")
+                MeoTheme.isDarkMode = false
         }
     }
 
-    readonly property var categories: [
-        { label: "Settings & Tuner", icon: "settings" },
-        { label: "Foundations", icon: "palette" },
-        { label: "Actions", icon: "smart_button" },
-        { label: "Text Input", icon: "edit" },
-        { label: "Selection", icon: "check_box" },
-        { label: "Navigation", icon: "explore" },
-        { label: "Data Display", icon: "table_chart" },
-        { label: "Surfaces", icon: "layers" },
-        { label: "Feedback", icon: "info" },
-        { label: "Search", icon: "search" },
-        { label: "Content & Media", icon: "perm_media" },
-        { label: "Chips", icon: "label" },
-        { label: "Layouts", icon: "dashboard_customize" },
-        { label: "Expressive", icon: "auto_awesome" }
-    ]
+    readonly property var categories: catalog.navigationGroups
 
     MeoAppLayout {
         id: appLayout
         anchors.fill: parent
+        currentIndex: window.initialPageIndex
         navigationModel: window.categories
         compactNavigationLimit: 5
         safeAreaTop: 0
         safeAreaBottom: 0
 
         pages: [
-            Component { SettingsPage {} },
-            Component { ThemePage {} },
-            Component { ButtonsPage {} },
-            Component { InputsPage {} },
-            Component { SelectionPage {} },
-            Component { NavigationPage {} },
-            Component { DataTablePage {} },
-            Component { DisplayPage {} },
-            Component { FeedbackPage {} },
-            Component { WidgetsLabPage {} },
-            Component { ComponentsLabPage {} },
-            Component { PatternsPage {} },
-            Component { LayoutsLabPage {} },
-            Component { ExpressivePage {} }
+            Component {
+                ShowcaseCategoryPage {
+                    categoryId: "foundations"
+                    categoryIds: catalog.navigationGroupById("foundations").categoryIds
+                    navigationTitle: catalog.navigationGroupById("foundations").label
+                    navigationSubtitle: catalog.navigationGroupById("foundations").subtitle
+                    componentFilter: window.componentFilter
+                }
+            },
+            Component {
+                ShowcaseCategoryPage {
+                    categoryId: "actions"
+                    categoryIds: catalog.navigationGroupById("controls").categoryIds
+                    navigationTitle: catalog.navigationGroupById("controls").label
+                    navigationSubtitle: catalog.navigationGroupById("controls").subtitle
+                    componentFilter: window.componentFilter
+                }
+            },
+            Component {
+                ShowcaseCategoryPage {
+                    categoryId: "navigation"
+                    categoryIds: catalog.navigationGroupById("composites").categoryIds
+                    navigationTitle: catalog.navigationGroupById("composites").label
+                    navigationSubtitle: catalog.navigationGroupById("composites").subtitle
+                    componentFilter: window.componentFilter
+                }
+            },
+            Component {
+                ShowcaseCategoryPage {
+                    categoryId: "search"
+                    categoryIds: catalog.navigationGroupById("features").categoryIds
+                    navigationTitle: catalog.navigationGroupById("features").label
+                    navigationSubtitle: catalog.navigationGroupById("features").subtitle
+                    componentFilter: window.componentFilter
+                }
+            }
         ]
     }
 }

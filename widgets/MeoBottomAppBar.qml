@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import MeoUI
 
 Rectangle {
@@ -9,52 +8,47 @@ Rectangle {
     property Component fab: null
     property var navigationIcons: []
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themeSurfaceContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surfaceContainer !== 'undefined') ? MeoTheme.surfaceContainer : "#F3EDF7"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-
-    width: parent ? parent.width : 360 * themeGlobalScale
-    height: 80 * themeGlobalScale
-    color: themeSurfaceContainer
-    radius: 20 * themeGlobalScale
+    // AndroidX BottomAppBarTokens: 80dp SurfaceContainer, CornerNone. This
+    // legacy baseline is intentionally distinct from the M3 Expressive
+    // MeoDockedToolbar replacement.
+    width: parent ? parent.width : 360 * MeoTheme.globalScale
+    height: 80 * MeoTheme.globalScale
+    color: MeoTheme.surfaceContainer
+    radius: MeoTheme.shapeNone
     clip: true
 
     Item {
         anchors.fill: parent
-        anchors.margins: 16 * control.themeGlobalScale
+        // BottomAppBarDefaults.ContentPadding resolves to 4dp around a 48dp
+        // touch target. The optional FAB itself has a 12dp end inset.
+        anchors.leftMargin: 4 * MeoTheme.globalScale
+        anchors.rightMargin: 4 * MeoTheme.globalScale
+        anchors.topMargin: 4 * MeoTheme.globalScale
+        anchors.bottomMargin: 4 * MeoTheme.globalScale
 
-        Rectangle {
-            id: actionsGroupSurface
-            width: navigationRow.implicitWidth + 8 * control.themeGlobalScale
-            height: 48 * control.themeGlobalScale
+        Row {
+            id: navigationRow
             anchors.left: parent.left
+            anchors.right: control.fab ? fabSlot.left : parent.right
             anchors.verticalCenter: parent.verticalCenter
-            radius: height / 2
-            color: Qt.rgba(control.themeOnSurfaceVariant.r, control.themeOnSurfaceVariant.g, control.themeOnSurfaceVariant.b, 0.08)
+            spacing: 0
 
-            Row {
-                id: navigationRow
-                anchors.centerIn: parent
-            spacing: 12 * control.themeGlobalScale
+            Repeater {
+                model: control.navigationIcons
+                delegate: Item {
+                    width: 48 * MeoTheme.globalScale
+                    height: 48 * MeoTheme.globalScale
 
-                Repeater {
-                    model: control.navigationIcons
-                    delegate: Item {
-                        width: 48 * control.themeGlobalScale
-                        height: 48 * control.themeGlobalScale
+                    Loader {
+                        anchors.centerIn: parent
+                        sourceComponent: typeof modelData === "string" ? null : modelData
+                    }
 
-                        Loader {
-                            anchors.centerIn: parent
-                            sourceComponent: typeof modelData === "string" ? null : modelData
-                        }
-
-                        MeoIconButton {
-                            anchors.centerIn: parent
-                            visible: typeof modelData === "string"
-                            icon.name: visible ? modelData : ""
-                            type: "standard"
-                        }
+                    MeoIconButton {
+                        anchors.centerIn: parent
+                        visible: typeof modelData === "string"
+                        icon.name: visible ? modelData : ""
+                        type: "standard"
                     }
                 }
             }
@@ -62,10 +56,13 @@ Rectangle {
 
         Item {
             id: fabSlot
-            width: Math.max(56 * control.themeGlobalScale, fabLoader.implicitWidth)
-            height: Math.max(56 * control.themeGlobalScale, fabLoader.implicitHeight)
+            visible: control.fab !== null
+            width: Math.max(56 * MeoTheme.globalScale, fabLoader.implicitWidth)
+            height: Math.max(56 * MeoTheme.globalScale, fabLoader.implicitHeight)
             anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: 12 * MeoTheme.globalScale
+            anchors.top: parent.top
+            anchors.topMargin: 8 * MeoTheme.globalScale
 
             Loader {
                 id: fabLoader

@@ -12,6 +12,9 @@ Item {
     property int currentIndex: 0
     property int compactNavigationLimit: 5
     property bool windowResizeActive: false
+    // Kept only for applications that explicitly preserve a legacy drawer.
+    // New layouts use the expanded navigation rail at every wide breakpoint.
+    property bool useLegacyDrawer: false
 
     // 🌟 Safe Area Insets (Edge-to-Edge support)
     property real safeAreaTop: 0
@@ -29,7 +32,8 @@ Item {
     readonly property bool isExpanded: windowMetrics.isExpandedWidth
     readonly property bool isLarge: windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
     readonly property string windowSizeClass: windowMetrics.widthSizeClass
-    readonly property real expandedDrawerWidth: 280 * themeGlobalScale
+    readonly property real expandedRailWidth: 280 * themeGlobalScale
+    readonly property bool usesExpandedRail: !useLegacyDrawer && (isExpanded || isLarge)
     readonly property var compactNavigationModel: navigationModel.slice(0, Math.min(compactNavigationLimit, navigationModel.length))
 
     onWidthChanged: {
@@ -59,17 +63,19 @@ Item {
     Row {
         anchors.fill: parent
 
-        // 1. Navigation Rail (Medium)
+        // 1. Collapsed rail on medium; expanded rail on all wider layouts.
         MeoNavigationRail {
             id: navRail
-            width: control.isMedium ? 80 * control.themeGlobalScale : control.isExpanded ? 256 * control.themeGlobalScale : 0
+            width: control.isMedium ? 96 * control.themeGlobalScale
+                                    : control.usesExpandedRail ? control.expandedRailWidth : 0
             height: parent.height
             model: control.navigationModel
             currentIndex: control.currentIndex
             visible: width > 0
-            enabled: control.isMedium || control.isExpanded
-            opacity: control.isMedium || control.isExpanded ? 1 : 0
-            isExpanded: control.isExpanded
+            enabled: control.isMedium || control.usesExpandedRail
+            opacity: control.isMedium || control.usesExpandedRail ? 1 : 0
+            isExpanded: control.usesExpandedRail
+            expandedWidth: control.expandedRailWidth
             resizeInstantly: control.windowResizeActive
             header: control.accountHeader ? accountHeaderWrapper : null
             onClicked: (index) => { control.currentIndex = index }
@@ -83,16 +89,16 @@ Item {
             }
         }
 
-        // 2. Navigation Drawer (Expanded)
+        // 2. Legacy drawer compatibility; it is never selected by default.
         MeoNavigationDrawer {
             id: navDrawer
-            width: control.isLarge ? control.expandedDrawerWidth : 0
+            width: control.useLegacyDrawer && control.isLarge ? 280 * control.themeGlobalScale : 0
             height: parent.height
             model: control.navigationModel
             currentIndex: control.currentIndex
             visible: width > 0
-            enabled: control.isLarge
-            opacity: control.isLarge ? 1 : 0
+            enabled: control.useLegacyDrawer && control.isLarge
+            opacity: control.useLegacyDrawer && control.isLarge ? 1 : 0
             header: control.accountHeader
             onClicked: (index) => { control.currentIndex = index }
 

@@ -12,6 +12,9 @@ Item {
     property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
     property date focusedDate: selectedDate
     property bool interactive: true
+    // Consumers with their own M3 picker header can reuse the accessible
+    // weekday/day grid without duplicating the calendar implementation.
+    property bool showHeader: true
     property int firstDayOfWeek: Qt.locale().firstDayOfWeek
     property var _dayItems: []
     property int _dayItemsRevision: 0
@@ -26,7 +29,7 @@ Item {
     signal dateSelected(date selected)
 
     implicitWidth: 300 * MeoTheme.globalScale
-    implicitHeight: 324 * MeoTheme.globalScale
+    implicitHeight: (showHeader ? 324 : 268) * MeoTheme.globalScale
 
     onSelectedDateChanged: {
         const moveActiveFocus = focusedDayItem && focusedDayItem.activeFocus
@@ -110,6 +113,8 @@ Item {
     }
 
     function moveMonth(offset) {
+        if (!interactive)
+            return
         const targetDisplay = new Date(displayDate.getFullYear(), displayDate.getMonth() + offset, 1)
         const focus = normalizedDate(focusedDate)
         const lastDay = new Date(targetDisplay.getFullYear(), targetDisplay.getMonth() + 1, 0).getDate()
@@ -123,6 +128,8 @@ Item {
         spacing: MeoTheme.space8
 
         RowLayout {
+            visible: control.showHeader
+            Layout.preferredHeight: control.showHeader ? implicitHeight : 0
             Layout.fillWidth: true
 
             MeoText {
@@ -131,13 +138,14 @@ Item {
                 typeRole: "title"
                 typeSize: "medium"
                 emphasized: true
-                color: MeoTheme.onSurface
+                color: MeoTheme.contentOnSurface
             }
 
             MeoIconButton {
                 type: "standard"
                 size: "s"
                 icon.name: "chevron_left"
+                enabled: control.interactive
                 Accessible.name: qsTr("Previous month")
                 onClicked: control.moveMonth(-1)
             }
@@ -146,6 +154,7 @@ Item {
                 type: "standard"
                 size: "s"
                 icon.name: "chevron_right"
+                enabled: control.interactive
                 Accessible.name: qsTr("Next month")
                 onClicked: control.moveMonth(1)
             }
@@ -169,7 +178,7 @@ Item {
                     typeSize: "small"
                     emphasized: true
                     horizontalAlignment: Text.AlignHCenter
-                    color: MeoTheme.onSurfaceVariant
+                    color: MeoTheme.contentOnSurfaceVariant
                 }
             }
         }
@@ -226,13 +235,23 @@ Item {
                     background: Item {
                         MeoShape {
                             id: daySurface
+                            objectName: "meoMonthCalendarDaySurface-" + dayButton.index
                             anchors.centerIn: parent
-                            width: Math.min(parent.width, 36 * MeoTheme.globalScale)
+                            // DatePickerModalTokens fixes both the date container and
+                            // its state layer at 40dp.  The day grid may shrink this on
+                            // deliberately narrow hosts, but its normal visual target
+                            // remains the M3 40dp circle.
+                            width: Math.min(parent.width, 40 * MeoTheme.globalScale)
                             height: width
                             type: "circle"
                             color: dayButton.isSelected ? MeoTheme.primary
-                                  : (dayButton.isToday ? MeoTheme.secondaryContainer
-                                                       : Qt.rgba(MeoTheme.surface.r, MeoTheme.surface.g, MeoTheme.surface.b, 0))
+                                  : Qt.rgba(MeoTheme.surface.r, MeoTheme.surface.g, MeoTheme.surface.b, 0)
+                            // M3 distinguishes today from a selection: it uses a
+                            // 1dp primary outline rather than a tonal filled circle.
+                            strokeColor: dayButton.isToday && !dayButton.isSelected
+                                         ? MeoTheme.primary : "transparent"
+                            strokeWidth: dayButton.isToday && !dayButton.isSelected
+                                         ? Math.max(1, MeoTheme.strokeWidthThin) : 0
 
                             MeoStateLayer {
                                 anchors.fill: parent
@@ -240,7 +259,7 @@ Item {
                                 hovered: dayButton.hovered
                                 pressed: dayButton.pressed
                                 focused: dayButton.visualFocus
-                                color: dayButton.isSelected ? MeoTheme.onPrimary : MeoTheme.onSurface
+                                color: dayButton.isSelected ? MeoTheme.contentOnPrimary : MeoTheme.contentOnSurface
                             }
                         }
                     }
@@ -252,8 +271,10 @@ Item {
                         emphasized: dayButton.isSelected || dayButton.isToday
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-                        color: dayButton.isSelected ? MeoTheme.onPrimary
-                              : (dayButton.isCurrentMonth ? MeoTheme.onSurface : MeoTheme.onSurfaceVariant)
+                        color: dayButton.isSelected ? MeoTheme.contentOnPrimary
+                              : (dayButton.isToday ? MeoTheme.primary
+                                                   : (dayButton.isCurrentMonth ? MeoTheme.contentOnSurface
+                                                                               : MeoTheme.contentOnSurfaceVariant))
                         opacity: dayButton.isCurrentMonth ? 1 : 0.55
                     }
                 }

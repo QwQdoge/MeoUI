@@ -4,28 +4,33 @@ import MeoUI
 
 MeoCard {
     id: control
-    type: "elevated"
-    padding: 0
+    type: "filled"
+    padding: 24 * MeoTheme.globalScale
 
     // 🌟 核心属性
     property date startDate: new Date(0) // Default to invalid/epoch
     property date endDate: new Date(0)
     property date displayDate: new Date()
+    property bool interactive: true
+    property string headline: "Select range"
+
+    signal rangeSelected(date start, date end)
+    signal accepted(date start, date end)
+    signal rejected()
 
     readonly property bool hasStartDate: startDate.getTime() > 0
     readonly property bool hasEndDate: endDate.getTime() > 0
 
-    // 🌟 作用域与主题安全防御
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnPrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimary !== 'undefined') ? MeoTheme.contentOnPrimary : "#FFFFFF"
-    readonly property color themePrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primaryContainer !== 'undefined') ? MeoTheme.primaryContainer : "#EADDFF"
-    readonly property color themeOnPrimaryContainer: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnPrimaryContainer !== 'undefined') ? MeoTheme.contentOnPrimaryContainer : "#21005D"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnPrimary: MeoTheme.contentOnPrimary
+    readonly property color themePrimaryContainer: MeoTheme.primaryContainer
+    readonly property color themeOnPrimaryContainer: MeoTheme.contentOnPrimaryContainer
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
-    implicitWidth: 328 * themeGlobalScale
-    implicitHeight: 600 * themeGlobalScale
+    implicitWidth: 376 * themeGlobalScale
+    implicitHeight: 640 * themeGlobalScale
 
     onStartDateChanged: {
         if (startInput)
@@ -38,8 +43,7 @@ MeoCard {
 
     Column {
         anchors.fill: parent
-        anchors.margins: 12 * control.themeGlobalScale
-        spacing: 12 * control.themeGlobalScale
+        spacing: 16 * control.themeGlobalScale
 
         // Header: Selection Summary
         Column {
@@ -49,7 +53,7 @@ MeoCard {
             padding: 12 * control.themeGlobalScale
 
             Text {
-                text: "Select range"
+                text: control.headline
                 font.pixelSize: 12 * control.themeGlobalScale
                 font.weight: Font.Medium
                 color: control.themeOnSurfaceVariant
@@ -87,6 +91,7 @@ MeoCard {
                     label: "Start"
                     format: "yyyy-MM-dd"
                     allowEmpty: true
+                    enabled: control.interactive
                     value: control.hasStartDate ? control.startDate : new Date(0)
                     onDateAccepted: function(date) { setRangeDate(true, date) }
                     onCleared: control.startDate = new Date(0)
@@ -99,6 +104,7 @@ MeoCard {
                     label: "End"
                     format: "yyyy-MM-dd"
                     allowEmpty: true
+                    enabled: control.interactive
                     value: control.hasEndDate ? control.endDate : new Date(0)
                     onDateAccepted: function(date) { setRangeDate(false, date) }
                     onCleared: control.endDate = new Date(0)
@@ -113,14 +119,31 @@ MeoCard {
             width: parent.width
             height: 48 * control.themeGlobalScale
 
-            Text {
-                text: Qt.formatDate(control.displayDate, "MMMM yyyy")
-                font.pixelSize: 14 * control.themeGlobalScale
-                font.weight: Font.Medium
-                color: control.themeOnSurfaceVariant
-                anchors.verticalCenter: parent.verticalCenter
+            Row {
                 anchors.left: parent.left
-                anchors.leftMargin: 12 * control.themeGlobalScale
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4 * control.themeGlobalScale
+
+                MeoButton {
+                    id: monthButton
+                    text: Qt.formatDate(control.displayDate, "MMMM")
+                    type: "text"
+                    size: "s"
+                    icon.name: "arrow_drop_down"
+                    enabled: control.interactive
+                    Accessible.name: qsTr("Select month")
+                    onClicked: monthMenu.openAt(monthButton, 0, monthButton.height)
+                }
+                MeoButton {
+                    id: yearButton
+                    text: control.displayDate.getFullYear().toString()
+                    type: "text"
+                    size: "s"
+                    icon.name: "arrow_drop_down"
+                    enabled: control.interactive
+                    Accessible.name: qsTr("Select year")
+                    onClicked: yearMenu.openAt(yearButton, 0, yearButton.height)
+                }
             }
 
             Row {
@@ -129,6 +152,7 @@ MeoCard {
 
                 MeoIconButton {
                     icon.name: "chevron_left"
+                    enabled: control.interactive
                     onClicked: {
                         let d = new Date(control.displayDate)
                         d.setMonth(d.getMonth() - 1)
@@ -137,6 +161,7 @@ MeoCard {
                 }
                 MeoIconButton {
                     icon.name: "chevron_right"
+                    enabled: control.interactive
                     onClicked: {
                         let d = new Date(control.displayDate)
                         d.setMonth(d.getMonth() + 1)
@@ -229,11 +254,31 @@ MeoCard {
 
                     MouseArea {
                         anchors.fill: parent
+                        enabled: control.interactive
                         onClicked: {
                             handleDateClick(dateInfo.date)
                         }
                     }
                 }
+            }
+        }
+
+        Row {
+            width: parent.width
+            layoutDirection: Qt.RightToLeft
+            spacing: 8 * control.themeGlobalScale
+
+            MeoButton {
+                text: qsTr("OK")
+                type: "text"
+                enabled: control.interactive && control.hasStartDate && control.hasEndDate
+                onClicked: control.accepted(control.startDate, control.endDate)
+            }
+            MeoButton {
+                text: qsTr("Cancel")
+                type: "text"
+                enabled: control.interactive
+                onClicked: control.rejected()
             }
         }
     }
@@ -264,6 +309,8 @@ MeoCard {
     }
 
     function handleDateClick(date) {
+        if (!interactive)
+            return
         if (!control.hasStartDate || (control.hasStartDate && control.hasEndDate)) {
             control.startDate = date
             control.endDate = new Date(0)
@@ -278,9 +325,12 @@ MeoCard {
                 control.endDate = date
             }
         }
+        control.rangeSelected(control.startDate, control.endDate)
     }
 
     function setRangeDate(isStart, date) {
+        if (!interactive)
+            return
         if (isStart) {
             if (control.hasEndDate && control.endDate.getTime() < date.getTime()) {
                 control.startDate = control.endDate
@@ -297,5 +347,54 @@ MeoCard {
             }
         }
         control.displayDate = isStart ? control.startDate : control.endDate
+        control.rangeSelected(control.startDate, control.endDate)
+    }
+
+    function chooseMonth(month) {
+        if (interactive)
+            displayDate = new Date(displayDate.getFullYear(), month, 1)
+    }
+
+    function chooseYear(year) {
+        if (interactive)
+            displayDate = new Date(year, displayDate.getMonth(), 1)
+    }
+
+    function monthEntries() {
+        const months = []
+        for (let month = 0; month < 12; ++month) {
+            months.push({
+                label: Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), "MMMM"),
+                selected: month === displayDate.getMonth(),
+                action: (function(value) { return function() { control.chooseMonth(value) } })(month)
+            })
+        }
+        return months
+    }
+
+    function yearEntries() {
+        const years = []
+        const first = displayDate.getFullYear() - 6
+        for (let offset = 0; offset < 13; ++offset) {
+            const year = first + offset
+            years.push({
+                label: year.toString(),
+                selected: year === displayDate.getFullYear(),
+                action: (function(value) { return function() { control.chooseYear(value) } })(year)
+            })
+        }
+        return years
+    }
+
+    MeoMenu {
+        id: monthMenu
+        model: control.monthEntries()
+        preferredMenuWidth: 180 * control.themeGlobalScale
+    }
+
+    MeoMenu {
+        id: yearMenu
+        model: control.yearEntries()
+        preferredMenuWidth: 144 * control.themeGlobalScale
     }
 }

@@ -9,18 +9,74 @@ Row {
     property int maxRating: 5
     property real rating: 0
     property bool readOnly: false
+    property bool allowHalfRating: true
+    property bool clearOnReselect: true
     property string size: "m" // "s" (16) | "m" (24) | "l" (32)
 
     // 🌟 M3 Context Colors
-    property color activeColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    property color inactiveColor: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outlineVariant !== 'undefined') ? MeoTheme.outlineVariant : "#CAC4D0"
+    property color activeColor: MeoTheme.primary
+    property color inactiveColor: MeoTheme.outlineVariant
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    readonly property real themeGlobalScale: MeoTheme.globalScale
 
     readonly property real iconSize: size === "s" ? 16 : size === "l" ? 32 : 24
     readonly property real touchTargetSize: Math.max(48 * themeGlobalScale, iconSize * themeGlobalScale)
 
     spacing: 4 * themeGlobalScale
+    activeFocusOnTab: enabled && !readOnly
+    Accessible.role: Accessible.Slider
+    Accessible.name: qsTr("Rating")
+    Accessible.description: qsTr("%1 of %2 stars").arg(rating).arg(maxRating)
+    Accessible.focusable: activeFocusOnTab
+
+    function ratingForPosition(starIndex, x, width) {
+        if (allowHalfRating && x < width / 2)
+            return starIndex + 0.5
+        return starIndex + 1
+    }
+
+    function setRatingFromUser(nextRating) {
+        if (!enabled || readOnly)
+            return
+        rating = clearOnReselect && rating === nextRating ? 0 : nextRating
+    }
+
+    function adjustRating(delta) {
+        if (!enabled || readOnly)
+            return
+        const step = allowHalfRating ? 0.5 : 1
+        rating = Math.max(0, Math.min(maxRating, rating + delta * step))
+    }
+
+    Keys.onLeftPressed: adjustRating(control.mirrored ? 1 : -1)
+    Keys.onRightPressed: adjustRating(control.mirrored ? -1 : 1)
+    Keys.onPressed: function(event) {
+        if (!enabled || readOnly)
+            return
+        if (event.key === Qt.Key_Home) {
+            rating = 0
+            event.accepted = true
+        } else if (event.key === Qt.Key_End) {
+            rating = maxRating
+            event.accepted = true
+        }
+    }
+
+    onMaxRatingChanged: {
+        const normalizedMax = Math.max(1, Math.round(maxRating))
+        if (maxRating !== normalizedMax) {
+            maxRating = normalizedMax
+            return
+        }
+        if (rating > maxRating)
+            rating = maxRating
+    }
+
+    onRatingChanged: {
+        const normalized = Math.max(0, Math.min(maxRating, rating))
+        if (rating !== normalized)
+            rating = normalized
+    }
 
     Repeater {
         model: control.maxRating
@@ -52,7 +108,8 @@ Row {
 
                 Behavior on color {
                     ColorAnimation {
-                        duration: (typeof MeoTheme !== "undefined" && MeoTheme.motionDurationState) ? MeoTheme.motionDurationState : 150
+                        duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
             }
@@ -61,29 +118,15 @@ Row {
                 id: starMouseArea
                 anchors.fill: parent
                 hoverEnabled: !control.readOnly
-                enabled: !control.readOnly
+                enabled: !control.readOnly && control.enabled
 
-                onClicked: {
-                    var newRating = starValue
-                    if (control.rating === starValue) {
-                        // Allows un-rating by clicking the same star again (common UX pattern)
-                        newRating = 0
-                    }
-                    // The rating property automatically emits ratingChanged when assigned.
-                    control.rating = newRating
+                onClicked: function(mouse) {
+                    control.setRatingFromUser(control.ratingForPosition(index, mouse.x, width))
                 }
 
                 onPositionChanged: (mouse) => {
                     if (starMouseArea.pressed) {
-                        var localX = mouse.x
-                        var currentItemIndex = index
-                        // Update rating based on drag
-                        if (localX > width * 0.5) {
-                             control.rating = currentItemIndex + 1
-                        } else if (localX > 0) {
-                             // Can support half star dragging if needed, but standard is whole stars
-                             control.rating = currentItemIndex + 1
-                        }
+                        control.setRatingFromUser(control.ratingForPosition(index, mouse.x, width))
                     }
                 }
             }

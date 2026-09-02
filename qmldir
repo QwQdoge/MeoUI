@@ -1,5 +1,6 @@
 module MeoUI
 singleton MeoTheme 1.0 MeoTheme.qml
+singleton MeoMotion 1.0 MeoMotion.qml
 MeoWindowMetrics 1.0 MeoWindowMetrics.qml
 MeoAssistChip 1.0 components/MeoAssistChip.qml
 MeoAvatar 1.0 components/MeoAvatar.qml
@@ -86,6 +87,7 @@ MeoNavigationBar 1.0 widgets/MeoNavigationBar.qml
 MeoNavigationDrawer 1.0 widgets/MeoNavigationDrawer.qml
 MeoNavigationDrawerModal 1.0 widgets/MeoNavigationDrawerModal.qml
 MeoNavigationRail 1.0 widgets/MeoNavigationRail.qml
+MeoNavigationRailModal 1.0 widgets/MeoNavigationRailModal.qml
 MeoSearchBar 1.0 widgets/MeoSearchBar.qml
 MeoSearchAppBar 1.0 widgets/MeoSearchAppBar.qml
 MeoSearchSuggestions 1.0 widgets/MeoSearchSuggestions.qml

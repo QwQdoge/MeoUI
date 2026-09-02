@@ -58,12 +58,16 @@ Item {
         when: windowShown
 
         property var savedScheme: ({})
+        property var savedLightScheme: ({})
+        property var savedDarkScheme: ({})
         property bool savedDynamic: false
         property bool savedDark: false
         property string savedSource: ""
 
         function initTestCase() {
             savedScheme = JSON.parse(JSON.stringify(MeoTheme.dynamicColorScheme || ({})))
+            savedLightScheme = JSON.parse(JSON.stringify(MeoTheme.dynamicLightColorScheme || ({})))
+            savedDarkScheme = JSON.parse(JSON.stringify(MeoTheme.dynamicDarkColorScheme || ({})))
             savedDynamic = MeoTheme.dynamicColorsAvailable
             savedDark = MeoTheme.isDarkMode
             savedSource = MeoTheme.dynamicColorSourceId
@@ -71,10 +75,14 @@ Item {
 
         function cleanupTestCase() {
             MeoTheme.isDarkMode = savedDark
-            if (savedDynamic)
+            if (MeoTheme.hasCompleteColorScheme(savedLightScheme)
+                    && MeoTheme.hasCompleteColorScheme(savedDarkScheme)) {
+                MeoTheme.applyDynamicColorSchemes(savedLightScheme, savedDarkScheme, savedSource)
+            } else if (savedDynamic) {
                 MeoTheme.applyDynamicColorScheme(savedScheme, savedSource)
-            else
+            } else {
                 MeoTheme.clearDynamicColorScheme()
+            }
         }
 
         function test_geometryContract() {
@@ -95,6 +103,33 @@ Item {
             wait(0)
             compare(String(row.iconContainerColor).toLowerCase(), "#f1d7ff")
             compare(String(row.iconColor).toLowerCase(), "#4d1763")
+        }
+
+        function test_dynamicPairTracksAppearanceWithoutCrossModeLeak() {
+            const light = JSON.parse(JSON.stringify(MeoTheme.fallbackLightColorScheme))
+            const dark = JSON.parse(JSON.stringify(MeoTheme.fallbackDarkColorScheme))
+            light.primary = "#0058A8"
+            dark.primary = "#B4C5FF"
+
+            verify(MeoTheme.applyDynamicColorSchemes(light, dark, "settings-pair-test"))
+            MeoTheme.isDarkMode = false
+            wait(0)
+            compare(String(MeoTheme.primary).toLowerCase(), "#0058a8")
+
+            MeoTheme.isDarkMode = true
+            wait(0)
+            compare(String(MeoTheme.primary).toLowerCase(), "#b4c5ff")
+
+            const singleLight = JSON.parse(JSON.stringify(MeoTheme.fallbackLightColorScheme))
+            singleLight.primary = "#0061A4"
+            MeoTheme.isDarkMode = false
+            verify(MeoTheme.applyDynamicColorScheme(singleLight, "settings-single-test"))
+            compare(String(MeoTheme.primary).toLowerCase(), "#0061a4")
+
+            MeoTheme.isDarkMode = true
+            wait(0)
+            compare(String(MeoTheme.primary).toLowerCase(),
+                    String(MeoTheme.fallbackDarkColorScheme.primary).toLowerCase())
         }
 
         function test_pointerAndKeyboardStates() {

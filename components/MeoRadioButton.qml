@@ -27,16 +27,39 @@ Control {
             text = label
     }
 
-    // 🌟 作用域与主题安全防御
-    readonly property bool isDarkMode: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.isDarkMode !== 'undefined') ? MeoTheme.isDarkMode : false
-    readonly property color themePrimary: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.primary !== 'undefined') ? MeoTheme.primary : "#6750A4"
-    readonly property color themeOnSurface: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
-    readonly property color themeOnSurfaceVariant: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
-    readonly property color themeOutline: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.outline !== 'undefined') ? MeoTheme.outline : "#79747E"
-    readonly property color themeError: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.error !== 'undefined') ? MeoTheme.error : "#B3261E"
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionStateDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationShort2 !== 'undefined') ? MeoTheme.motionDurationShort2 : 100
-    readonly property int motionSelectDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
+    readonly property color themePrimary: MeoTheme.primary
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
+    readonly property color themeOnSurfaceVariant: MeoTheme.contentOnSurfaceVariant
+    readonly property color themeOutline: MeoTheme.outline
+    readonly property color themeError: MeoTheme.error
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionStateDuration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationShort2
+    readonly property int motionSelectDuration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationFast
+    // AndroidX RadioButtonTokens keeps selected enabled marks Primary. An
+    // unselected enabled ring is OnSurfaceVariant at rest, then OnSurface for
+    // hover, focus, or press. Keep that semantic distinction rather than
+    // using one outline role for every enabled state.
+    // Source: androidx-main RadioButton.kt 0f823cf70129ce97e94871fad6d1bb750cd6e5b5
+    // and RadioButtonTokens.kt abd46df399f6e310e113f66cd51ab9250735215f
+    // (Apache-2.0); expressed through existing MeoTheme color roles.
+    readonly property bool hasInteractiveState: enabled
+                                                && (activeFocus || mouseArea.containsMouse || mouseArea.pressed)
+    readonly property color selectedIndicatorColor: !enabled
+                                                  ? Qt.rgba(themeOnSurface.r, themeOnSurface.g, themeOnSurface.b, MeoTheme.disabledContentOpacity)
+                                                  : (isError ? themeError : themePrimary)
+    // M3 Radio Button specs: a 20dp icon is hosted in a 48dp target with a
+    // 40dp state layer. The public size variants keep their visual sizes, but
+    // the default M3 target and interaction layer remain fixed.
+    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real stateLayerSize: 40 * themeGlobalScale
+
+    Accessible.role: Accessible.RadioButton
+    Accessible.name: label
+    Accessible.description: isError && errorText !== "" ? errorText : helperText
+    Accessible.checkable: true
+    Accessible.checked: checked
+    Accessible.focusable: enabled && activeFocusOnTab
+    Accessible.onPressAction: select()
 
     // 📐 尺寸与比例自适应 (Sizes and Proportions)
     readonly property real radioOuterSize: {
@@ -49,9 +72,8 @@ Control {
     }
 
     readonly property real radioBorderWidth: {
-        const borderVal = (thickness === "thin" ? (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthThin : 1 * themeGlobalScale) :
-                           (thickness === "thick" ? (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthThick : 3 * themeGlobalScale) :
-                           (typeof MeoTheme !== 'undefined' ? MeoTheme.strokeWidthMedium : 2 * themeGlobalScale)))
+        const borderVal = (thickness === "thin" ? MeoTheme.strokeWidthThin :
+                           (thickness === "thick" ? MeoTheme.strokeWidthThick : MeoTheme.strokeWidthMedium))
         if (size === "xs") return Math.max(1, borderVal * 0.75)
         if (size === "xl") return borderVal * 1.5
         return borderVal
@@ -67,7 +89,6 @@ Control {
     }
 
     readonly property var fontLabel: {
-        if (typeof MeoTheme === 'undefined') return { "size": 14, "weight": Font.Medium }
         if (size === "xs") return MeoTheme.labelSmallUi
         if (size === "s") return MeoTheme.labelMediumUi
         if (size === "m") return MeoTheme.labelBig
@@ -76,11 +97,25 @@ Control {
         return MeoTheme.labelBig
     }
 
-    implicitWidth: Math.max(radioOuter.width + (label !== "" ? spacing + labelText.implicitWidth : 0), 40 * themeGlobalScale)
-    implicitHeight: Math.max(radioOuter.height, 40 * themeGlobalScale) + ((errorText !== "" && isError) || helperText !== "" ? 20 * themeGlobalScale : 0)
+    implicitWidth: Math.max(radioOuter.width + (label !== "" ? spacing + labelText.implicitWidth : 0), minimumTargetSize)
+    implicitHeight: minimumTargetSize + ((errorText !== "" && isError) || helperText !== "" ? 20 * themeGlobalScale : 0)
 
-    padding: 8 * themeGlobalScale
+    padding: 0
     spacing: 12 * themeGlobalScale
+
+    function select() {
+        if (!enabled || checked)
+            return
+        checked = true
+        toggled(true)
+    }
+
+    Keys.onPressed: function(event) {
+        if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+            select()
+            event.accepted = true
+        }
+    }
 
     // 点击交互
     MouseArea {
@@ -88,47 +123,51 @@ Control {
         anchors.fill: parent
         hoverEnabled: true
         enabled: control.enabled
-        onClicked: {
-            if (!control.checked) {
-                control.checked = true
-                control.toggled(true)
-            }
-        }
+        onClicked: control.select()
     }
 
     contentItem: Column {
         spacing: 4 * control.themeGlobalScale
 
         Row {
+            objectName: "meoRadioButtonRow"
+            height: control.minimumTargetSize
             spacing: control.spacing
+            layoutDirection: control.LayoutMirroring.enabled ? Qt.RightToLeft : Qt.LeftToRight
 
             // 🎨 单选框外圈 (Radio outer ring)
             Rectangle {
                 id: radioOuter
+                objectName: "meoRadioButtonOuter"
                 width: control.radioOuterSize
                 height: control.radioOuterSize
                 anchors.verticalCenter: parent.verticalCenter
                 radius: width / 2
                 color: "transparent"
                 border.color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38)
+                    if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                     if (control.checked) return control.isError ? control.themeError : control.themePrimary
-                    return control.isError ? control.themeError : control.themeOutline
+                    if (control.isError)
+                        return control.themeError
+                    return control.hasInteractiveState
+                           ? control.themeOnSurface
+                           : control.themeOnSurfaceVariant
                 }
                 border.width: control.radioBorderWidth
 
                 // 🌟 核心选中原点 (Active inner point)
                 Rectangle {
+                    objectName: "meoRadioButtonDot"
                     anchors.centerIn: parent
                     width: control.checked ? control.radioInnerSize : 0
                     height: width
                     radius: width / 2
-                    color: control.isError ? control.themeError : control.themePrimary
+                    color: control.selectedIndicatorColor
 
                     Behavior on width {
                         NumberAnimation {
                             duration: control.motionSelectDuration
-                            easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0]
+                            easing.bezierCurve: MeoTheme.motionEasingStandard
                         }
                     }
                 }
@@ -136,8 +175,8 @@ Control {
                 // 🌟 状态层反馈 (Hover/Pressed/Focused states)
                 Item {
                     anchors.centerIn: parent
-                    width: control.radioOuterSize + 20 * control.themeGlobalScale
-                    height: control.radioOuterSize + 20 * control.themeGlobalScale
+                    width: control.stateLayerSize
+                    height: control.stateLayerSize
                     z: -1
 
                     MeoStateLayer {
@@ -152,19 +191,18 @@ Control {
                     }
                 }
 
-                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingSoul !== "undefined") ? MeoTheme.motionEasingSoul : [0.34, 0.8, 0.34, 1.0] } }
+                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // 🔤 标签文本
             Text {
                 id: labelText
                 text: control.label
-                font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+                font.family: MeoTheme.typefacePlain
                 font.pixelSize: control.fontLabel.size * control.themeGlobalScale
                 font.weight: control.fontLabel.weight
                 color: {
-                    if (!control.enabled) return isDarkMode ? Qt.rgba(1, 1, 1, 0.38) : Qt.rgba(0, 0, 0, 0.38)
-                    if (control.isError) return control.themeError
+                    if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                     return control.themeOnSurface
                 }
                 anchors.verticalCenter: parent.verticalCenter
@@ -177,7 +215,7 @@ Control {
             id: feedbackText
             visible: (control.isError && control.errorText !== "") || control.helperText !== ""
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
-            font.family: (typeof MeoTheme !== "undefined" && MeoTheme.typefacePlain) ? MeoTheme.typefacePlain : "Roboto"
+            font.family: MeoTheme.typefacePlain
             font.pixelSize: (control.fontLabel.size - 2) * control.themeGlobalScale
             color: control.isError ? control.themeError : control.themeOnSurfaceVariant
             leftPadding: control.radioOuterSize + control.spacing
