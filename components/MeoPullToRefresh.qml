@@ -23,6 +23,11 @@ Control {
     readonly property real visibleFraction: Math.min(1, distanceFraction)
     readonly property bool indicatorVisible: refreshing || (pullEnabled && distanceFraction > 0)
     readonly property bool animationActive: refreshing && visible && width > 0 && height > 0 && !MeoTheme.reduceMotion
+    // Keep this component safe for an app that receives a newer component
+    // before its MeoTheme singleton has been refreshed during an update.
+    readonly property int indeterminateCycleDuration: typeof MeoTheme.motionDurationIndeterminateCycle === "number"
+                                                   ? MeoTheme.motionDurationIndeterminateCycle
+                                                   : MeoTheme.motionDurationFor(666)
 
     implicitWidth: 40 * themeGlobalScale
     implicitHeight: 40 * themeGlobalScale
@@ -129,14 +134,14 @@ Control {
                 loops: Animation.Infinite
 
                 ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: 666; easing.type: Easing.Linear }
+                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: control.indeterminateCycleDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: control.indeterminateCycleDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: control.indeterminateCycleDuration; easing.type: Easing.Linear }
                 }
                 ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: 666; easing.type: Easing.InOutSine }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: 666; easing.type: Easing.Linear }
+                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: control.indeterminateCycleDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: control.indeterminateCycleDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: control.indeterminateCycleDuration; easing.type: Easing.Linear }
                 }
                 ScriptAction { script: { indicatorCanvas.animStartAngle %= 1.0; indicatorCanvas.animEndAngle %= 1.0; indicatorCanvas.animRotationAngle %= 1.0; } }
             }

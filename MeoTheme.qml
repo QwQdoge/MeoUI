@@ -462,6 +462,9 @@ QtObject {
     readonly property int motionDurationSheetExit: motionDurationFor(220)
     readonly property int motionDurationPage: motionDurationFor(320)
     readonly property int motionDurationTooltipExit: motionDurationFor(100)
+    // Continuous indicators are intentionally slower than a page transition,
+    // but still pass through the same accessibility and speed-scale gateway.
+    readonly property int motionDurationIndeterminateCycle: motionDurationFor(666)
     readonly property int motionStaggerDelay: motionDurationFor(25)
 
     readonly property list<real> motionEasingStandard: [0.2, 0, 0, 1]

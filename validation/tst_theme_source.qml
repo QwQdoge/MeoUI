@@ -129,5 +129,15 @@ Item {
             const settled = Source.MeoMotion.stateAt(spec, 0, 0, 1, 1000)
             verify(Source.MeoMotion.isAtRest(settled, 1, 0.005, 0.01))
         }
+
+        function test_motionTokensRespectReducedMotion() {
+            const savedReduceMotion = Source.MeoTheme.reduceMotion
+            Source.MeoTheme.reduceMotion = false
+            compare(Source.MeoTheme.motionDurationIndeterminateCycle, 666)
+            Source.MeoTheme.reduceMotion = true
+            compare(Source.MeoTheme.motionDurationState, 0)
+            compare(Source.MeoTheme.motionDurationIndeterminateCycle, 0)
+            Source.MeoTheme.reduceMotion = savedReduceMotion
+        }
     }
 }

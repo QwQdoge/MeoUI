@@ -109,5 +109,15 @@ Item {
             compare(rangeSlider.inactiveTrackColor, standardSlider.inactiveTrackColor)
             compare(rangeSlider.thumbColor, standardSlider.thumbColor)
         }
+
+        function test_wavyMotionRespectsReducedMotion() {
+            const savedReduceMotion = MeoTheme.reduceMotion
+            MeoTheme.reduceMotion = false
+            compare(standardSlider.motionWaveDuration, MeoTheme.motionDurationFor(666))
+            MeoTheme.reduceMotion = true
+            compare(standardSlider.motionWaveDuration, 0)
+            compare(standardSlider.waveAnimationActive, false)
+            MeoTheme.reduceMotion = savedReduceMotion
+        }
     }
 }

@@ -37,5 +37,18 @@ Item {
             indicator.pullEnabled = false
             compare(indicator.indicatorVisible, false)
         }
+
+        function test_indeterminateMotionUsesTheSharedAccessibilityToken() {
+            const savedReduceMotion = MeoTheme.reduceMotion
+            MeoTheme.reduceMotion = false
+            compare(indicator.indeterminateCycleDuration, MeoTheme.motionDurationFor(666))
+            indicator.refreshing = true
+            verify(indicator.animationActive)
+            MeoTheme.reduceMotion = true
+            compare(indicator.indeterminateCycleDuration, 0)
+            compare(indicator.animationActive, false)
+            indicator.refreshing = false
+            MeoTheme.reduceMotion = savedReduceMotion
+        }
     }
 }

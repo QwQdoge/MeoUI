@@ -84,7 +84,9 @@ Control {
     readonly property bool reduceMotion: MeoTheme.reduceMotion
     readonly property int motionStateDuration: MeoTheme.motionDurationState
     readonly property int motionTrackDuration: MeoTheme.motionDurationSelection
-    readonly property int motionWaveDuration: reduceMotion ? 0 : 720
+    readonly property int motionWaveDuration: typeof MeoTheme.motionDurationIndeterminateCycle === "number"
+                                               ? MeoTheme.motionDurationIndeterminateCycle
+                                               : MeoTheme.motionDurationFor(666)
     readonly property var fontLabelSmall: MeoTheme.labelSmall
 
     function compositeColor(foreground, opacity, background) {
