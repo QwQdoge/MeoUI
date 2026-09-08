@@ -58,7 +58,14 @@ Control {
     readonly property real circularAmplitude: 1.6 * themeGlobalScale
     readonly property bool isPill: type === "linear" && linearStyle === "pill" && !wavy
     readonly property string accessibleProgress: Math.round(clampedValue * 100) + "%"
-    readonly property real wavyReferenceWidth: width > 0 ? width : implicitWidth
+    // This is diagnostic geometry used by the progress contract below, not
+    // the Canvas paint width (the Canvas always uses its live anchored size).
+    // Referencing `width` here feeds back into an anchored MeoSettingsRow's
+    // implicit layout calculation and produces a binding loop while the row
+    // is first measured.  The linear control's implicit width is the stable
+    // reference for the public geometry values; rendering still adapts to the
+    // actual assigned width in wavyCanvas.onPaint.
+    readonly property real wavyReferenceWidth: implicitWidth
     readonly property real wavyActiveWidth: type === "linear"
                                            ? wavyReferenceWidth * (indeterminate ? 0.42 : clampedValue)
                                            : 0

@@ -56,6 +56,8 @@ Item {
             source: control.source
             visible: control.source !== ""
             fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
 
             layer.enabled: avatarImage.visible
             layer.effect: MultiEffect {

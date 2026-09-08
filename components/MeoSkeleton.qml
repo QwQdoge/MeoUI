@@ -9,6 +9,9 @@ Item {
     property string type: "text" // "text" | "avatar" | "card" | "pill" | "block"
     property bool active: true
     property bool animate: true
+    // Breathing is the low-GPU default. Shimmer remains an explicit opt-in
+    // for a product surface that has measured a real benefit.
+    property string animationStyle: "breathing" // "breathing" | "shimmer" | "none"
     readonly property real defaultRadius: type === "avatar" || type === "pill"
                                        ? Math.min(width, height) / 2
                                        : type === "card" ? 12 * themeGlobalScale
@@ -22,7 +25,10 @@ Item {
     readonly property real themeGlobalScale: MeoTheme.globalScale
     // Pause shimmer whenever there is no drawable surface.  It resumes from
     // its current position, so virtualized delegates do not flash on return.
-    readonly property bool animationActive: active && animate && visible && width > 0 && height > 0 && !MeoTheme.reduceMotion
+    readonly property bool animationActive: active && animate
+                                           && animationStyle !== "none"
+                                           && visible && width > 0 && height > 0
+                                           && !MeoTheme.reduceMotion
 
     implicitWidth: (type === "avatar" ? 40 : type === "card" ? 240 : type === "pill" ? 120 : type === "block" ? 160 : 100) * themeGlobalScale
     implicitHeight: (type === "avatar" ? 40 : type === "card" ? 144 : type === "pill" ? 32 : type === "block" ? 64 : 16) * themeGlobalScale
@@ -40,12 +46,29 @@ Item {
         color: control.themeSurfaceVariant
         clip: true
 
+        opacity: control.animationStyle === "breathing" ? 0.62 : 1
+        SequentialAnimation on opacity {
+            running: control.animationActive && control.animationStyle === "breathing"
+            loops: Animation.Infinite
+            NumberAnimation {
+                from: 0.62; to: 0.9
+                duration: MeoTheme.motionDurationFor(900)
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+            NumberAnimation {
+                from: 0.9; to: 0.62
+                duration: MeoTheme.motionDurationFor(900)
+                easing.bezierCurve: MeoTheme.motionEasingStandard
+            }
+        }
+
         // Shimmer Effect
         Rectangle {
             id: shimmer
             width: parent.width * 2
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
+            visible: control.animationStyle === "shimmer"
 
             gradient: Gradient {
                 orientation: Gradient.Horizontal
@@ -62,7 +85,7 @@ Item {
                 from: -control.width * 2
                 to: control.width
                 duration: MeoTheme.motionDurationFor(1500)
-                running: control.animationActive
+                running: control.animationActive && control.animationStyle === "shimmer"
                 loops: Animation.Infinite
             }
         }

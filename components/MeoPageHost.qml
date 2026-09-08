@@ -16,6 +16,10 @@ Item {
     property string pageKey: ""
     property int direction: 1
     property real transitionDistance: 32 * MeoTheme.globalScale
+    // URL-backed pages are compiled and instantiated across frames so route
+    // changes do not monopolize the GUI thread. Component-backed routes keep
+    // their normal synchronous construction semantics in Qt.
+    property bool asynchronous: true
     // A URL-loaded page is usually a lightweight Item with no implicit size.
     // The host owns the viewport, so make every loaded page fill it instead of
     // requiring each page root to repeat anchors.fill: parent.
@@ -160,6 +164,7 @@ Item {
 
     Loader {
         id: firstLoader
+        asynchronous: control.asynchronous
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: parent.width
@@ -174,6 +179,7 @@ Item {
 
     Loader {
         id: secondLoader
+        asynchronous: control.asynchronous
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         width: parent.width

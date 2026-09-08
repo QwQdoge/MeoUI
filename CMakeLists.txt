@@ -102,6 +102,7 @@ qt_add_qml_module(meoui_module
         components/MeoRangeSlider.qml
         components/MeoCarousel.qml
         components/MeoFullScreenDialog.qml
+        components/MeoHoldToConfirm.qml
         components/MeoPageIndicator.qml
         components/MeoCheckbox.qml
         components/MeoSwitch.qml
@@ -124,6 +125,8 @@ qt_add_qml_module(meoui_module
         components/MeoStateLayer.qml
         components/MeoMotionPopup.qml
         components/MeoMotionSurface.qml
+        components/MeoSpringValue.qml
+        components/MeoLaunchSurface.qml
         components/MeoPageHost.qml
         components/MeoFilterChip.qml
         components/MeoInputChip.qml

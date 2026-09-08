@@ -132,7 +132,10 @@ Item {
         if (name === "MeoSkeleton") return skeletonSample
         if (name === "MeoCard") return cardSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
+        if (name === "MeoSpringValue") return springValueSample
+        if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
+        if (name === "MeoHoldToConfirm") return holdToConfirmSample
         if (name === "MeoFullScreenDialog") return fullDialogSample
         if (name === "MeoExpressiveDialog") return expressiveDialogSample
         if (name === "MeoBottomSheet") return bottomSheetSample
@@ -215,6 +218,7 @@ Item {
                     { "label": "Slow effects", "spec": MeoMotion.slowEffects }
                 ]
                 delegate: MeoChip {
+                    required property int index
                     required property var modelData
                     label: modelData.label + " · ζ " + modelData.spec.dampingRatio
                            + " · k " + modelData.spec.stiffness
@@ -1912,6 +1916,43 @@ Item {
         }
     }
     Component {
+        id: holdToConfirmSample
+        Row {
+            spacing: MeoTheme.space12
+
+            Column {
+                spacing: MeoTheme.space4
+                SampleLabel { label: "Session-ending" }
+                MeoHoldToConfirm {
+                    confirmationText: "Hold to sign out"
+                    holdingText: "Keep holding to sign out…"
+                    iconName: "logout"
+                    tone: "neutral"
+                }
+            }
+            Column {
+                spacing: MeoTheme.space4
+                SampleLabel { label: "Destructive" }
+                MeoHoldToConfirm {
+                    confirmationText: "Hold to shut down"
+                    holdingText: "Keep holding to shut down…"
+                    iconName: "power_settings_new"
+                    tone: "error"
+                }
+            }
+            Column {
+                spacing: MeoTheme.space4
+                SampleLabel { label: "Disabled" }
+                MeoHoldToConfirm {
+                    confirmationText: "Hold to restart"
+                    iconName: "restart_alt"
+                    tone: "primary"
+                    enabled: false
+                }
+            }
+        }
+    }
+    Component {
         id: fullDialogSample
         Column {
             spacing: MeoTheme.space8
@@ -2705,7 +2746,7 @@ Item {
                 delegate: Column {
                     required property var modelData
                     width: 96 * MeoTheme.globalScale
-                    spacing: MeoTheme.space6
+                    spacing: MeoTheme.space8
 
                     MeoShape {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -3156,6 +3197,36 @@ Item {
                 typeSize: "medium"
                 color: MeoTheme.contentOnTertiaryContainer
             }
+        }
+    }
+    Component {
+        id: springValueSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 120 * MeoTheme.globalScale
+            property bool pressed: false
+            MeoSpringValue {
+                id: sampleSpring
+                value: 1
+                targetValue: parent.pressed ? 0.9 : 1
+                spring: MeoMotion.fastSpatial
+            }
+            MeoButton {
+                anchors.centerIn: parent
+                text: parent.pressed ? "Release" : "Retarget spring"
+                scale: sampleSpring.value
+                onPressedChanged: parent.pressed = pressed
+            }
+        }
+    }
+    Component {
+        id: launchSurfaceSample
+        MeoLaunchSurface {
+            width: 520 * MeoTheme.globalScale
+            height: 300 * MeoTheme.globalScale
+            appName: "Dolphin"
+            supportingText: "Opening your files"
+            fallbackIcon: "folder"
         }
     }
 

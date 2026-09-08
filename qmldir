@@ -18,6 +18,7 @@ MeoColorField 1.0 components/MeoColorField.qml
 MeoDataTable 1.0 components/MeoDataTable.qml
 MeoDateInput 1.0 components/MeoDateInput.qml
 MeoDialog 1.0 components/MeoDialog.qml
+MeoHoldToConfirm 1.0 components/MeoHoldToConfirm.qml
 MeoDivider 1.0 components/MeoDivider.qml
 MeoDockedToolbar 1.0 components/MeoDockedToolbar.qml
 MeoExposedDropdown 1.0 components/MeoExposedDropdown.qml
@@ -42,6 +43,8 @@ MeoMediaCard 1.0 components/MeoMediaCard.qml
 MeoMenu 1.0 components/MeoMenu.qml
 MeoMotionPopup 1.0 components/MeoMotionPopup.qml
 MeoMotionSurface 1.0 components/MeoMotionSurface.qml
+MeoSpringValue 1.0 components/MeoSpringValue.qml
+MeoLaunchSurface 1.0 components/MeoLaunchSurface.qml
 MeoMonthCalendar 1.0 components/MeoMonthCalendar.qml
 MeoNavigationDrawerItem 1.0 components/MeoNavigationDrawerItem.qml
 MeoPageHost 1.0 components/MeoPageHost.qml
