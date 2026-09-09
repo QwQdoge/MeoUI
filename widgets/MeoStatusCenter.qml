@@ -5,7 +5,20 @@ import MeoUI
 MeoMotionSurface {
     id: control
 
+    enum Mode {
+        TimeCalendar,
+        Notifications,
+        TimeCalendarNotifications
+    }
+
+    // `mode` is the canonical status-center contract.  Keep the former
+    // string API for one compatibility cycle so an installed shell can update
+    // MeoUI before its plasmoid package is replaced.
+    property int mode: MeoStatusCenter.TimeCalendarNotifications
+    property string centerMode: ""
     property Component notificationContent: null
+    property Component calendarContent: null
+    property Component headerContent: null
 
     property date currentDateTime: new Date()
     // Keep the live desktop clock current without overwriting applications
@@ -15,7 +28,26 @@ MeoMotionSurface {
     property string dateText: Qt.formatDate(currentDateTime, Qt.DefaultLocaleLongDate)
     property int unreadCount: 0
     property string notificationsTitle: qsTr("Notifications")
+    // Hosts with retained popup content set this false while closed.  That
+    // prevents a hidden status center from retaining a minute clock timer.
+    property bool contentActive: visible
     readonly property bool compact: width < 640 * MeoTheme.globalScale
+    readonly property int effectiveMode: {
+        switch (centerMode) {
+        case "timeCalendar":
+            return MeoStatusCenter.TimeCalendar
+        case "notificationsOnly":
+            return MeoStatusCenter.Notifications
+        case "timeNotifications":
+        case "timeCalendarNotifications":
+            return MeoStatusCenter.TimeCalendarNotifications
+        default:
+            return mode
+        }
+    }
+    readonly property bool showsTime: effectiveMode !== MeoStatusCenter.Notifications
+    readonly property bool showsCalendar: effectiveMode !== MeoStatusCenter.Notifications
+    readonly property bool showsNotifications: effectiveMode !== MeoStatusCenter.TimeCalendar
 
     color: MeoTheme.surfaceContainerLow
     // Status Center is a transient Pixel-style surface rather than a generic
@@ -29,7 +61,7 @@ MeoMotionSurface {
     Timer {
         interval: 60000
         repeat: true
-        running: control.updateTimeAutomatically
+        running: control.updateTimeAutomatically && control.contentActive
         triggeredOnStart: false
         onTriggered: control.currentDateTime = new Date()
     }
@@ -39,7 +71,14 @@ MeoMotionSurface {
         anchors.margins: MeoTheme.space24
         spacing: MeoTheme.space16
 
+        Loader {
+            visible: control.headerContent !== null
+            Layout.fillWidth: true
+            sourceComponent: control.headerContent
+        }
+
         RowLayout {
+            visible: control.headerContent === null && control.showsTime
             Layout.fillWidth: true
             spacing: MeoTheme.space16
 
@@ -78,6 +117,7 @@ MeoMotionSurface {
         }
 
         MeoDivider {
+            visible: control.showsTime && (control.showsCalendar || control.showsNotifications)
             Layout.fillWidth: true
         }
 
@@ -86,21 +126,24 @@ MeoMotionSurface {
             Layout.fillHeight: true
             spacing: MeoTheme.space24
 
-            MeoMonthCalendar {
-                visible: !control.compact
+            Loader {
+                // A time-and-calendar-only center must not become blank at a
+                // narrow width.  Combined centers leave narrow-page selection
+                // to their host and keep the notification slot visible here.
+                visible: control.showsCalendar && (!control.compact || !control.showsNotifications)
                 Layout.preferredWidth: 300 * MeoTheme.globalScale
                 Layout.fillHeight: true
-                selectedDate: control.currentDateTime
-                displayDate: control.currentDateTime
+                sourceComponent: control.calendarContent || defaultCalendar
             }
 
             MeoDivider {
-                visible: !control.compact
+                visible: control.showsCalendar && control.showsNotifications && !control.compact
                 Layout.fillHeight: true
                 orientation: "vertical"
             }
 
             ColumnLayout {
+                visible: control.showsNotifications
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 spacing: MeoTheme.space8
@@ -125,6 +168,15 @@ MeoMotionSurface {
                     }
                 }
             }
+        }
+    }
+
+    Component {
+        id: defaultCalendar
+
+        MeoMonthCalendar {
+            selectedDate: control.currentDateTime
+            displayDate: control.currentDateTime
         }
     }
 }

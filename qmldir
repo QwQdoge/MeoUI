@@ -65,6 +65,7 @@ MeoSlider 1.0 components/MeoSlider.qml
 MeoSnackbar 1.0 components/MeoSnackbar.qml
 MeoSplitButton 1.0 components/MeoSplitButton.qml
 MeoStateLayer 1.0 components/MeoStateLayer.qml
+MeoStatusStrip 1.0 components/MeoStatusStrip.qml
 MeoSteppedSlider 1.0 components/MeoSteppedSlider.qml
 MeoStepper 1.0 components/MeoStepper.qml
 MeoSuggestionChip 1.0 components/MeoSuggestionChip.qml

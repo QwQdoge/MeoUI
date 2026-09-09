@@ -126,6 +126,7 @@ Item {
         if (name === "MeoGroupedList") return groupedListSample
         if (name === "MeoSegmentedList") return segmentedListSample
         if (name === "MeoStatusCenter") return statusCenterSample
+        if (name === "MeoStatusStrip") return statusStripSample
         if (name === "MeoBadge") return badgeSample
         if (name === "MeoAvatar") return avatarSample
         if (name === "MeoDivider") return dividerSample
@@ -3187,6 +3188,19 @@ Item {
                     MeoListItem { width: parent.width; headline: "No new warnings"; supportingText: "All checked samples are mapped"; leadingIcon: "info" }
                 }
             }
+        }
+    }
+
+    Component {
+        id: statusStripSample
+        MeoStatusStrip {
+            statusModel: [
+                { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: "Connected to MeoNet" },
+                { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: "Volume 64 percent" },
+                { id: "battery", iconName: "battery_full", text: "82%", available: true, active: false, accessibleName: "Battery 82 percent" },
+                { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: "Attention required" },
+                { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: "Hidden optional status" }
+            ]
         }
     }
 

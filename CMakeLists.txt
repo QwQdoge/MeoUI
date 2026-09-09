@@ -123,6 +123,7 @@ qt_add_qml_module(meoui_module
         components/MeoTooltip.qml
         components/MeoSnackbar.qml
         components/MeoStateLayer.qml
+        components/MeoStatusStrip.qml
         components/MeoMotionPopup.qml
         components/MeoMotionSurface.qml
         components/MeoSpringValue.qml
