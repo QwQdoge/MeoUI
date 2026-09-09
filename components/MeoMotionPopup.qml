@@ -150,7 +150,8 @@ Popup {
             }
             NumberAnimation {
                 property: "y"
-                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
+                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height
+                      : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
