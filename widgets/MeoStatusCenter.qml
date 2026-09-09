@@ -19,6 +19,10 @@ MeoMotionSurface {
     property Component notificationContent: null
     property Component calendarContent: null
     property Component headerContent: null
+    // The enum selects the primary information architecture.  A host may
+    // explicitly suppress the calendar for the legacy time-and-notifications
+    // presentation without inventing another visual status-center copy.
+    property bool calendarEnabled: true
 
     property date currentDateTime: new Date()
     // Keep the live desktop clock current without overwriting applications
@@ -47,6 +51,7 @@ MeoMotionSurface {
     }
     readonly property bool showsTime: effectiveMode !== MeoStatusCenter.Notifications
     readonly property bool showsCalendar: effectiveMode !== MeoStatusCenter.Notifications
+                                             && calendarEnabled
     readonly property bool showsNotifications: effectiveMode !== MeoStatusCenter.TimeCalendar
 
     color: MeoTheme.surfaceContainerLow
