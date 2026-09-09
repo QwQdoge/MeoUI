@@ -448,8 +448,17 @@ QtObject {
     readonly property var motionDurationFast: motionDurationFor(120)
     readonly property var motionDurationMedium: motionDurationFor(220)
     readonly property var motionDurationSlow: motionDurationFor(320)
-    readonly property var motionDurationRippleExpand: motionDurationFor(280)
-    readonly property var motionDurationRippleFade: motionDurationFor(160)
+    readonly property int motionDurationPanelState: motionDurationFor(100)
+    readonly property int motionDurationRippleExpand: motionDurationFor(300)
+    readonly property int motionDurationRippleFade: motionDurationFor(150)
+    readonly property int motionDurationPopupEffectsEnter: motionDurationFor(200)
+    readonly property int motionDurationPopupEffectsExit: motionDurationFor(150)
+    readonly property int motionDurationDisclosureEnter: motionDurationFor(250)
+    readonly property int motionDurationDisclosureExit: motionDurationFor(200)
+    readonly property int motionDurationPageEnter: motionDurationFor(300)
+    readonly property int motionDurationPageExit: motionDurationFor(200)
+    readonly property int motionDurationCalendarPage: motionDurationFor(250)
+    readonly property int motionDurationExternalValue: motionDurationFor(200)
     readonly property int motionDurationState: motionDurationFor(100)
     readonly property int motionDurationSelection: motionDurationFor(220)
     readonly property int motionDurationShapeEnter: motionDurationFor(140)
@@ -477,9 +486,11 @@ QtObject {
     readonly property list<real> motionEasingExit: [1, 0, 1, 1]
 
     // 🌟 M3E Spring Physics Motion Curves (Spatial vs Effect)
-    readonly property list<real> motionEasingSpringBouncy: isBouncy ? [0.34, 1.35, 0.64, 1.0] : motionEasingEmphasizedDecelerate // Controlled Settling Overshoot
-    readonly property list<real> motionEasingSpringStiff: isBouncy ? [0.18, 0.89, 0.32, 1.25] : motionEasingStandardDecelerate // Instant Physical Press Response
-    readonly property list<real> motionEasingSpringSubtle: isBouncy ? [0.22, 1.1, 0.36, 1.0] : motionEasingEmphasizedDecelerate // Smooth Release Settling
+    // Deprecated compatibility aliases. These cubic curves are not physical,
+    // interruptible springs; use MeoMotion spatialSpec()/effectsSpec().
+    readonly property list<real> motionEasingSpringBouncy: isBouncy ? [0.34, 1.35, 0.64, 1.0] : motionEasingEmphasizedDecelerate
+    readonly property list<real> motionEasingSpringStiff: isBouncy ? [0.18, 0.89, 0.32, 1.25] : motionEasingStandardDecelerate
+    readonly property list<real> motionEasingSpringSubtle: isBouncy ? [0.22, 1.1, 0.36, 1.0] : motionEasingEmphasizedDecelerate
 
     // Compatibility & Primary M3E Curve
     readonly property list<real> motionEasingSoul: motionEasingEmphasized

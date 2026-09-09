@@ -10,7 +10,10 @@ QtObject {
     property real value: 0
     property real targetValue: 0
     property real velocity: 0
-    property var spring: MeoMotion.defaultSpatial
+    property string motionProfile: "pixel"
+    property string speed: "default"
+    property var spring: MeoMotion.spatialSpec(motionProfile, speed)
+    property int maximumRunDuration: MeoMotion.maximumDuration(motionProfile, speed)
     property bool enabled: !MeoTheme.reduceMotion
     property real valueThreshold: 0.001
     property real velocityThreshold: 0.01
@@ -34,7 +37,7 @@ QtObject {
     }
 
     function retarget() {
-        if (!enabled) {
+        if (!enabled || MeoTheme.reduceMotion || MeoTheme.effectiveMotionScale <= 0) {
             driver.stop()
             value = targetValue
             velocity = 0
@@ -64,11 +67,19 @@ QtObject {
         interval: 16
         repeat: true
         onTriggered: {
+            const elapsed = Date.now() - control._startedAt
+            if (elapsed >= control.maximumRunDuration) {
+                stop()
+                control.value = control.targetValue
+                control.velocity = 0
+                control.settled(control.value)
+                return
+            }
             const state = MeoMotion.stateAt(control.spring,
                                             control._startValue,
                                             control._startVelocity,
                                             control.targetValue,
-                                            Date.now() - control._startedAt)
+                                            MeoMotion.scaledElapsed(elapsed, MeoTheme.effectiveMotionScale))
             control.value = state.value
             control.velocity = state.velocity
             if (MeoMotion.isAtRest(state, control.targetValue,

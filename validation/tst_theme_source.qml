@@ -139,5 +139,28 @@ Item {
             compare(Source.MeoTheme.motionDurationIndeterminateCycle, 0)
             Source.MeoTheme.reduceMotion = savedReduceMotion
         }
+
+        function test_profileMotionUsesOfficialSchemesAndBounds() {
+            compare(Source.MeoMotion.spatialSpec("calm", "fast").stiffness, 1400)
+            compare(Source.MeoMotion.spatialSpec("pixel", "default").stiffness, 380)
+            compare(Source.MeoMotion.spatialSpec("playful", "slow").stiffness, 200)
+            compare(Source.MeoMotion.effectsSpec("fast").dampingRatio, 1.0)
+            compare(Source.MeoMotion.maximumDuration("calm", "slow"), 550)
+            compare(Source.MeoMotion.maximumDuration("pixel", "default"), 550)
+            compare(Source.MeoMotion.maximumDuration("playful", "fast"), 500)
+            compare(Source.MeoMotion.pressScale("calm"), 0.98)
+            compare(Source.MeoMotion.pressScale("pixel"), 0.96)
+            compare(Source.MeoMotion.pressScale("playful"), 0.94)
+        }
+
+        function test_scaledElapsedRespectsMotionScaleAndReducedMotion() {
+            const savedReduceMotion = Source.MeoTheme.reduceMotion
+            Source.MeoTheme.reduceMotion = false
+            compare(Source.MeoMotion.scaledElapsed(100, 0.5), 50)
+            compare(Source.MeoMotion.scaledElapsed(100, 0), Number.MAX_SAFE_INTEGER)
+            Source.MeoTheme.reduceMotion = true
+            compare(Source.MeoMotion.scaledElapsed(100, 1), Number.MAX_SAFE_INTEGER)
+            Source.MeoTheme.reduceMotion = savedReduceMotion
+        }
     }
 }
