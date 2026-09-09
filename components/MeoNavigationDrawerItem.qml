@@ -102,10 +102,10 @@ Control {
                 focused: control.activeFocus
             }
 
-            Behavior on color { ColorAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
-            Behavior on height { NumberAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
-            Behavior on anchors.leftMargin { NumberAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
-            Behavior on anchors.rightMargin { NumberAnimation { duration: control.animationDuration; easing.bezierCurve: control.emphasizedCurve } }
+            Behavior on color { ColorAnimation { duration: control.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on height { NumberAnimation { duration: control.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on anchors.leftMargin { NumberAnimation { duration: control.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on anchors.rightMargin { NumberAnimation { duration: control.animationDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
         }
 
         Rectangle {
@@ -164,7 +164,7 @@ Control {
                 Behavior on color {
                     ColorAnimation {
                         duration: MeoTheme.motionDurationState
-                        easing.bezierCurve: control.selected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: control.selected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
                     }
                 }
             }

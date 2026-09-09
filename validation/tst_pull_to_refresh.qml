@@ -41,7 +41,7 @@ Item {
         function test_indeterminateMotionUsesTheSharedAccessibilityToken() {
             const savedReduceMotion = MeoTheme.reduceMotion
             MeoTheme.reduceMotion = false
-            compare(indicator.indeterminateCycleDuration, MeoTheme.motionDurationFor(666))
+            compare(indicator.indeterminateCycleDuration, MeoTheme.motionDurationIndeterminateCycle)
             indicator.refreshing = true
             verify(indicator.animationActive)
             MeoTheme.reduceMotion = true

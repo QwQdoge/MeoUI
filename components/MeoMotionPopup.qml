@@ -80,6 +80,8 @@ Popup {
                 duration: control.presentation === MeoMotionPopup.SideSheet
                           || control.presentation === MeoMotionPopup.BottomSheet
                           ? MeoTheme.motionDurationSheetExit : MeoTheme.motionDurationDialogExit
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: MeoTheme.motionEasingLinear
             }
         }
     }
@@ -119,7 +121,7 @@ Popup {
             Behavior on radius {
                 NumberAnimation {
                     duration: MeoTheme.motionDurationSelection
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
                 }
             }
         }
@@ -132,21 +134,21 @@ Popup {
                 from: 0
                 to: 1
                 duration: MeoTheme.motionDurationPopupEffectsEnter
-                easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
                 property: "scale"
                 from: MeoTheme.reduceMotion ? 1 : control.isMenu ? control.entranceScale : control.presentation === MeoMotionPopup.Dialog ? control.entranceScale : 1
                 to: 1
                 duration: MeoTheme.motionDurationPopupEffectsEnter
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
                 property: "x"
                 from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
                 to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
                 property: "y"
@@ -154,7 +156,7 @@ Popup {
                       : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -166,28 +168,28 @@ Popup {
                 from: 1
                 to: 0
                 duration: MeoTheme.motionDurationPopupEffectsExit
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "scale"
                 from: 1
                 to: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.98 : control.presentation === MeoMotionPopup.Dialog ? 0.96 : 1
                 duration: MeoTheme.motionDurationPopupEffectsExit
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "x"
                 from: control.x
                 to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
                 duration: control.exitDuration
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "y"
                 from: control.y
                 to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
                 duration: control.exitDuration
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
         }
     }

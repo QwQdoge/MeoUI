@@ -116,12 +116,12 @@ Button {
                 enabled: !MeoTheme.reduceMotion
                 NumberAnimation {
                     duration: MeoTheme.motionDurationShapeEnter
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
             Behavior on color {
                 enabled: !MeoTheme.reduceMotion
-                ColorAnimation { duration: MeoTheme.motionDurationSelection }
+                ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
 
             MeoStateLayer {
@@ -187,7 +187,7 @@ Button {
                 if (control.effectiveType === "tonal") return control.themeOnSecondaryContainer;
                 return control.themeOnSurfaceVariant;
             }
-            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationFast } }
+            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         MeoBadge {

@@ -112,13 +112,15 @@ SpinBox {
             enabled: !MeoTheme.reduceMotion
             ColorAnimation {
                 duration: MeoTheme.motionDurationState
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
         Behavior on radius {
             enabled: !MeoTheme.reduceMotion
             NumberAnimation {
                 duration: MeoTheme.motionDurationShapeSettle
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }

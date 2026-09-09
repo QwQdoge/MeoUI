@@ -113,7 +113,7 @@ Item {
         function test_wavyMotionRespectsReducedMotion() {
             const savedReduceMotion = MeoTheme.reduceMotion
             MeoTheme.reduceMotion = false
-            compare(standardSlider.motionWaveDuration, MeoTheme.motionDurationFor(666))
+            compare(standardSlider.motionWaveDuration, MeoTheme.motionDurationWaveCycle)
             MeoTheme.reduceMotion = true
             compare(standardSlider.motionWaveDuration, 0)
             compare(standardSlider.waveAnimationActive, false)

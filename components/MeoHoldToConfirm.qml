@@ -133,7 +133,7 @@ Button {
             Behavior on radius {
                 NumberAnimation {
                     duration: MeoTheme.motionDurationSelection
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
                 }
             }
         }
@@ -143,7 +143,7 @@ Button {
             radius: control.height / 2
             color: Qt.rgba(control.foregroundColor.r, control.foregroundColor.g, control.foregroundColor.b, 0.18)
             visible: control.holding && control.progress > 0
-            Behavior on width { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : 40 } }
+            Behavior on width { NumberAnimation { duration: MeoTheme.motionDurationHoldRelease; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
         }
         MeoStateLayer {
             anchors.fill: parent

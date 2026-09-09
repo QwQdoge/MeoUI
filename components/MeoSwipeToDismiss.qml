@@ -98,7 +98,7 @@ Item {
 
         Behavior on opacity {
             enabled: !control.reducedMotion
-            NumberAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.bezierCurve: MeoTheme.motionEasingStandard }
+            NumberAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
 
         Rectangle {
@@ -141,7 +141,7 @@ Item {
             property: "x"
             to: 0
             duration: control.reducedMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
 
         NumberAnimation {
@@ -150,7 +150,7 @@ Item {
             property: "x"
             to: control.width
             duration: control.reducedMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             onFinished: {
                 control.leftActionTriggered()
                 control.dismissedInDirection(control.isRightToLeft ? "endToStart" : "startToEnd")
@@ -164,7 +164,7 @@ Item {
             property: "x"
             to: -control.width
             duration: control.reducedMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             onFinished: {
                 control.rightActionTriggered()
                 control.dismissedInDirection(control.isRightToLeft ? "startToEnd" : "endToStart")
@@ -176,7 +176,7 @@ Item {
     // Optional: Auto-hide height when dismissed
     Behavior on implicitHeight {
         enabled: !control.reducedMotion
-        NumberAnimation { duration: MeoTheme.motionDurationPage; easing.bezierCurve: MeoTheme.motionEasingStandard }
+        NumberAnimation { duration: MeoTheme.motionDurationPage; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
     }
 
     states: [

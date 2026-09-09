@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(MeoUI VERSION 1.0.3 LANGUAGES CXX)
+include(CTest)
 set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
 
@@ -32,6 +33,53 @@ if(COMMAND qt_policy)
     if(QT_KNOWN_POLICY_QTP0004)
         qt_policy(SET QTP0004 NEW)
     endif()
+endif()
+
+# Use Qt 6 explicitly. On this host /usr/bin/qmltestrunner is still Qt 5 and
+# silently cannot load this module, which previously left CTest with no QML
+# coverage at all.
+if(BUILD_TESTING)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    # Do not reuse a cached Qt 5 runner from an earlier configuration.
+    # /usr/bin/qmltestrunner is Qt 5 on several supported hosts.
+    unset(MEOUI_QMLTESTRUNNER CACHE)
+    find_program(MEOUI_QMLTESTRUNNER
+        NAMES qmltestrunner
+        # qmake6's QT_HOST_BINS is /usr/lib/qt6/bin on Arch; keep that
+        # before the generic prefix, whose /usr/bin runner can be Qt 5.
+        PATHS "/usr/lib/qt6/bin" "${QT6_INSTALL_PREFIX}/bin"
+        NO_DEFAULT_PATH
+        REQUIRED
+    )
+
+    function(add_meoui_qml_test test_name test_file)
+        add_test(
+            NAME ${test_name}
+            COMMAND ${MEOUI_QMLTESTRUNNER}
+                    -input "${CMAKE_CURRENT_SOURCE_DIR}/validation/${test_file}"
+                    -import "${CMAKE_CURRENT_BINARY_DIR}"
+                    -o -,txt
+        )
+        set_tests_properties(${test_name} PROPERTIES
+            ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+        )
+    endfunction()
+
+    add_meoui_qml_test(meoui.quick_settings_tile tst_quick_settings_tile.qml)
+    add_meoui_qml_test(meoui.month_calendar tst_month_calendar.qml)
+    add_meoui_qml_test(meoui.motion_theme tst_theme_source.qml)
+    add_meoui_qml_test(meoui.status_center tst_status_center.qml)
+    add_meoui_qml_test(meoui.exposed_dropdown tst_exposed_dropdown.qml)
+    add_test(
+        NAME meoui.design_system_usage
+        COMMAND ${Python3_EXECUTABLE}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tools/verify-design-system-usage.py"
+                --mode library
+                "${CMAKE_CURRENT_SOURCE_DIR}/components"
+                "${CMAKE_CURRENT_SOURCE_DIR}/widgets"
+                "${CMAKE_CURRENT_SOURCE_DIR}/patterns"
+                "${CMAKE_CURRENT_SOURCE_DIR}/showcase"
+    )
 endif()
 
 set_source_files_properties(MeoTheme.qml MeoMotion.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)

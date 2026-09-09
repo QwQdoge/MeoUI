@@ -138,20 +138,20 @@ Frame {
 
             Behavior on color {
                 enabled: !control.reducedMotion
-                ColorAnimation { duration: control.motionFast }
+                ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
             Behavior on radius {
                 enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionShape
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
             Behavior on scale {
                 enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionFast
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
         }

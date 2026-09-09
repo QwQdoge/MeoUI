@@ -379,7 +379,7 @@ Control {
                 enabled: !MeoTheme.reduceMotion
                 ColorAnimation {
                     duration: MeoTheme.motionDurationSelection
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
                 }
             }
         }
@@ -420,7 +420,7 @@ Control {
                 enabled: !MeoTheme.reduceMotion
                 NumberAnimation {
                     duration: MeoTheme.motionDurationEffectDefault
-                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
         }

@@ -20,7 +20,7 @@ MeoMotionPopup {
     property real maximumMenuWidth: 320 * themeGlobalScale
     property real preferredMenuWidth: 240 * themeGlobalScale
     property int currentIndex: -1
-    property int submenuDelay: MeoTheme.reduceMotion ? 0 : 120
+    property int submenuDelay: MeoTheme.motionSubmenuDelay
     property var parentMenu: null
     signal submenuRequested(int index, var item, Item anchor)
 
@@ -359,7 +359,7 @@ MeoMotionPopup {
 
                             Behavior on color {
                                 enabled: !MeoTheme.reduceMotion
-                                ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+                                ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
                             }
 
                             MeoStateLayer {

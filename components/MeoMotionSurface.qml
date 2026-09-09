@@ -85,7 +85,7 @@ Item {
         Behavior on color {
             ColorAnimation {
                 duration: MeoTheme.motionDurationEffectSlow
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }
@@ -98,7 +98,7 @@ Item {
         Behavior on color {
             ColorAnimation {
                 duration: MeoTheme.motionDurationEffectSlow
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }
@@ -108,17 +108,17 @@ Item {
         color: control.resolvedColor
         border.width: 1
         border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.16)
-        Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+        Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
         Behavior on color {
             ColorAnimation {
                 duration: MeoTheme.motionDurationEffectSlow
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
         Behavior on border.color {
             ColorAnimation {
                 duration: MeoTheme.motionDurationEffectSlow
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }

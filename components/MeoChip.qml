@@ -125,11 +125,11 @@ Control {
         border.color: control.activeFocus ? control.themePrimary : control.outlineColor
 
         scale: hitArea.pressed ? 0.975 : 1.0
-        Behavior on color { ColorAnimation { duration: control.motionFast } }
+        Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         Behavior on scale {
             NumberAnimation {
                 duration: control.motionFast
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 
@@ -198,7 +198,7 @@ Control {
             anchors.verticalCenter: parent.verticalCenter
 
             Behavior on scale {
-                NumberAnimation { duration: control.motionFast }
+                NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
             onIconChanged: {
                 scale = 0.86
@@ -210,7 +210,7 @@ Control {
                 property: "scale"
                 to: 1.0
                 duration: control.motionSelection
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 

@@ -147,7 +147,7 @@ Item {
                             }
                             NumberAnimation {
                                 duration: control.motionDuration
-                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
                     }
@@ -222,10 +222,10 @@ Item {
         }
 
         enter: Transition {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.motionDuration; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.motionDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate }
         }
         exit: Transition {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationEffectDefault; easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate }
         }
     }
 

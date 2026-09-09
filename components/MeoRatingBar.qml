@@ -109,7 +109,7 @@ Row {
                 Behavior on color {
                     ColorAnimation {
                         duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
             }

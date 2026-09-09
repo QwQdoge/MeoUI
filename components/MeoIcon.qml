@@ -42,7 +42,7 @@ Text {
     Behavior on fillLevel {
         NumberAnimation {
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
 
@@ -51,7 +51,7 @@ Text {
     Behavior on color {
         ColorAnimation {
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasized
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
         }
     }
 }

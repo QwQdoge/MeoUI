@@ -11,7 +11,7 @@ Item {
     property bool dragged: false
     property bool focusRingEnabled: true
     property bool rippleEnabled: true
-    property color color: "#000000" // 默认覆盖颜色（通常为 On-Surface 或 Primary）
+    property color color: MeoTheme.contentOnSurface
     property real radius: 0
     // Connected groups need one continuous outer silhouette: only the first
     // and last item inherit the container corners.  Keep this in the shared
@@ -42,9 +42,9 @@ Item {
     readonly property real focusOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityFocus !== 'undefined') ? MeoTheme.stateOpacityFocus : 0.10
     readonly property real pressedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityPressed !== 'undefined') ? MeoTheme.stateOpacityPressed : 0.10
     readonly property real draggedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityDragged !== 'undefined') ? MeoTheme.stateOpacityDragged : 0.16
-    readonly property int hoverDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationFast !== 'undefined') ? MeoTheme.motionDurationFast : 120
-    readonly property int rippleExpandDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleExpand !== 'undefined') ? MeoTheme.motionDurationRippleExpand : 280
-    readonly property int rippleFadeDuration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationRippleFade !== 'undefined') ? MeoTheme.motionDurationRippleFade : 160
+    readonly property int hoverDuration: MeoTheme.motionDurationFast
+    readonly property int rippleExpandDuration: MeoTheme.motionDurationRippleExpand
+    readonly property int rippleFadeDuration: MeoTheme.motionDurationRippleFade
 
     anchors.fill: parent
     width: parent ? parent.width : 0
@@ -128,7 +128,7 @@ Item {
             Behavior on opacity {
                 NumberAnimation {
                     duration: control.hoverDuration
-                    easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
                 }
             }
         }
@@ -162,7 +162,7 @@ Item {
             opacity: control.enabled && control.focused && control.focusRingEnabled ? 0.78 : 0
 
             Behavior on opacity {
-                NumberAnimation { duration: control.hoverDuration }
+                NumberAnimation { duration: control.hoverDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
         }
     }
@@ -174,7 +174,7 @@ Item {
         from: 0
         to: rippleLayer.targetRadius
         duration: control.rippleExpandDuration
-        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasizedDecelerate !== 'undefined') ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasizedDecelerate !== 'undefined') ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
     }
 
     NumberAnimation {
@@ -183,7 +183,7 @@ Item {
         property: "opacity"
         to: control.pressedOpacity
         duration: control.hoverDuration
-        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
     }
 
     NumberAnimation {
@@ -192,7 +192,7 @@ Item {
         property: "opacity"
         to: 0
         duration: control.hoverDuration
-        easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
     }
 
     readonly property real stateOpacity: {

@@ -167,7 +167,7 @@ Control {
                     Behavior on width {
                         NumberAnimation {
                             duration: control.motionSelectDuration
-                            easing.bezierCurve: MeoTheme.motionEasingStandard
+                            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                         }
                     }
                 }
@@ -191,7 +191,7 @@ Control {
                     }
                 }
 
-                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // 🔤 标签文本

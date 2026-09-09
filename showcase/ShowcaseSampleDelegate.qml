@@ -226,6 +226,21 @@ Item {
                     selected: index === 0
                 }
             }
+
+            Repeater {
+                model: [
+                    { "label": "State", "duration": MeoTheme.motionDurationState },
+                    { "label": "Selection", "duration": MeoTheme.motionDurationSelection },
+                    { "label": "Popup enter", "duration": MeoTheme.motionDurationPopupEffectsEnter },
+                    { "label": "Page enter", "duration": MeoTheme.motionDurationPageEnter },
+                    { "label": "Sheet enter", "duration": MeoTheme.motionDurationSheetEnter },
+                    { "label": "Indicator cycle", "duration": MeoTheme.motionDurationIndeterminateCycle }
+                ]
+                delegate: MeoChip {
+                    required property var modelData
+                    label: modelData.label + " · " + modelData.duration + " ms"
+                }
+            }
         }
     }
     Component { id: windowMetricsSample; Flow { spacing: MeoTheme.space8; Repeater { model: [{"label":"Compact","width":599},{"label":"Medium","width":600},{"label":"Expanded","width":840},{"label":"Large","width":1200},{"label":"Extra-large","width":1600}]; delegate: MeoChip { required property var modelData; label: modelData.label + " · " + modelData.width; selected: modelData.width === 840 } } } }

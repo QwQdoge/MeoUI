@@ -91,15 +91,15 @@ Control {
 
                 Behavior on width {
                     enabled: !control.reducedMotion
-                    NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+                    NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
                 }
                 Behavior on height {
                     enabled: !control.reducedMotion
-                    NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+                    NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
                 }
                 Behavior on color {
                     enabled: !control.reducedMotion
-                    ColorAnimation { duration: MeoTheme.motionDurationShort4; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    ColorAnimation { duration: MeoTheme.motionDurationShort4; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                 }
 
                 TapHandler {

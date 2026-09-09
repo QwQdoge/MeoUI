@@ -9,8 +9,11 @@ Control {
 
     property string label: ""
     property var model: []
+    property string textRole: ""
+    property string valueRole: ""
     property string text: ""
     property int currentIndex: -1
+    property var currentValue
     property bool isError: false
     property string errorText: ""
     property string type: "filled"
@@ -42,14 +45,33 @@ Control {
 
     onTextChanged: syncIndexFromText()
     onModelChanged: syncIndexFromText()
-    onCurrentIndexChanged: syncTextFromIndex()
-    Component.onCompleted: syncIndexFromText()
+    onCurrentIndexChanged: syncSelectionFromIndex()
+    onCurrentValueChanged: syncIndexFromValue()
+    Component.onCompleted: {
+        if (currentValue !== undefined)
+            syncIndexFromValue()
+        else
+            syncIndexFromText()
+    }
 
     function optionText(index) {
         if (index < 0 || index >= optionCount)
             return ""
         const option = model[index]
-        return option === undefined || option === null ? "" : String(option)
+        if (option === undefined || option === null)
+            return ""
+        if (textRole !== "" && typeof option === "object")
+            return String(option[textRole] === undefined ? "" : option[textRole])
+        return String(option)
+    }
+
+    function optionValue(index) {
+        if (index < 0 || index >= optionCount)
+            return undefined
+        const option = model[index]
+        if (valueRole !== "" && option && typeof option === "object")
+            return option[valueRole]
+        return option
     }
 
     function indexOfText(value) {
@@ -65,14 +87,32 @@ Control {
             return
         _synchronizingSelection = true
         currentIndex = indexOfText(text)
+        currentValue = currentIndex >= 0 ? optionValue(currentIndex) : undefined
         _synchronizingSelection = false
     }
 
-    function syncTextFromIndex() {
+    function syncSelectionFromIndex() {
         if (_synchronizingSelection || currentIndex < 0 || currentIndex >= optionCount)
             return
         _synchronizingSelection = true
         text = optionText(currentIndex)
+        currentValue = optionValue(currentIndex)
+        _synchronizingSelection = false
+    }
+
+    function syncIndexFromValue() {
+        if (_synchronizingSelection || currentValue === undefined)
+            return
+        _synchronizingSelection = true
+        let match = -1
+        for (let index = 0; index < optionCount; ++index) {
+            if (optionValue(index) === currentValue) {
+                match = index
+                break
+            }
+        }
+        currentIndex = match
+        text = match >= 0 ? optionText(match) : ""
         _synchronizingSelection = false
     }
 
@@ -83,6 +123,7 @@ Control {
         _synchronizingSelection = true
         currentIndex = index
         text = value
+        currentValue = optionValue(index)
         _synchronizingSelection = false
         selected(index, value)
     }

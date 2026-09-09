@@ -8,7 +8,7 @@ import MeoUI
 Control {
     id: control
 
-    property color color: "#6750a4"
+    property color color: MeoTheme.primary
     property string label: ""
     property string helperText: ""
     // Expose the actual editable field rather than a one-way snapshot binding,
@@ -59,7 +59,7 @@ Control {
             id: colorField
             width: Math.max(0, parent.width - swatch.width - parent.spacing)
             label: control.label
-            placeholder: "#6750a4"
+            placeholder: MeoTheme.primary.toString().toLowerCase()
             helperText: control.valid ? control.helperText : qsTr("Use a six-digit color such as #4285f4")
             isError: !control.valid && text.trim() !== ""
             errorText: qsTr("Enter a valid #RRGGBB color")

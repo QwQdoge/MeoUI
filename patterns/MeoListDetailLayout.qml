@@ -55,10 +55,10 @@ Item {
         visible: control.isCompact
 
         initialItem: control.listComponent
-        pushEnter: Transition { NumberAnimation { property: "x"; from: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; to: 0; duration: MeoTheme.motionDurationPage; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-        pushExit: Transition { NumberAnimation { property: "opacity"; from: 1; to: 0; duration: MeoTheme.motionDurationState } }
-        popEnter: Transition { NumberAnimation { property: "opacity"; from: 0; to: 1; duration: MeoTheme.motionDurationState } }
-        popExit: Transition { NumberAnimation { property: "x"; from: 0; to: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; duration: MeoTheme.motionDurationPage; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate } }
+        pushEnter: Transition { NumberAnimation { property: "x"; from: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; to: 0; duration: MeoTheme.motionDurationPage; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+        pushExit: Transition { NumberAnimation { property: "opacity"; from: 1; to: 0; duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+        popEnter: Transition { NumberAnimation { property: "opacity"; from: 0; to: 1; duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+        popExit: Transition { NumberAnimation { property: "x"; from: 0; to: MeoTheme.reduceMotion ? 0 : stackView.width * 0.08; duration: MeoTheme.motionDurationPage; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate } }
 
         onCurrentItemChanged: {
             // Logic to sync with showDetail if needed

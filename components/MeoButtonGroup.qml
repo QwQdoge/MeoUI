@@ -228,7 +228,7 @@ Control {
                 shadowColor: MeoTheme.shadow
             }
 
-            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationEffectDefault } }
+            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Row {
@@ -335,11 +335,11 @@ Control {
 
                             Behavior on radius {
                                 enabled: !MeoTheme.reduceMotion
-                                NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+                                NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
                             }
                             Behavior on color {
                                 enabled: !MeoTheme.reduceMotion
-                                ColorAnimation { duration: MeoTheme.motionDurationState }
+                                ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                             }
                         }
 
@@ -354,7 +354,7 @@ Control {
                             Behavior on opacity {
                                 NumberAnimation {
                                     duration: MeoTheme.motionDurationEffectDefault
-                                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                                 }
                             }
                         }
@@ -377,7 +377,7 @@ Control {
                             height: parent.height - 16 * control.themeGlobalScale
                             color: control.outlined ? control.themeOutline : control.themeOutlineVariant
                             opacity: !control.isStandard && groupButton.index > 0 && !groupButton.selected ? 0.78 : 0
-                            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+                            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                         }
                     }
 
@@ -408,7 +408,7 @@ Control {
                                 lineHeight: (control.fontToken.lineHeight || 20) * control.themeGlobalScale
                                 verticalAlignment: Text.AlignVCenter
                                 anchors.verticalCenter: parent.verticalCenter
-                                Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState } }
+                                Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                             }
                         }
                     }

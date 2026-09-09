@@ -162,7 +162,7 @@ Control {
                         Behavior on opacity {
                             NumberAnimation {
                                 duration: segmentButton.selected ? MeoTheme.motionDurationSelection : MeoTheme.motionDurationState
-                                easing.bezierCurve: segmentButton.selected ? MeoTheme.motionEasingEmphasizedDecelerate : MeoTheme.motionEasingEmphasizedAccelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: segmentButton.selected ? MeoTheme.motionEasingEmphasizedDecelerate : MeoTheme.motionEasingEmphasizedAccelerate
                             }
                         }
                     }
@@ -186,7 +186,7 @@ Control {
                         color: control.enabled ? control.themeOutline
                                                : Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.12)
                         opacity: index > 0 && !segmentButton.selected && !segmentButton.previousSelected ? 1 : 0
-                        Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+                        Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                     }
                 }
 
@@ -206,7 +206,7 @@ Control {
                                 size: control.size === "xl" ? 24 * control.themeGlobalScale : 18 * control.themeGlobalScale
                                 color: segmentButton.foreground
                                 opacity: segmentButton.selected || segmentButton.itemIcon.length > 0 ? 1 : 0
-                                Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+                                Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                             }
                         }
 
@@ -221,7 +221,7 @@ Control {
                             verticalAlignment: Text.AlignVCenter
                             elide: Text.ElideRight
                             anchors.verticalCenter: parent.verticalCenter
-                            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState } }
+                            Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                         }
                     }
                 }

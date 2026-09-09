@@ -13,10 +13,10 @@ Flickable {
     property alias model: repeater.model
     property real padding: (windowMetrics.pageMargin || 16 * themeGlobalScale)
 
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property var fontTitleLarge: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.titleLarge !== 'undefined') ? MeoTheme.titleLarge : { "size": 22, "weight": Font.Normal }
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property var fontTitleLarge: MeoTheme.titleLarge
 
-    ScrollBar.vertical: ScrollBar {}
+    ScrollBar.vertical: MeoScrollBar {}
 
     MeoWindowMetrics {
         id: windowMetrics
@@ -44,10 +44,10 @@ Flickable {
 
         Text {
             text: control.title
-            font.family: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontFamily !== 'undefined') ? MeoTheme.fontFamily : "sans-serif"
-            font.pixelSize: fontTitleLarge.size * (typeof MeoTheme !== 'undefined' && typeof MeoTheme.fontScale !== 'undefined' ? MeoTheme.fontScale * control.themeGlobalScale : control.themeGlobalScale)
+            font.family: MeoTheme.fontFamily
+            font.pixelSize: fontTitleLarge.size * MeoTheme.fontScale * control.themeGlobalScale
             font.weight: fontTitleLarge.weight
-            color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurface !== 'undefined') ? MeoTheme.contentOnSurface : "#1C1B1F"
+            color: MeoTheme.contentOnSurface
             bottomPadding: 16 * control.themeGlobalScale
             visible: text !== ""
         }
@@ -94,7 +94,7 @@ Flickable {
                             MeoIcon {
                                 icon: "chevron_right"
                                 size: 24 * control.themeGlobalScale
-                                color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.contentOnSurfaceVariant !== 'undefined') ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+                                color: MeoTheme.contentOnSurfaceVariant
                             }
                         }
 

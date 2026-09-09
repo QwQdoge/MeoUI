@@ -169,10 +169,10 @@ Control {
             enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionMedium
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
-        Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionPage } }
+        Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionPage; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
     }
 
     contentItem: Loader {
@@ -223,7 +223,7 @@ Control {
             enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionMedium
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -255,8 +255,8 @@ Control {
                     return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
                 return "transparent"
             }
-            Behavior on radius { enabled: !control.reducedMotion; NumberAnimation { duration: control.motionFast } }
-            Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionFast } }
+            Behavior on radius { enabled: !control.reducedMotion; NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         contentItem: MeoIcon {
@@ -272,7 +272,7 @@ Control {
             enabled: !control.reducedMotion
             NumberAnimation {
                 duration: control.motionFast
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }

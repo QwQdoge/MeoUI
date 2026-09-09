@@ -159,7 +159,9 @@ Control {
         loops: Animation.Infinite
         from: 0.0
         to: 1.0
-        duration: Math.max(1, Math.round(1000 * MeoTheme.effectiveMotionScale))
+        duration: Math.max(1, MeoTheme.motionDurationWaveCycle)
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: MeoTheme.motionEasingLinear
     }
 
     NumberAnimation on indeterminateLinearPhase {
@@ -168,8 +170,8 @@ Control {
         loops: Animation.Infinite
         from: 0.0
         to: 1.0
-        duration: Math.max(1, Math.round(1750 * MeoTheme.effectiveMotionScale))
-        easing.type: Easing.Linear
+        duration: Math.max(1, MeoTheme.motionDurationProgressLinearCycle)
+        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear
     }
 
     Canvas {
@@ -495,7 +497,7 @@ Control {
                 enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
         }
@@ -515,7 +517,7 @@ Control {
                 enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
         }
@@ -552,7 +554,7 @@ Control {
                 enabled: !control.reduceMotion
                 NumberAnimation {
                     duration: control.motionDuration
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
         }
@@ -586,8 +588,8 @@ Control {
                 loops: Animation.Infinite
                 from: control.mirrored ? (parent ? parent.width : 240) : -width
                 to: control.mirrored ? -width : (parent ? parent.width : 240)
-                duration: Math.max(1, Math.round(1100 * MeoTheme.effectiveMotionScale))
-                easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                duration: Math.max(1, MeoTheme.motionDurationProgressPillTravel)
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
             }
         }
     }
@@ -628,16 +630,16 @@ Control {
                         property: "indeterminateArcLength"
                         from: 30
                         to: 270
-                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                        duration: Math.max(1, MeoTheme.motionDurationProgressCircularPhase)
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcStart"
                         from: -90
                         to: 45
-                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                        duration: Math.max(1, MeoTheme.motionDurationProgressCircularPhase)
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
                 ParallelAnimation {
@@ -646,16 +648,16 @@ Control {
                         property: "indeterminateArcLength"
                         from: 270
                         to: 30
-                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                        duration: Math.max(1, MeoTheme.motionDurationProgressCircularPhase)
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                     NumberAnimation {
                         target: circularCanvas
                         property: "indeterminateArcStart"
                         from: 45
                         to: 270
-                        duration: Math.max(1, Math.round(1333 * MeoTheme.effectiveMotionScale))
-                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                        duration: Math.max(1, MeoTheme.motionDurationProgressCircularPhase)
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
                 ScriptAction { script: circularCanvas.indeterminateArcStart = -90 }

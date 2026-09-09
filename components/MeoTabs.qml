@@ -150,7 +150,7 @@ Control {
                             enabled: !MeoTheme.reduceMotion
                             NumberAnimation {
                                 duration: MeoTheme.motionDurationSelection
-                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
                     }
@@ -202,7 +202,7 @@ Control {
                                        : tabItem.unselectedContentColor
                                 Behavior on color {
                                     enabled: !MeoTheme.reduceMotion
-                                    ColorAnimation { duration: MeoTheme.motionDurationState }
+                                    ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                                 }
                             }
 
@@ -228,7 +228,7 @@ Control {
                             enabled: !MeoTheme.reduceMotion
                             NumberAnimation {
                                 duration: MeoTheme.motionDurationSelection
-                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
                     }

@@ -58,7 +58,7 @@ Control {
     implicitHeight: Math.max(control.containerHeight, contentFlow.implicitHeight + (control.type === "filled" ? (control.label !== "" ? 28 : 16) : 16) * themeGlobalScale) + (size === "xs" ? 0 : helperSpace)
 
     opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
-    Behavior on opacity { NumberAnimation { duration: control.motionFast } }
+    Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
     readonly property var currentFont: {
         if (size === "xs") return fontBodySmall;
@@ -129,15 +129,15 @@ Control {
                 visible: control.type === "filled"
             }
 
-            Behavior on color { ColorAnimation { duration: control.motionFast; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             border.color: control.type === "outlined" ? control.indicatorColor : "transparent"
             border.width: control.type === "outlined" ? (control.activeFocus ? 2 : 1) : 0
 
-            Behavior on border.color { ColorAnimation { duration: control.motionFast } }
-            Behavior on radius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
-            Behavior on topLeftRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
-            Behavior on topRightRadius { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on border.color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on radius { NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on topLeftRadius { NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
+            Behavior on topRightRadius { NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
 
             Rectangle {
                 id: activeIndicator
@@ -148,8 +148,8 @@ Control {
                 color: control.indicatorColor
                 visible: control.type === "filled"
 
-                Behavior on height { NumberAnimation { duration: control.motionFast; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-                Behavior on color { ColorAnimation { duration: control.motionFast } }
+                Behavior on height { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
         }
     }
@@ -245,8 +245,8 @@ Control {
 
             readonly property var labelFont: overlayLayer.isCollapsed ? MeoTheme.labelSmallEmphasized : control.currentFont
 
-            Behavior on y { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-            Behavior on scale { NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on y { NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on scale { NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             Rectangle {
                 anchors.fill: parent
@@ -270,7 +270,7 @@ Control {
                     return control.themeOnSurfaceVariant;
                 }
 
-                Behavior on color { ColorAnimation { duration: control.motionFast } }
+                Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
         }
     }
@@ -299,7 +299,7 @@ Control {
                 return control.isError ? control.themeError : control.themeOnSurfaceVariant;
             }
             elide: Text.ElideRight
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Text {

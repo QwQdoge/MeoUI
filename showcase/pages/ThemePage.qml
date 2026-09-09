@@ -57,7 +57,7 @@ ShowcaseCategoryPage {
                         MeoText { text: Math.round(MeoTheme.cornerScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
-                    Slider {
+                    MeoSlider {
                         Layout.fillWidth: true
                         from: 0.2
                         to: 2.5
@@ -76,7 +76,7 @@ ShowcaseCategoryPage {
                         MeoText { text: Math.round(MeoTheme.globalScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
-                    Slider {
+                    MeoSlider {
                         Layout.fillWidth: true
                         from: 0.8
                         to: 1.5
@@ -101,7 +101,7 @@ ShowcaseCategoryPage {
                         MeoText { text: Math.round(MeoTheme.fontScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
-                    Slider {
+                    MeoSlider {
                         Layout.fillWidth: true
                         from: 0.8
                         to: 1.4
@@ -120,7 +120,7 @@ ShowcaseCategoryPage {
                         MeoText { text: Math.round(MeoTheme.motionScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
-                    Slider {
+                    MeoSlider {
                         Layout.fillWidth: true
                         from: 0.5
                         to: 2.0

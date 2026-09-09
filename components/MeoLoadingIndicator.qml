@@ -38,8 +38,8 @@ Control {
     // guesses.  Source: androidx-main cb385ff0850af6dd89bdea7f9df340fe4950a6eb,
     // LoadingIndicator.kt (Apache-2.0), independently expressed through
     // MeoMotion's analytic spring sampler.
-    readonly property int morphInterval: Math.max(1, Math.round(650 * themeMotionScale))
-    readonly property int globalRotationDuration: Math.max(1, Math.round(4666 * themeMotionScale))
+    readonly property int morphInterval: Math.max(1, MeoTheme.motionDurationLoadingMorph)
+    readonly property int globalRotationDuration: Math.max(1, MeoTheme.motionDurationLoadingRotation)
     readonly property var morphSpring: MeoMotion.springSpec(0.6, 200)
 
     // Official 7-Shape Sequence
@@ -101,6 +101,8 @@ Control {
                     from: 0
                     to: 360
                     duration: control.globalRotationDuration
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingLinear
                 }
             }
 

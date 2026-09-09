@@ -62,7 +62,7 @@ Item {
             id: yBehavior
             NumberAnimation {
                 duration: MeoTheme.motionDurationSheetEnter
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
 

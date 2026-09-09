@@ -131,8 +131,8 @@ ShowcaseCategoryPage {
                     width: 96 * MeoTheme.globalScale
                     height: 96 * MeoTheme.globalScale
                     color: MeoTheme.primary
-                    fromShape: fromCombo.currentText
-                    toShape: toCombo.currentText
+                    fromShape: fromCombo.text
+                    toShape: toCombo.text
                     morphProgress: progressSlider.value
                     rawSpringProgress: progressSlider.value + (overshootCheck.checked ? 0.25 * Math.sin(progressSlider.value * Math.PI) : 0)
                     rotationAngle: rotSlider.value
@@ -144,7 +144,7 @@ ShowcaseCategoryPage {
                     RowLayout {
                         spacing: MeoTheme.space8
                         MeoText { text: "From Shape:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
-                        ComboBox {
+                        MeoExposedDropdown {
                             id: fromCombo
                             model: ["SoftBurst", "Circle", "Cookie9Sided", "Pentagon", "Pill", "Sunny", "Cookie4Sided", "Oval", "Heart"]
                             currentIndex: 0
@@ -154,7 +154,7 @@ ShowcaseCategoryPage {
                     RowLayout {
                         spacing: MeoTheme.space8
                         MeoText { text: "To Shape:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
-                        ComboBox {
+                        MeoExposedDropdown {
                             id: toCombo
                             model: ["Cookie9Sided", "SoftBurst", "Pentagon", "Pill", "Sunny", "Cookie4Sided", "Oval", "Circle", "Heart"]
                             currentIndex: 0
@@ -164,7 +164,7 @@ ShowcaseCategoryPage {
                     RowLayout {
                         spacing: MeoTheme.space8
                         MeoText { text: "Progress (0..1):"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
-                        Slider {
+                        MeoSlider {
                             id: progressSlider
                             from: 0.0
                             to: 1.0
@@ -175,7 +175,7 @@ ShowcaseCategoryPage {
                     RowLayout {
                         spacing: MeoTheme.space8
                         MeoText { text: "Rotation Angle:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
-                        Slider {
+                        MeoSlider {
                             id: rotSlider
                             from: 0
                             to: 360
@@ -246,7 +246,7 @@ ShowcaseCategoryPage {
                 spacing: MeoTheme.space12
                 Layout.alignment: Qt.AlignHCenter
                 MeoText { text: "Determinate Progress:"; typeRole: "label"; typeSize: "medium" }
-                Slider {
+                MeoSlider {
                     id: detSlider
                     from: 0.0
                     to: 1.0

@@ -19,6 +19,10 @@ Item {
 
         function init() {
             dropdown.enabled = true
+            dropdown.model = ["Development", "Staging", "Production"]
+            dropdown.textRole = ""
+            dropdown.valueRole = ""
+            dropdown.currentValue = undefined
             dropdown.text = ""
             dropdown.currentIndex = -1
             dropdown.type = "filled"
@@ -38,6 +42,23 @@ Item {
             compare(dropdown.currentIndex, 2)
             dropdown.moveSelection(-5)
             compare(dropdown.currentIndex, 0)
+        }
+
+        function test_objectRolesSynchronizeValueTextAndIndex() {
+            dropdown.textRole = "label"
+            dropdown.valueRole = "id"
+            dropdown.model = [
+                { "id": "dev", "label": "Development" },
+                { "id": "prod", "label": "Production" }
+            ]
+
+            dropdown.currentValue = "prod"
+            compare(dropdown.currentIndex, 1)
+            compare(dropdown.text, "Production")
+
+            dropdown.selectIndex(0)
+            compare(dropdown.currentValue, "dev")
+            compare(dropdown.text, "Development")
         }
 
         function test_menuStateAndDisabledContract() {

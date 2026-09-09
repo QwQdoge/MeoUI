@@ -46,7 +46,7 @@ Popup {
             shadowEnabled: true
             shadowBlur: 0.2
             shadowVerticalOffset: 2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(0,0,0,0.2)
+            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
         }
     }
 
@@ -148,15 +148,15 @@ Popup {
     enter: Transition {
         enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.OutCubic }
-            NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+            NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
         }
     }
     exit: Transition {
         enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.InCubic }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.8; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.InCubic }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: MeoTheme.motionDurationEffectFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
+            NumberAnimation { property: "scale"; from: 1.0; to: 0.8; duration: MeoTheme.motionDurationSpatialFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
         }
     }
 }

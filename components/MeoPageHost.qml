@@ -202,35 +202,35 @@ Item {
             from: 0
             to: 1
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationPage
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
         NumberAnimation {
             target: control.incomingLoader
             property: "x"
             to: 0
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationPage
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
         NumberAnimation {
             target: control.incomingLoader
             property: "scale"
             to: 1
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationPage
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
         NumberAnimation {
             target: control.outgoingLoader
             property: "opacity"
             to: 0
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationMedium2
-            easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate
         }
         NumberAnimation {
             target: control.outgoingLoader
             property: "x"
             to: MeoTheme.reduceMotion ? 0 : -control.transitionDistance * 0.35 * (control.direction < 0 ? -1 : 1)
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationMedium2
-            easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate
         }
 
         onFinished: {

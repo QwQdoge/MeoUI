@@ -33,11 +33,11 @@ Control {
     opacity: visible ? 1 : 0
     Behavior on scale {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+        NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
     }
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: MeoTheme.motionDurationShort3 }
+        NumberAnimation { duration: MeoTheme.motionDurationShort3; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
     }
 
     background: Rectangle {
@@ -47,11 +47,11 @@ Control {
         border.color: Qt.rgba(control.contentColor.r, control.contentColor.g, control.contentColor.b, 0.16)
         Behavior on color {
             enabled: !MeoTheme.reduceMotion
-            ColorAnimation { duration: MeoTheme.motionDurationMedium1 }
+            ColorAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
         Behavior on radius {
             enabled: !MeoTheme.reduceMotion
-            NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+            NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
         }
     }
 
@@ -66,7 +66,7 @@ Control {
             MeoIcon { anchors.centerIn: parent; icon: control.icon; size: 22; color: control.contentColor }
             Behavior on radius {
                 enabled: !MeoTheme.reduceMotion
-                NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+                NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
             }
         }
         Column {

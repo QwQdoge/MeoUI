@@ -131,7 +131,7 @@ Flickable {
                         // application to fork its page title.
                         fontScaleOverride: control.isCompact ? 0.78 : 1.0
                         emphasized: true
-                        color: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurface !== "undefined") ? MeoTheme.contentOnSurface : "#1C1B1F"
+                        color: MeoTheme.contentOnSurface
                         wrapMode: Text.WordWrap
                     }
 
@@ -141,7 +141,7 @@ Flickable {
                         visible: text !== ""
                         typeRole: "body"
                         typeSize: "big"
-                        color: (typeof MeoTheme !== "undefined" && typeof MeoTheme.contentOnSurfaceVariant !== "undefined") ? MeoTheme.contentOnSurfaceVariant : "#49454F"
+                        color: MeoTheme.contentOnSurfaceVariant
                         wrapMode: Text.WordWrap
                     }
                 }

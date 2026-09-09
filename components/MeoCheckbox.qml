@@ -209,10 +209,10 @@ Control {
                     }
 
                     Behavior on animationProgress {
-                        NumberAnimation { duration: control.motionCheckDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { duration: control.motionCheckDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                     }
                     Behavior on indeterminateMorph {
-                        NumberAnimation { duration: control.motionCheckDuration; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { duration: control.motionCheckDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                     }
 
                     onPaint: {
@@ -260,8 +260,8 @@ Control {
                     }
                 }
 
-                Behavior on color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on color { ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on border.color { ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // 🔤 标签文本

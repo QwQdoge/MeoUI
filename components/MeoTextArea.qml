@@ -95,9 +95,9 @@ TextArea {
                 if (control.type === "outlined") return control.hovered ? control.themeOnSurface : control.themeOutline
                 return "transparent"
             }
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
-            Behavior on border.color { ColorAnimation { duration: control.motionFast } }
-            Behavior on border.width { NumberAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on border.color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on border.width { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Rectangle {
@@ -115,8 +115,8 @@ TextArea {
                 if (control.activeFocus) return control.themePrimary
                 return control.themeOnSurfaceVariant
             }
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
-            Behavior on height { NumberAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on height { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Text {
@@ -132,7 +132,7 @@ TextArea {
             font.pixelSize: control.fontLabel.size * control.themeGlobalScale
             font.weight: control.fontLabel.weight
             color: control.isError ? control.themeError : (control.activeFocus ? control.themePrimary : control.themeOnSurfaceVariant)
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Row {

@@ -65,10 +65,10 @@ Control {
     // focused control is redirected before its visual action changes.
     activeFocusOnTab: enabled && !busy && !unavailable
     z: dragHandler.active ? 100 : 0
-    opacity: !enabled || unavailable ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
+    opacity: !enabled || busy || unavailable ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: MeoTheme.motionDurationState }
+        NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
     }
     Accessible.role: Accessible.Button
     Accessible.name: title
@@ -137,7 +137,7 @@ Control {
             Behavior on color {
                 ColorAnimation {
                     duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
                 }
             }
             MeoStateLayer {
@@ -404,17 +404,21 @@ Control {
         property bool longPressConsumed: false
         z: 1
         anchors.fill: parent
+        // The detail action is its own 44dp target. Do not let the tile's
+        // primary pointer catcher compete for that same hit region.
+        anchors.rightMargin: detailsButton.visible ? detailsButton.width
+                                                  + detailsButton.anchors.rightMargin : 0
         enabled: control.enabled && !control.busy && !control.unavailable && (!control.editMode || control.editSelectable)
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: longPressConsumed = false
-        onPressAndHold: function(mouse) {
-            if (mouse.button === Qt.LeftButton && control.detailsEnabled
-                    && control.detailsOnLongPress && !control.editMode) {
+        function handleLongPress() {
+            if (control.detailsEnabled && control.detailsOnLongPress && !control.editMode) {
                 longPressConsumed = true
                 control.requestDetails()
             }
         }
+        onPressAndHold: handleLongPress()
         onClicked: function(mouse) {
             if (longPressConsumed) {
                 longPressConsumed = false

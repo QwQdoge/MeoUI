@@ -40,7 +40,7 @@ Control {
     readonly property bool reduceMotion: MeoTheme.reduceMotion
     readonly property int motionStateDuration: MeoTheme.motionDurationState
     readonly property int motionTrackDuration: MeoTheme.motionDurationSelection
-    readonly property int motionWaveDuration: reduceMotion ? 0 : 720
+    readonly property int motionWaveDuration: MeoTheme.motionDurationWaveCycle
 
     function compositeColor(foreground, opacity, background) {
         return Qt.rgba(foreground.r * opacity + background.r * (1 - opacity),
@@ -137,8 +137,8 @@ Control {
                 height: standardTrack.height
                 radius: height / 2
                 color: control.resolvedActiveTrackColor
-                Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
-                Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
+                Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // Android 16 / Pixel expressive range track: three independent pills.
@@ -152,7 +152,7 @@ Control {
                 height: control.renderedTrackHeight
                 radius: height / 2
                 color: control.resolvedInactiveTrackColor
-                Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
+                Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             Rectangle {
@@ -165,8 +165,8 @@ Control {
                 height: control.renderedTrackHeight
                 radius: height / 2
                 color: control.resolvedActiveTrackColor
-                Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
-                Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
+                Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             Rectangle {
@@ -179,8 +179,8 @@ Control {
                 height: control.renderedTrackHeight
                 radius: height / 2
                 color: control.resolvedInactiveTrackColor
-                Behavior on x { NumberAnimation { duration: control.motionTrackDuration } }
-                Behavior on width { NumberAnimation { duration: control.motionTrackDuration } }
+                Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
             // Tick marks intentionally stay on the classic compact track.
@@ -266,7 +266,7 @@ Control {
                     to: 40 * control.themeGlobalScale
                     duration: Math.max(1, control.motionWaveDuration)
                     loops: Animation.Infinite
-                    easing.type: Easing.Linear
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear
                 }
             }
         }
@@ -338,7 +338,7 @@ Control {
                      : "transparent"
             Behavior on color {
                 enabled: !control.reduceMotion
-                ColorAnimation { duration: control.motionStateDuration }
+                ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
         }
     }

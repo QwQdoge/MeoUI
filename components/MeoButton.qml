@@ -210,7 +210,7 @@ Button {
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            Behavior on opacity { NumberAnimation { duration: control.motionFast } }
+            Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         MeoLoadingIndicator {
@@ -224,11 +224,11 @@ Button {
             color: control.textColor
             vibrant: false
             withContainer: control.loadingWithContainer
-            Behavior on opacity { NumberAnimation { duration: control.motionFast } }
+            Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             Behavior on scale {
                 NumberAnimation {
                     duration: control.motionSelection
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
                 }
             }
         }
@@ -269,12 +269,12 @@ Button {
                 color: control.stateColor
             }
 
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             Behavior on radius {
                 enabled: control.bouncy && !MeoTheme.reduceMotion
                 NumberAnimation {
                     duration: control.motionShape
-                    easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
                 }
             }
         }

@@ -89,13 +89,13 @@ Button {
     Behavior on implicitWidth {
         NumberAnimation {
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
     Behavior on implicitHeight {
         NumberAnimation {
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
 
@@ -124,11 +124,11 @@ Button {
 
         Behavior on radius {
             enabled: !MeoTheme.reduceMotion
-            NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
+            NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
         }
         Behavior on color {
             enabled: !MeoTheme.reduceMotion
-            ColorAnimation { duration: MeoTheme.motionDurationSelection }
+            ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
 
         MeoStateLayer {
@@ -193,7 +193,7 @@ Button {
                 Behavior on reveal {
                     NumberAnimation {
                         duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
-                        easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                     }
                 }
             }

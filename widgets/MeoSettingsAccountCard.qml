@@ -60,7 +60,7 @@ Control {
                 enabled: !control.reducedMotion
                 ColorAnimation {
                     duration: MeoTheme.motionDurationEffectDefault
-                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
         }
@@ -86,7 +86,7 @@ Control {
             border.color: MeoTheme.primary
             opacity: control.activeFocus ? 1 : 0
 
-            Behavior on opacity { enabled: !control.reducedMotion; NumberAnimation { duration: MeoTheme.motionDurationEffectDefault } }
+            Behavior on opacity { enabled: !control.reducedMotion; NumberAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         MouseArea {
@@ -105,7 +105,7 @@ Control {
 
         Behavior on opacity {
             enabled: !control.reducedMotion
-            NumberAnimation { duration: MeoTheme.motionDurationEffectDefault }
+            NumberAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
 
         MeoAvatar {

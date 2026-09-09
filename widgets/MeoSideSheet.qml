@@ -28,7 +28,7 @@ Rectangle {
     border.width: 1
     border.color: Qt.rgba(themeOutline.r, themeOutline.g, themeOutline.b, 0.22)
 
-    Behavior on x { NumberAnimation { duration: control.isOpen ? MeoTheme.motionDurationSheetEnter : MeoTheme.motionDurationSheetExit; easing.bezierCurve: control.isOpen ? MeoTheme.motionEasingEmphasizedDecelerate : MeoTheme.motionEasingEmphasizedAccelerate } }
+    Behavior on x { NumberAnimation { duration: control.isOpen ? MeoTheme.motionDurationSheetEnter : MeoTheme.motionDurationSheetExit; easing.type: Easing.BezierSpline; easing.bezierCurve: control.isOpen ? MeoTheme.motionEasingEmphasizedDecelerate : MeoTheme.motionEasingEmphasizedAccelerate } }
 
     Column {
         anchors.fill: parent

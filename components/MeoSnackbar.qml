@@ -137,15 +137,15 @@ Popup {
     enter: Transition {
         enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: control.motionEnter }
-            NumberAnimation { property: "scale"; from: 0.94; to: 1; duration: control.motionEnter; easing.type: Easing.OutCubic }
+            NumberAnimation { property: "opacity"; from: 0; to: 1; duration: control.motionEnter; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+            NumberAnimation { property: "scale"; from: 0.94; to: 1; duration: control.motionEnter; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
         }
     }
     exit: Transition {
         enabled: !MeoTheme.reduceMotion
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1; to: 0; duration: control.motionExit }
-            NumberAnimation { property: "scale"; from: 1; to: 0.97; duration: control.motionExit; easing.type: Easing.InCubic }
+            NumberAnimation { property: "opacity"; from: 1; to: 0; duration: control.motionExit; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+            NumberAnimation { property: "scale"; from: 1; to: 0.97; duration: control.motionExit; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
         }
     }
 }

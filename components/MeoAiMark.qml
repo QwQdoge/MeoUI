@@ -1,15 +1,15 @@
 import QtQuick
+import MeoUI
 
 /// Canonical Meo AI identity mark.
 ///
-/// This fixed brand mark intentionally does not inherit a dynamic scheme: the
-/// supplied lavender field, filled monogram, and curved sparkle are the AI
-/// identity itself rather than a generic Material icon.
+/// The geometry is stable identity artwork; its default colors follow the
+/// active Material scheme so the mark belongs to the surrounding surface.
 Item {
     id: root
 
-    property color containerColor: "#A289ED"
-    property color markColor: "#FFFFFF"
+    property color containerColor: MeoTheme.tertiaryContainer
+    property color markColor: MeoTheme.contentOnTertiaryContainer
     // Units are relative to the 64-by-64 canonical drawing grid.
     property real cornerRadius: 14.5
 

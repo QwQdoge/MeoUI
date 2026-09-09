@@ -52,12 +52,12 @@ Rectangle {
     color: isContextual ? themePrimaryContainer : themeSurface
     Behavior on color {
         enabled: !MeoTheme.reduceMotion
-        ColorAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+        ColorAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
     }
 
     Behavior on height {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+        NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
     }
 
     Rectangle {
@@ -136,9 +136,9 @@ Rectangle {
 
             Behavior on font.pixelSize {
                 enabled: !control.flexible && !MeoTheme.reduceMotion
-                NumberAnimation { duration: control.motionMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
+                NumberAnimation { duration: control.motionMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized }
             }
-            Behavior on color { ColorAnimation { duration: control.motionFast } }
+            Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         Row {

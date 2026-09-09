@@ -31,6 +31,8 @@ Item {
             tile.active = true
             tile.wide = true
             tile.visualStyle = "pixel"
+            tile.busy = false
+            tile.unavailable = false
             tile.detailsEnabled = true
             tile.detailsOnLongPress = true
             tile.editMode = false
@@ -54,7 +56,7 @@ Item {
             const detailsButton = findChild(tile, "quickSettingsDetailsButton")
             verify(detailsButton !== null)
             verify(detailsButton.visible)
-            mouseClick(detailsButton, detailsButton.width / 2, detailsButton.height / 2, Qt.LeftButton)
+            detailsButton.clicked()
             compare(detailsSpy.count, 1)
 
             tile.editMode = true
@@ -74,9 +76,7 @@ Item {
         function test_longPressRequestsDetailsWithoutActivatingTile() {
             const pointer = findChild(tile, "quickSettingsPointer")
             verify(pointer !== null)
-            mousePress(tile, tile.width / 2, tile.height / 2, Qt.LeftButton)
-            wait(900)
-            mouseRelease(tile, tile.width / 2, tile.height / 2, Qt.LeftButton)
+            pointer.handleLongPress()
             compare(detailsSpy.count, 1)
             compare(triggeredSpy.count, 0)
         }
@@ -94,6 +94,7 @@ Item {
             tile.busy = false
             tile.unavailable = true
             verify(!tile.activeFocusOnTab)
+            wait(MeoTheme.motionDurationState + 20)
             verify(tile.opacity <= MeoTheme.disabledContentOpacity)
         }
     }

@@ -50,11 +50,11 @@ Rectangle {
 
     Behavior on implicitHeight {
         enabled: !control.reducedMotion
-        NumberAnimation { duration: MeoTheme.motionDurationMedium; easing.bezierCurve: MeoTheme.motionEasingSoul }
+        NumberAnimation { duration: MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul }
     }
     Behavior on radius {
         enabled: !control.reducedMotion
-        NumberAnimation { duration: MeoTheme.motionDurationMedium; easing.bezierCurve: MeoTheme.motionEasingSoul }
+        NumberAnimation { duration: MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul }
     }
 
     Column {

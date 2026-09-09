@@ -56,14 +56,14 @@ ToolTip {
                 from: 0.0
                 to: 1.0
                 duration: control.motionEffectFast
-                easing.type: Easing.OutCubic
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
                 property: "scale"
                 from: 0.8
                 to: 1.0
                 duration: control.motionSpatialFast
-                easing.type: Easing.OutCubic
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -75,14 +75,14 @@ ToolTip {
                 from: 1.0
                 to: 0.0
                 duration: control.motionEffectFast
-                easing.type: Easing.InCubic
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "scale"
                 from: 1.0
                 to: 0.8
                 duration: control.motionSpatialFast
-                easing.type: Easing.InCubic
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
         }
     }

@@ -12,9 +12,9 @@ Item {
     property string adaptiveMode: "adaptive" // "adaptive" | "stacked" (compact) | "side-by-side" (expanded)
 
     // 🌟 作用域与主题安全防御
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
-    readonly property int motionMedium: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionDurationMedium !== "undefined") ? MeoTheme.motionDurationMedium : 220
-    readonly property var motionEasing: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingStandard !== "undefined") ? MeoTheme.motionEasingStandard : [0.2, 0.0, 0, 1.0]
+    readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property int motionMedium: MeoTheme.motionDurationMedium
+    readonly property var motionEasing: MeoTheme.motionEasingStandard
 
     // Canonical Layout dimensions (M3)
     readonly property real expandedPaneWidth: 360 * themeGlobalScale
@@ -49,7 +49,7 @@ Item {
             Behavior on width {
                 NumberAnimation {
                     duration: control.motionMedium
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
 
@@ -65,7 +65,7 @@ Item {
                 Behavior on opacity {
                     NumberAnimation {
                         duration: control.motionMedium
-                        easing.bezierCurve: control.motionEasing
+                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
             }
@@ -86,20 +86,20 @@ Item {
             Behavior on x {
                 NumberAnimation {
                     duration: control.motionMedium
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
 
             Behavior on width {
                 NumberAnimation {
                     duration: control.motionMedium
-                    easing.bezierCurve: control.motionEasing
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                 }
             }
 
             Rectangle {
                 anchors.fill: parent
-                color: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.surface !== 'undefined') ? MeoTheme.surface : "#FFFBFE"
+                color: MeoTheme.surface
 
                 Loader {
                     anchors.fill: parent

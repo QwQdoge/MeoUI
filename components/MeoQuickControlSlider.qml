@@ -42,7 +42,7 @@ Control {
     opacity: enabled ? 1 : MeoTheme.disabledContentOpacity
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: MeoTheme.motionDurationState }
+        NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
     }
     // The actual Qt Slider owns the slider semantic, matching AOSP's
     // ToggleSeekBar rather than exposing a duplicate slider on this wrapper.
@@ -111,7 +111,7 @@ Control {
                 color: control.activeContainerColor
                 Behavior on width {
                     enabled: control.animateExternalChanges && !control.tracking && !MeoTheme.reduceMotion
-                    NumberAnimation { duration: MeoTheme.motionDurationExternalValue; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate }
+                    NumberAnimation { duration: MeoTheme.motionDurationExternalValue; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate }
                 }
             }
             Rectangle {

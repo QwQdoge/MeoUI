@@ -46,7 +46,7 @@ Item {
             enabled: !MeoTheme.reduceMotion
             ColorAnimation {
                 duration: MeoTheme.motionDurationEffectDefault
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }

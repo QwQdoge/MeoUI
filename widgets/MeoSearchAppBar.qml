@@ -52,7 +52,7 @@ Rectangle {
             enabled: !control.reducedMotion
             NumberAnimation {
                 duration: MeoTheme.motionDurationSelection
-                easing.bezierCurve: MeoTheme.motionEasingEmphasized
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized
             }
         }
     }

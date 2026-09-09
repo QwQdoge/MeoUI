@@ -168,8 +168,8 @@ Control {
                         return control.isError ? control.themeError : control.themeOutline
                     }
 
-                    Behavior on color { ColorAnimation { duration: control.motionFast } }
-                    Behavior on border.color { ColorAnimation { duration: control.motionFast } }
+                    Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+                    Behavior on border.color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
                     Rectangle {
                         id: thumb
@@ -209,22 +209,22 @@ Control {
                                                      : control.themeSurfaceContainerHighest
                             fill: control.checked
                             opacity: visible ? 1.0 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: control.motionFast } }
+                            Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                         }
 
                         Behavior on width {
                             NumberAnimation {
                                 duration: control.motionSelection
-                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
                         Behavior on x {
                             NumberAnimation {
                                 duration: control.motionSelection
-                                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                             }
                         }
-                        Behavior on color { ColorAnimation { duration: control.motionFast } }
+                        Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                     }
                 }
 
@@ -245,7 +245,7 @@ Control {
                     Behavior on x {
                         NumberAnimation {
                             duration: control.motionSelection
-                            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                         }
                     }
                 }

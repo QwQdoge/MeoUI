@@ -205,8 +205,8 @@ MeoCard {
                     x: parent.width / 2 + Math.sin(control.selectorAngle * Math.PI / 180) * control.selectorRadius - width / 2
                     y: parent.height / 2 - Math.cos(control.selectorAngle * Math.PI / 180) * control.selectorRadius - height / 2
 
-                    Behavior on x { NumberAnimation { duration: control.motionSelection } }
-                    Behavior on y { NumberAnimation { duration: control.motionSelection } }
+                    Behavior on x { NumberAnimation { duration: control.motionSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear } }
+                    Behavior on y { NumberAnimation { duration: control.motionSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
                 }
 
                 Rectangle {
@@ -334,7 +334,7 @@ MeoCard {
             onClicked: control.activeUnit = isHour ? "hour" : "minute"
         }
 
-        Behavior on color { ColorAnimation { duration: control.motionFast } }
+        Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
     }
 
     component PeriodSelector: Item {
@@ -370,7 +370,7 @@ MeoCard {
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: control.isPM = modelData === "PM"
                     }
-                    Behavior on color { ColorAnimation { duration: control.motionFast } }
+                    Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 }
             }
         }

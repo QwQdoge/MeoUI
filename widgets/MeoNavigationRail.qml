@@ -106,7 +106,7 @@ Rectangle {
             duration: control.resizeInstantly || MeoTheme.reduceMotion
                       ? 0
                       : MeoTheme.motionDurationSelection
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
 
@@ -262,7 +262,7 @@ Rectangle {
                                     Behavior on color {
                                         ColorAnimation {
                                             duration: MeoTheme.motionDurationState
-                                            easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
+                                            easing.type: Easing.BezierSpline; easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
                                         }
                                     }
                                 }
@@ -289,13 +289,13 @@ Rectangle {
                                             Behavior on width {
                                                 NumberAnimation {
                                                     duration: MeoTheme.motionDurationSelection
-                                                    easing.bezierCurve: MeoTheme.motionEasingEnter
+                                                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEnter
                                                 }
                                             }
                                             Behavior on color {
                                                 ColorAnimation {
                                                     duration: MeoTheme.motionDurationState
-                                                    easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
+                                                    easing.type: Easing.BezierSpline; easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
                                                 }
                                             }
                                         }

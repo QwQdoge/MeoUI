@@ -60,8 +60,8 @@ Rectangle {
     border.color: focusVisible ? MeoTheme.primary
                                : pixelStyle ? MeoTheme.outlineVariant : "transparent"
 
-    Behavior on border.color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-    Behavior on border.width { NumberAnimation { duration: MeoTheme.motionDurationState; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+    Behavior on border.color { ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+    Behavior on border.width { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
     Row {
         anchors.fill: parent
@@ -120,7 +120,7 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: icon.name !== ""
             opacity: visible ? 1.0 : 0.0
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             onClicked: {
                 if (control.active && control.text !== "") {

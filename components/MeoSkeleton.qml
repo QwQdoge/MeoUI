@@ -52,13 +52,13 @@ Item {
             loops: Animation.Infinite
             NumberAnimation {
                 from: 0.62; to: 0.9
-                duration: MeoTheme.motionDurationFor(900)
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                duration: MeoTheme.motionDurationSkeletonPulse
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
             NumberAnimation {
                 from: 0.9; to: 0.62
-                duration: MeoTheme.motionDurationFor(900)
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                duration: MeoTheme.motionDurationSkeletonPulse
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
 
@@ -84,9 +84,11 @@ Item {
                 target: shimmer
                 from: -control.width * 2
                 to: control.width
-                duration: MeoTheme.motionDurationFor(1500)
+                duration: MeoTheme.motionDurationSkeletonShimmer
                 running: control.animationActive && control.animationStyle === "shimmer"
                 loops: Animation.Infinite
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: MeoTheme.motionEasingLinear
             }
         }
     }

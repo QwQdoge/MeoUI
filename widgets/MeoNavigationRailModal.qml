@@ -95,7 +95,7 @@ MeoMotionPopup {
             from: MeoTheme.reduceMotion ? 0 : -control.width
             to: 0
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSheetEnter
-            easing.bezierCurve: MeoTheme.motionEasingEnter
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEnter
         }
     }
 
@@ -105,7 +105,7 @@ MeoMotionPopup {
             from: 0
             to: MeoTheme.reduceMotion ? 0 : -control.width
             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSheetExit
-            easing.bezierCurve: MeoTheme.motionEasingExit
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingExit
         }
     }
 

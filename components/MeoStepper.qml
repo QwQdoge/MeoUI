@@ -281,6 +281,6 @@ Control {
     opacity: enabled ? 1.0 : MeoTheme.disabledContentOpacity
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
-        NumberAnimation { duration: MeoTheme.motionDurationState }
+        NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
     }
 }

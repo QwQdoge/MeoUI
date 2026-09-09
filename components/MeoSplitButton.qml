@@ -129,10 +129,10 @@ Control {
                     shadowColor: MeoTheme.shadow
                 }
 
-                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
+                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
                 MeoStateLayer {
                     anchors.fill: parent
@@ -211,10 +211,10 @@ Control {
                     shadowColor: MeoTheme.shadow
                 }
 
-                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
-                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection } }
+                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
                 MeoStateLayer {
                     anchors.fill: parent
@@ -241,7 +241,7 @@ Control {
                     Behavior on rotation {
                         NumberAnimation {
                             duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSpatialFast
-                            easing.bezierCurve: MeoTheme.motionEasingStandard
+                            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                         }
                     }
                 }

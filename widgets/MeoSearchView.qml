@@ -147,16 +147,16 @@ Popup {
 
     enter: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.bezierCurve: MeoTheme.motionEasingSoul }
-            NumberAnimation { property: "scale"; from: control.docked ? 0.96 : 0.98; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationLong2; easing.bezierCurve: MeoTheme.motionEasingSoul }
-            NumberAnimation { target: mainColumn; property: "opacity"; from: 0.0; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium }
+            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul }
+            NumberAnimation { property: "scale"; from: control.docked ? 0.96 : 0.98; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationLong2; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul }
+            NumberAnimation { target: mainColumn; property: "opacity"; from: 0.0; to: 1.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
     }
 
     exit: Transition {
         ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
-            NumberAnimation { property: "scale"; from: 1.0; to: control.docked ? 0.96 : 0.98; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
+            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
+            NumberAnimation { property: "scale"; from: 1.0; to: control.docked ? 0.96 : 0.98; duration: control.reducedMotion ? 0 : MeoTheme.motionDurationMedium; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate }
         }
     }
 }

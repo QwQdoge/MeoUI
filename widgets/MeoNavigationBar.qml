@@ -152,15 +152,14 @@ Rectangle {
                             Behavior on width {
                                 NumberAnimation {
                                     duration: control.motionSelection
-                                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                                 }
                             }
                             Behavior on color {
                                 ColorAnimation {
                                     duration: control.motionState
-                                    easing.bezierCurve: destination.isSelected
-                                                        ? MeoTheme.motionEasingEnter
-                                                        : MeoTheme.motionEasingExit
+                                    easing.type: Easing.BezierSpline
+                                    easing.bezierCurve: MeoTheme.motionEasingStandard
                                 }
                             }
                         }

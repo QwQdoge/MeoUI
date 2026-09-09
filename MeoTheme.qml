@@ -445,45 +445,59 @@ QtObject {
     readonly property var motionDurationInstant: motionDurationShort1
     // Interactive desktop feedback needs to acknowledge a pointer immediately.
     // Longer values stay reserved for spatial transitions rather than hover/press.
-    readonly property var motionDurationFast: motionDurationFor(120)
-    readonly property var motionDurationMedium: motionDurationFor(220)
-    readonly property var motionDurationSlow: motionDurationFor(320)
-    readonly property int motionDurationPanelState: motionDurationFor(100)
-    readonly property int motionDurationRippleExpand: motionDurationFor(300)
-    readonly property int motionDurationRippleFade: motionDurationFor(150)
-    readonly property int motionDurationPopupEffectsEnter: motionDurationFor(200)
-    readonly property int motionDurationPopupEffectsExit: motionDurationFor(150)
-    readonly property int motionDurationDisclosureEnter: motionDurationFor(250)
-    readonly property int motionDurationDisclosureExit: motionDurationFor(200)
-    readonly property int motionDurationPageEnter: motionDurationFor(300)
-    readonly property int motionDurationPageExit: motionDurationFor(200)
-    readonly property int motionDurationCalendarPage: motionDurationFor(250)
-    readonly property int motionDurationExternalValue: motionDurationFor(200)
-    readonly property int motionDurationState: motionDurationFor(100)
-    readonly property int motionDurationSelection: motionDurationFor(220)
-    readonly property int motionDurationShapeEnter: motionDurationFor(140)
-    readonly property int motionDurationShapeSettle: motionDurationFor(220)
-    readonly property int motionDurationDialogEnter: motionDurationFor(240)
-    readonly property int motionDurationDialogExit: motionDurationFor(160)
-    readonly property int motionDurationMenuEnter: motionDurationFor(160)
-    readonly property int motionDurationMenuExit: motionDurationFor(120)
-    readonly property int motionDurationSheetEnter: motionDurationFor(320)
-    readonly property int motionDurationSheetExit: motionDurationFor(220)
-    readonly property int motionDurationPage: motionDurationFor(320)
-    readonly property int motionDurationTooltipExit: motionDurationFor(100)
+    readonly property var motionDurationFast: motionDurationShort2
+    readonly property var motionDurationMedium: motionDurationMedium1
+    readonly property var motionDurationSlow: motionDurationMedium3
+    readonly property int motionDurationPanelState: motionDurationShort2
+    readonly property int motionDurationRippleExpand: motionDurationMedium2
+    readonly property int motionDurationRippleFade: motionDurationShort3
+    readonly property int motionDurationPopupEffectsEnter: motionDurationMedium1
+    readonly property int motionDurationPopupEffectsExit: motionDurationShort3
+    readonly property int motionDurationDisclosureEnter: motionDurationMedium2
+    readonly property int motionDurationDisclosureExit: motionDurationShort4
+    readonly property int motionDurationPageEnter: motionDurationMedium3
+    readonly property int motionDurationPageExit: motionDurationMedium1
+    readonly property int motionDurationCalendarPage: motionDurationMedium2
+    readonly property int motionDurationExternalValue: motionDurationShort4
+    readonly property int motionDurationState: motionDurationShort2
+    readonly property int motionDurationSelection: motionDurationShort4
+    readonly property int motionDurationShapeEnter: motionDurationShort3
+    readonly property int motionDurationShapeSettle: motionDurationMedium1
+    readonly property int motionDurationDialogEnter: motionDurationMedium2
+    readonly property int motionDurationDialogExit: motionDurationShort4
+    readonly property int motionDurationMenuEnter: motionDurationShort4
+    readonly property int motionDurationMenuExit: motionDurationShort3
+    readonly property int motionDurationSheetEnter: motionDurationMedium4
+    readonly property int motionDurationSheetExit: motionDurationMedium2
+    readonly property int motionDurationPage: motionDurationMedium3
+    readonly property int motionDurationTooltipExit: motionDurationShort2
     // Continuous indicators are intentionally slower than a page transition,
     // but still pass through the same accessibility and speed-scale gateway.
-    readonly property int motionDurationIndeterminateCycle: motionDurationFor(666)
-    readonly property int motionStaggerDelay: motionDurationFor(25)
+    readonly property int motionDurationIndeterminateCycle: motionDurationExtraLong4
+    readonly property int motionDurationWaveCycle: motionDurationExtraLong4
+    readonly property int motionDurationSkeletonPulse: motionDurationExtraLong3
+    readonly property int motionDurationSkeletonShimmer: motionDurationFor(1500)
+    readonly property int motionDurationProgressLinearCycle: motionDurationFor(1750)
+    readonly property int motionDurationProgressPillTravel: motionDurationFor(1100)
+    readonly property int motionDurationProgressCircularPhase: motionDurationFor(1333)
+    readonly property int motionDurationLoadingMorph: motionDurationFor(650)
+    readonly property int motionDurationLoadingRotation: motionDurationFor(4666)
+    readonly property int motionDurationHoldRelease: motionDurationShort1
+    readonly property int motionStaggerDelay: motionDurationShort1
+    readonly property int motionSubmenuDelay: motionDurationShort2
 
     readonly property list<real> motionEasingStandard: [0.2, 0, 0, 1]
     readonly property list<real> motionEasingStandardAccelerate: [0.3, 0, 1, 1]
     readonly property list<real> motionEasingStandardDecelerate: [0, 0, 0, 1]
-    readonly property list<real> motionEasingEmphasized: [0.05, 0.7, 0.1, 1]
+    readonly property list<real> motionEasingEmphasized: [
+        0.05, 0, 0.133333, 0.06, 0.166666, 0.4,
+        0.208333, 0.82, 0.25, 1, 1, 1
+    ]
     readonly property list<real> motionEasingEmphasizedAccelerate: [0.3, 0, 0.8, 0.15]
     readonly property list<real> motionEasingEmphasizedDecelerate: [0.05, 0.7, 0.1, 1]
-    readonly property list<real> motionEasingEnter: [0, 0, 0, 1]
-    readonly property list<real> motionEasingExit: [1, 0, 1, 1]
+    readonly property list<real> motionEasingLinear: [0, 0, 1, 1]
+    readonly property list<real> motionEasingEnter: motionEasingStandardDecelerate
+    readonly property list<real> motionEasingExit: motionEasingStandardAccelerate
 
     // 🌟 M3E Spring Physics Motion Curves (Spatial vs Effect)
     // Deprecated compatibility aliases. These cubic curves are not physical,
@@ -497,14 +511,14 @@ QtObject {
 
     // 🌟 M3E Motion Scheme Categories
     // Spatial Motion (Position, Size, Bounds, Shape Morphing)
-    readonly property int motionDurationSpatialFast: motionDurationFor(120)
-    readonly property int motionDurationSpatialDefault: motionDurationFor(220)
-    readonly property int motionDurationSpatialSlow: motionDurationFor(340)
+    readonly property int motionDurationSpatialFast: motionDurationShort4
+    readonly property int motionDurationSpatialDefault: motionDurationMedium3
+    readonly property int motionDurationSpatialSlow: motionDurationLong2
 
     // Effect Motion (Opacity, Color, State Layer, Scrim - Monotonic without Overshoot)
-    readonly property int motionDurationEffectFast: motionDurationFor(80)
-    readonly property int motionDurationEffectDefault: motionDurationFor(150)
-    readonly property int motionDurationEffectSlow: motionDurationFor(250)
+    readonly property int motionDurationEffectFast: motionDurationShort2
+    readonly property int motionDurationEffectDefault: motionDurationShort4
+    readonly property int motionDurationEffectSlow: motionDurationMedium2
 
     // 🌟 字体族 Token (Font Family Tokens)
     // Consumers may bind these to the platform font provider. Keep a concrete

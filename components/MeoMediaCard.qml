@@ -103,7 +103,7 @@ MeoCard {
                 enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: control.motionFast
-                    easing.bezierCurve: MeoTheme.motionEasingSoul
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul
                 }
             }
 
@@ -114,7 +114,7 @@ MeoCard {
                 visible: control.type === "elevated" && control.level > 0
                 Behavior on color {
                     enabled: !control.reducedMotion
-                    ColorAnimation { duration: control.motionFast }
+                    ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                 }
 
                 layer.enabled: visible && control.visible
@@ -127,7 +127,7 @@ MeoCard {
                             anchors.fill: parent
                             type: control.shape
                             radius: control.radius
-                            color: "white"
+                            color: MeoTheme.contentOnSurface
                         }
                     }
                 }
@@ -170,13 +170,13 @@ MeoCard {
 
             Behavior on color {
                 enabled: !control.reducedMotion
-                ColorAnimation { duration: control.motionFast }
+                ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
             Behavior on radius {
                 enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: mouseArea.containsMouse || mouseArea.pressed ? MeoTheme.motionDurationShapeEnter : MeoTheme.motionDurationShapeSettle
-                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
                 }
             }
         }

@@ -141,7 +141,7 @@ Item {
     Behavior on width {
         NumberAnimation {
             duration: control.motionEnabled ? MeoTheme.motionDurationSpatialDefault : 0
-            easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+            easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
         }
     }
 
@@ -186,13 +186,13 @@ Item {
         Behavior on width {
             NumberAnimation {
                 duration: control.motionEnabled ? MeoTheme.motionDurationSpatialDefault : 0
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
         Behavior on opacity {
             NumberAnimation {
                 duration: control.motionEnabled ? MeoTheme.motionDurationEffectDefault : 0
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }
@@ -216,13 +216,13 @@ Item {
         Behavior on width {
             NumberAnimation {
                 duration: control.motionEnabled ? MeoTheme.motionDurationSpatialDefault : 0
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
         Behavior on opacity {
             NumberAnimation {
                 duration: control.motionEnabled ? MeoTheme.motionDurationEffectDefault : 0
-                easing.bezierCurve: MeoTheme.motionEasingStandard
+                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
             }
         }
     }

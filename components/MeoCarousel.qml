@@ -81,12 +81,12 @@ Control {
                 enabled: !control.reducedMotion
                 NumberAnimation {
                     duration: MeoTheme.motionDurationSelection
-                    easing.bezierCurve: MeoTheme.motionEasingSoul
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingSoul
                 }
             }
             Behavior on opacity {
                 enabled: !control.reducedMotion
-                NumberAnimation { duration: MeoTheme.motionDurationState }
+                NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
 
             Loader {

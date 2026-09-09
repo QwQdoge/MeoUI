@@ -80,8 +80,8 @@ Item {
             header: control.accountHeader ? accountHeaderWrapper : null
             onClicked: (index) => { control.currentIndex = index }
 
-            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
             Component {
                 id: accountHeaderWrapper
@@ -102,8 +102,8 @@ Item {
             header: control.accountHeader
             onClicked: (index) => { control.currentIndex = index }
 
-            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState } }
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         // 3. Main Content Area
@@ -111,7 +111,7 @@ Item {
             width: parent.width - (navRail.visible ? navRail.width : 0) - (navDrawer.visible ? navDrawer.width : 0)
             height: parent.height
 
-            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+            Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
             // Top App Bar (Compact only, with Hamburger)
             MeoTopAppBar {
@@ -208,7 +208,7 @@ Item {
             from: 0.0
             to: 1.0
             duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialDefault !== 'undefined') ? MeoTheme.motionDurationSpatialDefault : 240
-            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+            easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
         }
         NumberAnimation {
             target: pageLoader
@@ -216,7 +216,7 @@ Item {
             from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 1.0 : 0.96
             to: 1.0
             duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
-            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSpringBouncy !== 'undefined') ? MeoTheme.motionEasingSpringBouncy : [0.34, 1.35, 0.64, 1.0]
+            easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSpringBouncy !== 'undefined') ? MeoTheme.motionEasingSpringBouncy : [0.34, 1.35, 0.64, 1.0]
         }
         NumberAnimation {
             target: pageLoader
@@ -224,7 +224,7 @@ Item {
             from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 0 : pageLoader.slideDistance
             to: 0
             duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
-            easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.05, 0.7, 0.1, 1]
+            easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.05, 0.7, 0.1, 1]
         }
     }
 }
