@@ -16,6 +16,9 @@ Item {
     property bool showText: true
     property real iconSize: 18 * MeoTheme.globalScale
     property real spacing: MeoTheme.space4
+    // Hosts pass their per-instance typography preference here.  Keep it at
+    // the shared primitive so a panel adapter never needs a visual text copy.
+    property real textScale: 1.0
 
     implicitWidth: content.implicitWidth
     implicitHeight: Math.max(28 * MeoTheme.globalScale, content.implicitHeight)
@@ -68,6 +71,7 @@ Item {
                     typeRole: "label"
                     typeSize: "small"
                     emphasized: parent.modelData.active === true
+                    fontScaleOverride: control.textScale
                     color: parent.contentColor
                     Accessible.name: parent.modelData.accessibleName || text
                 }
