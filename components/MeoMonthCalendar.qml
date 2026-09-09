@@ -16,6 +16,7 @@ Item {
     // weekday/day grid without duplicating the calendar implementation.
     property bool showHeader: true
     property int firstDayOfWeek: Qt.locale().firstDayOfWeek
+    property bool showWeekNumbers: false
     property var _dayItems: []
     property int _dayItemsRevision: 0
 
@@ -28,7 +29,7 @@ Item {
 
     signal dateSelected(date selected)
 
-    implicitWidth: 300 * MeoTheme.globalScale
+    implicitWidth: (showWeekNumbers ? 336 : 300) * MeoTheme.globalScale
     implicitHeight: (showHeader ? 324 : 268) * MeoTheme.globalScale
 
     onSelectedDateChanged: {
@@ -76,6 +77,18 @@ Item {
         const valueUtc = Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())
         const index = Math.round((valueUtc - firstUtc) / 86400000)
         return index >= 0 && index < 42 ? index : -1
+    }
+
+    // ISO-8601 week number for the first visible date in a calendar row.
+    // This is deliberately computed from the locale-aligned row start, not
+    // from an arbitrary selected day.
+    function weekNumberForRow(row) {
+        const date = dateAt(row * 7)
+        const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+        const weekday = utc.getUTCDay() || 7
+        utc.setUTCDate(utc.getUTCDate() + 4 - weekday)
+        const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1))
+        return Math.ceil((((utc - yearStart) / 86400000) + 1) / 7)
     }
 
     function focusFocusedDay(reason) {
@@ -164,14 +177,24 @@ Item {
             id: weekdayGrid
             Layout.fillWidth: true
             Layout.preferredHeight: 24 * MeoTheme.globalScale
-            columns: 7
+            columns: control.showWeekNumbers ? 8 : 7
+
+            MeoText {
+                visible: control.showWeekNumbers
+                width: weekdayGrid.width / 8
+                height: weekdayGrid.height
+                text: qsTr("Wk")
+                typeRole: "label"; typeSize: "small"; emphasized: true
+                horizontalAlignment: Text.AlignHCenter
+                color: MeoTheme.contentOnSurfaceVariant
+            }
 
             Repeater {
                 model: 7
 
                 delegate: MeoText {
                     required property int index
-                    width: weekdayGrid.width / 7
+                    width: weekdayGrid.width / (control.showWeekNumbers ? 8 : 7)
                     height: weekdayGrid.height
                     text: Qt.formatDate(control.dateAt(index), "ddd")
                     typeRole: "label"
@@ -183,13 +206,40 @@ Item {
             }
         }
 
-        Grid {
-            id: dayGrid
+        Item {
+            id: calendarRows
             Layout.fillWidth: true
             Layout.preferredHeight: 252 * MeoTheme.globalScale
-            columns: 7
 
-            Repeater {
+            Row {
+                anchors.fill: parent
+
+                Column {
+                    id: weekColumn
+                    visible: control.showWeekNumbers
+                    width: visible ? 36 * MeoTheme.globalScale : 0
+                    height: parent.height
+                    Repeater {
+                        model: 6
+                        delegate: MeoText {
+                            required property int index
+                            width: weekColumn.width
+                            height: weekColumn.height / 6
+                            text: String(control.weekNumberForRow(index))
+                            typeRole: "label"; typeSize: "small"
+                            horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                            color: MeoTheme.contentOnSurfaceVariant
+                        }
+                    }
+                }
+
+                Grid {
+                    id: dayGrid
+                    width: parent.width - weekColumn.width
+                    height: parent.height
+                    columns: 7
+
+                    Repeater {
                 id: dayRepeater
                 model: 42
                 onItemAdded: function(index, item) {
@@ -276,6 +326,8 @@ Item {
                                                    : (dayButton.isCurrentMonth ? MeoTheme.contentOnSurface
                                                                                : MeoTheme.contentOnSurfaceVariant))
                         opacity: dayButton.isCurrentMonth ? 1 : 0.55
+                    }
+                }
                     }
                 }
             }

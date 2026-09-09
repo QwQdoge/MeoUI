@@ -952,6 +952,9 @@ Item {
 
             SampleLabel { label: "5. Disabled" }
             MeoQuickControlSlider { width: parent.width; iconName: "light_mode"; label: "Brightness"; accessibleName: "Brightness"; iconAccessibleName: "Display options"; value: 38; enabled: false }
+
+            SampleLabel { label: "6. External value animation" }
+            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: "Hardware volume"; accessibleName: "Hardware volume"; value: 76; animateExternalChanges: true; motionProfile: "pixel" }
         }
     }
     Component {
@@ -975,6 +978,9 @@ Item {
 
             SampleLabel { label: "5. Edit state" }
             MeoQuickSettingsTile { title: "Quick Share"; supportingText: "Contacts"; iconName: "share"; active: true; wide: true; visualStyle: "pixel"; editMode: true; editSelected: true }
+
+            SampleLabel { label: "6. Busy / unavailable" }
+            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Waiting for NetworkManager"; iconName: "wifi"; wide: true; visualStyle: "pixel"; busy: true }
         }
     }
     Component {
@@ -2879,6 +2885,7 @@ Item {
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 7, 26); displayDate: new Date(2026, 7, 1) }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 1, 29); displayDate: new Date(2026, 1, 1) }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 0, 1); displayDate: new Date(2026, 0, 1); firstDayOfWeek: Qt.Monday }
+            MeoMonthCalendar { width: 248 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 0, 1); displayDate: new Date(2026, 0, 1); firstDayOfWeek: Qt.Monday; showWeekNumbers: true }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 7, 31); displayDate: new Date(2026, 8, 1) }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 10, 15); displayDate: new Date(2026, 10, 1); interactive: false }
         }
@@ -3188,11 +3195,12 @@ Item {
         MeoMotionSurface {
             width: 320 * MeoTheme.globalScale
             height: 132 * MeoTheme.globalScale
-            color: MeoTheme.tertiaryContainer
+            surfaceStyle: "tonal"
+            motionProfile: "pixel"
             animateOnCompleted: true
             MeoText {
                 anchors.centerIn: parent
-                text: "Animated surface"
+                text: "Pixel motion surface"
                 typeRole: "title"
                 typeSize: "medium"
                 color: MeoTheme.contentOnTertiaryContainer
@@ -3240,6 +3248,7 @@ Item {
                 width: 300 * MeoTheme.globalScale
                 height: 132 * MeoTheme.globalScale
                 presentation: MeoMotionPopup.Dialog
+                motionProfile: "pixel"
                 MeoText {
                     anchors.centerIn: parent
                     width: parent.width - 2 * MeoTheme.space24

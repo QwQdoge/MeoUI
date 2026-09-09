@@ -39,5 +39,12 @@ Item {
             compare(surface.strokeWidth, 0)
             compare(surface.width, Math.min(calendar.width / 7, 40 * MeoTheme.globalScale))
         }
+
+        function test_weekNumbersUseIsoWeekRows() {
+            calendar.showWeekNumbers = true
+            compare(Math.round(calendar.implicitWidth), Math.round(336 * MeoTheme.globalScale))
+            verify(calendar.weekNumberForRow(0) >= 1)
+            verify(calendar.weekNumberForRow(0) <= 53)
+        }
     }
 }

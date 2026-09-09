@@ -21,6 +21,9 @@ Popup {
                                         : isFullScreen ? MeoTheme.surface
                                                        : MeoTheme.surfaceContainerHigh
     property real scrimOpacity: 0.32
+    property string motionProfile: "pixel"
+    property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
+    property real entranceScale: 0.98
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
@@ -128,14 +131,14 @@ Popup {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: control.enterDuration
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                duration: MeoTheme.motionDurationPopupEffectsEnter
+                easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
                 property: "scale"
-                from: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.92 : control.presentation === MeoMotionPopup.Dialog ? 0.90 : 1
+                from: MeoTheme.reduceMotion ? 1 : control.isMenu ? control.entranceScale : control.presentation === MeoMotionPopup.Dialog ? control.entranceScale : 1
                 to: 1
-                duration: control.enterDuration
+                duration: MeoTheme.motionDurationPopupEffectsEnter
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
@@ -161,14 +164,14 @@ Popup {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: control.exitDuration
+                duration: MeoTheme.motionDurationPopupEffectsExit
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "scale"
                 from: 1
                 to: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.98 : control.presentation === MeoMotionPopup.Dialog ? 0.96 : 1
-                duration: control.exitDuration
+                duration: MeoTheme.motionDurationPopupEffectsExit
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {

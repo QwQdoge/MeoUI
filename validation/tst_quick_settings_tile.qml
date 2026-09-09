@@ -44,8 +44,8 @@ Item {
             verify(surface !== null)
             verify(tile.pixelStyle)
             compare(Math.round(tile.visualHeight), Math.round(80 * MeoTheme.globalScale))
-            compare(tile.activeContainerColor, MeoTheme.primary)
-            compare(tile.activeContentColor, MeoTheme.contentOnPrimary)
+            compare(tile.activeContainerColor, MeoTheme.primaryContainer)
+            compare(tile.activeContentColor, MeoTheme.contentOnPrimaryContainer)
             compare(tile.focusStrokeWidth, MeoTheme.strokeWidthThick)
             compare(tile.focusStrokeColor, MeoTheme.secondaryFixed)
         }
@@ -85,6 +85,16 @@ Item {
             tile.enabled = false
             wait(MeoTheme.motionDurationState + 20)
             compare(tile.opacity, MeoTheme.disabledContentOpacity)
+        }
+
+        function test_busyAndUnavailableStateBlockActions() {
+            tile.busy = true
+            tile.unavailable = false
+            verify(!tile.activeFocusOnTab)
+            tile.busy = false
+            tile.unavailable = true
+            verify(!tile.activeFocusOnTab)
+            verify(tile.opacity <= MeoTheme.disabledContentOpacity)
         }
     }
 }

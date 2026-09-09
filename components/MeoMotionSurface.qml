@@ -7,6 +7,9 @@ Item {
     property string type: "elevated"
     property bool interactive: true
     property bool bouncy: true
+    property string surfaceStyle: "theme" // theme | flat | tonal | translucent
+    property real surfaceOpacity: 1.0
+    property string motionProfile: "pixel"
     property color color: MeoTheme.surfaceContainerLowest
     property real radius: MeoTheme.shapeExtraLarge
     property int elevation: 2
@@ -19,8 +22,16 @@ Item {
     property real entranceScaleStart: 1
     property real entranceOffsetStart: 0
 
-    readonly property var entranceSpatialSpec: MeoMotion.defaultSpatial
-    readonly property var entranceEffectsSpec: MeoMotion.defaultEffects
+    readonly property var entranceSpatialSpec: MeoMotion.spatialSpec(motionProfile, "default")
+    readonly property var entranceEffectsSpec: MeoMotion.effectsSpec("default")
+    readonly property color resolvedColor: {
+        const semantic = surfaceStyle === "flat" ? MeoTheme.surface
+                       : surfaceStyle === "tonal" ? MeoTheme.surfaceContainer
+                       : color
+        const opacity = surfaceStyle === "translucent"
+                        ? Math.max(0.7, Math.min(1, surfaceOpacity)) : 1
+        return Qt.rgba(semantic.r, semantic.g, semantic.b, opacity)
+    }
 
     function reveal(direction) {
         entranceDirection = direction === 0 ? 1 : direction
@@ -94,7 +105,7 @@ Item {
     Rectangle {
         anchors.fill: parent
         radius: control.radius
-        color: control.color
+        color: control.resolvedColor
         border.width: 1
         border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.16)
         Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }

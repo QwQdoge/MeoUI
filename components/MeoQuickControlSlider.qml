@@ -18,6 +18,9 @@ Control {
     property real value: 0
     property bool detailsAvailable: false
     property bool expanded: false
+    property string motionProfile: "pixel"
+    property bool animateExternalChanges: true
+    property bool externalValueChange: false
     // Mirrors the user-facing tracking boundary used by SystemUI brightness
     // controllers. Hosts can use the end signal to persist a final value
     // without conflating it with every in-progress `moved` update.
@@ -106,6 +109,10 @@ Control {
                 width: Math.max(4 * MeoTheme.globalScale, sliderArea.fraction * parent.width)
                 height: parent.height
                 color: control.activeContainerColor
+                Behavior on width {
+                    enabled: control.animateExternalChanges && !control.tracking && !MeoTheme.reduceMotion
+                    NumberAnimation { duration: MeoTheme.motionDurationExternalValue; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate }
+                }
             }
             Rectangle {
                 id: dividerHandle

@@ -13,14 +13,16 @@ Control {
     property bool active: false
     property bool wide: false
     property bool busy: false
+    property bool unavailable: false
+    property string motionProfile: "pixel"
     // "pixel" mirrors the large, touch-first Android quick-settings editor
     // without changing the compact desktop surface that already uses this
     // component.  It is intentionally a geometry variant, not a second color
     // system: both variants continue to consume the active Meo dynamic roles.
     property string visualStyle: "standard" // "standard" | "pixel"
     readonly property bool pixelStyle: visualStyle === "pixel"
-    readonly property color activeContainerColor: pixelStyle ? MeoTheme.primary : MeoTheme.primaryContainer
-    readonly property color activeContentColor: pixelStyle ? MeoTheme.contentOnPrimary : MeoTheme.contentOnPrimaryContainer
+    readonly property color activeContainerColor: MeoTheme.primaryContainer
+    readonly property color activeContentColor: MeoTheme.contentOnPrimaryContainer
     property bool detailsEnabled: false
     // AOSP quick-settings tiles use the secondary action for a long press.
     // Keep this opt-out so hosts that reserve long press for another command
@@ -61,9 +63,9 @@ Control {
     implicitHeight: (pixelStyle ? 80 : (wide ? 72 : 96)) * MeoTheme.globalScale
     // Keep the tab-focus capability stable while entering edit mode. The
     // focused control is redirected before its visual action changes.
-    activeFocusOnTab: enabled && !busy
+    activeFocusOnTab: enabled && !busy && !unavailable
     z: dragHandler.active ? 100 : 0
-    opacity: !enabled ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
+    opacity: !enabled || unavailable ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
         NumberAnimation { duration: MeoTheme.motionDurationState }
@@ -82,20 +84,28 @@ Control {
     Drag.source: control
     Drag.hotSpot.x: width / 2
     Drag.hotSpot.y: height / 2
-    transform: Translate {
-        x: dragHandler.activeTranslation.x
-        y: dragHandler.activeTranslation.y
+    transform: [
+        Translate { x: dragHandler.activeTranslation.x; y: dragHandler.activeTranslation.y },
+        Scale { origin.x: control.width / 2; origin.y: control.visualHeight / 2; xScale: pressSpring.value; yScale: pressSpring.value }
+    ]
+
+    MeoSpringValue {
+        id: pressSpring
+        motionProfile: control.motionProfile
+        speed: "fast"
+        value: 1
+        targetValue: pointer.pressed && !dragHandler.active ? MeoMotion.pressScale(control.motionProfile) : 1
     }
 
     function activateMain() {
-        if (enabled && !busy && editMode && editSelectable)
+        if (enabled && !busy && !unavailable && editMode && editSelectable)
             editSelectionRequested()
-        else if (enabled && !busy && !editMode)
+        else if (enabled && !busy && !unavailable && !editMode)
             triggered()
     }
 
     function requestDetails() {
-        if (enabled && !busy && !editMode && detailsEnabled)
+        if (enabled && !busy && !unavailable && !editMode && detailsEnabled)
             detailsRequested()
     }
 
@@ -309,6 +319,16 @@ Control {
             color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
             elide: Text.ElideRight
         }
+        MeoIcon {
+            visible: control.busy || control.unavailable
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: MeoTheme.space8
+            icon: control.busy ? "progress_activity" : "block"
+            size: 18
+            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+            Accessible.name: control.busy ? qsTr("Working") : qsTr("Unavailable")
+        }
         MeoIconButton {
             objectName: "quickSettingsRemoveButton"
             visible: control.editMode && control.removable
@@ -351,7 +371,7 @@ Control {
         width: 44 * MeoTheme.globalScale
         height: width
         z: 4
-        enabled: control.enabled && !control.busy
+        enabled: control.enabled && !control.busy && !control.unavailable
         // Qt already excludes invisible and disabled items from tab traversal.
         // Keeping this stable avoids changing the flag while this button owns
         // focus during an edit-mode transition.
@@ -384,7 +404,7 @@ Control {
         property bool longPressConsumed: false
         z: 1
         anchors.fill: parent
-        enabled: control.enabled && !control.busy && (!control.editMode || control.editSelectable)
+        enabled: control.enabled && !control.busy && !control.unavailable && (!control.editMode || control.editSelectable)
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onPressed: longPressConsumed = false
