@@ -59,6 +59,13 @@ Item {
             compare(range.pressedThumbWidth, MeoTheme.sliderThumbPressedWidthExpressive)
             compare(range.trackCornerRadius, MeoTheme.sliderTrackCornerRadiusXS)
             verify(range.endStopEnabled)
+            range.discrete = true
+            range.stepSize = 10
+            wait(0)
+            const interiorTick = findChild(range, "meoRangeSliderTick_5")
+            verify(interiorTick !== null)
+            compare(interiorTick.width, MeoTheme.sliderStopSizeExpressive)
+            range.discrete = false
         }
 
         function test_splitTrackUsesSharedAsymmetricCorners() {
@@ -93,6 +100,14 @@ Item {
             compare(range.resolvedThumbColor,
                     range.compositeColor(MeoTheme.contentOnSurface, MeoTheme.disabledContentOpacity, MeoTheme.surface))
             compare(range.Accessible.ignored, true)
+        }
+
+        function test_eachThumbUsesSharedPointerFeedback() {
+            const stateLayer = findChild(range, "meoRangeSliderThumbStateLayer")
+            verify(stateLayer !== null)
+            verify(stateLayer.rippleEnabled)
+            compare(stateLayer.shape, "circle")
+            compare(stateLayer.rippleExpandDuration, MeoTheme.motionDurationRippleExpand)
         }
     }
 }

@@ -9,8 +9,11 @@ text—without copying another product's branding, wording, or layout.
 - `MeoSettingsRow` is a 72dp+ semantic row with a 40dp dynamic tonal icon
   container. Its trailing kind is explicit: `navigation`, `status`, `choice`,
   `toggle`, `action`, or `none`.
-- `MeoSettingsGroup` owns the shared rounded surface, dividers, state layer,
-  and row-end geometry. Do not turn every row into a detached card.
+- `MeoSegmentedList` is the single connected-surface engine. `MeoGroupedList`
+  and `MeoSettingsGroup` preserve their public APIs as adapters over it; they
+  must not duplicate container, separator, or row-position geometry.
+- `MeoSettingsGroup` maps semantic Settings roles onto that engine. Do not turn
+  every row into a detached card.
 - `MeoSettingsTaskSheet` is the only standard third-level Settings surface. It
   retracts on accept, reject, or navigation.
 - `MeoSearchBar` is search-first. Set `trailingIcon: ""` when an account action
@@ -24,6 +27,12 @@ text—without copying another product's branding, wording, or layout.
 - Prefer one comfortable vertical list over dashboard grids for primary
   settings. Keep one primary action per row and keep supporting text to two
   lines maximum.
+- Use 28dp group-end corners, 1dp internal member corners, and a 2dp gap that
+  reveals the page `surface`. A 1dp `outlineVariant` line is an explicit compact
+  alternative, not the Pixel-style default.
+- Every interactive row uses `MeoStateLayer`: 8% hover darkening, 10% pressed
+  darkening plus a pointer-origin ripple, and a primary keyboard focus ring.
+  Disabled rows do not render pointer feedback.
 - Give grouped rows a shared rounded surface and 12–16dp space between groups.
   An index should fit a broad category scan before asking a user to navigate.
 - Keep desktop Settings content around 720–760dp readable width. On compact

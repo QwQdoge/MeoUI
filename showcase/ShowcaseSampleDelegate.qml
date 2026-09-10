@@ -1740,29 +1740,48 @@ Item {
     }
     Component {
         id: groupedListSample
-        Row {
+        Flow {
+            width: 760 * MeoTheme.globalScale
             spacing: MeoTheme.space24
-            MeoGroupedList {
+
+            Column {
                 width: 360 * MeoTheme.globalScale
-                title: "Recent files"
-                subtitle: "A connected list has one shared surface."
-                selectedIndex: 1
-                model: [
-                    { "label": "Release notes", "icon": "article", "trailingText": "Today" },
-                    { "label": "Component audit", "icon": "fact_check", "supportingText": "Updated 10 minutes ago", "badgeText": "3" },
-                    { "label": "Archived draft", "icon": "archive", "enabled": false }
-                ]
+                spacing: MeoTheme.space8
+
+                SampleLabel { label: "Pixel connected surface — 28 / 1 / 2" }
+
+                MeoGroupedList {
+                    width: parent.width
+                    title: "Recent files"
+                    subtitle: "One outer silhouette; every row remains independently interactive."
+                    selectedIndex: 1
+                    model: [
+                        { "label": "Release notes", "icon": "article", "trailingText": "Today" },
+                        { "label": "Component audit", "icon": "fact_check", "supportingText": "Updated 10 minutes ago", "badgeText": "3" },
+                        { "label": "Archived draft", "icon": "archive", "enabled": false }
+                    ]
+                }
             }
-            MeoGroupedList {
-                width: 300 * MeoTheme.globalScale
-                title: "No dividers"
-                showDividers: false
-                showChevron: false
-                model: [
-                    { "label": "One surface", "icon": "layers" },
-                    { "label": "Tonal selection", "icon": "check_circle" }
-                ]
-                selectedIndex: 1
+
+            Column {
+                width: 360 * MeoTheme.globalScale
+                spacing: MeoTheme.space8
+
+                SampleLabel { label: "Optional 1dp line separator" }
+
+                MeoGroupedList {
+                    width: parent.width
+                    title: "Interaction states"
+                    subtitle: "Hover darkens 8%; press adds the shared pointer ripple."
+                    separatorStyle: "line"
+                    dividerInset: 56 * MeoTheme.globalScale
+                    showChevron: false
+                    model: [
+                        { "label": "Hover or press this row", "icon": "touch_app" },
+                        { "label": "Keyboard focus", "icon": "keyboard", "supportingText": "Tab, then Enter or Space" },
+                        { "label": "Unavailable", "icon": "block", "enabled": false }
+                    ]
+                }
             }
         }
     }
@@ -3153,35 +3172,71 @@ Item {
 
     Component {
         id: settingsGroupSample
-        Column {
+        Rectangle {
             width: 520 * MeoTheme.globalScale
-            spacing: MeoTheme.space20
+            implicitHeight: settingsPreview.implicitHeight + 48 * MeoTheme.globalScale
+            radius: MeoTheme.shapeExtraLarge
+            color: MeoTheme.surface
 
-            MeoSettingsGroup {
-                width: parent.width
-                containerColor: MeoTheme.primaryContainer
-                model: [
-                    { "title": "Use cross-device services", "trailingKind": "switch", "checked": true }
-                ]
-            }
+            Column {
+                id: settingsPreview
+                x: 24 * MeoTheme.globalScale
+                y: 24 * MeoTheme.globalScale
+                width: parent.width - 48 * MeoTheme.globalScale
+                spacing: MeoTheme.space20
 
-            MeoText {
-                width: parent.width
-                text: "Other devices signed in to your account will be able to find and share with you."
-                typeRole: "body"
-                typeSize: "large"
-                color: MeoTheme.contentOnSurface
-                wrapMode: Text.WordWrap
-            }
+                MeoIconButton {
+                    type: "tonal"
+                    size: "m"
+                    icon.name: "arrow_back"
+                    Accessible.name: "Back"
+                }
 
-            MeoSettingsGroup {
-                width: parent.width
-                title: "What your devices can do"
-                model: [
-                    { "title": "Call casting", "subtitle": "Move video calls to this device", "leadingIcon": "phone_forwarded", "trailingKind": "none", "interactive": true },
-                    { "title": "Internet sharing", "subtitle": "Let your devices connect to your hotspot and Wi-Fi", "leadingIcon": "wifi", "trailingKind": "none", "interactive": true },
-                    { "title": "Continue activity", "subtitle": "Continue tasks and access apps, media, and notifications", "leadingIcon": "devices", "trailingKind": "none", "interactive": true }
-                ]
+                MeoText {
+                    width: parent.width
+                    text: "Cross-device\nservices"
+                    typeRole: "title"
+                    typeSize: "big"
+                    color: MeoTheme.contentOnSurface
+                    wrapMode: Text.WordWrap
+                }
+
+                MeoSettingsGroup {
+                    width: parent.width
+                    containerColor: MeoTheme.primaryContainer
+                    model: [
+                        { "title": "Use cross-device services", "trailingKind": "switch", "checked": true }
+                    ]
+                }
+
+                MeoText {
+                    width: parent.width
+                    text: "Other devices signed in to your account will be able to find and share with you."
+                    typeRole: "body"
+                    typeSize: "large"
+                    color: MeoTheme.contentOnSurface
+                    wrapMode: Text.WordWrap
+                }
+
+                MeoSettingsGroup {
+                    width: parent.width
+                    title: "What your devices can do"
+                    model: [
+                        { "title": "Call casting", "subtitle": "Move video calls to this device", "leadingIcon": "phone_forwarded", "trailingKind": "none", "interactive": true },
+                        { "title": "Internet sharing", "subtitle": "Let your devices connect to your hotspot and Wi-Fi", "leadingIcon": "wifi", "trailingKind": "none", "interactive": true },
+                        { "title": "Continue activity", "subtitle": "Continue tasks and access apps, media, and notifications", "leadingIcon": "devices", "trailingKind": "none", "interactive": true }
+                    ]
+                }
+
+                MeoSettingsGroup {
+                    width: parent.width
+                    title: "Controls inside the same surface"
+                    model: [
+                        { "title": "Internet sharing", "subtitle": "Allow nearby devices", "leadingIcon": "wifi", "trailingKind": "switch", "checked": true },
+                        { "title": "Device volume", "leadingIcon": "volume_up", "trailingKind": "slider", "value": 62, "sliderSize": "m" },
+                        { "title": "Refresh rate", "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
+                    ]
+                }
             }
         }
     }

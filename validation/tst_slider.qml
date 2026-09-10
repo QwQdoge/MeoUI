@@ -137,6 +137,13 @@ Item {
             verify(trailing.visible)
             compare(leading.width, MeoTheme.sliderStopSizeExpressive)
             compare(trailing.width, MeoTheme.sliderStopSizeExpressive)
+            standardSlider.discrete = true
+            standardSlider.stepSize = 10
+            wait(0)
+            const interiorTick = findChild(standardSlider, "meoSliderTick_5")
+            verify(interiorTick !== null)
+            compare(interiorTick.width, MeoTheme.sliderStopSizeExpressive)
+            standardSlider.discrete = false
             standardSlider.expressive = false
         }
 
@@ -158,6 +165,15 @@ Item {
             compare(standardSlider.Accessible.ignored, true)
             compare(standardSlider.accessibleName, "Room volume")
             compare(standardSlider.accessibleDescription, "50 percent")
+        }
+
+        function test_thumbUsesSharedPointerFeedback() {
+            const stateLayer = findChild(standardSlider, "meoSliderThumbStateLayer")
+            verify(stateLayer !== null)
+            verify(stateLayer.rippleEnabled)
+            compare(stateLayer.shape, "circle")
+            compare(stateLayer.rippleExpandDuration, MeoTheme.motionDurationRippleExpand)
+            compare(stateLayer.rippleFadeDuration, MeoTheme.motionDurationRippleFade)
         }
 
         function test_disabledRolesAreResolvedPerElement() {

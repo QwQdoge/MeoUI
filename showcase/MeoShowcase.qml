@@ -50,6 +50,10 @@ ApplicationWindow {
         id: catalog
     }
     Component.onCompleted: {
+        // The application is the MD3 Expressive reference surface. Standard
+        // mode remains available from the Theme page for direct comparison,
+        // but old/default motion must not be the first frame reviewers see.
+        MeoTheme.isExpressive = true
         for (let index = 0; index < Qt.application.arguments.length; ++index) {
             const argument = Qt.application.arguments[index]
             if (argument.indexOf("--width=") === 0)

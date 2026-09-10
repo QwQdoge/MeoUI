@@ -34,6 +34,10 @@ Control {
     property real outerCornerRadius: MeoTheme.connectedGroupOuterRadius
     property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
     property real segmentInset: 0
+    property bool showDivider: false
+    property real dividerInset: 0
+    property color dividerColor: MeoTheme.outlineVariant
+    property real dividerOpacity: 0.28
     readonly property bool pressed: mouseArea.pressed
     property string shape: "rect" // 🌟 MD3 Expressive: "rect" | "squircle" | "hexagon" | ...
 
@@ -120,6 +124,7 @@ Control {
             bottomRightRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : control.innerCornerRadius
 
             MeoStateLayer {
+                objectName: "meoListItemStateLayer"
                 anchors.fill: parent
                 visible: control.interactive
                 enabled: control.enabled
@@ -134,6 +139,19 @@ Control {
                 bottomLeftRadius: shapeBg.bottomLeftRadius
                 bottomRightRadius: shapeBg.bottomRightRadius
                 color: selected ? control.selectedContentColor : control.themeOnSurface
+            }
+
+            Rectangle {
+                objectName: "meoListItemDivider"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: control.mirrored ? 0 : control.dividerInset
+                anchors.rightMargin: control.mirrored ? control.dividerInset : 0
+                anchors.bottom: parent.bottom
+                height: Math.max(1, 1 * control.themeGlobalScale)
+                visible: control.showDivider
+                color: control.dividerColor
+                opacity: control.dividerOpacity
             }
 
             Behavior on color {

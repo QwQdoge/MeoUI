@@ -187,6 +187,11 @@ Control {
     }
     readonly property real splitActiveLength: Math.max(0, Math.min(trackLength, handleCenterPosition - thumbGap))
     readonly property real splitInactiveStart: Math.max(0, Math.min(trackLength, handleCenterPosition + thumbGap))
+    readonly property real dragThreshold: trackLength > 0
+                                                ? Math.min(1, 4 * themeGlobalScale / trackLength)
+                                                : 1
+    property real _pressVisualPosition: 0
+    property bool _dragged: false
     readonly property bool wavyEnabled: wavy && horizontal
     readonly property bool waveAnimationActive: wavyEnabled
                                                 && visible
@@ -223,6 +228,18 @@ Control {
         Accessible.description: control.accessibleDescription
 
         onMoved: control.setValue(value)
+        onPressedChanged: {
+            if (pressed) {
+                control._pressVisualPosition = visualPosition
+                control._dragged = false
+            } else {
+                control._dragged = false
+            }
+        }
+        onVisualPositionChanged: {
+            if (pressed && Math.abs(visualPosition - control._pressVisualPosition) >= control.dragThreshold)
+                control._dragged = true
+        }
 
         background: Item {
             id: trackArea
@@ -368,7 +385,6 @@ Control {
             Repeater {
                 id: tickRepeater
                 model: (!control.wavy
-                        && control.effectiveTrackStyle !== "split"
                         && (control.discrete || control.stops || control.tickMarksEnabled)
                         && control.stepSize > 0)
                        ? Math.max(0, Math.floor(Math.abs(control.to - control.from) / control.stepSize) + 1)
@@ -376,6 +392,7 @@ Control {
 
                 delegate: Rectangle {
                     required property int index
+                    objectName: "meoSliderTick_" + index
                     x: control.horizontal
                        ? (tickRepeater.count > 1 ? index * (trackArea.width / (tickRepeater.count - 1)) - width / 2 : 0)
                        : (trackArea.width - width) / 2
@@ -508,6 +525,7 @@ Control {
             Rectangle {
                 id: thumb
                 objectName: "meoSliderThumb"
+                z: 1
                 anchors.centerIn: parent
                 width: control.horizontal
                        ? (internalSlider.pressed ? control.pressedThumbWidth : control.thumbWidth)
@@ -534,6 +552,7 @@ Control {
             Rectangle {
                 id: valueLabel
                 objectName: "meoSliderValueIndicator"
+                z: 2
                 x: control.horizontal ? (parent.width - width) / 2 : parent.width + 12 * control.themeGlobalScale
                 y: control.horizontal ? -height - MeoTheme.sliderValueIndicatorGap : (parent.height - height) / 2
                 width: Math.max(MeoTheme.sliderValueIndicatorSize,
@@ -576,16 +595,17 @@ Control {
                 anchors.centerIn: parent
                 width: 40 * control.themeGlobalScale
                 height: 40 * control.themeGlobalScale
-                z: -1
+                z: 0
 
                 MeoStateLayer {
+                    objectName: "meoSliderThumbStateLayer"
                     anchors.fill: parent
                     shape: "circle"
                     hovered: internalSlider.hovered
                     pressed: internalSlider.pressed
-                    dragged: internalSlider.pressed
+                    dragged: control._dragged
                     focused: internalSlider.activeFocus
-                    rippleEnabled: false
+                    rippleEnabled: true
                     color: control.themePrimary
                 }
             }

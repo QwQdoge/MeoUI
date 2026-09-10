@@ -1,26 +1,15 @@
 import QtQuick
-import QtQuick.Controls
 import MeoUI
 
-// A high-density, rounded group for settings indexes and category pages.
-// The model deliberately maps semantic row roles rather than exposing a
-// generic "trailing component", which keeps navigation, mutable controls,
-// and status-only facts distinguishable to both users and assistive tools.
-Column {
+// Semantic Settings adapter over MeoSegmentedList. The base pattern owns the
+// connected container, member gaps, dividers, positions, and selection. This
+// type only maps Settings row roles and forwards their actions.
+MeoSegmentedList {
     id: control
 
-    property string title: ""
-    property string subtitle: ""
-    property var model: []
-    property bool showDividers: true
-    property color containerColor: MeoTheme.surfaceContainerLowest
     property color selectedContainerColor: MeoTheme.secondaryContainer
-    property color separatorColor: MeoTheme.surface
-    property string separatorStyle: "gap" // gap | line | none
     property real radius: MeoTheme.connectedGroupOuterRadius
-    property real memberGap: MeoTheme.connectedGroupGap
-    property real horizontalInset: 0
-    property Component delegate: defaultDelegate
+    property Component rowDelegate: settingsRowDelegate
 
     signal rowActivated(int index, var row)
     signal rowToggled(int index, bool checked, var row)
@@ -29,79 +18,21 @@ Column {
     signal rowOptionSelected(int index, int optionIndex, var option, var row)
     signal rowDropdownSelected(int index, int optionIndex, string value, var row)
 
-    readonly property real scale: MeoTheme.globalScale
-    readonly property var titleFont: MeoTheme.titleSmall
-    readonly property var subtitleFont: MeoTheme.bodyMedium
-
-    width: parent ? parent.width : 560 * scale
-    spacing: 8 * scale
-
-    Column {
-        width: parent.width
-        leftPadding: control.horizontalInset
-        rightPadding: control.horizontalInset
-        spacing: 2 * control.scale
-        visible: control.title !== "" || control.subtitle !== ""
-
-        Text {
-            width: parent.width
-            text: control.title
-            visible: text !== ""
-            font.family: MeoTheme.typefacePlain
-            font.pixelSize: control.titleFont.size * control.scale
-            font.weight: control.titleFont.weight
-            color: MeoTheme.primary
-            elide: Text.ElideRight
-            textFormat: Text.PlainText
-        }
-
-        Text {
-            width: parent.width
-            text: control.subtitle
-            visible: text !== ""
-            font.family: MeoTheme.typefacePlain
-            font.pixelSize: control.subtitleFont.size * control.scale
-            font.weight: control.subtitleFont.weight
-            color: MeoTheme.contentOnSurfaceVariant
-            wrapMode: Text.WordWrap
-            maximumLineCount: 2
-            textFormat: Text.PlainText
-        }
-    }
-
-    Item {
-        width: parent.width
-        implicitHeight: rows.implicitHeight
-
-        Rectangle {
-            anchors.fill: parent
-            radius: control.radius
-            color: control.separatorColor
-        }
-
-        Column {
-            id: rows
-            width: parent.width
-            spacing: control.showDividers && control.separatorStyle === "gap"
-                     ? control.memberGap : 0
-
-            Repeater {
-                id: rowRepeater
-                model: control.model
-                delegate: control.delegate
-            }
-        }
-    }
+    containerRadius: radius
+    titleColor: MeoTheme.primary
+    loaderObjectNamePrefix: "meoSettingsGroupLoader_"
+    delegate: rowDelegate
 
     Component {
-        id: defaultDelegate
+        id: settingsRowDelegate
 
         MeoSettingsRow {
             id: row
+            property var modelData: null
+            property int index: -1
             readonly property var item: modelData || ({})
 
             objectName: item.objectName || item.id || ""
-            width: rows.width
             title: item.title || item.label || ""
             subtitle: item.subtitle || item.supportingText || ""
             leadingIcon: item.leadingIcon || item.icon || ""
@@ -118,6 +49,8 @@ Column {
                     return String(item.status)
                 return ""
             }
+            badgeText: item.badgeText || ""
+            badgeColor: item.badgeColor || MeoTheme.error
             statusTone: item.statusTone || "neutral"
             actionText: item.actionText || ""
             actionType: item.actionType || "text"
@@ -137,6 +70,8 @@ Column {
             sliderValueLabelEnabled: item.sliderValueLabelEnabled === true
             sliderIsThick: item.sliderIsThick === true
             sliderWavy: item.sliderWavy === true
+            sliderExpressive: item.sliderExpressive === undefined ? true : item.sliderExpressive
+            sliderTrackStyle: item.sliderTrackStyle || (sliderExpressive ? "split" : "standard")
             sliderSize: item.sliderSize || "s"
             valueSuffix: item.valueSuffix || ""
             showValueLabel: item.showValueLabel === undefined ? true : item.showValueLabel
@@ -159,23 +94,11 @@ Column {
             progressShowTrack: item.progressShowTrack === undefined ? true : item.progressShowTrack
             progressText: item.progressText || ""
             showProgressLabel: item.showProgressLabel === undefined ? true : item.showProgressLabel
-            enabled: item.enabled === undefined ? true : item.enabled
-            selected: item.selected === true
+            enabled: control.enabledFor(item)
+            selectionColor: control.selectedContainerColor
             interactive: item.interactive === undefined
                          ? trailingKind !== "status" && trailingKind !== "none"
                          : item.interactive
-            // Each member owns its surface so the shared separator background
-            // can remain visible through the two dp connected-group gap.
-            surfaceColor: control.containerColor
-            selectionColor: control.selectedContainerColor
-            positionInGroup: rowRepeater.count <= 1 ? "only"
-                             : index === 0 ? "first"
-                             : index === rowRepeater.count - 1 ? "last"
-                             : "middle"
-            showDivider: control.showDividers
-                         && control.separatorStyle === "line"
-                         && index < rowRepeater.count - 1
-            dividerColor: control.separatorColor
 
             onActivated: {
                 if (typeof item.action === "function")
@@ -192,10 +115,10 @@ Column {
                     item.action()
                 control.rowActionTriggered(index, item)
             }
-            onSliderMoved: (value) => {
+            onSliderMoved: (nextValue) => {
                 if (typeof item.onSliderMoved === "function")
-                    item.onSliderMoved(value)
-                control.rowSliderMoved(index, value, item)
+                    item.onSliderMoved(nextValue)
+                control.rowSliderMoved(index, nextValue, item)
             }
             onOptionSelected: (optionIndex, option) => {
                 if (typeof item.onOptionSelected === "function")

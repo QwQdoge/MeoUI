@@ -21,6 +21,9 @@ Control {
     property bool showDivider: false
     property real dividerInset: 0
     property color dividerColor: MeoTheme.outlineVariant
+    property real dividerOpacity: 0.28
+    property real outerCornerRadius: MeoTheme.connectedGroupOuterRadius
+    property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
 
     // Surface and state
     property color surfaceColor: MeoTheme.surfaceContainerLowest
@@ -50,6 +53,8 @@ Control {
     // unless it is given options, in which case it becomes a dropdown.
     property string trailingKind: "navigation" // navigation | switch | toggle | value | slider | segmented | dropdown | choice | radio | checkbox | button | action | status | progress | none
     property string trailingText: ""
+    property string badgeText: ""
+    property color badgeColor: MeoTheme.error
     property bool statusShowsChevron: false
     property string statusTone: "neutral" // primary | secondary | tertiary | error | neutral
     property bool checked: false
@@ -71,6 +76,8 @@ Control {
     property bool sliderValueLabelEnabled: false
     property bool sliderIsThick: false
     property bool sliderWavy: false
+    property bool sliderExpressive: true
+    property string sliderTrackStyle: sliderExpressive ? "split" : "standard"
     property string sliderSize: "s"
     property string valueSuffix: ""
     property bool showValueLabel: true
@@ -135,8 +142,7 @@ Control {
     readonly property bool hasExpandedControl: isSlider || isSegmented || isDropdown || isProgress
     readonly property bool isInteractive: interactive && enabled && !hasExpandedControl
     readonly property real scale: MeoTheme.globalScale
-    readonly property real rowRadius: MeoTheme.connectedGroupOuterRadius
-    readonly property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
+    readonly property real rowRadius: outerCornerRadius
     readonly property real topCornerRadius: (positionInGroup === "only" || positionInGroup === "first")
                                             ? rowRadius : innerCornerRadius
     readonly property real bottomCornerRadius: (positionInGroup === "only" || positionInGroup === "last")
@@ -217,7 +223,7 @@ Control {
     readonly property bool hasMetadataTrailing: !hasControlTrailing
                                                && !isSegmented
                                                && !isDropdown
-                                               && (headerTrailingText !== "" || hasChevron)
+                                               && (badgeText !== "" || headerTrailingText !== "" || hasChevron)
     readonly property bool hasHeaderTrailing: hasControlTrailing || hasMetadataTrailing
 
     // These defaults remain dynamic because they are bound to semantic roles.
@@ -400,6 +406,7 @@ Control {
         }
 
         MeoStateLayer {
+            objectName: "meoSettingsRowStateLayer"
             anchors.fill: parent
             radius: control.rowRadius
             topLeftRadius: control.topCornerRadius
@@ -448,7 +455,7 @@ Control {
             height: Math.max(1, 1 * control.scale)
             visible: control.showDivider
             color: control.dividerColor
-            opacity: 0.28
+            opacity: control.dividerOpacity
         }
 
         MouseArea {
@@ -566,6 +573,13 @@ Control {
                     width: implicitWidth
                     height: implicitHeight
 
+                    MeoBadge {
+                        text: control.badgeText
+                        visible: text !== ""
+                        color: control.badgeColor
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
                     Text {
                         id: trailingTextItem
                         text: control.headerTrailingText
@@ -594,7 +608,7 @@ Control {
                     anchors.centerIn: parent
                     visible: control.isToggle
                     checked: control.checked
-                    size: "s"
+                    size: "m"
                     enabled: control.enabled
                     onToggled: (nextChecked) => control.setChecked(nextChecked)
                 }
@@ -606,7 +620,7 @@ Control {
                     checked: control.checked
                     indeterminate: control.indeterminate
                     label: ""
-                    size: "s"
+                    size: "m"
                     enabled: control.enabled
                     onToggled: (nextChecked) => control.setChecked(nextChecked)
                 }
@@ -617,7 +631,7 @@ Control {
                     visible: control.isRadio
                     checked: control.checked
                     label: ""
-                    size: "s"
+                    size: "m"
                     enabled: control.enabled
                     onToggled: (nextChecked) => control.setChecked(nextChecked)
                 }
@@ -628,7 +642,7 @@ Control {
                     visible: control.isAction
                     text: control.effectiveActionText
                     type: control.actionType
-                    size: "s"
+                    size: "m"
                     enabled: control.enabled
                     onClicked: control.actionTriggered()
                 }
@@ -663,6 +677,8 @@ Control {
                 valueLabelEnabled: control.sliderValueLabelEnabled
                 isThick: control.sliderIsThick
                 wavy: control.sliderWavy
+                expressive: control.sliderExpressive
+                trackStyle: control.sliderTrackStyle
                 size: control.sliderSize
                 enabled: control.enabled
                 onMoved: (nextValue) => control.setSliderValue(nextValue)

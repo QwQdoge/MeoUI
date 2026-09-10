@@ -20,6 +20,18 @@ Item {
         ]
     }
 
+    Patterns.MeoSettingsGroup {
+        id: settingsGroup
+        x: 0
+        y: 300
+        width: 340
+        model: [
+            { "id": "settings-first", "title": "Internet", "leadingIcon": "wifi" },
+            { "id": "settings-middle", "title": "Bluetooth", "leadingIcon": "bluetooth" },
+            { "id": "settings-last", "title": "Battery", "leadingIcon": "battery_full" }
+        ]
+    }
+
     Component {
         id: customRow
         Components.MeoListItem {
@@ -64,6 +76,7 @@ Item {
             grouped.selectedIndex = -1
             segmented.selectedIndex = 1
             grouped.LayoutMirroring.enabled = false
+            grouped.separatorStyle = "gap"
             groupedSpy.clear()
             segmentedSpy.clear()
         }
@@ -105,6 +118,55 @@ Item {
             compare(middleSurface.bottomLeftRadius, MeoTheme.connectedGroupInnerRadius)
             compare(lastSurface.topLeftRadius, MeoTheme.connectedGroupInnerRadius)
             compare(lastSurface.bottomLeftRadius, MeoTheme.connectedGroupOuterRadius)
+        }
+
+        function test_groupedAndSettingsListsShareOneSurfaceEngine() {
+            const groupedSurface = findChild(grouped, "meoSegmentedListSurface")
+            const settingsSurface = findChild(settingsGroup, "meoSegmentedListSurface")
+            verify(groupedSurface !== null)
+            verify(settingsSurface !== null)
+            compare(groupedSurface.radius, MeoTheme.connectedGroupOuterRadius)
+            compare(settingsSurface.radius, groupedSurface.radius)
+            compare(settingsGroup.memberGap, grouped.memberGap)
+            compare(settingsGroup.innerCornerRadius, grouped.innerCornerRadius)
+
+            const first = findChild(settingsGroup, "settings-first")
+            const middle = findChild(settingsGroup, "settings-middle")
+            const last = findChild(settingsGroup, "settings-last")
+            compare(first.positionInGroup, "first")
+            compare(middle.positionInGroup, "middle")
+            compare(last.positionInGroup, "last")
+        }
+
+        function test_lineSeparatorIsOptionalAndUsesSharedRowContract() {
+            grouped.separatorStyle = "line"
+            wait(0)
+            compare(grouped.itemSpacing, 0)
+            const first = findChild(grouped, "meoGroupedListItem_0")
+            const last = findChild(grouped, "meoGroupedListItem_2")
+            const firstDivider = findChild(first, "meoListItemDivider")
+            const lastDivider = findChild(last, "meoListItemDivider")
+            verify(firstDivider.visible)
+            verify(!lastDivider.visible)
+            compare(firstDivider.opacity, grouped.dividerOpacity)
+        }
+
+        function test_eachRowUsesTheSharedClippedPointerFeedback() {
+            const first = findChild(grouped, "meoGroupedListItem_0")
+            const middle = findChild(grouped, "meoGroupedListItem_1")
+            const firstStateLayer = findChild(first, "meoListItemStateLayer")
+            const middleStateLayer = findChild(middle, "meoListItemStateLayer")
+            verify(firstStateLayer !== null)
+            verify(middleStateLayer !== null)
+            verify(firstStateLayer.rippleEnabled)
+            compare(firstStateLayer.topLeftRadius, MeoTheme.connectedGroupOuterRadius)
+            compare(firstStateLayer.bottomLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(middleStateLayer.topLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(middleStateLayer.bottomLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(firstStateLayer.hoverOpacity, MeoTheme.stateOpacityHover)
+            compare(firstStateLayer.pressedOpacity, MeoTheme.stateOpacityPressed)
+            compare(firstStateLayer.pressDuration, MeoTheme.motionDurationPress)
+            compare(firstStateLayer.rippleExpandDuration, MeoTheme.motionDurationRippleExpand)
         }
 
         function test_customDelegateReceivesDataAndPosition() {

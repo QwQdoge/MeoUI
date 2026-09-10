@@ -196,17 +196,20 @@ Control {
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
 
-            // Tick marks intentionally stay on the classic compact track.
+            // Discrete stops remain visible on both classic and split rails.
+            // Hiding them on the expressive rail made the public `discrete`
+            // state visually indistinguishable from a continuous range.
             Repeater {
                 id: tickRepeater
-                model: (!control.wavy && control.trackStyle !== "split" && control.discrete && control.stepSize > 0)
+                model: (!control.wavy && control.discrete && control.stepSize > 0)
                        ? Math.max(0, Math.floor(Math.abs(control.to - control.from) / control.stepSize) + 1)
                        : 0
                 delegate: Rectangle {
                     required property int index
+                    objectName: "meoRangeSliderTick_" + index
                     x: tickRepeater.count > 1 ? index * (trackArea.width / (tickRepeater.count - 1)) - width / 2 : 0
                     y: (trackArea.height - height) / 2
-                    width: 2 * control.themeGlobalScale
+                    width: MeoTheme.sliderStopSizeExpressive
                     height: width
                     radius: width / 2
                     readonly property real tickValue: control.from + index * control.stepSize
@@ -320,6 +323,11 @@ Control {
         id: rangeThumb
         required property var sliderHandle
         required property real displayValue
+        property real pressVisualPosition: 0
+        property bool dragged: false
+        readonly property real dragThreshold: internalSlider.availableWidth > 0
+                                                   ? Math.min(1, 4 * control.themeGlobalScale / internalSlider.availableWidth)
+                                                   : 1
 
         x: internalSlider.leftPadding + sliderHandle.visualPosition * Math.max(0, internalSlider.availableWidth - width)
         y: internalSlider.topPadding + (internalSlider.availableHeight - height) / 2
@@ -329,6 +337,7 @@ Control {
         Rectangle {
             id: thumb
             objectName: "meoRangeSliderThumb"
+            z: 1
             anchors.centerIn: parent
             width: rangeThumb.sliderHandle.pressed
                    ? control.pressedThumbWidth : control.thumbWidth
@@ -351,6 +360,7 @@ Control {
 
         Rectangle {
             visible: control.valueLabelEnabled && rangeThumb.sliderHandle.pressed
+            z: 2
             anchors.bottom: parent.top
             anchors.bottomMargin: MeoTheme.sliderValueIndicatorGap
             anchors.horizontalCenter: parent.horizontalCenter
@@ -374,17 +384,37 @@ Control {
             anchors.centerIn: parent
             width: 40 * control.themeGlobalScale
             height: width
-            z: -1
+            z: 0
 
             MeoStateLayer {
+                objectName: "meoRangeSliderThumbStateLayer"
                 anchors.fill: parent
                 shape: "circle"
                 hovered: rangeThumb.sliderHandle.hovered
                 pressed: rangeThumb.sliderHandle.pressed
-                dragged: rangeThumb.sliderHandle.pressed
+                dragged: rangeThumb.dragged
                 focused: rangeThumb.sliderHandle.activeFocus
-                rippleEnabled: false
+                rippleEnabled: true
                 color: control.themePrimary
+            }
+        }
+
+        Connections {
+            target: rangeThumb.sliderHandle
+
+            function onPressedChanged() {
+                if (rangeThumb.sliderHandle.pressed) {
+                    rangeThumb.pressVisualPosition = rangeThumb.sliderHandle.visualPosition
+                    rangeThumb.dragged = false
+                } else {
+                    rangeThumb.dragged = false
+                }
+            }
+
+            function onVisualPositionChanged() {
+                if (rangeThumb.sliderHandle.pressed
+                        && Math.abs(rangeThumb.sliderHandle.visualPosition - rangeThumb.pressVisualPosition) >= rangeThumb.dragThreshold)
+                    rangeThumb.dragged = true
             }
         }
     }

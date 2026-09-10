@@ -12,12 +12,23 @@ Column {
     // they are assigned after creation alongside the rounding contract.
     property Component delegate: null
     property bool isSegmented: true
-    property real itemSpacing: MeoTheme.connectedGroupGap
+    property bool showDividers: true
+    property string separatorStyle: "gap" // gap | line | none
+    property real memberGap: MeoTheme.connectedGroupGap
+    property real itemSpacing: showDividers && separatorStyle === "gap" ? memberGap : 0
+    property real dividerInset: 0
+    property color dividerColor: separatorColor
+    property real dividerOpacity: 0.28
     property int selectedIndex: -1
     property color containerColor: MeoTheme.surfaceContainerLowest
     property color separatorColor: MeoTheme.surface
     property real containerRadius: MeoTheme.connectedGroupOuterRadius
     property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
+    property real horizontalInset: 0
+    property color titleColor: MeoTheme.contentOnSurface
+    property color subtitleColor: MeoTheme.contentOnSurfaceVariant
+    property string loaderObjectNamePrefix: "meoSegmentedListItem_"
+    property string itemObjectNamePrefix: ""
     readonly property bool isMirrored: LayoutMirroring.enabled
 
     signal clicked(int index)
@@ -38,6 +49,11 @@ Column {
         return !item || typeof item !== "object" || item.enabled === undefined ? true : item.enabled
     }
 
+    function selectedFor(item, index) {
+        return selectedIndex === index
+               || (!!item && typeof item === "object" && item.selected === true)
+    }
+
     function roundingFor(index) {
         if (model.length === 1)
             return "all"
@@ -45,6 +61,17 @@ Column {
             return "top"
         if (index === model.length - 1)
             return "bottom"
+        return "middle"
+    }
+
+    function positionFor(index) {
+        const rounding = roundingFor(index)
+        if (rounding === "all")
+            return "only"
+        if (rounding === "top")
+            return "first"
+        if (rounding === "bottom")
+            return "last"
         return "middle"
     }
 
@@ -61,6 +88,8 @@ Column {
 
     Column {
         width: parent.width
+        leftPadding: control.horizontalInset
+        rightPadding: control.horizontalInset
         visible: control.title !== "" || control.subtitle !== ""
         spacing: 2 * MeoTheme.globalScale
 
@@ -71,7 +100,7 @@ Column {
             typeRole: "title"
             typeSize: "small"
             emphasized: true
-            color: MeoTheme.contentOnSurface
+            color: control.titleColor
         }
         MeoText {
             width: parent.width
@@ -79,7 +108,7 @@ Column {
             visible: text !== ""
             typeRole: "body"
             typeSize: "medium"
-            color: MeoTheme.contentOnSurfaceVariant
+            color: control.subtitleColor
             wrapMode: Text.WordWrap
         }
     }
@@ -90,6 +119,7 @@ Column {
         visible: control.model.length > 0
 
         Rectangle {
+            objectName: "meoSegmentedListSurface"
             anchors.fill: parent
             radius: control.containerRadius
             color: control.separatorColor
@@ -107,7 +137,7 @@ Column {
                     id: itemLoader
                     required property int index
                     required property var modelData
-                    objectName: "meoSegmentedListItem_" + index
+                    objectName: control.loaderObjectNamePrefix + index
                     width: itemsColumn.width
                     sourceComponent: control.delegate || defaultItemComponent
 
@@ -121,6 +151,8 @@ Column {
                             item.index = itemLoader.index
                         if (item.hasOwnProperty("roundingStrategy"))
                             item.roundingStrategy = control.roundingFor(itemLoader.index)
+                        if (item.hasOwnProperty("positionInGroup"))
+                            item.positionInGroup = control.positionFor(itemLoader.index)
                         if (item.hasOwnProperty("isSegmented"))
                             item.isSegmented = control.isSegmented
                         if (item.hasOwnProperty("surfaceColor"))
@@ -129,10 +161,22 @@ Column {
                             item.outerCornerRadius = control.containerRadius
                         if (item.hasOwnProperty("innerCornerRadius"))
                             item.innerCornerRadius = control.innerCornerRadius
+                        if (item.hasOwnProperty("showDivider"))
+                            item.showDivider = control.showDividers
+                                               && control.separatorStyle === "line"
+                                               && itemLoader.index < control.model.length - 1
+                        if (item.hasOwnProperty("dividerInset"))
+                            item.dividerInset = control.dividerInset
+                        if (item.hasOwnProperty("dividerColor"))
+                            item.dividerColor = control.dividerColor
+                        if (item.hasOwnProperty("dividerOpacity"))
+                            item.dividerOpacity = control.dividerOpacity
                         if (item.hasOwnProperty("selected"))
-                            item.selected = control.selectedIndex === itemLoader.index
+                            item.selected = control.selectedFor(itemLoader.modelData, itemLoader.index)
                         if (item.hasOwnProperty("enabled"))
                             item.enabled = control.enabledFor(itemLoader.modelData)
+                        if (control.itemObjectNamePrefix !== "")
+                            item.objectName = control.itemObjectNamePrefix + itemLoader.index
                     }
 
                     onLoaded: applyListContract()
@@ -141,6 +185,7 @@ Column {
 
                     Connections {
                         target: itemLoader.item
+                        ignoreUnknownSignals: true
                         function onClicked() {
                             control.activate(itemLoader.index)
                         }
@@ -154,6 +199,38 @@ Column {
                         }
 
                         function onIsSegmentedChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onShowDividersChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onSeparatorStyleChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onDividerInsetChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onDividerColorChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onDividerOpacityChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onContainerColorChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onContainerRadiusChanged() {
+                            itemLoader.applyListContract()
+                        }
+
+                        function onInnerCornerRadiusChanged() {
                             itemLoader.applyListContract()
                         }
                     }
