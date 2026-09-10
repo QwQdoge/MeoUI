@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI 1.0
 import "../components" as Components
 
 Item {
@@ -27,42 +28,30 @@ Item {
             menu.LayoutMirroring.childrenInherit = true
         }
 
-        function test_triggerTransitionsToTheM3CloseAffordance() {
+        function test_triggerOpensTheSharedMenuSurface() {
             const trigger = findChild(menu, "meoFabMenuTrigger")
             verify(trigger !== null)
             const background = findChild(trigger, "meoFabBackground")
             verify(background !== null)
-            const closedRadius = background.radius
             const closedColor = background.color
 
             trigger.click()
             compare(menu.opened, true)
-            tryCompare(background, "radius", menu.finalTriggerSize / 2, 500)
-            compare(trigger.implicitWidth, menu.finalTriggerSize)
-            compare(background.color, menu.blendedColor(menu.color, menu.styleFinalColor, 1))
-            verify(background.radius > closedRadius)
-            verify(background.color !== closedColor)
+            const popup = findChild(menu, "meoFabMenuPopup")
+            verify(popup !== null)
+            tryCompare(popup, "opened", true, 500)
+            tryCompare(background, "color", menu.styleFinalColor, 500)
 
             trigger.click()
-            compare(menu.opened, false)
+            tryCompare(menu, "opened", false, 500)
         }
 
-        function test_actionSurfaceIsTokenDrivenAndRtlAware() {
+        function test_actionMenuIsCappedAndRtlAware() {
             menu.opened = true
-            tryVerify(function() {
-                return findChild(menu.Window.window.contentItem, "meoFabMenuAction0") !== null
-            }, 500)
-            const firstAction = findChild(menu.Window.window.contentItem, "meoFabMenuAction0")
-            verify(firstAction !== null)
-            const firstBackground = findChild(menu.Window.window.contentItem, "meoFabMenuActionBackground_0")
-            verify(firstBackground !== null)
-            compare(firstAction.implicitHeight, 56 * menu.themeGlobalScale)
-            compare(firstBackground.color, menu.itemColor)
-
-            const secondAction = findChild(menu.Window.window.contentItem, "meoFabMenuAction1")
-            verify(secondAction !== null)
-            compare(secondAction.y - firstAction.y,
-                    firstAction.implicitHeight + 4 * menu.themeGlobalScale)
+            const popup = findChild(menu, "meoFabMenuPopup")
+            tryCompare(popup, "opened", true, 500)
+            compare(popup.preferredMenuWidth, 224 * menu.themeGlobalScale)
+            compare(popup.model.length, 2)
 
             menu.LayoutMirroring.enabled = true
             compare(menu.mirrored, true)
@@ -71,12 +60,12 @@ Item {
         function test_colorStylesUseMatchingContainerAndClosePairs() {
             menu.colorStyle = "secondary"
             compare(menu.color, MeoTheme.secondaryContainer)
-            compare(menu.itemColor, MeoTheme.secondaryContainer)
+            compare(menu.itemColor, MeoTheme.surfaceContainer)
             compare(menu.styleFinalColor, MeoTheme.secondary)
 
             menu.colorStyle = "tertiary"
             compare(menu.color, MeoTheme.tertiaryContainer)
-            compare(menu.itemOnColor, MeoTheme.contentOnTertiaryContainer)
+            compare(menu.itemOnColor, MeoTheme.contentOnSurface)
             compare(menu.styleFinalOnColor, MeoTheme.contentOnTertiary)
         }
     }

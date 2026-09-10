@@ -58,8 +58,10 @@ Item {
             standardSlider.expressive = true
             compare(standardSlider.effectiveTrackStyle, "split")
             compare(standardSlider.thumbWidth, MeoTheme.sliderThumbWidthExpressive)
-            compare(standardSlider.trackHeight, MeoTheme.sliderTrackHeightM)
-            compare(standardSlider.thumbHeight, MeoTheme.sliderThumbHeightM)
+            compare(standardSlider.trackHeight, MeoTheme.sliderTrackHeightXS)
+            compare(standardSlider.thumbHeight, MeoTheme.sliderThumbHeightXS)
+            compare(standardSlider.pressedThumbWidth, MeoTheme.sliderThumbPressedWidthExpressive)
+            verify(standardSlider.endStopEnabled)
             standardSlider.size = "xl"
             compare(standardSlider.trackHeight, MeoTheme.sliderTrackHeightXL)
             compare(standardSlider.thumbHeight, MeoTheme.sliderThumbHeightXL)
@@ -68,6 +70,19 @@ Item {
             compare(centeredSlider.centerPosition, centeredSlider.trackLength / 2)
             compare(centeredSlider.activeTrackStart, centeredSlider.centerPosition)
             verify(centeredSlider.activeTrackEnd > centeredSlider.activeTrackStart)
+        }
+
+        function test_expressiveStopsUseSharedGeometry() {
+            standardSlider.expressive = true
+            const leading = findChild(standardSlider, "meoSliderLeadingEndStop")
+            const trailing = findChild(standardSlider, "meoSliderTrailingEndStop")
+            verify(leading !== null)
+            verify(trailing !== null)
+            verify(leading.visible)
+            verify(trailing.visible)
+            compare(leading.width, MeoTheme.sliderStopSizeExpressive)
+            compare(trailing.width, MeoTheme.sliderStopSizeExpressive)
+            standardSlider.expressive = false
         }
 
         function test_stopsAndVerticalContracts() {

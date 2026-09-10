@@ -6,6 +6,13 @@ import MeoUI
 Button {
     id: control
 
+    Keys.onPressed: event => {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            stateLayer.triggerFromKeyboard()
+    }
+
     property string type: "filled" // "filled" | "tonal" | "outlined" | "elevated" | "text"
     property string size: "s" // "xs" | "s" | "m" | "l" | "xl"
     property string shape: "round" // "round" | "square" | custom MeoShape type
@@ -260,6 +267,7 @@ Button {
             }
 
             MeoStateLayer {
+                id: stateLayer
                 anchors.fill: parent
                 radius: buttonShape.radius
                 shape: buttonShape.type

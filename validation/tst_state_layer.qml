@@ -76,8 +76,19 @@ Item {
             compare(stateLayer.bottomLeftRadius, stateLayer.radius)
             compare(stateLayer.bottomRightRadius, stateLayer.radius)
 
-            compare(stateLayer.rippleExpandDuration, 280)
-            compare(stateLayer.rippleFadeDuration, 160)
+            compare(stateLayer.rippleExpandDuration, MeoTheme.motionDurationRippleExpand)
+            compare(stateLayer.rippleFadeDuration, MeoTheme.motionDurationRippleFade)
+        }
+
+        function test_keyboardRippleStartsFromTheCenterAndReleasesResources() {
+            stateLayer.triggerFromKeyboard()
+            compare(stateLayer.rippleOriginX, stateLayer.width / 2)
+            compare(stateLayer.rippleOriginY, stateLayer.height / 2)
+            tryCompare(stateLayer, "rippleActive", true, 100)
+            stateLayer.pressed = true
+            stateLayer.pressed = false
+            tryCompare(stateLayer, "rippleActive", false,
+                       MeoTheme.motionDurationRippleFade + 250)
         }
     }
 }

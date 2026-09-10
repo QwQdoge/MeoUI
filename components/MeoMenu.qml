@@ -42,6 +42,9 @@ MeoMotionPopup {
     readonly property real menuWidth: Math.max(minimumMenuWidth,
                                                Math.min(maximumMenuWidth, preferredMenuWidth))
     readonly property bool submenuOpened: submenu.opened
+    // Read-only inspection handle for integration tests and hosts that need
+    // to observe nested transient state without reaching into QML ids.
+    readonly property var submenuSurface: submenu
 
     // Keep public `model` compatible with both JavaScript arrays and QML
     // ListModel instances. Repeater accepts both, so the imperative paths
@@ -279,6 +282,11 @@ MeoMotionPopup {
 
             delegate: Loader {
                 width: contentColumn.width
+                // Array delegates receive modelData directly, while ListModel
+                // exposes role names only. Normalize both through the public
+                // model helper so menu rows, shortcuts, and submenus never
+                // depend on a delegate-specific context property.
+                readonly property var modelData: control.modelItem(control.model, index)
                 property bool selectable: control.itemIsSelectable(modelData)
                 sourceComponent: control.itemType(modelData) === "separator" ? separatorComponent
                                  : control.itemType(modelData) === "label" ? labelComponent
@@ -475,7 +483,10 @@ MeoMotionPopup {
         // Keep child menus in the window overlay, not in an arbitrary layout
         // that happens to own the parent menu. This also gives viewport
         // clamping the real window dimensions.
-        parent: Overlay.overlay
+        // `Overlay.overlay` is unavailable in a few offscreen/nested hosts
+        // until the parent popup has opened. Fall back to the parent menu's
+        // owner so keyboard and submenu behavior remain functional there.
+        parent: Overlay.overlay || control.parent
         presentation: MeoMotionPopup.Menu
         property var model: []
         property bool vibrant: false
@@ -593,6 +604,7 @@ MeoMotionPopup {
                 model: submenu.model
                 delegate: FocusScope {
                     id: submenuOptionRow
+                    readonly property var modelData: control.modelItem(submenu.model, index)
                     readonly property bool selectable: control.itemIsSelectable(modelData)
                     readonly property bool selected: control.itemIsSelected(modelData)
                     readonly property color contentColor: control.rowContentColor(modelData, submenu.vibrant)

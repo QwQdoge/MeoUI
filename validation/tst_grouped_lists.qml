@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../patterns" as Patterns
 import "../components" as Components
 
@@ -82,6 +83,28 @@ Item {
             compare(grouped.supportingFor("Draft"), "")
             grouped.LayoutMirroring.enabled = true
             verify(grouped.isMirrored)
+        }
+
+        function test_connectedGeometryUsesPixelGroupContract() {
+            compare(grouped.containerRadius, MeoTheme.connectedGroupOuterRadius)
+            compare(grouped.innerCornerRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(grouped.memberGap, MeoTheme.connectedGroupGap)
+
+            const first = findChild(grouped, "meoGroupedListItem_0")
+            const middle = findChild(grouped, "meoGroupedListItem_1")
+            const last = findChild(grouped, "meoGroupedListItem_2")
+            verify(first !== null)
+            verify(middle !== null)
+            verify(last !== null)
+            const firstSurface = findChild(first, "meoListItemSurface")
+            const middleSurface = findChild(middle, "meoListItemSurface")
+            const lastSurface = findChild(last, "meoListItemSurface")
+            compare(firstSurface.topLeftRadius, MeoTheme.connectedGroupOuterRadius)
+            compare(firstSurface.bottomLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(middleSurface.topLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(middleSurface.bottomLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(lastSurface.topLeftRadius, MeoTheme.connectedGroupInnerRadius)
+            compare(lastSurface.bottomLeftRadius, MeoTheme.connectedGroupOuterRadius)
         }
 
         function test_customDelegateReceivesDataAndPosition() {

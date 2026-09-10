@@ -120,6 +120,8 @@ Item {
         if (name === "MeoMenu") return menuSample
         if (name === "MeoDataTable") return dataTableSample
         if (name === "MeoListItem") return listItemSample
+        if (name === "MeoListView") return listViewSample
+        if (name === "MeoListTransitions") return listTransitionsSample
         if (name === "MeoExpansionPanel") return expansionPanelSample
         if (name === "MeoSettingsRow") return settingsRowSample
         if (name === "MeoListHeader") return listHeaderSample
@@ -132,6 +134,7 @@ Item {
         if (name === "MeoDivider") return dividerSample
         if (name === "MeoSkeleton") return skeletonSample
         if (name === "MeoCard") return cardSample
+        if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
@@ -845,53 +848,40 @@ Item {
     }
     Component {
         id: sliderSample
-        GridLayout {
-            columns: 2
-            rowSpacing: MeoTheme.space12
-            columnSpacing: MeoTheme.space16
+        Column {
+            width: 520 * MeoTheme.globalScale
+            spacing: MeoTheme.space12
 
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "1. Standard" }
-                MeoSlider { width: 360 * MeoTheme.globalScale; value: 35 }
-            }
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "2. Expressive split" }
-                MeoSlider {
-                    width: 360 * MeoTheme.globalScale
-                    value: 35
-                    expressive: true
-                    trackStyle: "split"
-                    insetIcon: "volume_up"
-                }
-            }
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "3. Centered" }
-                MeoSlider { width: 360 * MeoTheme.globalScale; from: -100; to: 100; value: 35; centerValue: 0; variant: "centered"; trackStyle: "standard" }
-            }
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "4. Stops" }
-                MeoSlider { width: 360 * MeoTheme.globalScale; value: 40; stops: true; stepSize: 20; size: "xs" }
-            }
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "5. Vertical" }
-                MeoSlider {
-                    width: 64 * MeoTheme.globalScale
-                    height: 52 * MeoTheme.globalScale
-                    value: 35
-                    orientation: Qt.Vertical
-                }
-            }
-            Column {
-                spacing: MeoTheme.space4
-                SampleLabel { label: "6. Disabled" }
-                MeoSlider { width: 360 * MeoTheme.globalScale; value: 35; enabled: false }
+            SampleLabel { label: "1. Expressive narrow range" }
+            MeoRangeSlider {
+                width: parent.width
+                firstValue: 47
+                secondValue: 53
+                expressive: true
             }
 
+            SampleLabel { label: "2. Expressive split" }
+            MeoSlider {
+                width: parent.width
+                value: 50
+                expressive: true
+            }
+
+            SampleLabel { label: "3. Active and inactive rails" }
+            MeoSlider {
+                width: parent.width
+                value: 48
+                expressive: true
+                insetIcon: "volume_up"
+            }
+
+            Flow {
+                width: parent.width
+                spacing: MeoTheme.space12
+                MeoSlider { width: 156 * MeoTheme.globalScale; value: 40; stops: true; stepSize: 20 }
+                MeoSlider { width: 156 * MeoTheme.globalScale; value: 35; size: "s"; expressive: true }
+                MeoSlider { width: 156 * MeoTheme.globalScale; value: 35; enabled: false; expressive: true }
+            }
         }
     }
     Component {
@@ -1619,6 +1609,54 @@ Item {
 
             SampleLabel { label: "5. Disabled" }
             MeoListItem { width: parent.width; headline: "Unavailable item"; supportingText: "This action is disabled"; leadingIcon: "block"; enabled: false }
+        }
+    }
+    Component {
+        id: listViewSample
+        Item {
+            width: 420 * MeoTheme.globalScale
+            height: 228 * MeoTheme.globalScale
+
+            ListModel {
+                id: transitionRows
+                ListElement { title: "Connected network"; detail: "Stable displacement" }
+                ListElement { title: "Media playback"; detail: "Semantic insert transition" }
+                ListElement { title: "Background job"; detail: "Reduced motion safe" }
+            }
+
+            MeoListView {
+                anchors.fill: parent
+                clip: true
+                model: transitionRows
+                spacing: MeoTheme.space4
+                delegate: MeoListItem {
+                    required property string title
+                    required property string detail
+                    width: ListView.view.width
+                    headline: title
+                    supportingText: detail
+                    leadingIcon: index === 0 ? "wifi" : index === 1 ? "music_note" : "download"
+                    isSegmented: true
+                    roundingStrategy: index === 0 ? "top" : index === transitionRows.count - 1 ? "bottom" : "none"
+                }
+            }
+        }
+    }
+    Component {
+        id: listTransitionsSample
+        Flow {
+            spacing: MeoTheme.space8
+            MeoChip { label: "Insert " + MeoTheme.motionDurationListInsert + " ms"; selected: true }
+            MeoChip { label: "Remove " + MeoTheme.motionDurationListRemove + " ms" }
+            MeoChip { label: "Stagger " + MeoListTransitions.staggerDelay + " ms × " + MeoListTransitions.staggerCap }
+            MeoText {
+                width: 360 * MeoTheme.globalScale
+                text: MeoTheme.reduceMotion ? "Reduced motion: transitions are disabled." : "Insert, displacement, and reorder share semantic motion."
+                typeRole: "body"
+                typeSize: "small"
+                wrapMode: Text.WordWrap
+                color: MeoTheme.contentOnSurfaceVariant
+            }
         }
     }
     Component {
@@ -2824,12 +2862,12 @@ Item {
             Column {
                 spacing: MeoTheme.space4
                 SampleLabel { label: "Primary seed" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Theme seed"; color: "#6750A4"; helperText: "Valid #RRGGBB seed" }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Theme seed"; color: MeoTheme.primary; helperText: "Valid #RRGGBB seed" }
             }
             Column {
                 spacing: MeoTheme.space4
                 SampleLabel { label: "Tonal seed" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Tonal seed"; color: "#146C94" }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Tonal seed"; color: MeoTheme.tertiary }
             }
             Column {
                 spacing: MeoTheme.space4
@@ -2853,7 +2891,7 @@ Item {
             Column {
                 spacing: MeoTheme.space4
                 SampleLabel { label: "Disabled" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Locked seed"; color: "#4285F4"; enabled: false }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Locked seed"; color: MeoTheme.secondary; enabled: false }
             }
         }
     }
@@ -3073,14 +3111,36 @@ Item {
 
     Component {
         id: settingsGroupSample
-        MeoSettingsGroup {
-            width: 460 * MeoTheme.globalScale
-            title: "Connections"
-            subtitle: "Account and network controls"
-            model: [
-                { "title": "Wi-Fi", "subtitle": "Meo Network", "leadingIcon": "wifi", "trailingKind": "navigation" },
-                { "title": "Bluetooth", "subtitle": "Headphones", "leadingIcon": "bluetooth", "trailingKind": "switch", "checked": true }
-            ]
+        Column {
+            width: 520 * MeoTheme.globalScale
+            spacing: MeoTheme.space20
+
+            MeoSettingsGroup {
+                width: parent.width
+                containerColor: MeoTheme.primaryContainer
+                model: [
+                    { "title": "Use cross-device services", "trailingKind": "switch", "checked": true }
+                ]
+            }
+
+            MeoText {
+                width: parent.width
+                text: "Other devices signed in to your account will be able to find and share with you."
+                typeRole: "body"
+                typeSize: "large"
+                color: MeoTheme.contentOnSurface
+                wrapMode: Text.WordWrap
+            }
+
+            MeoSettingsGroup {
+                width: parent.width
+                title: "What your devices can do"
+                model: [
+                    { "title": "Call casting", "subtitle": "Move video calls to this device", "leadingIcon": "phone_forwarded", "trailingKind": "none", "interactive": true },
+                    { "title": "Internet sharing", "subtitle": "Let your devices connect to your hotspot and Wi-Fi", "leadingIcon": "wifi", "trailingKind": "none", "interactive": true },
+                    { "title": "Continue activity", "subtitle": "Continue tasks and access apps, media, and notifications", "leadingIcon": "devices", "trailingKind": "none", "interactive": true }
+                ]
+            }
         }
     }
 
@@ -3264,6 +3324,38 @@ Item {
             appName: "Dolphin"
             supportingText: "Opening your files"
             fallbackIcon: "folder"
+        }
+    }
+
+    Component {
+        id: cachedImageSample
+        Row {
+            spacing: MeoTheme.space16
+
+            Column {
+                spacing: MeoTheme.space6
+                SampleLabel { label: "Constrained thumbnail" }
+                MeoCachedImage {
+                    width: 112 * MeoTheme.globalScale
+                    height: 84 * MeoTheme.globalScale
+                    source: "qrc:/qt/qml/MeoUI/assets/icons/meo-ai-f.svg"
+                    requestedSourceWidth: 112
+                    requestedSourceHeight: 84
+                }
+            }
+            Column {
+                spacing: MeoTheme.space6
+                SampleLabel { label: "Inactive decode" }
+                MeoCachedImage {
+                    width: 112 * MeoTheme.globalScale
+                    height: 84 * MeoTheme.globalScale
+                    source: "qrc:/qt/qml/MeoUI/assets/icons/meo-ai-f.svg"
+                    active: false
+                    requestedSourceWidth: 112
+                    requestedSourceHeight: 84
+                }
+                MeoText { text: "Paused"; typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant }
+            }
         }
     }
 

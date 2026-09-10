@@ -5,6 +5,11 @@ import MeoUI
 Popup {
     id: control
 
+    // Lifecycle and placement behavior adapted from the small, reusable parts
+    // of DankMaterialShell's DankPopout/TransientSurfaceTracker (MIT,
+    // Copyright 2025 Avenge Media LLC). Reimplemented for Qt Quick Controls:
+    // no Quickshell window, DMS theme, SettingsData, or service code is used.
+
     enum Presentation {
         Dialog,
         Menu,
@@ -27,6 +32,21 @@ Popup {
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
+    // `contentActive` is the common gate for nested Loaders, discovery work,
+    // timers, and indeterminate indicators. Popup content itself stays owned
+    // by Qt; a host opts in by binding its expensive children to this flag.
+    property bool keepContentWarm: false
+    property bool prewarmBeforeOpen: true
+    // A child dialog, password prompt, or submenu registers itself here while
+    // open. The parent then ignores outside presses until that transient closes.
+    property var transientSurface: null
+    // Manual preserves the existing API. Opt into auto/below/above/right/left
+    // only for anchored transient surfaces that want viewport-aware placement.
+    property string placement: "manual"
+    property Item placementAnchor: null
+    property real placementGap: 8 * MeoTheme.globalScale
+    property bool _openRequested: false
+    property bool _retainingExitContent: false
 
     readonly property bool isMenu: presentation === MeoMotionPopup.Menu
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
@@ -38,10 +58,96 @@ Popup {
     readonly property int exitDuration: isMenu ? MeoTheme.motionDurationMenuExit
                                                 : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetExit
                                                                               : MeoTheme.motionDurationDialogExit
+    readonly property bool contentActive: keepContentWarm || opened || _openRequested
+                                         || _retainingExitContent
+    readonly property bool hasOpenTransientSurface: transientSurface
+                                                    && (transientSurface.opened
+                                                        || transientSurface.visible)
+    readonly property int defaultClosePolicy: isFullScreen ? Popup.CloseOnEscape
+                                                           : Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    readonly property real measuredImplicitWidth: Math.max(implicitWidth, contentItem ? contentItem.implicitWidth : 0)
+    readonly property real measuredImplicitHeight: Math.max(implicitHeight, contentItem ? contentItem.implicitHeight : 0)
 
     function openFrom(item) {
         focusReturnItem = item || null
-        open()
+        placementAnchor = item || placementAnchor
+        requestOpen()
+    }
+
+    function requestOpen() {
+        if (opened || _openRequested)
+            return
+        _openRequested = true
+        if (!prewarmBeforeOpen) {
+            open()
+            return
+        }
+        // Queue one polish turn so a Loader activated by contentActive can
+        // report its intrinsic size before the enter transition starts.
+        Qt.callLater(function() {
+            if (!_openRequested || opened)
+                return
+            // Reading both values forces QML to evaluate content geometry
+            // after active Loaders have received contentActive.
+            const measuredWidth = measuredImplicitWidth
+            const measuredHeight = measuredImplicitHeight
+            void measuredWidth
+            void measuredHeight
+            positionForAnchor()
+            clampToViewport()
+            open()
+        })
+    }
+
+    function registerTransientSurface(surface) {
+        transientSurface = surface || null
+    }
+
+    function unregisterTransientSurface(surface) {
+        if (!surface || transientSurface === surface)
+            transientSurface = null
+    }
+
+    function positionForAnchor() {
+        const anchor = placementAnchor
+        if (placement === "manual" || !anchor || !parent || isFullScreen
+                || isBottomSheet || isSideSheet)
+            return false
+
+        const globalPoint = anchor.mapToGlobal(0, 0)
+        const point = parent.mapFromGlobal(globalPoint.x, globalPoint.y)
+        const popupWidth = Math.max(width, measuredImplicitWidth)
+        const popupHeight = Math.max(height, measuredImplicitHeight)
+        const below = parent.height - (point.y + anchor.height) - viewportMargin
+        const above = point.y - viewportMargin
+        const right = parent.width - (point.x + anchor.width) - viewportMargin
+        const left = point.x - viewportMargin
+        let direction = placement
+        if (direction === "auto") {
+            // Prefer the vertical edge with enough room. If neither fits,
+            // choose the largest remaining side before viewport clamping.
+            if (below >= popupHeight || below >= above)
+                direction = "below"
+            else if (above >= popupHeight)
+                direction = "above"
+            else
+                direction = right >= left ? "right" : "left"
+        }
+
+        if (direction === "above") {
+            x = point.x
+            y = point.y - popupHeight - placementGap
+        } else if (direction === "right") {
+            x = point.x + anchor.width + placementGap
+            y = point.y
+        } else if (direction === "left") {
+            x = point.x - popupWidth - placementGap
+            y = point.y
+        } else {
+            x = point.x
+            y = point.y + anchor.height + placementGap
+        }
+        return true
     }
 
     function clampToViewport() {
@@ -55,20 +161,33 @@ Popup {
 
     modal: !isMenu
     focus: true
-    closePolicy: isFullScreen ? Popup.CloseOnEscape
-                              : Popup.CloseOnEscape | Popup.CloseOnPressOutside
+    closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
     transformOrigin: isSideSheet ? Item.Right
                                  : isBottomSheet ? Item.Bottom
                                                  : isMenu ? Item.TopRight : Item.Center
 
-    onAboutToShow: clampToViewport()
-    onOpened: Qt.callLater(function() {
-        if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
-            initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
-        else if (contentItem)
-            contentItem.forceActiveFocus(Qt.PopupFocusReason)
-    })
+    onAboutToShow: {
+        if (prewarmBeforeOpen) {
+            const measuredWidth = measuredImplicitWidth
+            const measuredHeight = measuredImplicitHeight
+            void measuredWidth
+            void measuredHeight
+        }
+        positionForAnchor()
+        clampToViewport()
+    }
+    onOpened: {
+        _openRequested = false
+        Qt.callLater(function() {
+            if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
+                initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
+            else if (contentItem)
+                contentItem.forceActiveFocus(Qt.PopupFocusReason)
+        })
+    }
+    onAboutToHide: _retainingExitContent = true
     onClosed: {
+        _retainingExitContent = false
         if (focusReturnItem && focusReturnItem.visible && focusReturnItem.enabled)
             focusReturnItem.forceActiveFocus(Qt.PopupFocusReason)
     }

@@ -136,8 +136,8 @@ ShowcaseCategoryPage {
                         height: 20 * MeoTheme.globalScale
                         width: 110 * MeoTheme.globalScale
                         radius: MeoTheme.shapeExtraSmall
-                        color: Qt.rgba(1, 0, 0, 0.12)
-                        MeoText { anchors.centerIn: parent; text: "EXPERIMENTAL"; typeRole: "label"; typeSize: "small"; color: MeoTheme.error }
+                        color: MeoTheme.errorContainer
+                        MeoText { anchors.centerIn: parent; text: "EXPERIMENTAL"; typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnErrorContainer }
                     }
                 }
 

@@ -69,7 +69,21 @@ if(BUILD_TESTING)
     add_meoui_qml_test(meoui.month_calendar tst_month_calendar.qml)
     add_meoui_qml_test(meoui.motion_theme tst_theme_source.qml)
     add_meoui_qml_test(meoui.status_center tst_status_center.qml)
+    add_meoui_qml_test(meoui.state_layer tst_state_layer.qml)
+    add_meoui_qml_test(meoui.motion_popup tst_motion_popup.qml)
+    add_meoui_qml_test(meoui.list_transitions tst_list_transitions.qml)
+    add_meoui_qml_test(meoui.cached_image tst_cached_image.qml)
+    add_meoui_qml_test(meoui.fab_menu tst_fab_menu.qml)
+    add_meoui_qml_test(meoui.split_button tst_split_button.qml)
     add_meoui_qml_test(meoui.exposed_dropdown tst_exposed_dropdown.qml)
+    add_meoui_qml_test(meoui.chip_dropdown tst_chip_dropdown.qml)
+    add_meoui_qml_test(meoui.menu tst_menu.qml)
+    add_meoui_qml_test(meoui.slider tst_slider.qml)
+    add_meoui_qml_test(meoui.range_slider tst_range_slider.qml)
+    add_meoui_qml_test(meoui.quick_control_slider tst_quick_control_slider.qml)
+    add_meoui_qml_test(meoui.grouped_lists tst_grouped_lists.qml)
+    add_meoui_qml_test(meoui.settings_row_contract tst_settings_row_contract.qml)
+    add_meoui_qml_test(meoui.settings_expressive tst_settings_expressive.qml)
     add_test(
         NAME meoui.design_system_usage
         COMMAND ${Python3_EXECUTABLE}
@@ -80,9 +94,17 @@ if(BUILD_TESTING)
                 "${CMAKE_CURRENT_SOURCE_DIR}/patterns"
                 "${CMAKE_CURRENT_SOURCE_DIR}/showcase"
     )
+    add_test(
+        NAME meoui.showcase_design_system_usage
+        COMMAND ${Python3_EXECUTABLE}
+                "${CMAKE_CURRENT_SOURCE_DIR}/tools/verify-design-system-usage.py"
+                --mode consumer
+                "${CMAKE_CURRENT_SOURCE_DIR}/showcase"
+    )
 endif()
 
-set_source_files_properties(MeoTheme.qml MeoMotion.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(MeoTheme.qml MeoMotion.qml components/MeoListTransitions.qml
+    PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 # MeoUI is a separately loadable runtime module.  Applications must import it
 # through the QML import path instead of embedding a private static copy.  This
@@ -158,6 +180,7 @@ qt_add_qml_module(meoui_module
         components/MeoRadioButton.qml
         components/MeoFAB.qml
         components/MeoCard.qml
+        components/MeoCachedImage.qml
         components/MeoMediaCard.qml
         components/MeoChip.qml
         components/MeoProgressBar.qml
@@ -165,6 +188,8 @@ qt_add_qml_module(meoui_module
         components/MeoBadge.qml
         components/MeoDivider.qml
         components/MeoListItem.qml
+        components/MeoListTransitions.qml
+        components/MeoListView.qml
         components/MeoSettingsRow.qml
         components/MeoMenu.qml
         components/MeoTabs.qml
@@ -336,6 +361,10 @@ if(MEOUI_BUILD_SHOWCASE)
         Qt6::QuickControls2
         meoui_module
     )
+    # The generated QML plugin owns the runtime type registration used by
+    # qmltestrunner as well as the standalone Showcase. Building only the app
+    # must never leave an older plugin beside fresh QML cache files.
+    add_dependencies(MeoShowcaseDemo meoui_moduleplugin)
     target_compile_definitions(MeoShowcaseDemo PRIVATE
         MEOUI_DEFAULT_OUTPUT_ROOT="${MEOUI_DEFAULT_OUTPUT_ROOT}"
     )

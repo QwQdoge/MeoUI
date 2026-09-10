@@ -34,15 +34,15 @@ Item {
         }
 
         function test_containerAndValueContract() {
-            const activeTrack = findChild(quickControl, "meoQuickControlActiveTrack")
-            const divider = findChild(quickControl, "meoQuickControlDivider")
             const slider = findChild(quickControl, "quickControlValueSlider")
-            verify(activeTrack !== null)
-            verify(divider !== null)
             verify(slider !== null)
-            compare(Math.round(quickControl.implicitHeight), Math.round(56 * MeoTheme.globalScale))
+            compare(findChild(quickControl, "meoQuickControlActiveTrack"), null)
+            compare(findChild(quickControl, "meoQuickControlDivider"), null)
+            compare(Math.round(quickControl.implicitHeight), Math.round(48 * MeoTheme.globalScale))
             compare(Math.round(quickControl.valueFraction * 100), 48)
-            verify(activeTrack.width > 0)
+            compare(slider.trackHeight, MeoTheme.sliderTrackHeightXS)
+            compare(slider.thumbWidth, MeoTheme.sliderThumbWidthExpressive)
+            verify(slider.endStopEnabled)
             verify(slider.enabled)
         }
 
@@ -64,7 +64,7 @@ Item {
             quickControl.expanded = true
             verify(quickControl.detailsAvailable)
             const slider = findChild(quickControl, "quickControlValueSlider")
-            verify(slider.Accessible.description.indexOf("48") !== -1)
+            verify(slider.accessibleDescription.indexOf("48") !== -1)
         }
 
         function test_realSliderOwnsAccessibilityAndTrackingBoundary() {

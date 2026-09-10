@@ -449,8 +449,12 @@ QtObject {
     readonly property var motionDurationMedium: motionDurationMedium1
     readonly property var motionDurationSlow: motionDurationMedium3
     readonly property int motionDurationPanelState: motionDurationShort2
-    readonly property int motionDurationRippleExpand: motionDurationMedium2
-    readonly property int motionDurationRippleFade: motionDurationShort3
+    // Expressive input feedback must acknowledge the press before a spatial
+    // transition can visually take over.  Keep ripple timing separate from
+    // page/popup motion so every control shares the same fast press contract.
+    readonly property int motionDurationPress: motionDurationShort1
+    readonly property int motionDurationRippleExpand: motionDurationShort4
+    readonly property int motionDurationRippleFade: motionDurationShort2
     readonly property int motionDurationPopupEffectsEnter: motionDurationMedium1
     readonly property int motionDurationPopupEffectsExit: motionDurationShort3
     readonly property int motionDurationDisclosureEnter: motionDurationMedium2
@@ -459,6 +463,18 @@ QtObject {
     readonly property int motionDurationPageExit: motionDurationMedium1
     readonly property int motionDurationCalendarPage: motionDurationMedium2
     readonly property int motionDurationExternalValue: motionDurationShort4
+    // Shared view transitions. A zero effective duration is represented by a
+    // null Transition in MeoListTransitions to avoid Qt delegate cleanup
+    // issues during reduced-motion updates.
+    readonly property int motionDurationListInsert: motionDurationShort4
+    readonly property int motionDurationListRemove: motionDurationShort3
+    readonly property int motionDurationListDisplaced: motionDurationShort4
+    readonly property int motionListStaggerDelay: motionDurationFor(15)
+    readonly property int motionListStaggerCap: 8
+    // Delay a busy affordance just long enough to avoid flashing it for an
+    // already-completed backend action. This is a semantic delay, not an
+    // animation duration; it still respects the central motion scale.
+    readonly property int motionBusyIndicatorDelay: motionDurationFor(150)
     readonly property int motionDurationState: motionDurationShort2
     readonly property int motionDurationSelection: motionDurationShort4
     readonly property int motionDurationShapeEnter: motionDurationShort3
@@ -672,6 +688,7 @@ QtObject {
     readonly property real sliderTrackHeightXL: 96 * globalScale
 
     readonly property real sliderThumbWidthExpressive: 4 * globalScale
+    readonly property real sliderThumbPressedWidthExpressive: 2 * globalScale
     readonly property real sliderThumbHeightXS: 44 * globalScale
     readonly property real sliderThumbHeightS: 44 * globalScale
     readonly property real sliderThumbHeightM: 52 * globalScale
@@ -680,6 +697,14 @@ QtObject {
     // Compatibility alias for callers that did not select an explicit size.
     readonly property real sliderThumbHeightExpressive: sliderThumbHeightXS
     readonly property real sliderThumbGapExpressive: 6 * globalScale
+    readonly property real sliderStopSizeExpressive: 4 * globalScale
+
+    // Pixel-style connected surfaces use one large outer silhouette and a
+    // barely rounded inner join separated by the surrounding surface.  These
+    // tokens are shared by Settings, lists, and connected button groups.
+    readonly property real connectedGroupOuterRadius: shapeExtraLarge
+    readonly property real connectedGroupInnerRadius: 1 * globalScale * cornerScale
+    readonly property real connectedGroupGap: 2 * globalScale
 
     readonly property real shapeSquareRadius: 4 * globalScale
 

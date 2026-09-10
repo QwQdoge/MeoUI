@@ -15,7 +15,10 @@ Column {
     property bool showDividers: true
     property color containerColor: MeoTheme.surfaceContainerLowest
     property color selectedContainerColor: MeoTheme.secondaryContainer
-    property real radius: MeoTheme.shapeExtraLarge
+    property color separatorColor: MeoTheme.surface
+    property string separatorStyle: "gap" // gap | line | none
+    property real radius: MeoTheme.connectedGroupOuterRadius
+    property real memberGap: MeoTheme.connectedGroupGap
     property real horizontalInset: 0
     property Component delegate: defaultDelegate
 
@@ -47,7 +50,7 @@ Column {
             font.family: MeoTheme.typefacePlain
             font.pixelSize: control.titleFont.size * control.scale
             font.weight: control.titleFont.weight
-            color: MeoTheme.contentOnSurface
+            color: MeoTheme.primary
             elide: Text.ElideRight
             textFormat: Text.PlainText
         }
@@ -73,13 +76,14 @@ Column {
         Rectangle {
             anchors.fill: parent
             radius: control.radius
-            color: control.containerColor
+            color: control.separatorColor
         }
 
         Column {
             id: rows
             width: parent.width
-            spacing: 0
+            spacing: control.showDividers && control.separatorStyle === "gap"
+                     ? control.memberGap : 0
 
             Repeater {
                 id: rowRepeater
@@ -100,8 +104,9 @@ Column {
             width: rows.width
             title: item.title || item.label || ""
             subtitle: item.subtitle || item.supportingText || ""
-            leadingIcon: item.icon || ""
+            leadingIcon: item.leadingIcon || item.icon || ""
             leadingTone: item.tone || item.leadingTone || "primary"
+            leadingStyle: item.leadingStyle || "plain"
             trailingKind: item.trailingKind || item.kind || "navigation"
             trailingText: {
                 if (item.trailingText !== undefined && item.trailingText !== null)
@@ -159,13 +164,18 @@ Column {
             interactive: item.interactive === undefined
                          ? trailingKind !== "status" && trailingKind !== "none"
                          : item.interactive
-            surfaceColor: "transparent"
+            // Each member owns its surface so the shared separator background
+            // can remain visible through the two dp connected-group gap.
+            surfaceColor: control.containerColor
             selectionColor: control.selectedContainerColor
             positionInGroup: rowRepeater.count <= 1 ? "only"
                              : index === 0 ? "first"
                              : index === rowRepeater.count - 1 ? "last"
                              : "middle"
-            showDivider: control.showDividers && index < rowRepeater.count - 1
+            showDivider: control.showDividers
+                         && control.separatorStyle === "line"
+                         && index < rowRepeater.count - 1
+            dividerColor: control.separatorColor
 
             onActivated: {
                 if (typeof item.action === "function")

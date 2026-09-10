@@ -104,11 +104,22 @@ def audit(path: Path, mode: str) -> list[str]:
             issues.append(f"{path}:{line}: animation has no semantic duration")
         if not re.search(r"easing\.type\s*:\s*Easing\.BezierSpline", block):
             issues.append(f"{path}:{line}: animation bypasses MeoUI bezier easing")
-        if not re.search(r"easing\.bezierCurve\s*:[^;}\n]*MeoTheme\.motionEasing", block):
+        if not re.search(r"easing\.bezierCurve\s*:[^;}\n]*(?:MeoTheme|Meo\.MeoTheme)\.motionEasing", block):
             issues.append(f"{path}:{line}: animation has no MeoUI easing token")
         duration = re.search(r"\bduration\s*:\s*([^;}\n]+)", block)
         if duration and re.fullmatch(r"\s*\d+(?:\.\d+)?\s*", duration.group(1)):
             issues.append(f"{path}:{line}: animation uses a numeric duration")
+
+    # Slider input semantics and gesture handling have exactly two owners.
+    # Composites such as Quick Control must compose these public primitives
+    # instead of hiding a second native slider behind custom-painted rails.
+    if mode == "library" and path.name not in {"MeoSlider.qml", "MeoRangeSlider.qml"}:
+        for match in RAW_CONTROL.finditer(source):
+            if match.group(1) in {"Slider", "RangeSlider"}:
+                issues.append(
+                    f"{path}:{line_number(source, match.start())}: "
+                    f"duplicate native slider: {match.group(0)}"
+                )
 
     if mode == "consumer":
         for pattern, label in ((HARDCODED_COLOR, "hard-coded UI color"),

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Effects
+import ".." as Meo
 
 Item {
     id: control
@@ -11,7 +12,14 @@ Item {
     property bool dragged: false
     property bool focusRingEnabled: true
     property bool rippleEnabled: true
-    property color color: MeoTheme.contentOnSurface
+    property bool _keyboardRipplePending: false
+    // `color` remains the semantic foreground/focus color for compatibility.
+    // Pointer feedback itself uses the theme scrim so every filled, tonal, and
+    // neutral surface becomes perceptibly darker instead of changing hue.
+    property color color: theme.contentOnSurface
+    property color overlayColor: theme.scrim
+    property color focusColor: theme.primary
+    property real rippleFeather: 2 * themeGlobalScale
     property real radius: 0
     // Connected groups need one continuous outer silhouette: only the first
     // and last item inherit the container corners.  Keep this in the shared
@@ -34,17 +42,27 @@ Item {
     readonly property real maskBottomLeftRadius: usesFullRoundMask ? maskRadius : bottomLeftRadius
     readonly property real maskBottomRightRadius: usesFullRoundMask ? maskRadius : bottomRightRadius
 
-    // 🌟 作用域与主题安全防御
-    readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
+    // MeoTheme is the only source for state and motion tokens.  Do not keep
+    // a second set of fallback curves in this primitive: consumers must get a
+    // complete theme or fail visibly during development.
+    readonly property var theme: Meo.MeoTheme
+    readonly property real themeGlobalScale: theme.globalScale
 
     // 🌟 状态层透明度定义 (MD3 规范)
-    readonly property real hoverOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityHover !== 'undefined') ? MeoTheme.stateOpacityHover : 0.08
-    readonly property real focusOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityFocus !== 'undefined') ? MeoTheme.stateOpacityFocus : 0.10
-    readonly property real pressedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityPressed !== 'undefined') ? MeoTheme.stateOpacityPressed : 0.10
-    readonly property real draggedOpacity: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.stateOpacityDragged !== 'undefined') ? MeoTheme.stateOpacityDragged : 0.16
-    readonly property int hoverDuration: MeoTheme.motionDurationFast
-    readonly property int rippleExpandDuration: MeoTheme.motionDurationRippleExpand
-    readonly property int rippleFadeDuration: MeoTheme.motionDurationRippleFade
+    readonly property real hoverOpacity: theme.stateOpacityHover
+    readonly property real focusOpacity: theme.stateOpacityFocus
+    readonly property real pressedOpacity: theme.stateOpacityPressed
+    readonly property real draggedOpacity: theme.stateOpacityDragged
+    readonly property int hoverDuration: theme.motionDurationFast
+    readonly property int pressDuration: theme.motionDurationPress
+    readonly property int rippleExpandDuration: theme.motionDurationRippleExpand
+    readonly property int rippleFadeDuration: theme.motionDurationRippleFade
+    // This exposes the lifetime boundary for hosts and tests.  The ripple
+    // surface is not painted between interactions, so it cannot become a
+    // permanent GPU workload on a dense list.
+    readonly property bool rippleActive: rippleLayer.opacity > 0
+    readonly property real rippleOriginX: rippleLayer.originX
+    readonly property real rippleOriginY: rippleLayer.originY
 
     anchors.fill: parent
     width: parent ? parent.width : 0
@@ -59,7 +77,7 @@ Item {
     }
 
     function trigger(x, y) {
-        if (!control.enabled || !control.rippleEnabled || (typeof MeoTheme !== "undefined" && MeoTheme.reduceMotion))
+        if (!control.enabled || !control.rippleEnabled || theme.reduceMotion)
             return
         rippleExpand.stop()
         rippleFade.stop()
@@ -72,10 +90,21 @@ Item {
         rippleExpand.start()
     }
 
+    // Hosts handling a keyboard activation call this rather than reusing the
+    // last pointer location; Material keyboard feedback originates centrally.
+    function triggerFromKeyboard() {
+        _keyboardRipplePending = true
+        trigger(control.width / 2, control.height / 2)
+    }
+
     onPressedChanged: {
-        if (pressed && !dragged)
-            trigger(pressX, pressY)
-        else
+        if (pressed && !dragged) {
+            if (_keyboardRipplePending)
+                _keyboardRipplePending = false
+            else
+                trigger(pressX, pressY)
+        }
+        else if (rippleActive)
             rippleFade.restart()
     }
 
@@ -93,7 +122,7 @@ Item {
     Item {
         id: maskedLayer
         anchors.fill: parent
-        visible: baseLayer.opacity > 0 || rippleLayer.opacity > 0
+        visible: baseLayer.opacity > 0 || control.rippleActive
         layer.enabled: visible && control.maskRadius > 0
         layer.effect: MultiEffect {
             maskEnabled: true
@@ -115,7 +144,7 @@ Item {
         Rectangle {
             id: baseLayer
             anchors.fill: parent
-            color: control.color
+            color: control.overlayColor
             opacity: {
                 if (!control.enabled) return 0
                 if (control.dragged) return control.draggedOpacity
@@ -127,13 +156,13 @@ Item {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: control.hoverDuration
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+                    duration: control.pressed ? control.pressDuration : control.hoverDuration
+                    easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
                 }
             }
         }
 
-        Rectangle {
+        Item {
             id: rippleLayer
             property real originX: control.width / 2
             property real originY: control.height / 2
@@ -144,9 +173,21 @@ Item {
             y: originY - radiusValue
             width: radiusValue * 2
             height: radiusValue * 2
-            radius: radiusValue
-            color: control.color
             opacity: 0
+            visible: opacity > 0
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width / 2
+                color: control.overlayColor
+                layer.enabled: rippleLayer.visible && control.rippleFeather > 0
+                layer.effect: MultiEffect {
+                    blurEnabled: true
+                    blur: 0.28
+                    blurMax: Math.max(4, Math.ceil(control.rippleFeather * 4))
+                    autoPaddingEnabled: true
+                }
+            }
         }
 
         Rectangle {
@@ -158,11 +199,11 @@ Item {
             bottomLeftRadius: control.maskBottomLeftRadius
             bottomRightRadius: control.maskBottomRightRadius
             border.width: control.focused && control.focusRingEnabled ? Math.max(2, 2 * control.themeGlobalScale) : 0
-            border.color: control.color
+            border.color: control.focusColor
             opacity: control.enabled && control.focused && control.focusRingEnabled ? 0.78 : 0
 
             Behavior on opacity {
-                NumberAnimation { duration: control.hoverDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                NumberAnimation { duration: control.hoverDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard }
             }
         }
     }
@@ -174,7 +215,7 @@ Item {
         from: 0
         to: rippleLayer.targetRadius
         duration: control.rippleExpandDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingEmphasizedDecelerate !== 'undefined') ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
+        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingEmphasizedDecelerate
     }
 
     NumberAnimation {
@@ -183,7 +224,7 @@ Item {
         property: "opacity"
         to: control.pressedOpacity
         duration: control.hoverDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
     }
 
     NumberAnimation {
@@ -191,8 +232,21 @@ Item {
         target: rippleLayer
         property: "opacity"
         to: 0
-        duration: control.hoverDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
+        duration: control.rippleFadeDuration
+        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
+    }
+
+    Connections {
+        target: control.theme
+        function onReduceMotionChanged() {
+            if (!control.theme.reduceMotion)
+                return
+            rippleExpand.stop()
+            rippleFadeIn.stop()
+            rippleFade.stop()
+            rippleLayer.opacity = 0
+            rippleLayer.radiusValue = 0
+        }
     }
 
     readonly property real stateOpacity: {

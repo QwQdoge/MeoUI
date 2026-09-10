@@ -39,7 +39,7 @@ Item {
 
     ListModel {
         id: listMenuModel
-        ListElement { label: "Archive"; icon: "archive" }
+        ListElement { label: "Archive"; icon: "archive"; enabled: true }
         ListElement { label: "Unavailable"; enabled: false }
     }
 
@@ -80,11 +80,10 @@ Item {
             menu.open()
             wait(220)
             verify(menu.model[2].selected)
-            verify(menu.activateItem(2, null))
+            verify(menu.activateItem(2, menu.menuItemAt(2)))
             compare(submenuSpy.count, 1)
             verify(menu.visible)
-            wait(220)
-            verify(menu.submenuOpened)
+            tryCompare(menu, "submenuOpened", true, menu.submenuSurface.enterDuration + 250)
             compare(menu.itemShortcut({ "shortcut": "Ctrl+P" }), "Ctrl+P")
             compare(menu.itemSupportingText({ "supportingText": "Available offline" }), "Available offline")
             verify(menu.itemIsSelected({ "checked": true }))
@@ -108,12 +107,11 @@ Item {
                 { "label": "More", "subItems": listSubmenuModel }
             ]
             menu.open()
-            wait(220)
+            tryCompare(menu, "opened", true, menu.enterDuration + 250)
             verify(menu.activateItem(0, menu.menuItemAt(0)))
-            wait(220)
-            verify(menu.submenuOpened)
-            compare(menu.submenu.currentIndex, 0)
-            verify(menu.submenu.activateItem(0, menu.submenu.menuItemAt(0)))
+            tryCompare(menu, "submenuOpened", true, menu.submenuSurface.enterDuration + 250)
+            compare(menu.submenuSurface.currentIndex, 0)
+            verify(menu.submenuSurface.activateItem(0, menu.submenuSurface.menuItemAt(0)))
             wait(220)
         }
 
@@ -125,17 +123,17 @@ Item {
             verify(menu.openSubmenu(2, menu.model[2], anchor))
             wait(220)
             const globalPoint = anchor.mapToGlobal(0, 0)
-            const anchorInSubmenuParent = menu.submenu.parent.mapFromGlobal(globalPoint.x, globalPoint.y)
+            const anchorInSubmenuParent = menu.submenuSurface.parent.mapFromGlobal(globalPoint.x, globalPoint.y)
             const preferredX = anchorInSubmenuParent.x + anchor.width + 4 * menu.themeGlobalScale
-            const maximumX = Math.max(menu.submenu.viewportMargin,
-                                      menu.submenu.parent.width - menu.submenu.width - menu.submenu.viewportMargin)
+            const maximumX = Math.max(menu.submenuSurface.viewportMargin,
+                                      menu.submenuSurface.parent.width - menu.submenuSurface.width - menu.submenuSurface.viewportMargin)
             const preferredY = anchorInSubmenuParent.y
-            const maximumY = Math.max(menu.submenu.viewportMargin,
-                                      menu.submenu.parent.height - menu.submenu.height - menu.submenu.viewportMargin)
-            compare(Math.round(menu.submenu.x), Math.round(Math.max(menu.submenu.viewportMargin,
-                                                                     Math.min(preferredX, maximumX))))
-            compare(Math.round(menu.submenu.y), Math.round(Math.max(menu.submenu.viewportMargin,
-                                                                     Math.min(preferredY, maximumY))))
+            const maximumY = Math.max(menu.submenuSurface.viewportMargin,
+                                      menu.submenuSurface.parent.height - menu.submenuSurface.height - menu.submenuSurface.viewportMargin)
+            verify(Math.abs(menu.submenuSurface.x - Math.max(menu.submenuSurface.viewportMargin,
+                                                              Math.min(preferredX, maximumX))) <= 1)
+            verify(Math.abs(menu.submenuSurface.y - Math.max(menu.submenuSurface.viewportMargin,
+                                                              Math.min(preferredY, maximumY))) <= 1)
             menu.closeSubmenu()
             menu.close()
         }

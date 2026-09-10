@@ -13,6 +13,13 @@ Item {
         name: "MeoChipDropdown"
         when: windowShown
 
+        function init() {
+            dropdown.selectedIndices = [0]
+            dropdown.showCounter = false
+            dropdown.isError = false
+            dropdown.errorText = ""
+        }
+
         function test_selectionCanBeChangedWithoutDuplicateManualEmission() {
             let signalCount = 0
             const handler = function() { signalCount++ }
@@ -28,7 +35,7 @@ Item {
             dropdown.isError = true
             dropdown.errorText = "Select a tag"
             compare(dropdown.error, true)
-            compare(dropdown.selectedIndices.length, 2)
+            compare(dropdown.selectedIndices.length, 1)
         }
     }
 }

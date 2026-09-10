@@ -13,10 +13,11 @@ Control {
     property real stepSize: 1.0
     property bool isThick: false
     property bool expressive: false
-    property string size: expressive ? "m" : "xs" // "xs" | "s" | "m" | "l" | "xl"
+    property string size: "xs" // "xs" | "s" | "m" | "l" | "xl"
     property bool wavy: false
     property bool valueLabelEnabled: false
-    property string trackStyle: expressive && size !== "xs" ? "split" : "standard" // "standard" | "split"
+    property string trackStyle: expressive ? "split" : "standard" // "standard" | "split"
+    property bool endStopEnabled: expressive || trackStyle === "split"
 
     // Expressive range selection follows the same primary/neutral pair as the
     // standard slider. The prior primary-container treatment lost contrast in
@@ -72,6 +73,7 @@ Control {
         return MeoTheme.sliderThumbHeightXS
     }
     readonly property real thumbWidth: MeoTheme.sliderThumbWidthExpressive
+    readonly property real pressedThumbWidth: MeoTheme.sliderThumbPressedWidthExpressive
     readonly property real thumbHeight: expressiveThumbHeight
     readonly property real thumbGap: MeoTheme.sliderThumbGapExpressive
     readonly property real firstTrackX: internalSlider.first.visualPosition * internalSlider.availableWidth
@@ -89,6 +91,7 @@ Control {
 
     RangeSlider {
         id: internalSlider
+        objectName: "meoRangeSliderNative"
         anchors.fill: parent
         from: control.from
         to: control.to
@@ -203,6 +206,28 @@ Control {
                 }
             }
 
+            Rectangle {
+                objectName: "meoRangeSliderLeadingEndStop"
+                visible: control.endStopEnabled && !control.wavy
+                width: MeoTheme.sliderStopSizeExpressive
+                height: width
+                radius: width / 2
+                x: Math.max(0, control.renderedTrackHeight / 2 - width / 2)
+                anchors.verticalCenter: parent.verticalCenter
+                color: control.resolvedActiveTrackColor
+            }
+
+            Rectangle {
+                objectName: "meoRangeSliderTrailingEndStop"
+                visible: control.endStopEnabled && !control.wavy
+                width: MeoTheme.sliderStopSizeExpressive
+                height: width
+                radius: width / 2
+                x: Math.max(0, parent.width - control.renderedTrackHeight / 2 - width / 2)
+                anchors.verticalCenter: parent.verticalCenter
+                color: control.resolvedActiveTrackColor
+            }
+
             Canvas {
                 id: wavyCanvas
                 visible: control.wavy
@@ -295,11 +320,23 @@ Control {
             id: thumb
             objectName: "meoRangeSliderThumb"
             anchors.centerIn: parent
-            width: control.thumbWidth
+            width: rangeThumb.sliderHandle.pressed
+                   ? control.pressedThumbWidth : control.thumbWidth
             height: control.thumbHeight
             radius: width / 2
             color: control.resolvedThumbColor
             border.width: 0
+
+            Behavior on width {
+                enabled: !control.reduceMotion
+                NumberAnimation {
+                    duration: rangeThumb.sliderHandle.pressed
+                              ? MeoTheme.motionDurationPress
+                              : MeoTheme.motionDurationSelection
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: rangeThumb.sliderHandle.pressed ? MeoTheme.motionEasingStandardDecelerate : MeoTheme.motionEasingEmphasizedDecelerate
+                }
+            }
         }
 
         Rectangle {
@@ -322,23 +359,22 @@ Control {
             }
         }
 
-        Rectangle {
+        Item {
             objectName: "meoRangeSliderStateLayer"
             anchors.centerIn: parent
             width: 40 * control.themeGlobalScale
             height: width
-            radius: width / 2
             z: -1
-            color: rangeThumb.sliderHandle.pressed
-                   ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
-                             MeoTheme.stateOpacityPressed)
-                   : rangeThumb.sliderHandle.hovered
-                     ? Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
-                               MeoTheme.stateOpacityHover)
-                     : "transparent"
-            Behavior on color {
-                enabled: !control.reduceMotion
-                ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+
+            MeoStateLayer {
+                anchors.fill: parent
+                shape: "circle"
+                hovered: rangeThumb.sliderHandle.hovered
+                pressed: rangeThumb.sliderHandle.pressed
+                dragged: rangeThumb.sliderHandle.pressed
+                focused: rangeThumb.sliderHandle.activeFocus
+                rippleEnabled: false
+                color: control.themePrimary
             }
         }
     }

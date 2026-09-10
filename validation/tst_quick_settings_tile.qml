@@ -50,6 +50,17 @@ Item {
             compare(tile.activeContentColor, MeoTheme.contentOnPrimaryContainer)
             compare(tile.focusStrokeWidth, MeoTheme.strokeWidthThick)
             compare(tile.focusStrokeColor, MeoTheme.secondaryFixed)
+            compare(tile.inactiveIconShape, "Circle")
+            compare(tile.activeIconShape, "Cookie4Sided")
+            verify(tile.iconShapeMorphEnabled)
+            const morph = findChild(tile, "quickSettingsIconShapeMorph")
+            verify(morph !== null)
+            tile.active = false
+            wait(MeoMotion.maximumDuration(tile.motionProfile, "fast") + 20)
+            compare(morph.value, 0)
+            tile.active = true
+            wait(MeoMotion.maximumDuration(tile.motionProfile, "fast") + 20)
+            compare(morph.value, 1)
         }
 
         function test_detailsButtonAndEditMode() {

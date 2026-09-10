@@ -22,9 +22,11 @@ Item {
             verify(statusCenter.timeText.length > 0)
             verify(statusCenter.dateText.length > 0)
             verify(!statusCenter.compact)
+            statusCenter.compactBreakpoint = 680
             statusCenter.width = 600
             verify(statusCenter.compact)
             statusCenter.width = 720
+            verify(!statusCenter.compact)
         }
     }
 }

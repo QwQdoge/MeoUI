@@ -12,8 +12,12 @@ Column {
     property bool showDividers: true
     property bool showChevron: true
     property real dividerInset: 56 * MeoTheme.globalScale
-    property real containerRadius: MeoTheme.shapeLarge
+    property real containerRadius: MeoTheme.connectedGroupOuterRadius
+    property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
+    property real memberGap: MeoTheme.connectedGroupGap
     property color containerColor: MeoTheme.surfaceContainerLowest
+    property color separatorColor: MeoTheme.surface
+    property string separatorStyle: "gap" // gap | line | none
     readonly property bool isMirrored: LayoutMirroring.enabled
 
     signal clicked(int index)
@@ -80,13 +84,14 @@ Column {
         Rectangle {
             anchors.fill: parent
             radius: control.containerRadius
-            color: control.containerColor
+            color: control.separatorColor
         }
 
         Column {
             id: rows
             width: parent.width
-            spacing: 0
+            spacing: control.showDividers && control.separatorStyle === "gap"
+                     ? control.memberGap : 0
 
             Repeater {
                 model: control.model
@@ -104,6 +109,9 @@ Column {
                     enabled: control.enabledFor(modelData)
                     interactive: enabled
                     isSegmented: true
+                    surfaceColor: control.containerColor
+                    outerCornerRadius: control.containerRadius
+                    innerCornerRadius: control.innerCornerRadius
                     roundingStrategy: control.model.length === 1 ? "all"
                                       : index === 0 ? "top"
                                       : index === control.model.length - 1 ? "bottom" : "middle"
@@ -143,14 +151,16 @@ Column {
                     onClicked: control.activate(index)
 
                     Rectangle {
-                        visible: control.showDividers && index < control.model.length - 1
+                        visible: control.showDividers
+                                 && control.separatorStyle === "line"
+                                 && index < control.model.length - 1
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.leftMargin: control.isMirrored ? 0 : control.dividerInset
                         anchors.rightMargin: control.isMirrored ? control.dividerInset : 0
                         height: Math.max(1, MeoTheme.globalScale)
-                        color: MeoTheme.outlineVariant
+                        color: control.separatorColor
                     }
                 }
             }

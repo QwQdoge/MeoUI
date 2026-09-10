@@ -65,7 +65,7 @@ Control {
         if (size === "l") return 16 * themeGlobalScale
         return 20 * themeGlobalScale // XL
     }
-    readonly property real connectedInnerCornerRadius: connectedSquareCornerRadius
+    readonly property real connectedInnerCornerRadius: MeoTheme.connectedGroupInnerRadius
     readonly property real groupRadius: !isStandard && baseShape === "square"
                                        ? connectedSquareCornerRadius : height / 2
 

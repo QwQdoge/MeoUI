@@ -12,9 +12,12 @@ Column {
     // they are assigned after creation alongside the rounding contract.
     property Component delegate: null
     property bool isSegmented: true
-    property real itemSpacing: 0
+    property real itemSpacing: MeoTheme.connectedGroupGap
     property int selectedIndex: -1
     property color containerColor: MeoTheme.surfaceContainerLowest
+    property color separatorColor: MeoTheme.surface
+    property real containerRadius: MeoTheme.connectedGroupOuterRadius
+    property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
     readonly property bool isMirrored: LayoutMirroring.enabled
 
     signal clicked(int index)
@@ -88,8 +91,8 @@ Column {
 
         Rectangle {
             anchors.fill: parent
-            radius: MeoTheme.shapeLarge
-            color: control.containerColor
+            radius: control.containerRadius
+            color: control.separatorColor
         }
 
         Column {
@@ -120,6 +123,12 @@ Column {
                             item.roundingStrategy = control.roundingFor(itemLoader.index)
                         if (item.hasOwnProperty("isSegmented"))
                             item.isSegmented = control.isSegmented
+                        if (item.hasOwnProperty("surfaceColor"))
+                            item.surfaceColor = control.containerColor
+                        if (item.hasOwnProperty("outerCornerRadius"))
+                            item.outerCornerRadius = control.containerRadius
+                        if (item.hasOwnProperty("innerCornerRadius"))
+                            item.innerCornerRadius = control.innerCornerRadius
                         if (item.hasOwnProperty("selected"))
                             item.selected = control.selectedIndex === itemLoader.index
                         if (item.hasOwnProperty("enabled"))

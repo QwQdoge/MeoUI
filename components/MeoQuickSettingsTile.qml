@@ -15,6 +15,9 @@ Control {
     property bool busy: false
     property bool unavailable: false
     property string motionProfile: "pixel"
+    property string inactiveIconShape: "Circle"
+    property string activeIconShape: "Cookie4Sided"
+    property bool iconShapeMorphEnabled: true
     // "pixel" mirrors the large, touch-first Android quick-settings editor
     // without changing the compact desktop surface that already uses this
     // component.  It is intentionally a geometry variant, not a second color
@@ -95,6 +98,15 @@ Control {
         speed: "fast"
         value: 1
         targetValue: pointer.pressed && !dragHandler.active ? MeoMotion.pressScale(control.motionProfile) : 1
+    }
+
+    MeoSpringValue {
+        id: iconShapeMorph
+        objectName: "quickSettingsIconShapeMorph"
+        motionProfile: control.motionProfile
+        speed: "fast"
+        value: 0
+        targetValue: control.active ? 1 : 0
     }
 
     function activateMain() {
@@ -212,11 +224,22 @@ Control {
             Rectangle {
                 Layout.preferredWidth: 56 * MeoTheme.globalScale
                 Layout.preferredHeight: width
-                radius: width / 2
-                color: control.active
-                       ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
-                                 control.activeContentColor.b, 0.16)
-                       : MeoTheme.surfaceContainerHigh
+                radius: width / 2 // fallback hit geometry; the visual is the morph below
+                color: "transparent"
+
+                MeoShapeMorph {
+                    anchors.fill: parent
+                    fromShape: control.inactiveIconShape
+                    toShape: control.activeIconShape
+                    morphProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
+                                                                  : (control.active ? 1 : 0)
+                    rawSpringProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
+                                                                       : morphProgress
+                    color: control.active
+                           ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
+                                     control.activeContentColor.b, 0.16)
+                           : MeoTheme.surfaceContainerHigh
+                }
 
                 MeoIcon {
                     anchors.centerIn: parent
@@ -277,11 +300,22 @@ Control {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 48 * MeoTheme.globalScale
                 Layout.preferredHeight: width
-                radius: width / 2
-                color: control.active
-                       ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
-                                 control.activeContentColor.b, 0.16)
-                       : MeoTheme.surfaceContainerHigh
+                radius: width / 2 // fallback hit geometry; the visual is the morph below
+                color: "transparent"
+
+                MeoShapeMorph {
+                    anchors.fill: parent
+                    fromShape: control.inactiveIconShape
+                    toShape: control.activeIconShape
+                    morphProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
+                                                                  : (control.active ? 1 : 0)
+                    rawSpringProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
+                                                                       : morphProgress
+                    color: control.active
+                           ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
+                                     control.activeContentColor.b, 0.16)
+                           : MeoTheme.surfaceContainerHigh
+                }
 
                 MeoIcon {
                     anchors.centerIn: parent

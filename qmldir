@@ -10,6 +10,7 @@ MeoBreadcrumbs 1.0 components/MeoBreadcrumbs.qml
 MeoButton 1.0 components/MeoButton.qml
 MeoButtonGroup 1.0 components/MeoButtonGroup.qml
 MeoCard 1.0 components/MeoCard.qml
+MeoCachedImage 1.0 components/MeoCachedImage.qml
 MeoCarousel 1.0 components/MeoCarousel.qml
 MeoCheckbox 1.0 components/MeoCheckbox.qml
 MeoChip 1.0 components/MeoChip.qml
@@ -37,6 +38,8 @@ MeoIconToggleButton 1.0 components/MeoIconToggleButton.qml
 MeoInputChip 1.0 components/MeoInputChip.qml
 MeoListHeader 1.0 components/MeoListHeader.qml
 MeoListItem 1.0 components/MeoListItem.qml
+singleton MeoListTransitions 1.0 components/MeoListTransitions.qml
+MeoListView 1.0 components/MeoListView.qml
 MeoSettingsRow 1.0 components/MeoSettingsRow.qml
 MeoLoadingIndicator 1.0 components/MeoLoadingIndicator.qml
 MeoMediaCard 1.0 components/MeoMediaCard.qml

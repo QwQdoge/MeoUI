@@ -91,7 +91,9 @@ Item {
             compare(account.implicitHeight, 92 * MeoTheme.globalScale)
             compare(row.implicitHeight, 72 * MeoTheme.globalScale)
             compare(row.dividerInset, 0)
-            compare(group.radius, MeoTheme.shapeExtraLarge)
+            compare(group.radius, MeoTheme.connectedGroupOuterRadius)
+            compare(group.memberGap, MeoTheme.connectedGroupGap)
+            compare(row.leadingStyle, "plain")
             compare(navigation.implicitWidth, 288 * MeoTheme.globalScale)
         }
 
@@ -101,8 +103,11 @@ Item {
             scheme.onTertiaryContainer = "#4D1763"
             verify(MeoTheme.applyDynamicColorScheme(scheme, "settings-test"))
             wait(0)
+            row.leadingStyle = "tonal"
             compare(String(row.iconContainerColor).toLowerCase(), "#f1d7ff")
             compare(String(row.iconColor).toLowerCase(), "#4d1763")
+            row.leadingStyle = "plain"
+            compare(row.iconColor, MeoTheme.contentOnSurfaceVariant)
         }
 
         function test_dynamicPairTracksAppearanceWithoutCrossModeLeak() {

@@ -31,16 +31,19 @@ Item {
             const track = findChild(range, "meoRangeSliderStandardTrack")
             const active = findChild(range, "meoRangeSliderActiveTrack")
             const thumb = findChild(range, "meoRangeSliderThumb")
+            const nativeRange = findChild(range, "meoRangeSliderNative")
             verify(track !== null)
             verify(active !== null)
             verify(thumb !== null)
+            verify(nativeRange !== null)
+            tryCompare(range, "trackStyle", "standard")
+            tryCompare(track, "visible", true)
             verify(track.visible)
-            compare(range.trackStyle, "standard")
             compare(range.thumbWidth, MeoTheme.sliderThumbWidthExpressive)
             compare(range.thumbHeight, MeoTheme.sliderThumbHeightXS)
             compare(range.valueLabelEnabled, false)
             verify(active.width > 0)
-            verify(range.Accessible.name.indexOf("24") !== -1)
+            verify(nativeRange.Accessible.name.indexOf("24") !== -1)
         }
 
         function test_expressiveSplitIsExplicit() {
@@ -50,8 +53,10 @@ Item {
             verify(active.visible)
             compare(range.trackStyle, "split")
             compare(range.thumbWidth, MeoTheme.sliderThumbWidthExpressive)
-            compare(range.trackHeight, MeoTheme.sliderTrackHeightM)
-            compare(range.thumbHeight, MeoTheme.sliderThumbHeightM)
+            compare(range.trackHeight, MeoTheme.sliderTrackHeightXS)
+            compare(range.thumbHeight, MeoTheme.sliderThumbHeightXS)
+            compare(range.pressedThumbWidth, MeoTheme.sliderThumbPressedWidthExpressive)
+            verify(range.endStopEnabled)
         }
 
         function test_discreteAndDisabledConfiguration() {

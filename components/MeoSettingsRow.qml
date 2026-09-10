@@ -13,12 +13,14 @@ Control {
     property string subtitle: ""
     property string leadingIcon: ""
     property string leadingTone: "primary" // primary | secondary | tertiary | error | neutral
+    property string leadingStyle: "plain" // plain | tonal
 
     // Grouping is owned by MeoSettingsGroup. The values are public so the row
     // can also be used directly in a small one-off group.
     property string positionInGroup: "only" // only | first | middle | last
     property bool showDivider: false
     property real dividerInset: 0
+    property color dividerColor: MeoTheme.outlineVariant
 
     // Surface and state
     property color surfaceColor: MeoTheme.surfaceContainerLowest
@@ -133,10 +135,20 @@ Control {
     readonly property bool hasExpandedControl: isSlider || isSegmented || isDropdown || isProgress
     readonly property bool isInteractive: interactive && enabled && !hasExpandedControl
     readonly property real scale: MeoTheme.globalScale
-    readonly property real rowRadius: MeoTheme.shapeExtraLarge
+    readonly property real rowRadius: MeoTheme.connectedGroupOuterRadius
+    readonly property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
+    readonly property real topCornerRadius: (positionInGroup === "only" || positionInGroup === "first")
+                                            ? rowRadius : innerCornerRadius
+    readonly property real bottomCornerRadius: (positionInGroup === "only" || positionInGroup === "last")
+                                               ? rowRadius : innerCornerRadius
     readonly property bool pressed: rowHitArea.pressed
     readonly property bool focusVisible: activeFocus
-    readonly property real inlineControlInset: leadingIcon !== "" ? 56 * scale : 0
+    readonly property real leadingVisualSize: leadingStyle === "tonal"
+                                              ? MeoTheme.settingsLeadingContainerSize
+                                              : 24 * scale
+    readonly property real inlineControlInset: leadingIcon !== ""
+                                               ? leadingVisualSize + MeoTheme.settingsIconTextGap
+                                               : 0
     readonly property color currentSurfaceColor: selected ? selectionColor : surfaceColor
     readonly property color currentContentColor: selected ? selectionContentColor : MeoTheme.contentOnSurface
     readonly property color currentSupportingColor: selected
@@ -229,7 +241,9 @@ Control {
         }
     }
     property color iconContainerColor: toneContainerColor
-    property color iconColor: toneIconColor
+    property color iconColor: leadingStyle === "plain"
+                              ? MeoTheme.contentOnSurfaceVariant
+                              : toneIconColor
 
     implicitWidth: 360 * scale
     implicitHeight: Math.max(MeoTheme.settingsRowHeight,
@@ -367,13 +381,14 @@ Control {
     background: Item {
         Rectangle {
             id: surface
+            objectName: "meoSettingsRowSurface"
             anchors.fill: parent
             color: control.currentSurfaceColor
             radius: control.rowRadius
-            topLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            topRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            bottomLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
-            bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            topLeftRadius: control.topCornerRadius
+            topRightRadius: control.topCornerRadius
+            bottomLeftRadius: control.bottomCornerRadius
+            bottomRightRadius: control.bottomCornerRadius
 
             Behavior on color {
                 enabled: !MeoTheme.reduceMotion
@@ -387,10 +402,10 @@ Control {
         MeoStateLayer {
             anchors.fill: parent
             radius: control.rowRadius
-            topLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            topRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            bottomLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
-            bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            topLeftRadius: control.topCornerRadius
+            topRightRadius: control.topCornerRadius
+            bottomLeftRadius: control.bottomCornerRadius
+            bottomRightRadius: control.bottomCornerRadius
             visible: control.isInteractive
             pressed: rowHitArea.pressed
             hovered: rowHitArea.containsMouse
@@ -408,10 +423,10 @@ Control {
             anchors.margins: MeoTheme.strokeWidthThin
             color: "transparent"
             radius: Math.max(0, control.rowRadius - MeoTheme.strokeWidthThin)
-            topLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            topRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "first") ? radius : 0
-            bottomLeftRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
-            bottomRightRadius: (control.positionInGroup === "only" || control.positionInGroup === "last") ? radius : 0
+            topLeftRadius: control.topCornerRadius
+            topRightRadius: control.topCornerRadius
+            bottomLeftRadius: control.bottomCornerRadius
+            bottomRightRadius: control.bottomCornerRadius
             border.width: control.activeFocus ? MeoTheme.strokeWidthMedium : 0
             border.color: MeoTheme.primary
             opacity: control.activeFocus ? 1 : 0
@@ -432,7 +447,7 @@ Control {
             anchors.bottom: parent.bottom
             height: Math.max(1, 1 * control.scale)
             visible: control.showDivider
-            color: MeoTheme.outlineVariant
+            color: control.dividerColor
             opacity: 0.28
         }
 
@@ -460,8 +475,8 @@ Control {
             spacing: MeoTheme.settingsIconTextGap
 
             Item {
-                width: visible ? MeoTheme.settingsLeadingContainerSize : 0
-                height: visible ? MeoTheme.settingsLeadingContainerSize : 0
+                width: visible ? control.leadingVisualSize : 0
+                height: visible ? control.leadingVisualSize : 0
                 anchors.verticalCenter: parent.verticalCenter
                 visible: control.leadingIcon !== ""
 
@@ -469,12 +484,15 @@ Control {
                     anchors.fill: parent
                     radius: width / 2
                     color: control.iconContainerColor
+                    visible: control.leadingStyle === "tonal"
                 }
 
                 MeoIcon {
                     anchors.centerIn: parent
                     icon: control.leadingIcon
-                    size: MeoTheme.settingsLeadingIconSize
+                    size: control.leadingStyle === "tonal"
+                          ? MeoTheme.settingsLeadingIconSize
+                          : 24 * control.scale
                     color: control.iconColor
                 }
             }

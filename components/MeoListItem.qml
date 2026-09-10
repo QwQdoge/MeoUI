@@ -30,6 +30,10 @@ Control {
     property bool isEmphasized: false // MD3 Expressive: Use bold typography
     property bool vibrant: false // 🌟 MD3 Expressive: Vibrant selection style
     property bool selected: false
+    property color surfaceColor: "transparent"
+    property real outerCornerRadius: MeoTheme.connectedGroupOuterRadius
+    property real innerCornerRadius: MeoTheme.connectedGroupInnerRadius
+    property real segmentInset: 0
     readonly property bool pressed: mouseArea.pressed
     property string shape: "rect" // 🌟 MD3 Expressive: "rect" | "squircle" | "hexagon" | ...
 
@@ -90,9 +94,9 @@ Control {
     Keys.onSpacePressed: if (interactive && enabled) control.clicked()
 
     background: Item {
-        width: control.width - (control.isSegmented ? 16 * control.themeGlobalScale : 0)
+        width: control.width - (control.isSegmented ? 2 * control.segmentInset : 0)
         height: control.height
-        x: control.isSegmented ? 8 * control.themeGlobalScale : 0
+        x: control.isSegmented ? control.segmentInset : 0
 
         Rectangle {
             id: shapeBg
@@ -100,21 +104,20 @@ Control {
             anchors.fill: parent
             radius: {
                 if (!isSegmented) return 0;
-                if (MeoTheme.isExpressive && selected) return MeoTheme.shapeLargeIncreased;
-                return MeoTheme.shapeLarge;
+                return control.outerCornerRadius;
             }
             color: {
-                if (!isSegmented || !selected) return "transparent";
+                if (!isSegmented || !selected) return control.surfaceColor;
                 return control.resolvedSelectedContainerColor;
             }
             opacity: control.isSegmented && control.selected
                      ? control.resolvedSelectedContainerOpacity : 1.0
 
             // MD3 Expressive: Rounding strategies for connected items in a group
-            topLeftRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : 0
-            topRightRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : 0
-            bottomLeftRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : 0
-            bottomRightRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : 0
+            topLeftRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : control.innerCornerRadius
+            topRightRadius: (roundingStrategy === "all" || roundingStrategy === "top") ? radius : control.innerCornerRadius
+            bottomLeftRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : control.innerCornerRadius
+            bottomRightRadius: (roundingStrategy === "all" || roundingStrategy === "bottom") ? radius : control.innerCornerRadius
 
             MeoStateLayer {
                 anchors.fill: parent
@@ -125,7 +128,11 @@ Control {
                 focused: control.activeFocus
                 pressX: mouseArea.mouseX
                 pressY: mouseArea.mouseY
-                radius: (control.isSegmented && control.roundingStrategy === "all" && control.shape === "rect") ? shapeBg.radius : 0
+                radius: shapeBg.radius
+                topLeftRadius: shapeBg.topLeftRadius
+                topRightRadius: shapeBg.topRightRadius
+                bottomLeftRadius: shapeBg.bottomLeftRadius
+                bottomRightRadius: shapeBg.bottomRightRadius
                 color: selected ? control.selectedContentColor : control.themeOnSurface
             }
 

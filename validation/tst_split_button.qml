@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI 1.0
 import "../components" as Components
 
 Item {
@@ -42,7 +43,7 @@ Item {
                 split.type = types[index]
                 compare(primaryBackground.color, split.containerColor)
                 compare(menuBackground.color, split.containerColor)
-                compare(menu.x - (primary.x + primary.width), 2 * split.themeGlobalScale)
+                compare(content.spacing, 2 * split.themeGlobalScale)
                 compare(primary.implicitHeight, split.containerHeight)
             }
         }

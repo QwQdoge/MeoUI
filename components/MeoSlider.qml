@@ -29,8 +29,13 @@ Control {
     property bool isThick: false
     property bool wavy: false
     property bool expressive: false
-    property string size: expressive ? "m" : "xs" // "xs" | "s" | "m" | "l" | "xl"
-    property string trackStyle: expressive && size !== "xs" ? "split" : "standard" // "standard" | "split"
+    // Expressive motion and split geometry must not silently make the control
+    // forty dp thick.  XS is the Android/Pixel default; callers opt into the
+    // larger expressive sizes explicitly.
+    property string size: "xs" // "xs" | "s" | "m" | "l" | "xl"
+    property string trackStyle: expressive ? "split" : "standard" // "standard" | "split"
+    property bool endStopEnabled: expressive || effectiveTrackStyle === "split"
+    property bool animateExternalChanges: true
     property string insetIcon: ""
     property string leadingIcon: ""
     readonly property string effectiveInsetIcon: insetIcon !== "" ? insetIcon : leadingIcon
@@ -154,6 +159,7 @@ Control {
         return MeoTheme.sliderThumbHeightXS
     }
     readonly property real thumbWidth: MeoTheme.sliderThumbWidthExpressive
+    readonly property real pressedThumbWidth: MeoTheme.sliderThumbPressedWidthExpressive
     readonly property real thumbHeight: expressiveThumbHeight
     readonly property real thumbGap: MeoTheme.sliderThumbGapExpressive
     readonly property real trackLength: horizontal ? internalSlider.availableWidth : internalSlider.availableHeight
@@ -248,7 +254,7 @@ Control {
                 color: control.resolvedActiveTrackColor
 
                 Behavior on width {
-                    enabled: !internalSlider.pressed
+                    enabled: control.animateExternalChanges && !internalSlider.pressed
                     NumberAnimation {
                         duration: control.motionTrackDuration
                         easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -274,7 +280,7 @@ Control {
                 color: control.resolvedActiveTrackColor
 
                 Behavior on width {
-                    enabled: !internalSlider.pressed
+                    enabled: control.animateExternalChanges && !internalSlider.pressed
                     NumberAnimation {
                         duration: control.motionTrackDuration
                         easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -298,14 +304,14 @@ Control {
                 color: control.resolvedInactiveTrackColor
 
                 Behavior on x {
-                    enabled: !internalSlider.pressed
+                    enabled: control.animateExternalChanges && !internalSlider.pressed
                     NumberAnimation {
                         duration: control.motionTrackDuration
                         easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
                     }
                 }
                 Behavior on width {
-                    enabled: !internalSlider.pressed
+                    enabled: control.animateExternalChanges && !internalSlider.pressed
                     NumberAnimation {
                         duration: control.motionTrackDuration
                         easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
@@ -319,7 +325,6 @@ Control {
             MeoIcon {
                 visible: control.horizontal && splitActiveTrack.visible
                          && control.leadingIconEnabled
-                         && splitActiveTrack.width >= 48 * control.themeGlobalScale
                 anchors.left: splitActiveTrack.left
                 anchors.leftMargin: 12 * control.themeGlobalScale
                 anchors.verticalCenter: splitActiveTrack.verticalCenter
@@ -327,7 +332,9 @@ Control {
                 size: Math.min(24,
                                Math.max(16,
                                         control.renderedTrackHeight / control.themeGlobalScale - 8))
-                color: MeoTheme.contentOnPrimary
+                color: splitActiveTrack.width >= anchors.leftMargin + width
+                       ? MeoTheme.contentOnPrimary
+                       : MeoTheme.primary
                 opacity: visible ? 1.0 : 0.0
 
                 Behavior on opacity {
@@ -363,6 +370,37 @@ Control {
                            ? control.resolvedActiveTickColor
                            : control.resolvedInactiveTickColor
                 }
+            }
+
+            // M3 Expressive retains a contrasting stop at each outer end.  A
+            // selected stop uses the quiet rail role; an unselected stop uses
+            // primary so it remains visible on SecondaryContainer.
+            Rectangle {
+                id: leadingEndStop
+                objectName: "meoSliderLeadingEndStop"
+                visible: control.endStopEnabled && !control.wavyEnabled && control.horizontal
+                width: MeoTheme.sliderStopSizeExpressive
+                height: width
+                radius: width / 2
+                x: Math.max(0, control.renderedTrackHeight / 2 - width / 2)
+                anchors.verticalCenter: parent.verticalCenter
+                color: control.visualProgress > 0
+                       ? control.resolvedInactiveTrackColor
+                       : control.resolvedActiveTrackColor
+            }
+
+            Rectangle {
+                id: trailingEndStop
+                objectName: "meoSliderTrailingEndStop"
+                visible: control.endStopEnabled && !control.wavyEnabled && control.horizontal
+                width: MeoTheme.sliderStopSizeExpressive
+                height: width
+                radius: width / 2
+                x: Math.max(0, parent.width - control.renderedTrackHeight / 2 - width / 2)
+                anchors.verticalCenter: parent.verticalCenter
+                color: control.visualProgress >= 1
+                       ? control.resolvedInactiveTrackColor
+                       : control.resolvedActiveTrackColor
             }
 
             Canvas {
@@ -450,7 +488,7 @@ Control {
                 objectName: "meoSliderThumb"
                 anchors.centerIn: parent
                 width: control.horizontal
-                       ? control.thumbWidth
+                       ? (internalSlider.pressed ? control.pressedThumbWidth : control.thumbWidth)
                        : (control.effectiveTrackStyle === "split" ? control.thumbHeight : control.thumbWidth)
                 height: control.horizontal
                         ? (control.effectiveTrackStyle === "split" ? control.thumbHeight : control.thumbWidth)
@@ -458,6 +496,17 @@ Control {
                 radius: width / 2
                 color: control.resolvedThumbColor
                 border.width: 0
+
+                Behavior on width {
+                    enabled: !control.reduceMotion
+                    NumberAnimation {
+                        duration: internalSlider.pressed
+                                  ? MeoTheme.motionDurationPress
+                                  : MeoTheme.motionDurationSelection
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: internalSlider.pressed ? MeoTheme.motionEasingStandardDecelerate : MeoTheme.motionEasingEmphasizedDecelerate
+                    }
+                }
             }
 
             Rectangle {
@@ -499,29 +548,22 @@ Control {
                 }
             }
 
-            Rectangle {
+            Item {
                 objectName: "meoSliderStateLayer"
                 anchors.centerIn: parent
                 width: 40 * control.themeGlobalScale
                 height: 40 * control.themeGlobalScale
-                radius: width / 2
                 z: -1
-                color: {
-                    if (internalSlider.pressed)
-                        return Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
-                                       MeoTheme.stateOpacityPressed)
-                    if (internalSlider.hovered)
-                        return Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
-                                       MeoTheme.stateOpacityHover)
-                    if (internalSlider.activeFocus)
-                        return Qt.rgba(control.themePrimary.r, control.themePrimary.g, control.themePrimary.b,
-                                       MeoTheme.stateOpacityFocus)
-                    return "transparent"
-                }
 
-                Behavior on color {
-                    enabled: !control.reduceMotion
-                    ColorAnimation { duration: control.motionStateDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                MeoStateLayer {
+                    anchors.fill: parent
+                    shape: "circle"
+                    hovered: internalSlider.hovered
+                    pressed: internalSlider.pressed
+                    dragged: internalSlider.pressed
+                    focused: internalSlider.activeFocus
+                    rippleEnabled: false
+                    color: control.themePrimary
                 }
             }
         }

@@ -19,6 +19,9 @@ MeoMotionSurface {
     property Component notificationContent: null
     property Component calendarContent: null
     property Component headerContent: null
+    // Hosts can opt into a denser layout without duplicating their status
+    // center. Keep the previous 640dp behavior as the default.
+    property real compactBreakpoint: 640 * MeoTheme.globalScale
     // The enum selects the primary information architecture.  A host may
     // explicitly suppress the calendar for the legacy time-and-notifications
     // presentation without inventing another visual status-center copy.
@@ -35,7 +38,7 @@ MeoMotionSurface {
     // Hosts with retained popup content set this false while closed.  That
     // prevents a hidden status center from retaining a minute clock timer.
     property bool contentActive: visible
-    readonly property bool compact: width < 640 * MeoTheme.globalScale
+    readonly property bool compact: width < compactBreakpoint
     readonly property int effectiveMode: {
         switch (centerMode) {
         case "timeCalendar":
