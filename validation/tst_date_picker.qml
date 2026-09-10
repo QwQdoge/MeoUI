@@ -13,6 +13,12 @@ Item {
         name: "MeoDatePicker"
         when: windowShown
 
+        function init() {
+            picker.interactive = true
+            picker.selectedDate = new Date(2026, 7, 26)
+            picker.displayDate = new Date(2026, 7, 1)
+        }
+
         function test_monthAndYearNavigation() {
             picker.moveMonth(1)
             compare(picker.displayDate.getMonth(), 8)
@@ -24,7 +30,7 @@ Item {
 
         function test_calendarSelectionSynchronizesPicker() {
             const picked = new Date(2028, 1, 29)
-            picker.calendar.selectDay(picked, null)
+            picker.calendarControl.selectDay(picked, null)
             compare(picker.selectedDate.getFullYear(), 2028)
             compare(picker.selectedDate.getMonth(), 1)
             compare(picker.selectedDate.getDate(), 29)

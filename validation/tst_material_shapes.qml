@@ -70,7 +70,7 @@ Item {
 
         function test_androidxGeometryProvenanceAndAspectPreservation() {
             compare(Shapes.ANDROIDX_MATERIAL_SHAPES_REVISION,
-                    "bf48f4c018c001f2b10baab00a2710ab283fed0f")
+                    "9df4d001962d58aabca222967b8ceb1789acb960")
 
             // AndroidX normalizes against the longer side and centers the
             // shorter side; it does not stretch authored geometry to fill the

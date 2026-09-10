@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../widgets" as Widgets
 
 Item {
@@ -17,7 +18,7 @@ Item {
             compare(sideSheet.themeSurfaceContainerLow, MeoTheme.surfaceContainerLow)
             compare(sideSheet.themeOnSurface, MeoTheme.contentOnSurface)
             verify(!sideSheet.dismissible)
-            compare(sideSheet.presentation, sideSheet.SideSheet)
+            compare(sideSheet.presentation, MeoMotionPopup.SideSheet)
         }
     }
 }

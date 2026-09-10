@@ -33,10 +33,16 @@ text—without copying another product's branding, wording, or layout.
 - Use 28dp group-end corners, 1dp internal member corners, and a 2dp gap that
   reveals the page `surface`. A 1dp `outlineVariant` line is an explicit compact
   alternative, not the Pixel-style default.
-- Every interactive row uses `MeoStateLayer`: 8% hover darkening, 10% pressed
-  darkening plus a click-point-origin soft-edge circular ripple, and a primary
-  keyboard focus ring. Keyboard activation originates from the control center.
-  Disabled rows do not render pointer feedback.
+- Every interactive row uses `MeoStateLayer`: 8% hover darkening over 100ms,
+  followed by 10% pressed darkening through a click-point-origin soft-edge
+  circular ripple. The press acknowledges in 50ms, expands with the emphasized
+  decelerate curve for 200ms, remains fully expanded for the complete hold, and
+  fades with the standard curve for 100ms after release. Keyboard activation
+  originates from the control center. Disabled rows do not render pointer
+  feedback, and Reduce Motion removes spatial ripple animation immediately.
+- Settings detail navigation uses asymmetric semantic motion: a 350ms
+  emphasized-decelerate entrance and a 250ms standard-accelerate exit. Reduce
+  Motion resolves both durations to zero without changing navigation state.
 - Give grouped rows a shared rounded surface and 12–16dp space between groups.
   An index should fit a broad category scan before asking a user to navigate.
 - Keep desktop Settings content around 720–760dp readable width. On compact

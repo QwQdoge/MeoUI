@@ -31,6 +31,14 @@ Item {
         name: "MeoPageIndicator"
         when: windowShown
 
+        function init() {
+            horizontalIndicator.count = 5
+            horizontalIndicator.currentIndex = 20
+            horizontalIndicator.interactive = true
+            verticalIndicator.currentIndex = -4
+            activationSpy.clear()
+        }
+
         function test_emptyAndOutOfRangeIndexesAreSafe() {
             compare(horizontalIndicator.resolvedCurrentIndex, 4)
             compare(verticalIndicator.resolvedCurrentIndex, 0)
@@ -52,7 +60,7 @@ Item {
         function test_activationClampsAndNoninteractiveIndicatorDoesNotMutate() {
             horizontalIndicator.activate(40)
             compare(horizontalIndicator.currentIndex, 4)
-            compare(activationSpy.count, 2)
+            compare(activationSpy.count, 1)
 
             verticalIndicator.activate(2)
             compare(verticalIndicator.currentIndex, -4)

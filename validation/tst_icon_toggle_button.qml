@@ -53,16 +53,16 @@ Item {
 
             button.checked = true
             button.type = "standard"
-            compare(shape.color.a, 0)
+            tryVerify(function() { return shape.color.a < 0.001 }, 500)
 
             button.type = "filled"
-            compare(shape.color, button.themePrimary)
+            tryCompare(shape, "color", button.themePrimary, 500)
 
             button.type = "tonal"
-            compare(shape.color, button.themeSecondary)
+            tryCompare(shape, "color", button.themeSecondary, 500)
 
             button.type = "outlined"
-            compare(shape.color, button.themeInverseSurface)
+            tryCompare(shape, "color", button.themeInverseSurface, 500)
         }
 
         function test_uncheckedFilledUsesSurfaceContainerAndShapeMorphs() {
@@ -70,17 +70,17 @@ Item {
             verify(shape !== null)
             button.type = "filled"
             button.checked = false
-            compare(shape.color, button.themeSurfaceContainer)
+            tryCompare(shape, "color", button.themeSurfaceContainer, 500)
 
             button.type = "standard"
             button.shape = "circle"
             button.size = "m"
-            compare(shape.radius, button.implicitHeight / 2)
+            tryCompare(shape, "radius", button.containerHeight / 2, 500)
             button.checked = true
             tryCompare(shape, "radius", 16 * button.themeGlobalScale, 500)
-            button.down = true
+            mousePress(button, button.width / 2, button.height / 2, Qt.LeftButton)
             tryCompare(shape, "radius", 12 * button.themeGlobalScale, 500)
-            button.down = false
+            mouseRelease(button, button.width / 2, button.height / 2, Qt.LeftButton)
         }
 
         function test_checkedIconAndAccessibilityDelegateToIconButton() {

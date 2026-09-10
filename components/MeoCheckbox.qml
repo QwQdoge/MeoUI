@@ -122,9 +122,18 @@ Control {
     // 点击交互
     MouseArea {
         id: mouseArea
-        anchors.fill: parent
+        objectName: "meoCheckboxPointer"
+        parent: control
+        anchors.fill: control
+        z: 2
         hoverEnabled: true
         enabled: control.enabled
+        onPressed: function(mouse) {
+            const point = checkboxStateLayer.mapFromItem(mouseArea, mouse.x, mouse.y)
+            checkboxStateLayer.trigger(point.x, point.y)
+        }
+        onReleased: checkboxStateLayer.releaseRipple()
+        onCanceled: checkboxStateLayer.releaseRipple()
         onClicked: control.toggleSelection()
     }
 
@@ -171,15 +180,18 @@ Control {
 
                 // 🌟 状态层反馈 (Hover/Pressed/Focused states)
                 Item {
+                    id: stateLayerContainer
                     anchors.centerIn: parent
                     width: control.stateLayerSize
                     height: control.stateLayerSize
                     z: -1
 
                     MeoStateLayer {
+                        id: checkboxStateLayer
+                        objectName: "meoCheckboxStateLayer"
                         radius: width / 2
                         shape: "circle"
-                        pressed: mouseArea.pressed
+                        internalPointerTrackingEnabled: false
                         hovered: mouseArea.containsMouse
                         focused: control.activeFocus
                         pressX: mouseArea.mouseX - parent.x

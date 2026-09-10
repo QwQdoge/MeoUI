@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../components" as Components
 
 Item {
@@ -80,7 +81,7 @@ Item {
             compare(field.leadingContentWidth, field.iconSizePx + 16 * field.themeGlobalScale)
             compare(indicator.height, 1 * field.themeGlobalScale)
             field.isError = true
-            compare(indicator.color, field.themeError)
+            tryCompare(indicator, "color", field.themeError, 500)
             field.leadingIcon = ""
             field.isError = false
             compare(field.sidePadding, 16 * field.themeGlobalScale)

@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../widgets" as Widgets
 
 Item {
@@ -40,7 +41,7 @@ Item {
             navigationBar.currentIndex = 0
             const unselectedIndicator = findChild(navigationBar, "meoNavigationBarIndicator_1")
             verify(unselectedIndicator !== null)
-            compare(Math.round(unselectedIndicator.width), 0)
+            tryVerify(function() { return Math.round(unselectedIndicator.width) === 0 }, 500)
 
             navigationBar.compact = true
             compare(Math.round(navigationBar.height), Math.round(64 * navigationBar.themeGlobalScale))

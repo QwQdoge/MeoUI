@@ -17,6 +17,7 @@ Item {
 
         function init() {
             radio.enabled = true
+            radio.size = "m"
             radio.checked = false
             radio.isError = false
             radio.size = "m"
@@ -49,6 +50,7 @@ Item {
                 compare(outer.radius, radius)
             }
 
+            radio.size = "m"
             radio.checked = false
             tryCompare(outer.border, "color", radio.themeOnSurfaceVariant, 500)
             compare(outer.border.width, 2 * radio.themeGlobalScale)

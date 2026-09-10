@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../" as Source
 import "../components" as Components
 
@@ -34,8 +35,8 @@ Item {
 
     ListModel {
         id: listModelChoices
-        ListElement { label: "One"; checked: false }
-        ListElement { label: "Two"; checked: true }
+        ListElement { label: "One"; checked: false; enabled: true }
+        ListElement { label: "Two"; checked: true; enabled: true }
         ListElement { label: "Unavailable"; checked: false; enabled: false }
     }
 

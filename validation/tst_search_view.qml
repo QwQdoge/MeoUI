@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../widgets" as Widgets
 
 Item {
@@ -35,6 +36,11 @@ Item {
         name: "MeoSearchView"
         when: windowShown
 
+        function init() {
+            embeddedSearch.isExpanded = true
+            wait(0)
+        }
+
         function test_expressiveDefaultsUseContainedFullscreen() {
             compare(fullScreenView.style, "contained")
             compare(fullScreenView.layout, "full-screen")
@@ -56,7 +62,9 @@ Item {
         function test_embeddedDockedSurfaceSupportsResults() {
             compare(embeddedSearch.style, "contained")
             verify(embeddedSearch.isExpanded)
-            verify(embeddedSearch.implicitHeight > 56)
+            tryVerify(function() {
+                return embeddedSearch.implicitHeight > 56 * embeddedSearch.themeGlobalScale
+            }, 500)
             compare(embeddedSearch.suggestions.length, 1)
         }
 
@@ -64,7 +72,7 @@ Item {
             embeddedSearch.isExpanded = true
             embeddedSearch.deactivateSearch()
             compare(embeddedSearch.isExpanded, false)
-            compare(embeddedSearch.implicitHeight, 56)
+            tryCompare(embeddedSearch, "implicitHeight", 56 * embeddedSearch.themeGlobalScale, 500)
         }
 
         function test_fullScreenAndDockedPopupsOpen() {

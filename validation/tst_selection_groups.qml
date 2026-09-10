@@ -25,16 +25,16 @@ Item {
 
     ListModel {
         id: buttonGroupListModel
-        ListElement { label: "Day" }
+        ListElement { label: "Day"; enabled: true }
         ListElement { label: "Week"; enabled: false }
-        ListElement { label: "Month" }
+        ListElement { label: "Month"; enabled: true }
     }
 
     ListModel {
         id: segmentedListModel
-        ListElement { label: "Day"; icon: "calendar_today" }
+        ListElement { label: "Day"; icon: "calendar_today"; enabled: true }
         ListElement { label: "Week"; icon: "date_range"; enabled: false }
-        ListElement { label: "Month"; icon: "calendar_month" }
+        ListElement { label: "Month"; icon: "calendar_month"; enabled: true }
     }
 
     TestCase {
@@ -42,6 +42,7 @@ Item {
         when: windowShown
 
         function init() {
+            buttonGroup.model = [{ "label": "Day" }, { "label": "Week" }, { "label": "Month" }]
             buttonGroup.enabled = true
             buttonGroup.variant = "standard"
             buttonGroup.currentIndex = 1
@@ -54,10 +55,14 @@ Item {
             buttonGroup.selectedShape = "square"
             buttonGroup.LayoutMirroring.enabled = false
             segmented.enabled = true
+            segmented.model = [{ "label": "List", "icon": "view_list" },
+                               { "label": "Grid", "icon": "grid_view" },
+                               { "label": "Map", "icon": "map" }]
             segmented.multiSelect = false
             segmented.currentIndex = 0
             segmented.selectedIndices = []
             segmented.LayoutMirroring.enabled = false
+            wait(0)
         }
 
         function test_standardGroupReservesSpaceAndAnimatesSelectedWidth() {

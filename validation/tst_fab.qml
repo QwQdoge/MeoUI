@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../components" as Components
 
 Item {
@@ -57,7 +58,7 @@ Item {
         function test_disabledUsesSemanticContainerOpacity() {
             const background = findChild(fab, "meoFabBackground")
             fab.enabled = false
-            compare(background.color.a, 0.12)
+            tryVerify(function() { return Math.abs(background.color.a - 0.12) < 0.001 }, 500)
         }
 
         function test_expressiveMediumAndColorStylesUseSemanticRoles() {

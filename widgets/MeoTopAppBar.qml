@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import MeoUI
 
 Rectangle {
@@ -63,9 +62,9 @@ Rectangle {
     Rectangle {
         id: stateLayer
         anchors.fill: parent
-        color: isContextual ? themeOnPrimaryContainer : "transparent"
+        color: control.isContextual ? control.themeOnPrimaryContainer : "transparent"
         opacity: 0.08
-        visible: isContextual
+        visible: control.isContextual
     }
 
     Item {
@@ -87,52 +86,57 @@ Rectangle {
         }
 
         Text {
-            text: isContextual ? (selectionCount > 0 ? selectionCount.toString() : "") : control.title
+            id: titleLabel
+            text: control.isContextual
+                  ? (control.selectionCount > 0 ? control.selectionCount.toString() : "")
+                  : control.title
 
             readonly property real targetFontSize: {
-                if (control.type === "large") return fontHeadlineLarge.size;
-                if (control.type === "medium") return fontHeadlineMedium.size;
-                return fontTitleLarge.size;
+                if (control.type === "large") return control.fontHeadlineLarge.size;
+                if (control.type === "medium") return control.fontHeadlineMedium.size;
+                return control.fontTitleLarge.size;
             }
 
             font.pixelSize: {
                 if (control.flexible && (control.type === "medium" || control.type === "large")) {
-                    return (fontTitleLarge.size + (targetFontSize - fontTitleLarge.size) * control.scrollProgress) * control.themeGlobalScale;
+                    return (control.fontTitleLarge.size
+                            + (targetFontSize - control.fontTitleLarge.size) * control.scrollProgress)
+                           * control.themeGlobalScale;
                 }
                 return targetFontSize * control.themeGlobalScale;
             }
 
-            font.weight: (control.type === "large" ? fontHeadlineLarge.weight : (control.type === "medium" ? fontHeadlineMedium.weight : fontTitleLarge.weight))
-            font.letterSpacing: (fontTitleLarge.letterSpacing || 0) * control.themeGlobalScale
-            lineHeight: fontTitleLarge.lineHeight ? (fontTitleLarge.lineHeight / fontTitleLarge.size) : 28 / 22
-            color: isContextual ? control.themeOnPrimaryContainer : control.themeOnSurface
-            anchors.horizontalCenter: (control.type === "center" && !isContextual) ? parent.horizontalCenter : undefined
-            anchors.left: (control.type === "center" && !isContextual) ? undefined : (control.hasNavigation ? navIconLoader.right : parent.left)
-            anchors.leftMargin: (control.type === "center" && !isContextual) ? 0 : (control.hasNavigation ? 16 : 12) * control.themeGlobalScale
-            anchors.right: (control.type === "center" && !isContextual) ? undefined
-                          : ((control.type === "small" || control.type === "center") ? actionRow.left : parent.right)
-            anchors.rightMargin: (control.type === "small" || control.type === "center") ? 12 * control.themeGlobalScale : 16 * control.themeGlobalScale
-            width: (control.type === "center" && !isContextual)
-                   ? Math.max(0, parent.width - Math.max(navIconLoader.width, actionRow.width) * 2 - 24 * control.themeGlobalScale)
-                   : undefined
+            font.weight: control.type === "large" ? control.fontHeadlineLarge.weight
+                                                   : (control.type === "medium"
+                                                      ? control.fontHeadlineMedium.weight
+                                                      : control.fontTitleLarge.weight)
+            font.letterSpacing: (control.fontTitleLarge.letterSpacing || 0) * control.themeGlobalScale
+            lineHeight: control.fontTitleLarge.lineHeight
+                        ? (control.fontTitleLarge.lineHeight / control.fontTitleLarge.size) : 28 / 22
+            color: control.isContextual ? control.themeOnPrimaryContainer : control.themeOnSurface
+            readonly property bool centeredTitle: control.type === "center" && !control.isContextual
+            readonly property real logicalLeft: control.hasNavigation
+                                                ? navIconLoader.x + navIconLoader.width + 16 * control.themeGlobalScale
+                                                : 12 * control.themeGlobalScale
+            readonly property real logicalRight: (control.type === "small" || control.type === "center")
+                                                 ? actionRow.x - 12 * control.themeGlobalScale
+                                                 : parent.width - 16 * control.themeGlobalScale
+            width: centeredTitle
+                   ? Math.max(0, parent.width - Math.max(navIconLoader.width, actionRow.width) * 2
+                                      - 24 * control.themeGlobalScale)
+                   : Math.max(0, logicalRight - logicalLeft)
+            x: centeredTitle ? (parent.width - width) / 2 : logicalLeft
             elide: Text.ElideRight
-
-            anchors.verticalCenter: {
-                if (control.flexible && (control.type === "medium" || control.type === "large")) return undefined;
-                return control.type === "small" || control.type === "center" ? parent.verticalCenter : undefined
-            }
-
-            anchors.bottom: {
-                if (control.flexible && (control.type === "medium" || control.type === "large")) return parent.bottom;
-                return control.type === "medium" || control.type === "large" ? parent.bottom : undefined
-            }
-
-            anchors.bottomMargin: {
+            readonly property real resolvedBottomMargin: {
                 if (control.flexible && (control.type === "medium" || control.type === "large")) {
-                    return (parent.height - fontTitleLarge.size * control.themeGlobalScale) / 2 * (1.0 - control.scrollProgress);
+                    return (parent.height - control.fontTitleLarge.size * control.themeGlobalScale)
+                           / 2 * (1.0 - control.scrollProgress);
                 }
                 return 0;
             }
+            y: control.type === "small" || control.type === "center"
+               ? (parent.height - height) / 2
+               : parent.height - height - resolvedBottomMargin
 
             Behavior on font.pixelSize {
                 enabled: !control.flexible && !MeoTheme.reduceMotion

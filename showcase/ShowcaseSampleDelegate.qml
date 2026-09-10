@@ -1642,7 +1642,26 @@ Item {
             MeoListItem { width: parent.width; headline: "Inbox"; leadingIcon: "inbox"; badgeText: "3" }
 
             SampleLabel { label: "2. Supporting text" }
-            MeoListItem { width: parent.width; headline: "Release notes"; supportingText: "Updated 10 minutes ago"; leadingIcon: "article" }
+            MeoListItem {
+                width: parent.width
+                headline: "Release notes"
+                supportingText: "Updated 10 minutes ago"
+                leadingComponentSize: 36
+                leadingComponent: Component {
+                    Rectangle {
+                        width: 36 * MeoTheme.globalScale
+                        height: width
+                        radius: MeoTheme.shapeSmall
+                        color: MeoTheme.tertiaryContainer
+                        MeoIcon {
+                            anchors.centerIn: parent
+                            icon: "article"
+                            size: 22
+                            color: MeoTheme.contentOnTertiaryContainer
+                        }
+                    }
+                }
+            }
 
             SampleLabel { label: "3. Tonal selected" }
             MeoListItem { width: parent.width; headline: "Selected row"; supportingText: "Secondary container"; leadingIcon: "check_circle"; selected: true; isSegmented: true }
@@ -1709,13 +1728,13 @@ Item {
 
             Column {
                 width: 170 * MeoTheme.globalScale
-                spacing: MeoTheme.space6
+                spacing: MeoTheme.space8
                 SampleLabel { width: parent.width; label: "1. Standard"; horizontalAlignment: Text.AlignHCenter }
                 MeoListHeader { width: parent.width; text: "Recent" }
             }
             Column {
                 width: 170 * MeoTheme.globalScale
-                spacing: MeoTheme.space6
+                spacing: MeoTheme.space8
                 SampleLabel { width: parent.width; label: "2. Emphasized"; horizontalAlignment: Text.AlignHCenter }
                 MeoListHeader { width: parent.width; text: "Pinned"; type: "emphasized" }
             }
@@ -3153,6 +3172,7 @@ Item {
     Component {
         id: pageHostSample
         MeoPageHost {
+            id: samplePageHost
             width: 440 * MeoTheme.globalScale
             height: 180 * MeoTheme.globalScale
             sourceComponent: Component {
@@ -3167,6 +3187,15 @@ Item {
                         color: MeoTheme.contentOnSecondaryContainer
                     }
                 }
+            }
+            MeoText {
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                anchors.margins: MeoTheme.space8
+                text: samplePageHost.enterDuration + "ms in · " + samplePageHost.exitDuration + "ms out"
+                typeRole: "label"
+                typeSize: "small"
+                color: MeoTheme.contentOnSecondaryContainer
             }
         }
     }

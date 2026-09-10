@@ -115,5 +115,33 @@ Item {
                        MeoTheme.motionDurationRippleExpand
                        + MeoTheme.motionDurationRippleFade + 250)
         }
+
+        function test_holdKeepsExpandedRippleUntilRelease() {
+            stateLayer.pressX = 24
+            stateLayer.pressY = 18
+            stateLayer.pressed = true
+
+            tryCompare(stateLayer, "rippleActive", true, 100)
+            wait(MeoTheme.motionDurationRippleExpand + 50)
+            verify(stateLayer.rippleActive)
+            compare(stateLayer.rippleOpacity, stateLayer.pressedOpacity)
+            verify(Math.abs(stateLayer.rippleRadius - stateLayer.rippleTargetRadius) <= 1)
+
+            stateLayer.pressed = false
+            verify(stateLayer.rippleActive)
+            tryCompare(stateLayer, "rippleActive", false,
+                       MeoTheme.motionDurationRippleFade + 250)
+        }
+
+        function test_reduceMotionRemovesActiveRippleImmediately() {
+            const previousReduceMotion = stateLayer.theme.reduceMotion
+            stateLayer.pressed = true
+            tryCompare(stateLayer, "rippleActive", true, 100)
+            stateLayer.theme.reduceMotion = true
+            tryCompare(stateLayer, "rippleActive", false, 100)
+            tryCompare(stateLayer, "rippleRadius", 0, 100)
+            stateLayer.pressed = false
+            stateLayer.theme.reduceMotion = previousReduceMotion
+        }
     }
 }

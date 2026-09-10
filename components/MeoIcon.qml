@@ -1,4 +1,5 @@
 import QtQuick
+import MeoUI
 
 Text {
     id: control

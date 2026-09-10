@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../widgets" as Widgets
 
 Item {
@@ -21,7 +22,8 @@ Item {
             compare(sideSheet.themeOnSurface, MeoTheme.contentOnSurface)
             compare(sideSheet.x, sideSheet.parent.width)
             sideSheet.isOpen = true
-            compare(sideSheet.x, sideSheet.parent.width - sideSheet.width)
+            tryCompare(sideSheet, "x", sideSheet.parent.width - sideSheet.width,
+                       MeoTheme.motionDurationSheetEnter + 250)
             sideSheet.isOpen = false
         }
     }

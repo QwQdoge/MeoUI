@@ -28,12 +28,18 @@ Control {
     readonly property var currentAccount: normalizedCurrentIndex >= 0 ? model[normalizedCurrentIndex] : null
 
     onCurrentIndexChanged: {
-        if (accountCount > 0 && currentIndex !== normalizedCurrentIndex)
-            currentIndex = normalizedCurrentIndex
+        const boundedIndex = accountCount > 0
+                           ? Math.max(0, Math.min(accountCount - 1, currentIndex))
+                           : -1
+        if (currentIndex !== boundedIndex)
+            currentIndex = boundedIndex
     }
     onModelChanged: {
-        if (accountCount > 0 && currentIndex !== normalizedCurrentIndex)
-            currentIndex = normalizedCurrentIndex
+        const boundedIndex = accountCount > 0
+                           ? Math.max(0, Math.min(accountCount - 1, currentIndex))
+                           : -1
+        if (currentIndex !== boundedIndex)
+            currentIndex = boundedIndex
     }
 
     implicitWidth: 280 * themeGlobalScale

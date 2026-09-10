@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../components" as Components
 
 Item {
@@ -48,19 +49,19 @@ Item {
 
             button.type = "filled"
             button.selected = true
-            compare(shape.color, button.themePrimary)
+            tryCompare(shape, "color", button.themePrimary, 500)
 
             button.type = "tonal"
             button.selected = true
-            compare(shape.color, button.themeSecondary)
+            tryCompare(shape, "color", button.themeSecondary, 500)
 
             button.type = "outlined"
             button.selected = true
-            compare(shape.color, button.themeInverseSurface)
+            tryCompare(shape, "color", button.themeInverseSurface, 500)
 
             button.type = "standard"
             button.selected = true
-            compare(shape.color.a, 0)
+            tryVerify(function() { return shape.color.a < 0.001 }, 500)
 
             button.enabled = false
             compare(button.themeOnSurface.a, 1)
@@ -72,7 +73,7 @@ Item {
             button.type = "filled"
             button.toggle = true
             button.selected = false
-            compare(shape.color, button.themeSurfaceContainer)
+            tryCompare(shape, "color", button.themeSurfaceContainer, 500)
         }
 
         function test_defaultAndOutlinedUseSourceRoles() {
@@ -80,7 +81,7 @@ Item {
             verify(shape !== null)
 
             button.type = "filled"
-            compare(shape.color, button.themePrimary)
+            tryCompare(shape, "color", button.themePrimary, 500)
 
             button.type = "outlined"
             compare(shape.strokeColor, MeoTheme.outlineVariant)
@@ -105,14 +106,14 @@ Item {
             button.size = "m"
             button.shape = "circle"
             button.selected = false
-            compare(shape.radius, button.implicitHeight / 2)
+            tryCompare(shape, "radius", button.containerHeight / 2, 500)
 
             button.selected = true
             tryCompare(shape, "radius", 16 * button.themeGlobalScale, 500)
 
-            button.down = true
+            mousePress(button, button.width / 2, button.height / 2, Qt.LeftButton)
             tryCompare(shape, "radius", 12 * button.themeGlobalScale, 500)
-            button.down = false
+            mouseRelease(button, button.width / 2, button.height / 2, Qt.LeftButton)
         }
     }
 }

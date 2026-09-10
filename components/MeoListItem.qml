@@ -20,6 +20,7 @@ Control {
     property string badgeText: ""
     property color badgeColor: MeoTheme.error
     property Component leadingComponent: null
+    property real leadingComponentSize: 24
     property Component trailingComponent: null
     property list<Component> actions
 
@@ -78,13 +79,14 @@ Control {
         }
         if (leadingImage !== "" && leadingImageSize > 40) h = Math.max(h, leadingImageSize + (isDense ? 8 : 16));
         if (isSegmented) h += 8;
-        return Math.max(h * themeGlobalScale, contentRow.implicitHeight + padding * 2);
+        return Math.max(h * themeGlobalScale,
+                        contentRow.implicitHeight + topPadding + bottomPadding);
     }
 
-    padding: {
-        if (isDense) return 8 * themeGlobalScale;
-        return isSegmented ? 12 * themeGlobalScale : 16 * themeGlobalScale;
-    }
+    leftPadding: (isDense ? 8 : (isSegmented ? 12 : 16)) * themeGlobalScale
+    rightPadding: leftPadding
+    topPadding: (isDense ? 4 : 8) * themeGlobalScale
+    bottomPadding: topPadding
     spacing: 16 * themeGlobalScale // Standardized MD3 spacing
     activeFocusOnTab: interactive && enabled
     Accessible.role: Accessible.ListItem
@@ -194,10 +196,11 @@ Control {
         Item {
             width: {
                 if (control.leadingImage !== "") return control.leadingImageSize * control.themeGlobalScale;
-                if (control.leadingIcon !== "" || control.leadingComponent !== null) return 24 * control.themeGlobalScale;
+                if (control.leadingComponent !== null) return control.leadingComponentSize * control.themeGlobalScale;
+                if (control.leadingIcon !== "") return 24 * control.themeGlobalScale;
                 return 0;
             }
-            height: width > 0 ? Math.max(24 * control.themeGlobalScale, control.leadingImageSize * control.themeGlobalScale) : 0
+            height: width
             anchors.verticalCenter: parent.verticalCenter
             visible: width > 0
 
@@ -305,8 +308,6 @@ Control {
             }
 
             Loader {
-                width: item ? item.implicitWidth : 24 * control.themeGlobalScale
-                height: item ? item.implicitHeight : 24 * control.themeGlobalScale
                 anchors.verticalCenter: parent.verticalCenter
                 sourceComponent: control.trailingComponent
                 visible: control.trailingComponent !== null
@@ -326,7 +327,8 @@ Control {
     // Helper functions for dynamic width calculation
     function leadingRowItemWidth() {
         if (control.leadingImage !== "") return control.leadingImageSize * control.themeGlobalScale;
-        if (control.leadingIcon !== "" || control.leadingComponent !== null) return 24 * control.themeGlobalScale;
+        if (control.leadingComponent !== null) return control.leadingComponentSize * control.themeGlobalScale;
+        if (control.leadingIcon !== "") return 24 * control.themeGlobalScale;
         return 0;
     }
 

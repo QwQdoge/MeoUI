@@ -59,7 +59,9 @@ Item {
 
             quickControl.enabled = false
             wait(MeoTheme.motionDurationState + 20)
-            compare(quickControl.opacity, MeoTheme.disabledContentOpacity)
+            tryVerify(function() {
+                return Math.abs(quickControl.opacity - MeoTheme.disabledContentOpacity) < 0.001
+            }, 500)
             const slider = findChild(quickControl, "quickControlValueSlider")
             verify(!slider.enabled)
         }

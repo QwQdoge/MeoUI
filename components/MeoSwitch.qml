@@ -229,6 +229,7 @@ Control {
                 }
 
                 MeoStateLayer {
+                    objectName: "meoSwitchStateLayer"
                     width: control.stateLayerSize
                     height: width
                     x: switchTrack.x + control.thumbCenterX - width / 2

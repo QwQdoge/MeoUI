@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../" as Source
 import "../components" as Components
 

@@ -85,7 +85,8 @@ Item {
             compare(Math.round(destination.width), Math.round(rail.width))
             compare(Math.round(indicator.height), Math.round(56 * rail.themeGlobalScale))
             verify(indicator.width < destination.width)
-            compare(Math.round(indicator.x), Math.round(36 * rail.themeGlobalScale))
+            compare(Math.round(indicator.mapToItem(destination, 0, 0).x),
+                    Math.round(36 * rail.themeGlobalScale))
 
             mouseClick(destination, destination.width / 2, destination.height / 2)
             compare(rail.currentIndex, 2)

@@ -21,10 +21,6 @@ Popup {
     readonly property var fontTitleSmall: MeoTheme.titleSmall
     readonly property var fontBodyMedium: MeoTheme.bodyMedium
 
-    Accessible.role: Accessible.ToolTip
-    Accessible.name: title.length > 0 ? title : text
-    Accessible.description: title.length > 0 ? text : ""
-
     padding: 0
     // Rich tooltips use the Material maximum as their preferred surface width.
     // A Popup's immediate parent can be a small trigger item, so sizing from it
@@ -51,6 +47,9 @@ Popup {
     }
 
     contentItem: Column {
+        Accessible.role: Accessible.ToolTip
+        Accessible.name: control.title.length > 0 ? control.title : control.text
+        Accessible.description: control.title.length > 0 ? control.text : ""
         padding: 0
         spacing: 0
 
@@ -130,6 +129,8 @@ Popup {
                 spacing: 8 * control.themeGlobalScale
 
                 Repeater {
+                    id: actionRepeater
+                    objectName: "meoRichTooltipActions"
                     model: control.actions
                     MeoButton {
                         objectName: "meoRichTooltipAction_" + index

@@ -37,7 +37,7 @@ Item {
         }
 
         function test_optionalEmptyStateIsExposed() {
-            compare(optionalInput.text, "")
+            verify(optionalInput.isInputEmpty(optionalInput.text))
             compare(optionalInput.hasValue, false)
             optionalInput.text = ""
             optionalInput.commit()

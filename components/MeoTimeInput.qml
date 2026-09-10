@@ -9,7 +9,7 @@ MeoTextField {
     property string format: "HH:mm"
     property string value: ""
     property bool allowEmpty: false
-    readonly property bool hasValue: text.trim() !== ""
+    readonly property bool hasValue: !isInputEmpty(text)
 
     signal timeAccepted(string time)
     signal cleared()
@@ -29,7 +29,7 @@ MeoTextField {
     onValueChanged: syncTextFromValue()
 
     onTextChanged: {
-        if (allowEmpty && text.trim() === "") {
+        if (allowEmpty && isInputEmpty(text)) {
             isError = false
             errorText = ""
             return
@@ -49,7 +49,7 @@ MeoTextField {
     onEditingFinished: commit()
 
     function commit() {
-        if (allowEmpty && text.trim() === "") {
+        if (allowEmpty && isInputEmpty(text)) {
             isError = false
             errorText = ""
             if (value !== "")
@@ -77,6 +77,10 @@ MeoTextField {
     function parseTime(valueText) {
         const match = /^(?:[01]\d|2[0-3]):[0-5]\d$/.exec(valueText.trim())
         return match ? match[0] : ""
+    }
+
+    function isInputEmpty(valueText) {
+        return String(valueText).replace(/\D/g, "").length === 0
     }
 
     function syncTextFromValue() {

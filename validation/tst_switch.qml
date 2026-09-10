@@ -103,5 +103,20 @@ Item {
             toggle.LayoutMirroring.enabled = true
             compare(row.layoutDirection, Qt.RightToLeft)
         }
+
+        function test_stateLayerUsesExactPointerOrigin() {
+            const thumb = findChild(toggle, "meoSwitchThumb")
+            const stateLayer = findChild(toggle, "meoSwitchStateLayer")
+            verify(thumb !== null)
+            verify(stateLayer !== null)
+            const point = thumb.mapToItem(toggle, thumb.width / 2, thumb.height / 2)
+            const expected = stateLayer.mapFromItem(toggle, point.x, point.y)
+            mousePress(toggle, point.x, point.y, Qt.LeftButton)
+            wait(0)
+            verify(Math.abs(stateLayer.rippleOriginX - expected.x) <= 1)
+            verify(Math.abs(stateLayer.rippleOriginY - expected.y) <= 1)
+            verify(stateLayer.rippleActive)
+            mouseRelease(toggle, point.x, point.y, Qt.LeftButton)
+        }
     }
 }

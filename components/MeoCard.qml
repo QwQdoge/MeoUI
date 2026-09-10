@@ -61,11 +61,11 @@ Frame {
     readonly property real elevation: {
         if (type === "elevated") {
             const baseElevation = Math.max(0, level) * themeGlobalScale
-            if (interactive && enabled && hitArea.containsMouse)
+            if (interactive && enabled && hoverHandler.hovered)
                 return Math.max(2 * themeGlobalScale, baseElevation)
             return baseElevation
         }
-        if (interactive && enabled && hitArea.containsMouse)
+        if (interactive && enabled && hoverHandler.hovered)
             return 1 * themeGlobalScale
         return 0
     }
@@ -94,7 +94,7 @@ Frame {
             type: control.shape
             radius: {
                 if (!control.interactive) return control.effectiveRadius
-                if (hitArea.pressed) return Math.max(14 * control.themeGlobalScale, control.effectiveRadius - 8 * control.themeGlobalScale)
+                if (tapHandler.pressed) return Math.max(14 * control.themeGlobalScale, control.effectiveRadius - 8 * control.themeGlobalScale)
                 return control.effectiveRadius
             }
             color: control.containerColor
@@ -112,7 +112,7 @@ Frame {
             strokeWidth: control.selected ? 2 * control.themeGlobalScale
                                           : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
-            scale: control.interactive && control.bouncy && !control.reducedMotion ? (hitArea.pressed ? 0.985 : 1.0) : 1.0
+            scale: control.interactive && control.bouncy && !control.reducedMotion ? (tapHandler.pressed ? 0.985 : 1.0) : 1.0
 
             layer.enabled: control.visible && control.elevation > 0
             layer.effect: MultiEffect {
@@ -124,15 +124,15 @@ Frame {
             }
 
             MeoStateLayer {
+                id: cardStateLayer
+                objectName: "meoCardStateLayer"
                 anchors.fill: parent
                 radius: shapeBg.radius
                 shape: shapeBg.type
                 visible: control.interactive
-                pressed: hitArea.pressed
-                hovered: hitArea.containsMouse
+                internalPointerTrackingEnabled: false
+                hovered: hoverHandler.hovered
                 focused: control.activeFocus
-                pressX: hitArea.mouseX
-                pressY: hitArea.mouseY
                 color: control.themeOnSurface
             }
 
@@ -155,17 +155,32 @@ Frame {
                 }
             }
         }
+    }
 
-        MouseArea {
-            id: hitArea
-            anchors.fill: parent
-            enabled: control.interactive && control.enabled
-            hoverEnabled: true
-            cursorShape: control.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
-            onClicked: {
-                control.forceActiveFocus(Qt.MouseFocusReason)
-                control.activate()
+    HoverHandler {
+        id: hoverHandler
+        enabled: control.interactive && control.enabled
+        cursorShape: control.interactive ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    TapHandler {
+        id: tapHandler
+        enabled: control.interactive && control.enabled
+        acceptedButtons: Qt.LeftButton
+        gesturePolicy: TapHandler.ReleaseWithinBounds
+        onPressedChanged: {
+            if (pressed) {
+                const mapped = cardStateLayer.mapFromItem(
+                    tapHandler.parent,
+                    tapHandler.point.position.x, tapHandler.point.position.y)
+                cardStateLayer.trigger(mapped.x, mapped.y)
+            } else {
+                cardStateLayer.releaseRipple()
             }
+        }
+        onTapped: {
+            control.forceActiveFocus(Qt.MouseFocusReason)
+            control.activate()
         }
     }
 }

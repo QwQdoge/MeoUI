@@ -9,6 +9,11 @@ Item {
         name: "MeoColorField"
         when: windowShown
 
+        function init() {
+            colorField.color = "#6750A4"
+            colorField.text = "#6750a4"
+        }
+
         function test_textAliasCanBePrefilledAndCommitted() {
             compare(colorField.text, "#6750a4")
             colorField.text = "#FF8800"

@@ -119,8 +119,9 @@ Control {
                 id: segmentButton
                 objectName: "meoSegmentedButton_" + index
                 property var itemData: modelData
-                readonly property string itemLabel: typeof itemData === "string" ? itemData : (itemData.label || "")
-                readonly property string itemIcon: typeof itemData === "object" ? (itemData.icon || "") : ""
+                readonly property string itemLabel: typeof itemData === "string" ? itemData
+                                                    : (itemData && typeof itemData === "object" ? (itemData.label || "") : "")
+                readonly property string itemIcon: itemData && typeof itemData === "object" ? (itemData.icon || "") : ""
                 readonly property bool selected: control.isIndexSelected(index)
                 readonly property bool previousSelected: index > 0 && control.isIndexSelected(index - 1)
                 readonly property bool isFirst: index === 0

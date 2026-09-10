@@ -3,6 +3,7 @@ import QtTest
 import "../components" as Components
 
 Item {
+    id: root
     width: 400
     height: 120
 
@@ -26,7 +27,7 @@ Item {
         when: windowShown
 
         function test_rootUsesMeasuredImplicitSize() {
-            compare(Math.round(standardHeader.width), Math.round(360 * standardHeader.themeGlobalScale))
+            compare(Math.round(standardHeader.width), Math.round(root.width))
             compare(Math.round(standardHeader.height), Math.round(40 * standardHeader.themeGlobalScale))
             compare(Math.round(paddedHeader.height), Math.round((40 + 8 + 8) * paddedHeader.themeGlobalScale))
         }

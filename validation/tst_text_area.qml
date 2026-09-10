@@ -53,7 +53,7 @@ Item {
 
             area.isError = true
             compare(area.color, area.themeOnSurface)
-            compare(indicator.color, area.themeError)
+            tryCompare(indicator, "color", area.themeError, 500)
             area.isError = false
 
             area.enabled = false

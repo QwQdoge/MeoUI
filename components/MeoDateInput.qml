@@ -9,7 +9,7 @@ MeoTextField {
     property string format: "yyyy-MM-dd"
     property date value: new Date()
     property bool allowEmpty: false
-    property bool hasValue: !allowEmpty || text.trim() !== ""
+    readonly property bool hasValue: !allowEmpty || !isInputEmpty(text)
 
     signal dateAccepted(date date)
     signal cleared()
@@ -34,7 +34,7 @@ MeoTextField {
     }
 
     onTextChanged: {
-        if (allowEmpty && text.trim() === "") {
+        if (allowEmpty && isInputEmpty(text)) {
             isError = false
             errorText = ""
             return
@@ -52,7 +52,7 @@ MeoTextField {
     onEditingFinished: commit()
 
     function commit() {
-        if (allowEmpty && text.trim() === "") {
+        if (allowEmpty && isInputEmpty(text)) {
             isError = false
             errorText = ""
             if (!value || isNaN(value.getTime()) || value.getTime() > 0)
@@ -96,6 +96,13 @@ MeoTextField {
         const day = String(date.getDate()).padStart(2, "0")
         const sep = format.indexOf("/") !== -1 ? "/" : "-"
         return date.getFullYear() + sep + month + sep + day
+    }
+
+    function isInputEmpty(valueText) {
+        // TextField.inputMask keeps the literal separators visible ("--" or
+        // "//") even when no digit was entered.  Empty means no user digits,
+        // not an empty backing string.
+        return String(valueText).replace(/\D/g, "").length === 0
     }
 
     function parseDate(valueText) {

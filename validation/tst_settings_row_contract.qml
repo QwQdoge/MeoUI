@@ -239,5 +239,23 @@ Item {
             compare(groupProgress.progress, 0.5)
             compare(groupProgress.effectiveProgressText, "50%")
         }
+
+        function test_navigationRowUsesClickPointRippleAndHold() {
+            const stateLayer = findChild(navigationRow, "meoSettingsRowStateLayer")
+            verify(stateLayer !== null)
+            const x = 48
+            const y = navigationRow.height / 2
+            const expected = stateLayer.mapFromItem(navigationRow, x, y)
+            mousePress(navigationRow, x, y, Qt.LeftButton)
+            wait(0)
+            verify(Math.abs(stateLayer.rippleOriginX - expected.x) <= 1)
+            verify(Math.abs(stateLayer.rippleOriginY - expected.y) <= 1)
+            wait(stateLayer.rippleExpandDuration + 30)
+            verify(stateLayer.rippleActive)
+            compare(stateLayer.rippleOpacity, stateLayer.pressedOpacity)
+            mouseRelease(navigationRow, x, y, Qt.LeftButton)
+            tryCompare(stateLayer, "rippleActive", false,
+                       stateLayer.rippleFadeDuration + 250)
+        }
     }
 }

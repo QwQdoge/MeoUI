@@ -40,7 +40,7 @@ Item {
             icon.grade = 200
             icon.opticalSize = 48
 
-            compare(icon.fillLevel, 100)
+            tryCompare(icon, "fillLevel", 100, 500)
             compare(icon.weight, 700)
             compare(icon.grade, 200)
             compare(icon.opticalSize, 48)

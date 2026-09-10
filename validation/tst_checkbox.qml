@@ -3,8 +3,10 @@ import QtTest
 import "../components" as Components
 
 Item {
+    id: root
     width: 400
     height: 180
+    focus: true
 
     Components.MeoCheckbox {
         id: checkbox
@@ -23,6 +25,9 @@ Item {
             checkbox.size = "m"
             checkbox.LayoutMirroring.enabled = false
             checkbox.LayoutMirroring.childrenInherit = true
+            root.forceActiveFocus()
+            mouseMove(root, root.width - 1, root.height - 1)
+            wait(20)
         }
 
         function test_checkedAndIndeterminateTransitionsAreSemantic() {
@@ -87,6 +92,28 @@ Item {
             compare(indicator.border.width, 0)
             checkbox.LayoutMirroring.enabled = true
             compare(row.layoutDirection, Qt.RightToLeft)
+        }
+
+        function test_stateLayerUsesExactPointerOrigin() {
+            const indicator = findChild(checkbox, "meoCheckboxIndicator")
+            const pointer = findChild(checkbox, "meoCheckboxPointer")
+            const stateLayer = findChild(checkbox, "meoCheckboxStateLayer")
+            verify(indicator !== null)
+            verify(pointer !== null)
+            verify(stateLayer !== null)
+            const point = indicator.mapToItem(pointer, indicator.width / 2, indicator.height / 2)
+            const expected = stateLayer.mapFromItem(pointer, point.x, point.y)
+            verify(stateLayer.visible)
+            verify(stateLayer.enabled)
+            verify(!stateLayer.theme.reduceMotion)
+            mouseMove(pointer, point.x, point.y)
+            mousePress(pointer, point.x, point.y, Qt.LeftButton)
+            wait(0)
+            verify(pointer.pressed)
+            verify(stateLayer.rippleActive)
+            compare(Math.round(stateLayer.rippleOriginX), Math.round(expected.x))
+            compare(Math.round(stateLayer.rippleOriginY), Math.round(expected.y))
+            mouseRelease(pointer, point.x, point.y, Qt.LeftButton)
         }
     }
 }

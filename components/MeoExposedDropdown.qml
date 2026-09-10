@@ -210,14 +210,15 @@ Control {
     }
 
     MeoStateLayer {
+        id: exposedStateLayer
         objectName: "exposedDropdownStateLayer"
         anchors.left: textField.left
         anchors.right: textField.right
         anchors.top: textField.top
         height: textField.containerHeight
         radius: textField.containerRadius
-        hovered: pointer.containsMouse
-        pressed: pointer.pressed
+        internalPointerTrackingEnabled: false
+        hovered: dropdownHover.hovered
         focused: control.visualFocus
         color: control.isError ? MeoTheme.error : MeoTheme.onSurface
     }
@@ -235,16 +236,30 @@ Control {
         strokeColor: control.isError ? MeoTheme.error : MeoTheme.primary
     }
 
-    MouseArea {
-        id: pointer
-        objectName: "exposedDropdownPointer"
-        anchors.left: textField.left
-        anchors.right: textField.right
-        anchors.top: textField.top
-        height: textField.containerHeight
+    HoverHandler {
+        id: dropdownHover
+        parent: textField
         enabled: control.enabled
-        hoverEnabled: true
-        onClicked: {
+        cursorShape: Qt.PointingHandCursor
+    }
+
+    TapHandler {
+        id: dropdownTap
+        parent: textField
+        enabled: control.enabled
+        acceptedButtons: Qt.LeftButton
+        gesturePolicy: TapHandler.ReleaseWithinBounds
+        onPressedChanged: {
+            if (pressed) {
+                const mapped = exposedStateLayer.mapFromItem(
+                    dropdownTap.parent,
+                    dropdownTap.point.position.x, dropdownTap.point.position.y)
+                exposedStateLayer.trigger(mapped.x, mapped.y)
+            } else {
+                exposedStateLayer.releaseRipple()
+            }
+        }
+        onTapped: {
             control.forceActiveFocus(Qt.MouseFocusReason)
             control.toggleMenu()
         }

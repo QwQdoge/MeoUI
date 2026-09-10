@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
 
@@ -15,15 +14,14 @@ MeoCard {
 
     property date selectedDate: new Date()
     property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
-    property bool interactive: true
     property string headline: "Select date"
+    readonly property alias calendarControl: calendar
 
     signal dateSelected(date selected)
     signal accepted(date selected)
     signal rejected()
 
     readonly property real themeScale: MeoTheme.globalScale
-    readonly property int motionFast: MeoTheme.motionDurationState
     readonly property color headerTextColor: MeoTheme.contentOnSurface
     readonly property color supportingTextColor: MeoTheme.contentOnSurfaceVariant
 

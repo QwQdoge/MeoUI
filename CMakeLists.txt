@@ -62,31 +62,21 @@ if(BUILD_TESTING)
         )
         set_tests_properties(${test_name} PROPERTIES
             ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+            RUN_SERIAL TRUE
         )
     endfunction()
 
-    add_meoui_qml_test(meoui.quick_settings_tile tst_quick_settings_tile.qml)
-    add_meoui_qml_test(meoui.month_calendar tst_month_calendar.qml)
-    add_meoui_qml_test(meoui.motion_theme tst_theme_source.qml)
-    add_meoui_qml_test(meoui.status_center tst_status_center.qml)
-    add_meoui_qml_test(meoui.state_layer tst_state_layer.qml)
-    add_meoui_qml_test(meoui.interaction_feedback tst_interaction_feedback.qml)
-    add_meoui_qml_test(meoui.motion_popup tst_motion_popup.qml)
-    add_meoui_qml_test(meoui.list_transitions tst_list_transitions.qml)
-    add_meoui_qml_test(meoui.cached_image tst_cached_image.qml)
-    add_meoui_qml_test(meoui.fab_menu tst_fab_menu.qml)
-    add_meoui_qml_test(meoui.split_button tst_split_button.qml)
-    add_meoui_qml_test(meoui.exposed_dropdown tst_exposed_dropdown.qml)
-    add_meoui_qml_test(meoui.chip_dropdown tst_chip_dropdown.qml)
-    add_meoui_qml_test(meoui.menu tst_menu.qml)
-    add_meoui_qml_test(meoui.slider tst_slider.qml)
-    add_meoui_qml_test(meoui.range_slider tst_range_slider.qml)
-    add_meoui_qml_test(meoui.quick_control_slider tst_quick_control_slider.qml)
-    add_meoui_qml_test(meoui.important_ux tst_important_ux.qml)
-    add_meoui_qml_test(meoui.grouped_lists tst_grouped_lists.qml)
-    add_meoui_qml_test(meoui.settings_row_contract tst_settings_row_contract.qml)
-    add_meoui_qml_test(meoui.settings_expressive tst_settings_expressive.qml)
-    add_meoui_qml_test(meoui.settings_sidebar tst_settings_sidebar.qml)
+    # Every validation file is a real CTest gate. CONFIGURE_DEPENDS keeps new
+    # components from silently landing with a test that CI never executes.
+    file(GLOB MEOUI_QML_TEST_FILES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/validation/tst_*.qml"
+    )
+    foreach(test_path IN LISTS MEOUI_QML_TEST_FILES)
+        get_filename_component(test_file "${test_path}" NAME)
+        get_filename_component(test_stem "${test_path}" NAME_WE)
+        string(REGEX REPLACE "^tst_" "" test_suffix "${test_stem}")
+        add_meoui_qml_test("meoui.${test_suffix}" "${test_file}")
+    endforeach()
     add_test(
         NAME meoui.design_system_usage
         COMMAND ${Python3_EXECUTABLE}
@@ -334,6 +324,15 @@ install(FILES MeoTheme.qml MeoMotion.qml MeoWindowMetrics.qml
 install(DIRECTORY components patterns widgets showcase
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
     FILES_MATCHING PATTERN "*.qml"
+)
+# QML_FILES can include JavaScript modules.  Keep those beside the generated
+# qmldir as well: IDE tooling and downstream qmlimportscanner resolve these
+# entries from the install tree even though the runtime plugin also embeds them.
+install(FILES components/MeoMaterialShapes.js
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI/components"
+)
+install(FILES showcase/SettingsPreviewSchemes.js
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI/showcase"
 )
 install(FILES assets/icons/meo-ai-f.svg
     DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"

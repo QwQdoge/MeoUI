@@ -25,27 +25,37 @@ Item {
         }
 
         function test_m3ModeHeightsAndImplicitContract() {
-            compare(Math.round(topAppBar.height), Math.round(64 * topAppBar.themeGlobalScale))
+            tryVerify(function() {
+                return Math.round(topAppBar.height) === Math.round(64 * topAppBar.themeGlobalScale)
+            }, 500)
             compare(Math.round(topAppBar.implicitHeight), Math.round(topAppBar.height))
 
             topAppBar.type = "center"
             compare(Math.round(topAppBar.height), Math.round(64 * topAppBar.themeGlobalScale))
 
             topAppBar.type = "medium"
-            compare(Math.round(topAppBar.height), Math.round(112 * topAppBar.themeGlobalScale))
+            tryVerify(function() {
+                return Math.round(topAppBar.height) === Math.round(112 * topAppBar.themeGlobalScale)
+            }, 500)
 
             topAppBar.type = "large"
-            compare(Math.round(topAppBar.height), Math.round(152 * topAppBar.themeGlobalScale))
+            tryVerify(function() {
+                return Math.round(topAppBar.height) === Math.round(152 * topAppBar.themeGlobalScale)
+            }, 500)
         }
 
         function test_flexibleLargeInterpolatesWithoutChangingItsImplicitContract() {
             topAppBar.type = "large"
             topAppBar.flexible = true
             topAppBar.scrollProgress = 0
-            compare(Math.round(topAppBar.height), Math.round(64 * topAppBar.themeGlobalScale))
+            tryVerify(function() {
+                return Math.round(topAppBar.height) === Math.round(64 * topAppBar.themeGlobalScale)
+            }, 500)
 
             topAppBar.scrollProgress = 1
-            compare(Math.round(topAppBar.height), Math.round(152 * topAppBar.themeGlobalScale))
+            tryVerify(function() {
+                return Math.round(topAppBar.height) === Math.round(152 * topAppBar.themeGlobalScale)
+            }, 500)
             compare(Math.round(topAppBar.implicitHeight), Math.round(topAppBar.height))
         }
 
@@ -53,7 +63,7 @@ Item {
             topAppBar.isContextual = true
             topAppBar.selectionCount = 3
             compare(topAppBar.selectionCount, 3)
-            verify(topAppBar.color === topAppBar.themePrimaryContainer)
+            tryCompare(topAppBar, "color", topAppBar.themePrimaryContainer, 500)
         }
     }
 }

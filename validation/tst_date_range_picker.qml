@@ -14,6 +14,13 @@ Item {
         name: "MeoDateRangePicker"
         when: windowShown
 
+        function init() {
+            picker.interactive = true
+            picker.startDate = new Date(2026, 6, 12)
+            picker.endDate = new Date(2026, 6, 20)
+            picker.displayDate = new Date(2026, 6, 1)
+        }
+
         function test_reversedEndInputIsNormalized() {
             picker.setRangeDate(false, new Date(2026, 6, 8))
             compare(picker.startDate.getDate(), 8)

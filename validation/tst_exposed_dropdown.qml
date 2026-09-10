@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import MeoUI
 import "../components" as Components
 
 Item {
@@ -18,6 +19,9 @@ Item {
         when: windowShown
 
         function init() {
+            if (dropdown.opened)
+                dropdown.toggleMenu()
+            wait(MeoTheme.motionDurationPopupEffectsExit + 50)
             dropdown.enabled = true
             dropdown.model = ["Development", "Staging", "Production"]
             dropdown.textRole = ""
@@ -88,6 +92,26 @@ Item {
 
             dropdown.LayoutMirroring.enabled = true
             compare(field.LayoutMirroring.enabled, true)
+        }
+
+        function test_pointerFeedbackUsesSharedClickOrigin() {
+            const stateLayer = findChild(dropdown, "exposedDropdownStateLayer")
+            verify(stateLayer !== null)
+            const x = 36
+            const y = Math.min(24, dropdown.height / 2)
+            const expected = stateLayer.mapFromItem(dropdown, x, y)
+            verify(stateLayer.visible)
+            verify(stateLayer.enabled)
+            verify(!stateLayer.theme.reduceMotion)
+            mouseMove(dropdown, x, y)
+            mousePress(dropdown, x, y, Qt.LeftButton)
+            wait(0)
+            verify(stateLayer.rippleActive)
+            compare(Math.round(stateLayer.rippleOriginX), Math.round(expected.x))
+            compare(Math.round(stateLayer.rippleOriginY), Math.round(expected.y))
+            mouseRelease(dropdown, x, y, Qt.LeftButton)
+            if (dropdown.opened)
+                dropdown.toggleMenu()
         }
     }
 }

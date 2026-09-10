@@ -56,8 +56,8 @@ Item {
             compare(dockedToolbar.implicitHeight, 64 * MeoTheme.globalScale)
             compare(dockedToolbar.vibrant, false)
             compare(vibrantDockedToolbar.vibrant, true)
-            compare(vibrantDockedToolbar.containerColor, MeoTheme.primary)
-            compare(dockedToolbar.contentColor, MeoTheme.contentOnSurfaceVariant)
+            compare(vibrantDockedToolbar.containerColor, MeoTheme.primaryContainer)
+            compare(dockedToolbar.contentColor, MeoTheme.contentOnSurface)
         }
 
         function test_objectActionsExposeDisabledState() {
@@ -73,7 +73,7 @@ Item {
             compare(floatingToolbar.horizontal, true)
             compare(verticalFloatingToolbar.horizontal, false)
             verify(verticalFloatingToolbar.implicitHeight > verticalFloatingToolbar.implicitWidth)
-            compare(verticalFloatingToolbar.containerColor, MeoTheme.primary)
+            compare(verticalFloatingToolbar.containerColor, MeoTheme.primaryContainer)
             verify(floatingToolbar.surfaceWidth >= 64 * MeoTheme.globalScale)
         }
     }

@@ -20,6 +20,10 @@ Item {
         name: "MeoRichTooltip"
         when: windowShown
 
+        function init() {
+            tooltip.actions = [{ "text": "Learn more" }]
+        }
+
         function test_richTooltipTokensAndAction() {
             compare(tooltip.themeSurfaceContainer, MeoTheme.surfaceContainer)
             compare(tooltip.themeOnSurfaceVariant, MeoTheme.contentOnSurfaceVariant)
@@ -27,9 +31,14 @@ Item {
             compare(tooltip.focus, true)
             compare(tooltip.maximumWidth, 320 * MeoTheme.globalScale)
             compare(tooltip.width, tooltip.maximumWidth)
+            tooltip.open()
+            tryVerify(function() { return tooltip.visible }, 500)
             verify(findChild(tooltip, "meoRichTooltipTitle") !== null)
             verify(findChild(tooltip, "meoRichTooltipText") !== null)
-            verify(findChild(tooltip, "meoRichTooltipAction_0") !== null)
+            const actionsRepeater = findChild(tooltip, "meoRichTooltipActions")
+            verify(actionsRepeater !== null)
+            tryCompare(actionsRepeater, "count", 1, 500)
+            tooltip.close()
         }
 
         function test_nonInteractiveTooltipDoesNotTakeFocus() {

@@ -67,6 +67,9 @@ Item {
     readonly property bool rippleActive: rippleLayer.opacity > 0
     readonly property real rippleOriginX: rippleLayer.originX
     readonly property real rippleOriginY: rippleLayer.originY
+    readonly property real rippleOpacity: rippleLayer.opacity
+    readonly property real rippleRadius: rippleLayer.radiusValue
+    readonly property real rippleTargetRadius: rippleLayer.targetRadius
 
     anchors.fill: parent
     width: parent ? parent.width : 0

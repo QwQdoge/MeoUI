@@ -9,6 +9,15 @@ Item {
         name: "MeoTimePicker"
         when: windowShown
 
+        function init() {
+            picker.use24Hour = false
+            picker.hours = 10
+            picker.minutes = 30
+            picker.isPM = false
+            picker.inputMode = false
+            picker.activeUnit = "hour"
+        }
+
         function test_externalValuesAreNormalized() {
             picker.hours = 33
             picker.minutes = 99

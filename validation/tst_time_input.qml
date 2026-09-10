@@ -10,6 +10,12 @@ Item {
         name: "MeoTimeInput"
         when: windowShown
 
+        function init() {
+            input.value = "09:30"
+            optional.value = ""
+            optional.text = ""
+        }
+
         function test_strictTimeParsingAndValueSync() {
             compare(input.text, "09:30")
             compare(input.parseTime("23:59"), "23:59")

@@ -98,16 +98,16 @@ Item {
 
             basic.open()
             wait(0)
-            const reject = findChild(basic, "meoDialogRejectButton")
-            verify(reject !== null)
-            reject.click()
+            const rejectButton = findChild(basic, "meoDialogRejectButton")
+            verify(rejectButton !== null)
+            rejectButton.click()
             compare(cancelledSpy.count, 1)
             compare(dismissedSpy.count, 0)
 
             basic.open()
             wait(0)
             basic.close()
-            compare(dismissedSpy.count, 1)
+            tryCompare(dismissedSpy, "count", 1, basic.exitDuration + 250)
         }
 
         function test_fullScreenM3LayoutContract() {
