@@ -31,7 +31,8 @@ text—without copying another product's branding, wording, or layout.
   reveals the page `surface`. A 1dp `outlineVariant` line is an explicit compact
   alternative, not the Pixel-style default.
 - Every interactive row uses `MeoStateLayer`: 8% hover darkening, 10% pressed
-  darkening plus a pointer-origin ripple, and a primary keyboard focus ring.
+  darkening plus a click-point-origin soft-edge circular ripple, and a primary
+  keyboard focus ring. Keyboard activation originates from the control center.
   Disabled rows do not render pointer feedback.
 - Give grouped rows a shared rounded surface and 12–16dp space between groups.
   An index should fit a broad category scan before asking a user to navigate.

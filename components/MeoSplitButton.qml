@@ -106,6 +106,21 @@ Control {
             hoverEnabled: true
             Accessible.name: control.text
 
+            PointHandler {
+                acceptedButtons: Qt.LeftButton
+                onActiveChanged: {
+                    primaryStateLayer._pointerPressActive = active
+                    if (active) {
+                        const localPoint = primaryStateLayer.mapFromItem(primaryAction,
+                                                                        point.position.x,
+                                                                        point.position.y)
+                        primaryStateLayer.trigger(localPoint.x, localPoint.y)
+                    } else {
+                        primaryStateLayer.releaseRipple()
+                    }
+                }
+            }
+
             readonly property real innerRadius: pressed || hovered || visualFocus
                                                 ? control.innerActiveCorner : control.innerCorner
             background: Rectangle {
@@ -135,7 +150,10 @@ Control {
                 Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
                 MeoStateLayer {
+                    id: primaryStateLayer
+                    objectName: "meoSplitButtonPrimaryStateLayer"
                     anchors.fill: parent
+                    internalPointerTrackingEnabled: false
                     radius: control.outerCorner
                     pressed: primaryAction.pressed
                     hovered: primaryAction.hovered
@@ -187,6 +205,21 @@ Control {
             Accessible.name: qsTr("More options")
             Accessible.checked: menuPopup.opened
 
+            PointHandler {
+                acceptedButtons: Qt.LeftButton
+                onActiveChanged: {
+                    menuStateLayer._pointerPressActive = active
+                    if (active) {
+                        const localPoint = menuStateLayer.mapFromItem(menuAction,
+                                                                     point.position.x,
+                                                                     point.position.y)
+                        menuStateLayer.trigger(localPoint.x, localPoint.y)
+                    } else {
+                        menuStateLayer.releaseRipple()
+                    }
+                }
+            }
+
             readonly property real innerRadius: menuPopup.opened ? control.outerCorner
                                                 : pressed || hovered || visualFocus
                                                   ? control.innerActiveCorner : control.innerCorner
@@ -217,7 +250,10 @@ Control {
                 Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
                 MeoStateLayer {
+                    id: menuStateLayer
+                    objectName: "meoSplitButtonMenuStateLayer"
                     anchors.fill: parent
+                    internalPointerTrackingEnabled: false
                     radius: control.outerCorner
                     pressed: menuAction.pressed
                     hovered: menuAction.hovered

@@ -36,10 +36,28 @@ Item {
     Keys.onReturnPressed: activate()
     Keys.onEnterPressed: activate()
     Keys.onSpacePressed: activate()
+    Keys.onPressed: function(event) {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            stateLayer.triggerFromKeyboard()
+    }
 
     function activate() {
         if (enabled && interactive)
             clicked()
+    }
+
+    MeoStateLayer {
+        id: stateLayer
+        objectName: "meoAccountHeaderStateLayer"
+        anchors.fill: parent
+        radius: MeoTheme.shapeSmall
+        hovered: headerHitArea.containsMouse
+        pressed: headerHitArea.pressed
+        focused: control.activeFocus
+        enabled: control.enabled && control.interactive
+        color: control.themeOnSurface
     }
 
     Row {
@@ -97,8 +115,11 @@ Item {
     }
 
     MouseArea {
+        id: headerHitArea
         anchors.fill: parent
         enabled: control.enabled && control.interactive
+        hoverEnabled: true
+        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: control.activate()
         z: 0
     }

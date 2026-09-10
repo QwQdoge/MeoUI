@@ -58,6 +58,7 @@ Control {
     implicitHeight: Math.max(control.containerHeight, contentFlow.implicitHeight + (control.type === "filled" ? (control.label !== "" ? 28 : 16) : 16) * themeGlobalScale) + (size === "xs" ? 0 : helperSpace)
 
     opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
+    activeFocusOnTab: control.enabled
     Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
     readonly property var currentFont: {
@@ -88,6 +89,16 @@ Control {
         return type === "filled" ? themeOnSurfaceVariant : themeOutline;
     }
 
+    Keys.onPressed: function(event) {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            dropdownStateLayer.triggerFromKeyboard()
+    }
+    Keys.onReturnPressed: menu.open()
+    Keys.onEnterPressed: menu.open()
+    Keys.onSpacePressed: menu.open()
+
     // 🌟 Background MouseArea positioned at the top of the content hierarchy visually
     // to avoid blocking clicks on child chip actions.
     MouseArea {
@@ -112,12 +123,21 @@ Control {
                     : (control.activeFocus ? 16 : 12) * control.themeGlobalScale
             topLeftRadius: control.activeFocus ? 16 * control.themeGlobalScale : 12 * control.themeGlobalScale
             topRightRadius: control.activeFocus ? 16 * control.themeGlobalScale : 12 * control.themeGlobalScale
-            color: {
-                let base = control.containerColor;
-                if (control.enabled && bgMouseArea.containsMouse && control.type === "filled") {
-                    return Qt.tint(base, Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08));
-                }
-                return base;
+            color: control.containerColor
+
+            MeoStateLayer {
+                id: dropdownStateLayer
+                objectName: "meoChipDropdownStateLayer"
+                anchors.fill: parent
+                radius: containerRect.radius
+                topLeftRadius: containerRect.topLeftRadius
+                topRightRadius: containerRect.topRightRadius
+                bottomLeftRadius: containerRect.bottomLeftRadius
+                bottomRightRadius: containerRect.bottomRightRadius
+                hovered: bgMouseArea.containsMouse
+                pressed: bgMouseArea.pressed
+                focused: control.activeFocus
+                color: control.themeOnSurface
             }
 
             Rectangle {

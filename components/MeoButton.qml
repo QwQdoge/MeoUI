@@ -6,6 +6,21 @@ import MeoUI
 Button {
     id: control
 
+    PointHandler {
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            stateLayer._pointerPressActive = active
+            if (active) {
+                const localPoint = stateLayer.mapFromItem(control,
+                                                          point.position.x,
+                                                          point.position.y)
+                stateLayer.trigger(localPoint.x, localPoint.y)
+            } else {
+                stateLayer.releaseRipple()
+            }
+        }
+    }
+
     Keys.onPressed: event => {
         if (!event.isAutoRepeat
                 && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
@@ -268,7 +283,9 @@ Button {
 
             MeoStateLayer {
                 id: stateLayer
+                objectName: "meoButtonStateLayer"
                 anchors.fill: parent
+                internalPointerTrackingEnabled: false
                 radius: buttonShape.radius
                 shape: buttonShape.type
                 pressed: control.pressed

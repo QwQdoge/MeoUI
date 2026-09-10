@@ -12,14 +12,18 @@ Item {
     property bool dragged: false
     property bool focusRingEnabled: true
     property bool rippleEnabled: true
+    property bool internalPointerTrackingEnabled: true
+    property string rippleOriginMode: "pointer" // pointer | center
     property bool _keyboardRipplePending: false
+    property bool _pointerPressActive: false
     // `color` remains the semantic foreground/focus color for compatibility.
-    // Pointer feedback itself uses the theme scrim so every filled, tonal, and
+    // Activation feedback itself uses the theme scrim so every filled, tonal, and
     // neutral surface becomes perceptibly darker instead of changing hue.
     property color color: theme.contentOnSurface
     property color overlayColor: theme.scrim
     property color focusColor: theme.primary
     property real rippleFeather: 2 * themeGlobalScale
+    property real rippleStartRadius: 6 * themeGlobalScale
     property real radius: 0
     // Connected groups need one continuous outer silhouette: only the first
     // and last item inherit the container corners.  Keep this in the shared
@@ -76,18 +80,51 @@ Item {
         acceptedButtons: Qt.NoButton
     }
 
+    // Observe the real press point without owning the button action. This is
+    // intentionally passive so parent Buttons, MouseAreas, Tabs, and navigation
+    // delegates keep their existing click/drag semantics.
+    PointHandler {
+        id: ripplePointerTracker
+        enabled: control.internalPointerTrackingEnabled && control.enabled
+                 && control.rippleEnabled && !control.theme.reduceMotion
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            control._pointerPressActive = active
+            if (active) {
+                control.trigger(point.position.x, point.position.y)
+            } else {
+                control.releaseRipple()
+            }
+        }
+    }
+
     function trigger(x, y) {
         if (!control.enabled || !control.rippleEnabled || theme.reduceMotion)
             return
         rippleExpand.stop()
         rippleFade.stop()
-        rippleFadeIn.stop()
-        rippleLayer.originX = Math.max(0, Math.min(control.width, x))
-        rippleLayer.originY = Math.max(0, Math.min(control.height, y))
-        rippleLayer.radiusValue = 0
-        rippleLayer.opacity = 0
-        rippleFadeIn.start()
+        rippleMinimumLifetime.stop()
+        _releasePending = false
+        const requestedX = control.rippleOriginMode === "pointer" ? x : control.width / 2
+        const requestedY = control.rippleOriginMode === "pointer" ? y : control.height / 2
+        rippleLayer.originX = Math.max(0, Math.min(control.width, requestedX))
+        rippleLayer.originY = Math.max(0, Math.min(control.height, requestedY))
+        rippleLayer.radiusValue = control.rippleStartRadius
+        rippleLayer.opacity = control.pressedOpacity
+        rippleMinimumLifetime.restart()
         rippleExpand.start()
+    }
+
+    property bool _releasePending: false
+
+    function releaseRipple() {
+        if (!rippleActive)
+            return
+        _releasePending = true
+        if (!rippleMinimumLifetime.running) {
+            _releasePending = false
+            rippleFade.restart()
+        }
     }
 
     // Hosts handling a keyboard activation call this rather than reusing the
@@ -95,17 +132,27 @@ Item {
     function triggerFromKeyboard() {
         _keyboardRipplePending = true
         trigger(control.width / 2, control.height / 2)
+        keyboardPendingReset.restart()
+    }
+
+    Timer {
+        id: keyboardPendingReset
+        interval: 0
+        repeat: false
+        onTriggered: control._keyboardRipplePending = false
     }
 
     onPressedChanged: {
+        if (_pointerPressActive)
+            return
         if (pressed && !dragged) {
             if (_keyboardRipplePending)
                 _keyboardRipplePending = false
             else
                 trigger(pressX, pressY)
         }
-        else if (rippleActive)
-            rippleFade.restart()
+        else
+            releaseRipple()
     }
 
     // A drag is a continuous state, not another click.  Stop the expanding
@@ -114,8 +161,21 @@ Item {
     onDraggedChanged: {
         if (dragged) {
             rippleExpand.stop()
-            rippleFadeIn.stop()
+            rippleMinimumLifetime.stop()
+            _releasePending = false
             rippleFade.restart()
+        }
+    }
+
+    Timer {
+        id: rippleMinimumLifetime
+        interval: control.rippleExpandDuration
+        repeat: false
+        onTriggered: {
+            if (control._releasePending && !control.pressed) {
+                control._releasePending = false
+                rippleFade.restart()
+            }
         }
     }
 
@@ -148,6 +208,9 @@ Item {
             opacity: {
                 if (!control.enabled) return 0
                 if (control.dragged) return control.draggedOpacity
+                // Pointer presses are painted by the circular ripple itself.
+                // Avoid stacking a second full-surface pressed tint beneath it.
+                if (control.rippleActive && control.rippleEnabled) return 0
                 if (control.pressed) return control.pressedOpacity
                 if (control.hovered) return control.hoverOpacity
                 if (control.focused) return control.focusOpacity
@@ -212,19 +275,10 @@ Item {
         id: rippleExpand
         target: rippleLayer
         property: "radiusValue"
-        from: 0
+        from: control.rippleStartRadius
         to: rippleLayer.targetRadius
         duration: control.rippleExpandDuration
         easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingEmphasizedDecelerate
-    }
-
-    NumberAnimation {
-        id: rippleFadeIn
-        target: rippleLayer
-        property: "opacity"
-        to: control.pressedOpacity
-        duration: control.hoverDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
     }
 
     NumberAnimation {
@@ -242,8 +296,12 @@ Item {
             if (!control.theme.reduceMotion)
                 return
             rippleExpand.stop()
-            rippleFadeIn.stop()
+            rippleMinimumLifetime.stop()
+            keyboardPendingReset.stop()
             rippleFade.stop()
+            control._keyboardRipplePending = false
+            control._pointerPressActive = false
+            control._releasePending = false
             rippleLayer.opacity = 0
             rippleLayer.radiusValue = 0
         }

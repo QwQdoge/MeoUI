@@ -120,6 +120,7 @@ Control {
             Repeater {
                 model: control.model || []
                 delegate: MeoAvatar {
+                    id: accountAvatar
                     visible: index !== control.normalizedCurrentIndex
                     size: 32
                     source: modelData.avatar || ""
@@ -127,17 +128,45 @@ Control {
                     Accessible.role: Accessible.Button
                     Accessible.name: qsTr("Switch to %1").arg(modelData.name || qsTr("account"))
                     Accessible.onPressAction: control.selectAccount(index)
+                    activeFocusOnTab: control.enabled
+                    Keys.onPressed: function(event) {
+                        if (!event.isAutoRepeat
+                                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                    || event.key === Qt.Key_Space))
+                            avatarStateLayer.triggerFromKeyboard()
+                    }
+                    Keys.onReturnPressed: control.selectAccount(index)
+                    Keys.onEnterPressed: control.selectAccount(index)
+                    Keys.onSpacePressed: control.selectAccount(index)
+
+                    MeoStateLayer {
+                        id: avatarStateLayer
+                        objectName: "meoAccountAvatarStateLayer_" + index
+                        anchors.fill: parent
+                        shape: "circle"
+                        hovered: avatarPointer.containsMouse
+                        pressed: avatarPointer.pressed
+                        focused: accountAvatar.activeFocus
+                        color: control.themeOnSurface
+                    }
 
                     MouseArea {
+                        id: avatarPointer
                         anchors.fill: parent
                         enabled: control.enabled
-                        onClicked: control.selectAccount(index)
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            accountAvatar.forceActiveFocus(Qt.MouseFocusReason)
+                            control.selectAccount(index)
+                        }
                     }
                 }
             }
 
             // Add Account Button
             Rectangle {
+                id: addAccountButton
                 width: 32 * control.themeGlobalScale
                 height: 32 * control.themeGlobalScale
                 radius: width / 2
@@ -147,6 +176,27 @@ Control {
                 Accessible.role: Accessible.Button
                 Accessible.name: qsTr("Add account")
                 Accessible.onPressAction: control.addAccountRequested()
+                activeFocusOnTab: control.enabled
+                Keys.onPressed: function(event) {
+                    if (!event.isAutoRepeat
+                            && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                || event.key === Qt.Key_Space))
+                        addAccountStateLayer.triggerFromKeyboard()
+                }
+                Keys.onReturnPressed: control.addAccountRequested()
+                Keys.onEnterPressed: control.addAccountRequested()
+                Keys.onSpacePressed: control.addAccountRequested()
+
+                MeoStateLayer {
+                    id: addAccountStateLayer
+                    objectName: "meoAddAccountStateLayer"
+                    anchors.fill: parent
+                    shape: "circle"
+                    hovered: addAccountPointer.containsMouse
+                    pressed: addAccountPointer.pressed
+                    focused: addAccountButton.activeFocus
+                    color: control.themeOnSurface
+                }
 
                 MeoIcon {
                     anchors.centerIn: parent
@@ -156,8 +206,14 @@ Control {
                 }
 
                 MouseArea {
+                    id: addAccountPointer
                     anchors.fill: parent
-                    onClicked: control.addAccountRequested()
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        addAccountButton.forceActiveFocus(Qt.MouseFocusReason)
+                        control.addAccountRequested()
+                    }
                 }
             }
         }

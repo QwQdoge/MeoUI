@@ -246,6 +246,8 @@ Rectangle {
                                     visible: control.isExpanded
 
                                     MeoStateLayer {
+                                        id: expandedStateLayer
+                                        objectName: "meoNavigationRailExpandedStateLayer_" + destination.navigationIndex
                                         anchors.fill: parent
                                         radius: parent.radius
                                         hovered: mouseArea.containsMouse
@@ -304,6 +306,8 @@ Rectangle {
                                         // to the 56dp indicator even while the inactive
                                         // visual indicator itself contracts.
                                         MeoStateLayer {
+                                            id: collapsedStateLayer
+                                            objectName: "meoNavigationRailCollapsedStateLayer_" + destination.navigationIndex
                                             width: parent.width
                                             height: parent.height
                                             anchors.centerIn: parent
@@ -411,6 +415,16 @@ Rectangle {
                                 onClicked: {
                                     destination.forceActiveFocus(Qt.MouseFocusReason)
                                     destination.activate()
+                                }
+                            }
+                            Keys.onPressed: function(event) {
+                                if (!event.isAutoRepeat
+                                        && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                            || event.key === Qt.Key_Space)) {
+                                    if (control.isExpanded)
+                                        expandedStateLayer.triggerFromKeyboard()
+                                    else
+                                        collapsedStateLayer.triggerFromKeyboard()
                                 }
                             }
                             Keys.onReturnPressed: activate()

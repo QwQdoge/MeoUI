@@ -25,6 +25,7 @@ Item {
             stateLayer.focused = false
             stateLayer.pressed = false
             stateLayer.dragged = false
+            stateLayer.rippleOriginMode = "pointer"
         }
 
         function cleanup() {
@@ -33,6 +34,7 @@ Item {
             stateLayer.focused = false
             stateLayer.pressed = false
             stateLayer.dragged = false
+            stateLayer.rippleOriginMode = "pointer"
         }
 
         function test_statePriorityAndDisabledContract() {
@@ -88,7 +90,30 @@ Item {
             stateLayer.pressed = true
             stateLayer.pressed = false
             tryCompare(stateLayer, "rippleActive", false,
-                       MeoTheme.motionDurationRippleFade + 250)
+                       MeoTheme.motionDurationRippleExpand
+                       + MeoTheme.motionDurationRippleFade + 500)
+        }
+
+        function test_pointerPressUsesClickPointAndCenterRemainsAvailable() {
+            stateLayer.trigger(12, 14)
+            compare(stateLayer.rippleOriginX, 12)
+            compare(stateLayer.rippleOriginY, 14)
+
+            stateLayer.rippleOriginMode = "center"
+            stateLayer.trigger(12, 14)
+            compare(stateLayer.rippleOriginX, stateLayer.width / 2)
+            compare(stateLayer.rippleOriginY, stateLayer.height / 2)
+        }
+
+        function test_quickReleaseKeepsClickFeedbackUntilExpansionCompletes() {
+            stateLayer.pressed = true
+            stateLayer.pressed = false
+            tryCompare(stateLayer, "rippleActive", true, 50)
+            wait(Math.max(1, MeoTheme.motionDurationPress))
+            verify(stateLayer.rippleActive)
+            tryCompare(stateLayer, "rippleActive", false,
+                       MeoTheme.motionDurationRippleExpand
+                       + MeoTheme.motionDurationRippleFade + 250)
         }
     }
 }

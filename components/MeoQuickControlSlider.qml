@@ -106,8 +106,26 @@ Control {
                 Accessible.description: control.accessibleName
                 onClicked: control.iconTriggered()
 
+                PointHandler {
+                    acceptedButtons: Qt.LeftButton
+                    onActiveChanged: {
+                        iconStateLayer._pointerPressActive = active
+                        if (active) {
+                            const localPoint = iconStateLayer.mapFromItem(iconButton,
+                                                                         point.position.x,
+                                                                         point.position.y)
+                            iconStateLayer.trigger(localPoint.x, localPoint.y)
+                        } else {
+                            iconStateLayer.releaseRipple()
+                        }
+                    }
+                }
+
                 background: MeoStateLayer {
+                    id: iconStateLayer
+                    objectName: "quickControlIconStateLayer"
                     shape: "circle"
+                    internalPointerTrackingEnabled: false
                     hovered: iconButton.hovered
                     pressed: iconButton.pressed
                     focused: iconButton.visualFocus

@@ -131,7 +131,9 @@ Control {
     readonly property bool isStatus: effectiveKind === "status"
     readonly property bool isValue: effectiveKind === "value"
     readonly property bool isSlider: effectiveKind === "slider"
-    readonly property bool isSegmented: effectiveKind === "segmented"
+    // Writable so MeoSegmentedList can apply its shared row contract to a
+    // loaded delegate. Standalone rows retain the semantic default binding.
+    property bool isSegmented: effectiveKind === "segmented"
     readonly property bool isRadio: effectiveKind === "radio"
     readonly property bool isCheckbox: effectiveKind === "checkbox"
     readonly property bool isProgress: effectiveKind === "progress"

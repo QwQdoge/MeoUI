@@ -63,6 +63,12 @@ Control {
         clicked()
     }
 
+    Keys.onPressed: function(event) {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            stateLayer.triggerFromKeyboard()
+    }
     Keys.onReturnPressed: activate()
     Keys.onEnterPressed: activate()
     Keys.onSpacePressed: activate()
@@ -92,6 +98,8 @@ Control {
             clip: true
 
             MeoStateLayer {
+                id: stateLayer
+                objectName: "meoNavigationDrawerItemStateLayer"
                 radius: selectedLayer.radius
                 shape: "pill"
                 pressed: mouseArea.pressed

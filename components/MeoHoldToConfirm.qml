@@ -7,6 +7,21 @@ import MeoUI
 Button {
     id: control
 
+    PointHandler {
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            holdStateLayer._pointerPressActive = active
+            if (active) {
+                const localPoint = holdStateLayer.mapFromItem(control,
+                                                              point.position.x,
+                                                              point.position.y)
+                holdStateLayer.trigger(localPoint.x, localPoint.y)
+            } else {
+                holdStateLayer.releaseRipple()
+            }
+        }
+    }
+
     property string confirmationText: qsTr("Hold to confirm")
     property string holdingText: qsTr("Keep holding…")
     property int holdDuration: 5000
@@ -146,10 +161,13 @@ Button {
             Behavior on width { NumberAnimation { duration: MeoTheme.motionDurationHoldRelease; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
         }
         MeoStateLayer {
+            id: holdStateLayer
+            objectName: "meoHoldToConfirmStateLayer"
             anchors.fill: parent
             radius: control.height / 2
             color: control.foregroundColor
-            enabled: control.enabled && !control.holding
+            enabled: control.enabled
+            internalPointerTrackingEnabled: false
             hovered: control.hovered
             pressed: control.down
             focused: control.visualFocus

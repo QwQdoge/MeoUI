@@ -315,6 +315,21 @@ Control {
                                      : Accessible.Button
                     Accessible.checked: control.variant === "connected" && groupButton.selected
 
+                    PointHandler {
+                        acceptedButtons: Qt.LeftButton
+                        onActiveChanged: {
+                            groupStateLayer._pointerPressActive = active
+                            if (active) {
+                                const localPoint = groupStateLayer.mapFromItem(groupButton,
+                                                                              point.position.x,
+                                                                              point.position.y)
+                                groupStateLayer.trigger(localPoint.x, localPoint.y)
+                            } else {
+                                groupStateLayer.releaseRipple()
+                            }
+                        }
+                    }
+
                     onPressedChanged: {
                         if (pressed)
                             control.pressedIndex = index
@@ -360,7 +375,10 @@ Control {
                         }
 
                         MeoStateLayer {
+                            id: groupStateLayer
+                            objectName: "meoButtonGroupStateLayer_" + index
                             anchors.fill: parent
+                            internalPointerTrackingEnabled: false
                             radius: groupButton.segmentRadius
                             pressed: groupButton.pressed
                             hovered: groupButton.hovered

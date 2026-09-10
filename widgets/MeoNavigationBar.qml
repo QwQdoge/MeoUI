@@ -169,14 +169,16 @@ Rectangle {
                         // prevents a hover or press fill across the full item
                         // target while preserving that target's semantics.
                         MeoStateLayer {
+                            id: destinationStateLayer
+                            objectName: "meoNavigationBarStateLayer_" + destination.index
                             anchors.fill: parent
                             radius: parent.height / 2
                             shape: "pill"
                             hovered: hitArea.containsMouse
                             pressed: hitArea.pressed
                             focused: destination.activeFocus
-                            pressX: hitArea.mouseX - parent.x
-                            pressY: hitArea.mouseY - parent.y
+                            pressX: mapFromItem(hitArea, hitArea.mouseX, hitArea.mouseY).x
+                            pressY: mapFromItem(hitArea, hitArea.mouseX, hitArea.mouseY).y
                             color: destination.isSelected
                                    ? control.themeOnSecondaryContainer
                                    : control.themeOnSurface
@@ -223,6 +225,12 @@ Rectangle {
                         destination.forceActiveFocus(Qt.MouseFocusReason)
                         destination.activate()
                     }
+                }
+                Keys.onPressed: function(event) {
+                    if (!event.isAutoRepeat
+                            && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                || event.key === Qt.Key_Space))
+                        destinationStateLayer.triggerFromKeyboard()
                 }
                 Keys.onReturnPressed: activate()
                 Keys.onEnterPressed: activate()

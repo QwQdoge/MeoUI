@@ -6,6 +6,28 @@ import MeoUI
 Button {
     id: control
 
+    PointHandler {
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            stateLayer._pointerPressActive = active
+            if (active) {
+                const localPoint = stateLayer.mapFromItem(control,
+                                                          point.position.x,
+                                                          point.position.y)
+                stateLayer.trigger(localPoint.x, localPoint.y)
+            } else {
+                stateLayer.releaseRipple()
+            }
+        }
+    }
+
+    Keys.onPressed: event => {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            stateLayer.triggerFromKeyboard()
+    }
+
     // 🌟 核心属性
     property string type: "filled" // "standard" | "filled" | "tonal" | "outlined"
     property string size: "s" // "xs" | "s" | "m" | "l" | "xl"
@@ -125,6 +147,9 @@ Button {
             }
 
             MeoStateLayer {
+                id: stateLayer
+                objectName: "meoIconButtonStateLayer"
+                internalPointerTrackingEnabled: false
                 radius: shapeBg.radius
                 shape: shapeBg.type
                 pressed: control.pressed

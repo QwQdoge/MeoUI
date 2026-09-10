@@ -234,14 +234,16 @@ Control {
                     }
 
                     MeoStateLayer {
+                        id: tabStateLayer
+                        objectName: "meoTabStateLayer_" + tabItem.index
                         anchors.fill: parent
                         anchors.margins: control.expressive ? 4 * MeoTheme.globalScale : 0
                         radius: control.expressive ? MeoTheme.shapeFull : 8 * MeoTheme.globalScale
                         pressed: tabPointer.pressed
                         hovered: tabPointer.containsMouse
                         focused: tabItem.activeFocus
-                        pressX: tabPointer.mouseX
-                        pressY: tabPointer.mouseY
+                        pressX: tabPointer.mouseX - x
+                        pressY: tabPointer.mouseY - y
                         color: tabItem.selected && control.expressive ? MeoTheme.contentOnSecondaryContainer : MeoTheme.contentOnSurface
                     }
 
@@ -260,6 +262,10 @@ Control {
                     Keys.onLeftPressed: control.focusTab(index, control.mirrored ? 1 : -1)
                     Keys.onRightPressed: control.focusTab(index, control.mirrored ? -1 : 1)
                     Keys.onPressed: function(event) {
+                        if (!event.isAutoRepeat
+                                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                    || event.key === Qt.Key_Space))
+                            tabStateLayer.triggerFromKeyboard()
                         if (event.key === Qt.Key_Home) {
                             control.focusTab(-1, 1)
                             event.accepted = true

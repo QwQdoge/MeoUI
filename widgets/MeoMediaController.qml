@@ -240,23 +240,54 @@ Control {
         height: diameter
         padding: 0
         hoverEnabled: true
+        activeFocusOnTab: enabled
         Accessible.name: accessibleName
 
-        background: Rectangle {
-            radius: mediaButton.pressed ? Math.min(width, height) * 0.34 : width / 2
-            color: {
-                if (!mediaButton.enabled)
-                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
-                if (mediaButton.prominent)
-                    return control.mediaAccentContainer
-                if (mediaButton.active)
-                    return control.tintedSurface(control.themeSurfaceContainerHighest, control.isDarkMode ? 0.28 : 0.18)
-                if (mediaButton.hovered)
-                    return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
-                return "transparent"
+        PointHandler {
+            acceptedButtons: Qt.LeftButton
+            onActiveChanged: {
+                mediaStateLayer._pointerPressActive = active
+                if (active) {
+                    const localPoint = mediaStateLayer.mapFromItem(mediaButton,
+                                                                   point.position.x,
+                                                                   point.position.y)
+                    mediaStateLayer.trigger(localPoint.x, localPoint.y)
+                } else {
+                    mediaStateLayer.releaseRipple()
+                }
             }
-            Behavior on radius { enabled: !control.reducedMotion; NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-            Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+        }
+
+        background: Item {
+            clip: true
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width / 2
+                color: {
+                    if (!mediaButton.enabled)
+                        return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.08)
+                    if (mediaButton.prominent)
+                        return control.mediaAccentContainer
+                    if (mediaButton.active)
+                        return control.tintedSurface(control.themeSurfaceContainerHighest, control.isDarkMode ? 0.28 : 0.18)
+                    return "transparent"
+                }
+            }
+
+            MeoStateLayer {
+                id: mediaStateLayer
+                objectName: "meoMediaActionStateLayer"
+                anchors.fill: parent
+                internalPointerTrackingEnabled: false
+                shape: "circle"
+                hovered: mediaButton.hovered
+                pressed: mediaButton.pressed
+                focused: mediaButton.visualFocus
+                pressX: mediaButton.pressX
+                pressY: mediaButton.pressY
+                color: mediaButton.prominent ? control.mediaOnAccent : control.themeOnSurface
+            }
         }
 
         contentItem: MeoIcon {
@@ -267,14 +298,6 @@ Control {
             color: mediaButton.prominent ? control.mediaOnAccent : control.themeOnSurface
         }
 
-        scale: pressed ? 0.94 : hovered ? 1.025 : 1.0
-        Behavior on scale {
-            enabled: !control.reducedMotion
-            NumberAnimation {
-                duration: control.motionFast
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-            }
-        }
     }
 
     component MediaMetadata: Column {
@@ -447,11 +470,46 @@ Control {
                         width: Math.min(parent.width, outputRow.implicitWidth + 20 * control.themeGlobalScale)
                         padding: 0
                         hoverEnabled: true
+                        activeFocusOnTab: enabled
                         onClicked: control.outputRequested()
-                        background: Rectangle {
-                            radius: height / 2
-                            color: outputPill.hovered ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.10)
-                                                      : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
+
+                        PointHandler {
+                            acceptedButtons: Qt.LeftButton
+                            onActiveChanged: {
+                                outputStateLayer._pointerPressActive = active
+                                if (active) {
+                                    const localPoint = outputStateLayer.mapFromItem(outputPill,
+                                                                                   point.position.x,
+                                                                                   point.position.y)
+                                    outputStateLayer.trigger(localPoint.x, localPoint.y)
+                                } else {
+                                    outputStateLayer.releaseRipple()
+                                }
+                            }
+                        }
+
+                        background: Item {
+                            clip: true
+
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: height / 2
+                                color: Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
+                            }
+
+                            MeoStateLayer {
+                                id: outputStateLayer
+                                objectName: "meoMediaOutputStateLayer"
+                                anchors.fill: parent
+                                internalPointerTrackingEnabled: false
+                                radius: height / 2
+                                hovered: outputPill.hovered
+                                pressed: outputPill.pressed
+                                focused: outputPill.visualFocus
+                                pressX: outputPill.pressX
+                                pressY: outputPill.pressY
+                                color: control.themeOnSurface
+                            }
                         }
                         contentItem: Row {
                             id: outputRow

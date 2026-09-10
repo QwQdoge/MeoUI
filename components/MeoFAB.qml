@@ -6,6 +6,28 @@ import MeoUI
 Button {
     id: control
 
+    PointHandler {
+        acceptedButtons: Qt.LeftButton
+        onActiveChanged: {
+            stateLayer._pointerPressActive = active
+            if (active) {
+                const localPoint = stateLayer.mapFromItem(control,
+                                                          point.position.x,
+                                                          point.position.y)
+                stateLayer.trigger(localPoint.x, localPoint.y)
+            } else {
+                stateLayer.releaseRipple()
+            }
+        }
+    }
+
+    Keys.onPressed: event => {
+        if (!event.isAutoRepeat
+                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space))
+            stateLayer.triggerFromKeyboard()
+    }
+
     // type: "small" | "regular" | "medium" | "large" | "extended"
     property string type: "regular"
     // M3 Expressive color styles. The default preserves the baseline M3
@@ -132,7 +154,10 @@ Button {
         }
 
         MeoStateLayer {
+            id: stateLayer
+            objectName: "meoFabStateLayer"
             anchors.fill: parent
+            internalPointerTrackingEnabled: false
             radius: parent.radius
             pressed: control.pressed
             hovered: control.hovered

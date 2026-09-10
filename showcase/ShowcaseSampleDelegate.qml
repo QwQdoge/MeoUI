@@ -1772,7 +1772,7 @@ Item {
                 MeoGroupedList {
                     width: parent.width
                     title: "Interaction states"
-                    subtitle: "Hover darkens 8%; press adds the shared pointer ripple."
+                    subtitle: "Hover darkens 8%; press expands from the exact click point."
                     separatorStyle: "line"
                     dividerInset: 56 * MeoTheme.globalScale
                     showChevron: false
@@ -3172,71 +3172,29 @@ Item {
 
     Component {
         id: settingsGroupSample
-        Rectangle {
+        Column {
             width: 520 * MeoTheme.globalScale
-            implicitHeight: settingsPreview.implicitHeight + 48 * MeoTheme.globalScale
-            radius: MeoTheme.shapeExtraLarge
-            color: MeoTheme.surface
+            spacing: MeoTheme.space16
 
-            Column {
-                id: settingsPreview
-                x: 24 * MeoTheme.globalScale
-                y: 24 * MeoTheme.globalScale
-                width: parent.width - 48 * MeoTheme.globalScale
-                spacing: MeoTheme.space20
+            SampleLabel { label: "Navigation and supporting text" }
+            MeoSettingsGroup {
+                width: parent.width
+                title: "Connections"
+                model: [
+                    { "title": "Wi-Fi", "subtitle": "Meo Network", "leadingIcon": "wifi", "trailingKind": "navigation", "trailingText": "Connected" },
+                    { "title": "Bluetooth", "subtitle": "Headphones", "leadingIcon": "bluetooth", "trailingKind": "navigation", "badgeText": "2" },
+                    { "title": "Unavailable", "leadingIcon": "block", "trailingKind": "none", "enabled": false }
+                ]
+            }
 
-                MeoIconButton {
-                    type: "tonal"
-                    size: "m"
-                    icon.name: "arrow_back"
-                    Accessible.name: "Back"
-                }
-
-                MeoText {
-                    width: parent.width
-                    text: "Cross-device\nservices"
-                    typeRole: "title"
-                    typeSize: "big"
-                    color: MeoTheme.contentOnSurface
-                    wrapMode: Text.WordWrap
-                }
-
-                MeoSettingsGroup {
-                    width: parent.width
-                    containerColor: MeoTheme.primaryContainer
-                    model: [
-                        { "title": "Use cross-device services", "trailingKind": "switch", "checked": true }
-                    ]
-                }
-
-                MeoText {
-                    width: parent.width
-                    text: "Other devices signed in to your account will be able to find and share with you."
-                    typeRole: "body"
-                    typeSize: "large"
-                    color: MeoTheme.contentOnSurface
-                    wrapMode: Text.WordWrap
-                }
-
-                MeoSettingsGroup {
-                    width: parent.width
-                    title: "What your devices can do"
-                    model: [
-                        { "title": "Call casting", "subtitle": "Move video calls to this device", "leadingIcon": "phone_forwarded", "trailingKind": "none", "interactive": true },
-                        { "title": "Internet sharing", "subtitle": "Let your devices connect to your hotspot and Wi-Fi", "leadingIcon": "wifi", "trailingKind": "none", "interactive": true },
-                        { "title": "Continue activity", "subtitle": "Continue tasks and access apps, media, and notifications", "leadingIcon": "devices", "trailingKind": "none", "interactive": true }
-                    ]
-                }
-
-                MeoSettingsGroup {
-                    width: parent.width
-                    title: "Controls inside the same surface"
-                    model: [
-                        { "title": "Internet sharing", "subtitle": "Allow nearby devices", "leadingIcon": "wifi", "trailingKind": "switch", "checked": true },
-                        { "title": "Device volume", "leadingIcon": "volume_up", "trailingKind": "slider", "value": 62, "sliderSize": "m" },
-                        { "title": "Refresh rate", "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
-                    ]
-                }
+            SampleLabel { label: "Embedded current controls" }
+            MeoSettingsGroup {
+                width: parent.width
+                model: [
+                    { "title": "Internet sharing", "leadingIcon": "wifi", "trailingKind": "switch", "checked": true },
+                    { "title": "Device volume", "leadingIcon": "volume_up", "trailingKind": "slider", "value": 62, "sliderSize": "m" },
+                    { "title": "Refresh rate", "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
+                ]
             }
         }
     }

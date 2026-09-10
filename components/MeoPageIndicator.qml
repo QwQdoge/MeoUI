@@ -22,6 +22,7 @@ Control {
 
     readonly property color themePrimary: MeoTheme.primary
     readonly property color themeOutlineVariant: MeoTheme.outlineVariant
+    readonly property color themeOnSurface: MeoTheme.contentOnSurface
     readonly property real themeGlobalScale: MeoTheme.globalScale
 
     function activate(index) {
@@ -72,6 +73,7 @@ Control {
         Repeater {
             model: control.count
             delegate: Rectangle {
+                id: pageDot
                 objectName: "meoPageIndicatorDot_" + index
                 readonly property bool selected: index === control.resolvedCurrentIndex
                 x: control.isHorizontal
@@ -89,6 +91,16 @@ Control {
                 Accessible.checked: selected
                 Accessible.onPressAction: control.activate(index)
 
+                MeoStateLayer {
+                    objectName: "meoPageIndicatorStateLayer_" + index
+                    anchors.fill: parent
+                    shape: "pill"
+                    hovered: dotHover.hovered
+                    pressed: dotTap.pressed
+                    enabled: control.interactive
+                    color: pageDot.selected ? MeoTheme.contentOnPrimary : control.themeOnSurface
+                }
+
                 Behavior on width {
                     enabled: !control.reducedMotion
                     NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
@@ -102,7 +114,13 @@ Control {
                     ColorAnimation { duration: MeoTheme.motionDurationShort4; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                 }
 
+                HoverHandler {
+                    id: dotHover
+                    enabled: control.interactive
+                }
+
                 TapHandler {
+                    id: dotTap
                     enabled: control.interactive
                     onTapped: control.activate(index)
                 }

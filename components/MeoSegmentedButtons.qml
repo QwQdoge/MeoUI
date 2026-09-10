@@ -117,6 +117,7 @@ Control {
 
             delegate: Button {
                 id: segmentButton
+                objectName: "meoSegmentedButton_" + index
                 property var itemData: modelData
                 readonly property string itemLabel: typeof itemData === "string" ? itemData : (itemData.label || "")
                 readonly property string itemIcon: typeof itemData === "object" ? (itemData.icon || "") : ""
@@ -146,6 +147,21 @@ Control {
                 Accessible.checked: segmentButton.selected
                 Accessible.onPressAction: control.activateIndex(index, segmentButton.itemData)
 
+                PointHandler {
+                    acceptedButtons: Qt.LeftButton
+                    onActiveChanged: {
+                        segmentStateLayer._pointerPressActive = active
+                        if (active) {
+                            const localPoint = segmentStateLayer.mapFromItem(segmentButton,
+                                                                            point.position.x,
+                                                                            point.position.y)
+                            segmentStateLayer.trigger(localPoint.x, localPoint.y)
+                        } else {
+                            segmentStateLayer.releaseRipple()
+                        }
+                    }
+                }
+
                 background: Item {
                     clip: true
 
@@ -168,7 +184,10 @@ Control {
                     }
 
                     MeoStateLayer {
+                        id: segmentStateLayer
+                        objectName: "meoSegmentedButtonStateLayer_" + index
                         anchors.fill: parent
+                        internalPointerTrackingEnabled: false
                         radius: segmentButton.segmentRadius
                         pressed: segmentButton.pressed
                         hovered: segmentButton.hovered

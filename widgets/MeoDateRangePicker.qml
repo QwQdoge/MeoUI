@@ -236,6 +236,7 @@ MeoCard {
 
                     // Selection Circle
                     Rectangle {
+                        id: selectionCircle
                         anchors.centerIn: parent
                         width: 32 * control.themeGlobalScale
                         height: 32 * control.themeGlobalScale
@@ -252,9 +253,23 @@ MeoCard {
                         }
                     }
 
+                    MeoStateLayer {
+                        anchors.centerIn: parent
+                        width: 40 * control.themeGlobalScale
+                        height: width
+                        shape: "circle"
+                        hovered: dayPointer.containsMouse
+                        pressed: dayPointer.pressed
+                        enabled: control.interactive
+                        color: (isStart || isEnd) ? control.themeOnPrimary : control.themeOnSurface
+                    }
+
                     MouseArea {
+                        id: dayPointer
                         anchors.fill: parent
                         enabled: control.interactive
+                        hoverEnabled: true
+                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: {
                             handleDateClick(dateInfo.date)
                         }

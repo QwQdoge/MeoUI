@@ -276,6 +276,7 @@ MeoCard {
     }
 
     component TimeSelector: Rectangle {
+        id: timeSelector
         required property string valueText
         required property bool selected
         required property bool input
@@ -290,6 +291,29 @@ MeoCard {
         Accessible.role: Accessible.Button
         Accessible.name: isHour ? "Hour" : "Minute"
         Accessible.focusable: control.interactive
+        activeFocusOnTab: control.interactive && !input
+
+        Keys.onPressed: function(event) {
+            if (!event.isAutoRepeat
+                    && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                        || event.key === Qt.Key_Space))
+                selectorStateLayer.triggerFromKeyboard()
+        }
+        Keys.onReturnPressed: control.activeUnit = isHour ? "hour" : "minute"
+        Keys.onEnterPressed: control.activeUnit = isHour ? "hour" : "minute"
+        Keys.onSpacePressed: control.activeUnit = isHour ? "hour" : "minute"
+
+        MeoStateLayer {
+            id: selectorStateLayer
+            objectName: "meoTimeSelectorStateLayer"
+            anchors.fill: parent
+            radius: timeSelector.radius
+            hovered: selectorPointer.containsMouse
+            pressed: selectorPointer.pressed
+            focused: timeSelector.activeFocus
+            enabled: control.interactive && !timeSelector.input
+            color: control.clockLabelColor
+        }
 
         TextInput {
             id: editor
@@ -328,10 +352,15 @@ MeoCard {
         }
 
         MouseArea {
+            id: selectorPointer
             anchors.fill: parent
             enabled: control.interactive && !input
+            hoverEnabled: true
             cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-            onClicked: control.activeUnit = isHour ? "hour" : "minute"
+            onClicked: {
+                timeSelector.forceActiveFocus(Qt.MouseFocusReason)
+                control.activeUnit = isHour ? "hour" : "minute"
+            }
         }
 
         Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -347,6 +376,7 @@ MeoCard {
             Repeater {
                 model: ["AM", "PM"]
                 delegate: Rectangle {
+                    id: periodOption
                     required property string modelData
                     width: parent.width
                     height: parent.height / 2
@@ -355,6 +385,33 @@ MeoCard {
                     color: selected ? MeoTheme.tertiaryContainer : control.periodContainerColor
                     border.width: MeoTheme.strokeWidthThin
                     border.color: control.outlineColor
+                    activeFocusOnTab: control.interactive
+                    Accessible.role: Accessible.RadioButton
+                    Accessible.name: modelData
+                    Accessible.checked: selected
+                    Keys.onPressed: function(event) {
+                        if (!event.isAutoRepeat
+                                && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                                    || event.key === Qt.Key_Space))
+                            periodStateLayer.triggerFromKeyboard()
+                    }
+                    Keys.onReturnPressed: control.isPM = modelData === "PM"
+                    Keys.onEnterPressed: control.isPM = modelData === "PM"
+                    Keys.onSpacePressed: control.isPM = modelData === "PM"
+
+                    MeoStateLayer {
+                        id: periodStateLayer
+                        objectName: "meoPeriodSelectorStateLayer_" + index
+                        anchors.fill: parent
+                        radius: periodOption.radius
+                        hovered: periodPointer.containsMouse
+                        pressed: periodPointer.pressed
+                        focused: periodOption.activeFocus
+                        enabled: control.interactive
+                        color: periodOption.selected
+                               ? MeoTheme.contentOnTertiaryContainer
+                               : control.periodTextColor
+                    }
 
                     Text {
                         anchors.centerIn: parent
@@ -365,10 +422,15 @@ MeoCard {
                         font.weight: MeoTheme.labelLarge.weight
                     }
                     MouseArea {
+                        id: periodPointer
                         anchors.fill: parent
                         enabled: control.interactive
+                        hoverEnabled: true
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                        onClicked: control.isPM = modelData === "PM"
+                        onClicked: {
+                            periodOption.forceActiveFocus(Qt.MouseFocusReason)
+                            control.isPM = modelData === "PM"
+                        }
                     }
                     Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 }
