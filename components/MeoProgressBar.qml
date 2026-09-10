@@ -670,6 +670,8 @@ Control {
                 const radius = (Math.min(width, height) - stroke) / 2
                 const cx = width / 2
                 const cy = height / 2
+                if (radius <= 0)
+                    return
 
                 // The default circular indeterminate source token is
                 // transparent. Determinate circular progress instead keeps a

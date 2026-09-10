@@ -14,6 +14,9 @@ text—without copying another product's branding, wording, or layout.
   must not duplicate container, separator, or row-position geometry.
 - `MeoSettingsGroup` maps semantic Settings roles onto that engine. Do not turn
   every row into a detached card.
+- `MeoSettingsSidebar` is the reusable desktop index. It owns the persistent
+  search field, connected category groups, selected-route visibility, and
+  empty search state; the application supplies route data and navigation.
 - `MeoSettingsTaskSheet` is the only standard third-level Settings surface. It
   retracts on accept, reject, or navigation.
 - `MeoSearchBar` is search-first. Set `trailingIcon: ""` when an account action
@@ -39,6 +42,10 @@ text—without copying another product's branding, wording, or layout.
 - Keep desktop Settings content around 720–760dp readable width. On compact
   windows, use an index/drawer category menu rather than a generic five-item
   bottom bar that hides categories behind “More”.
+- At expanded and larger widths, keep the 360dp search-first index stable while
+  the detail pane changes. Do not repeat the complete category catalogue in
+  the detail pane. Automatically reveal the selected route when it is below
+  the visible portion of a long index.
 - A status row is not a disguised button. A KDE-owned action names KDE in its
   trailing label or supporting text.
 

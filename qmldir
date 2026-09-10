@@ -122,6 +122,7 @@ MeoSearchHeader 1.0 patterns/MeoSearchHeader.qml
 MeoSegmentedList 1.0 patterns/MeoSegmentedList.qml
 MeoSettingsLayout 1.0 patterns/MeoSettingsLayout.qml
 MeoSettingsGroup 1.0 patterns/MeoSettingsGroup.qml
+MeoSettingsSidebar 1.0 patterns/MeoSettingsSidebar.qml
 MeoSettingsTaskSheet 1.0 patterns/MeoSettingsTaskSheet.qml
 MeoRatingBar 1.0 components/MeoRatingBar.qml
 MeoSupportingPaneLayout 1.0 patterns/MeoSupportingPaneLayout.qml

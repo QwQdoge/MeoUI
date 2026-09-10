@@ -768,7 +768,7 @@ QtObject {
     // Settings composition tokens.  These keep the Pixel/Material 3 rhythm in
     // one reusable contract while allowing desktop pages to remain adaptive.
     readonly property real settingsContentMaxWidth: metricToken("settingsContentMaxWidth", 760) * globalScale
-    readonly property real settingsSidebarWidth: metricToken("settingsSidebarWidth", 288) * globalScale
+    readonly property real settingsSidebarWidth: metricToken("settingsSidebarWidth", 360) * globalScale
     readonly property real settingsSidebarHorizontalMargin: metricToken("settingsSidebarHorizontalMargin", 8) * globalScale
     readonly property real settingsSidebarItemHeight: metricToken("settingsSidebarItemHeight", 56) * globalScale
     readonly property real settingsRowHeight: metricToken("settingsRowHeight", 72) * globalScale

@@ -188,6 +188,7 @@ Item {
         if (name === "MeoPageHost") return pageHostSample
         if (name === "MeoSettingsLayout") return settingsSample
         if (name === "MeoSettingsGroup") return settingsGroupSample
+        if (name === "MeoSettingsSidebar") return settingsSidebarSample
         if (name === "MeoSettingsTaskSheet") return settingsTaskSheetSample
         if (name === "MeoQuickSettingsEditor") return quickSettingsEditorSample
         if (name === "MeoSupportingPaneLayout") return supportingPaneSample
@@ -3196,6 +3197,34 @@ Item {
                     { "title": "Refresh rate", "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
                 ]
             }
+        }
+    }
+
+    Component {
+        id: settingsSidebarSample
+        MeoSettingsSidebar {
+            width: MeoTheme.settingsSidebarWidth
+            height: 640 * MeoTheme.globalScale
+            selectedRoute: "category:devices"
+            groups: [
+                {
+                    "title": "Connections",
+                    "rows": [
+                        { "title": "Network & Internet", "subtitle": "Wi-Fi, VPN, and proxy", "leadingIcon": "wifi", "leadingStyle": "tonal", "route": "category:network" },
+                        { "title": "Connected devices", "subtitle": "Bluetooth and input devices", "leadingIcon": "devices", "leadingStyle": "tonal", "route": "category:devices" }
+                    ]
+                },
+                {
+                    "title": "Personal",
+                    "rows": [
+                        { "title": "Wallpaper & style", "subtitle": "Dynamic color, icons, and fonts", "leadingIcon": "palette", "leadingStyle": "tonal", "route": "category:style" },
+                        { "title": "Apps & notifications", "subtitle": "Defaults, permissions, and alerts", "leadingIcon": "apps", "leadingStyle": "tonal", "route": "category:apps" }
+                    ]
+                }
+            ]
+            searchResults: [
+                { "title": "Wi-Fi", "subtitle": "Network & Internet", "leadingIcon": "wifi", "route": "wifi" }
+            ]
         }
     }
 

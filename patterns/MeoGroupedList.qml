@@ -23,6 +23,7 @@ MeoSegmentedList {
             property int index: -1
             property var modelData: null
 
+            isSegmented: control.isSegmented
             headline: control.labelFor(modelData)
             supportingText: control.supportingFor(modelData)
             leadingIcon: control.iconFor(modelData)

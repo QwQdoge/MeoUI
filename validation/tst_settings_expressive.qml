@@ -94,7 +94,7 @@ Item {
             compare(group.radius, MeoTheme.connectedGroupOuterRadius)
             compare(group.memberGap, MeoTheme.connectedGroupGap)
             compare(row.leadingStyle, "plain")
-            compare(navigation.implicitWidth, 288 * MeoTheme.globalScale)
+            compare(navigation.implicitWidth, MeoTheme.settingsSidebarWidth)
         }
 
         function test_semanticDynamicColorRole() {

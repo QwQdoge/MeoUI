@@ -83,6 +83,10 @@ Column {
         return true
     }
 
+    function itemAt(index) {
+        return itemRepeater.itemAt(index)
+    }
+
     width: parent ? parent.width : 420 * MeoTheme.globalScale
     spacing: 8 * MeoTheme.globalScale
 
@@ -131,6 +135,7 @@ Column {
             spacing: control.itemSpacing
 
             Repeater {
+                id: itemRepeater
                 model: control.model
 
                 delegate: Loader {
@@ -153,8 +158,6 @@ Column {
                             item.roundingStrategy = control.roundingFor(itemLoader.index)
                         if (item.hasOwnProperty("positionInGroup"))
                             item.positionInGroup = control.positionFor(itemLoader.index)
-                        if (item.hasOwnProperty("isSegmented"))
-                            item.isSegmented = control.isSegmented
                         if (item.hasOwnProperty("surfaceColor"))
                             item.surfaceColor = control.containerColor
                         if (item.hasOwnProperty("outerCornerRadius"))
@@ -244,6 +247,7 @@ Column {
         MeoListItem {
             property var modelData: null
             property int index: -1
+            isSegmented: control.isSegmented
             headline: control.labelFor(modelData)
             supportingText: control.supportingFor(modelData)
             leadingIcon: control.iconFor(modelData)

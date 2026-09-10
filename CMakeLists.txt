@@ -86,6 +86,7 @@ if(BUILD_TESTING)
     add_meoui_qml_test(meoui.grouped_lists tst_grouped_lists.qml)
     add_meoui_qml_test(meoui.settings_row_contract tst_settings_row_contract.qml)
     add_meoui_qml_test(meoui.settings_expressive tst_settings_expressive.qml)
+    add_meoui_qml_test(meoui.settings_sidebar tst_settings_sidebar.qml)
     add_test(
         NAME meoui.design_system_usage
         COMMAND ${Python3_EXECUTABLE}
@@ -259,6 +260,7 @@ qt_add_qml_module(meoui_module
         patterns/MeoListDetailLayout.qml
         patterns/MeoSettingsLayout.qml
         patterns/MeoSettingsGroup.qml
+        patterns/MeoSettingsSidebar.qml
         patterns/MeoSettingsTaskSheet.qml
         patterns/MeoQuickSettingsEditor.qml
         patterns/MeoSearchFilterBar.qml
