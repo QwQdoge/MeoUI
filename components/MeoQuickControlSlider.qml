@@ -39,7 +39,7 @@ Control {
     readonly property alias slider: valueSlider
 
     implicitWidth: 360 * MeoTheme.globalScale
-    implicitHeight: 48 * MeoTheme.globalScale
+    implicitHeight: 52 * MeoTheme.globalScale
     padding: 0
     opacity: enabled ? 1 : MeoTheme.disabledContentOpacity
     Accessible.ignored: true
@@ -72,7 +72,9 @@ Control {
                 value: control.value
                 enabled: control.enabled
                 expressive: true
-                size: "xs"
+                // Inset icons start at M in the M3 Expressive matrix:
+                // 40dp track, 52dp handle, and a 24dp icon.
+                size: "m"
                 trackStyle: "split"
                 endStopEnabled: true
                 insetIcon: control.iconName

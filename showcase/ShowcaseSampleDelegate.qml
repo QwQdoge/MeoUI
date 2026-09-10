@@ -852,35 +852,77 @@ Item {
             width: 520 * MeoTheme.globalScale
             spacing: MeoTheme.space12
 
-            SampleLabel { label: "1. Expressive narrow range" }
-            MeoRangeSlider {
-                width: parent.width
-                firstValue: 47
-                secondValue: 53
-                expressive: true
-            }
-
-            SampleLabel { label: "2. Expressive split" }
+            SampleLabel { label: "1. XS — 16 / 44 / R8" }
             MeoSlider {
                 width: parent.width
                 value: 50
                 expressive: true
+                size: "xs"
             }
 
-            SampleLabel { label: "3. Active and inactive rails" }
+            SampleLabel { label: "2. S — 24 / 44 / R8, discrete stops" }
+            MeoSlider {
+                width: parent.width
+                value: 40
+                expressive: true
+                size: "s"
+                stops: true
+                stepSize: 10
+            }
+
+            SampleLabel { label: "3. M — 40 / 52 / R12, 24dp inset icon" }
             MeoSlider {
                 width: parent.width
                 value: 48
                 expressive: true
+                size: "m"
                 insetIcon: "volume_up"
             }
 
-            Flow {
+            SampleLabel { label: "4. L — 56 / 68 / R16, 24dp inset icon" }
+            MeoSlider {
                 width: parent.width
-                spacing: MeoTheme.space12
-                MeoSlider { width: 156 * MeoTheme.globalScale; value: 40; stops: true; stepSize: 20 }
-                MeoSlider { width: 156 * MeoTheme.globalScale; value: 35; size: "s"; expressive: true }
-                MeoSlider { width: 156 * MeoTheme.globalScale; value: 35; enabled: false; expressive: true }
+                value: 56
+                expressive: true
+                size: "l"
+                insetIcon: "volume_up"
+            }
+
+            SampleLabel { label: "5. XL — 96 / 108 / R28, 32dp inset icon" }
+            MeoSlider {
+                width: parent.width
+                value: 64
+                expressive: true
+                size: "xl"
+                insetIcon: "volume_up"
+            }
+
+            Row {
+                spacing: MeoTheme.space24
+
+                Column {
+                    spacing: MeoTheme.space8
+                    SampleLabel { label: "Value indicator" }
+                    MeoSlider {
+                        width: 320 * MeoTheme.globalScale
+                        value: 50
+                        expressive: true
+                        valueLabelEnabled: true
+                    }
+                }
+
+                Column {
+                    spacing: MeoTheme.space8
+                    SampleLabel { label: "Vertical" }
+                    MeoSlider {
+                        width: 52 * MeoTheme.globalScale
+                        height: 180 * MeoTheme.globalScale
+                        value: 60
+                        expressive: true
+                        size: "m"
+                        orientation: Qt.Vertical
+                    }
+                }
             }
         }
     }

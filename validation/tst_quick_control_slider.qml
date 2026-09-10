@@ -38,11 +38,15 @@ Item {
             verify(slider !== null)
             compare(findChild(quickControl, "meoQuickControlActiveTrack"), null)
             compare(findChild(quickControl, "meoQuickControlDivider"), null)
-            compare(Math.round(quickControl.implicitHeight), Math.round(48 * MeoTheme.globalScale))
+            compare(Math.round(quickControl.implicitHeight), Math.round(52 * MeoTheme.globalScale))
             compare(Math.round(quickControl.valueFraction * 100), 48)
-            compare(slider.trackHeight, MeoTheme.sliderTrackHeightXS)
+            compare(slider.trackHeight, MeoTheme.sliderTrackHeightM)
+            compare(slider.trackCornerRadius, MeoTheme.sliderTrackCornerRadiusM)
+            compare(slider.insetIconSize, MeoTheme.sliderInsetIconSizeM)
             compare(slider.thumbWidth, MeoTheme.sliderThumbWidthExpressive)
             verify(slider.endStopEnabled)
+            compare(findChild(slider, "meoSliderLeadingEndStop").visible, false)
+            compare(findChild(slider, "meoSliderTrailingEndStop").visible, true)
             verify(slider.enabled)
         }
 

@@ -39,7 +39,8 @@ Control {
     property string insetIcon: ""
     property string leadingIcon: ""
     readonly property string effectiveInsetIcon: insetIcon !== "" ? insetIcon : leadingIcon
-    property bool leadingIconEnabled: effectiveInsetIcon.length > 0
+    readonly property bool insetIconSupported: size === "m" || size === "l" || size === "xl"
+    property bool leadingIconEnabled: effectiveInsetIcon.length > 0 && insetIconSupported
     // The concrete Qt Slider below owns the platform slider semantic.  These
     // inputs let composites provide a task-specific name without adding a
     // second accessibility node around the same adjustable value.
@@ -162,6 +163,9 @@ Control {
     readonly property real pressedThumbWidth: MeoTheme.sliderThumbPressedWidthExpressive
     readonly property real thumbHeight: expressiveThumbHeight
     readonly property real thumbGap: MeoTheme.sliderThumbGapExpressive
+    readonly property real trackCornerRadius: MeoTheme.sliderTrackCornerRadiusForSize(size)
+    readonly property real trackInsideCornerRadius: MeoTheme.sliderTrackInsideCornerRadius
+    readonly property real insetIconSize: MeoTheme.sliderInsetIconSizeForSize(size)
     readonly property real trackLength: horizontal ? internalSlider.availableWidth : internalSlider.availableHeight
     // Vertical sliders grow from the bottom edge, matching Android's control.
     readonly property real visualProgress: horizontal ? internalSlider.visualPosition : 1 - internalSlider.visualPosition
@@ -205,6 +209,7 @@ Control {
 
     Slider {
         id: internalSlider
+        objectName: "meoSliderNative"
         anchors.fill: parent
         from: control.from
         to: control.to
@@ -213,6 +218,7 @@ Control {
         orientation: control.orientation
         live: true
         enabled: control.enabled
+        activeFocusOnTab: true
         Accessible.name: control.accessibleName
         Accessible.description: control.accessibleDescription
 
@@ -234,7 +240,7 @@ Control {
                 y: control.horizontal ? (parent.height - height) / 2 : 0
                 width: control.horizontal ? parent.width : control.renderedTrackHeight
                 height: control.horizontal ? control.renderedTrackHeight : parent.height
-                radius: height / 2
+                radius: Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedInactiveTrackColor
 
                 Behavior on height {
@@ -250,7 +256,7 @@ Control {
                 y: control.horizontal ? (parent.height - height) / 2 : parent.height - control.activeTrackEnd
                 width: control.horizontal ? Math.max(0, control.activeTrackEnd - control.activeTrackStart) : standardTrack.width
                 height: control.horizontal ? standardTrack.height : Math.max(0, control.activeTrackEnd - control.activeTrackStart)
-                radius: height / 2
+                radius: Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
 
                 Behavior on width {
@@ -276,7 +282,15 @@ Control {
                 y: control.horizontal ? (parent.height - height) / 2 : parent.height - control.splitActiveLength
                 width: control.horizontal ? control.splitActiveLength : control.renderedTrackHeight
                 height: control.horizontal ? control.renderedTrackHeight : control.splitActiveLength
-                radius: height / 2
+                radius: 0
+                topLeftRadius: control.horizontal ? Math.min(control.trackCornerRadius, width / 2, height / 2)
+                                                  : Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                bottomLeftRadius: control.horizontal ? Math.min(control.trackCornerRadius, width / 2, height / 2)
+                                                     : Math.min(control.trackCornerRadius, width / 2, height / 2)
+                topRightRadius: control.horizontal ? Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                                                   : Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                bottomRightRadius: control.horizontal ? Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                                                      : Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
 
                 Behavior on width {
@@ -300,7 +314,15 @@ Control {
                 y: control.horizontal ? (parent.height - height) / 2 : 0
                 width: control.horizontal ? Math.max(0, parent.width - x) : control.renderedTrackHeight
                 height: control.horizontal ? control.renderedTrackHeight : Math.max(0, parent.height - control.splitInactiveStart)
-                radius: height / 2
+                radius: 0
+                topLeftRadius: control.horizontal ? Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                                                  : Math.min(control.trackCornerRadius, width / 2, height / 2)
+                bottomLeftRadius: control.horizontal ? Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                                                     : Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                topRightRadius: control.horizontal ? Math.min(control.trackCornerRadius, width / 2, height / 2)
+                                                   : Math.min(control.trackCornerRadius, width / 2, height / 2)
+                bottomRightRadius: control.horizontal ? Math.min(control.trackCornerRadius, width / 2, height / 2)
+                                                      : Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
                 color: control.resolvedInactiveTrackColor
 
                 Behavior on x {
@@ -323,15 +345,14 @@ Control {
             }
 
             MeoIcon {
+                objectName: "meoSliderInsetIcon"
                 visible: control.horizontal && splitActiveTrack.visible
                          && control.leadingIconEnabled
                 anchors.left: splitActiveTrack.left
-                anchors.leftMargin: 12 * control.themeGlobalScale
+                anchors.leftMargin: control.trackCornerRadius
                 anchors.verticalCenter: splitActiveTrack.verticalCenter
                 icon: control.effectiveInsetIcon
-                size: Math.min(24,
-                               Math.max(16,
-                                        control.renderedTrackHeight / control.themeGlobalScale - 8))
+                size: control.insetIconSize / control.themeGlobalScale
                 color: splitActiveTrack.width >= anchors.leftMargin + width
                        ? MeoTheme.contentOnPrimary
                        : MeoTheme.primary
@@ -361,7 +382,7 @@ Control {
                     y: control.horizontal
                        ? (trackArea.height - height) / 2
                        : (tickRepeater.count > 1 ? trackArea.height - index * (trackArea.height / (tickRepeater.count - 1)) - height / 2 : 0)
-                    width: (control.size !== "xs" ? 4 : 2) * control.themeGlobalScale
+                    width: MeoTheme.sliderStopSizeExpressive
                     height: width
                     radius: width / 2
                     readonly property real progress: tickRepeater.count > 1
@@ -372,17 +393,18 @@ Control {
                 }
             }
 
-            // M3 Expressive retains a contrasting stop at each outer end.  A
-            // selected stop uses the quiet rail role; an unselected stop uses
-            // primary so it remains visible on SecondaryContainer.
+            // M3 Expressive retains contrasting outer stops. The leading stop
+            // yields to an inset icon because both must never occupy the same
+            // start slot; the trailing stop remains visible.
             Rectangle {
                 id: leadingEndStop
                 objectName: "meoSliderLeadingEndStop"
                 visible: control.endStopEnabled && !control.wavyEnabled && control.horizontal
+                         && !control.leadingIconEnabled
                 width: MeoTheme.sliderStopSizeExpressive
                 height: width
                 radius: width / 2
-                x: Math.max(0, control.renderedTrackHeight / 2 - width / 2)
+                x: Math.max(0, control.trackCornerRadius - width / 2)
                 anchors.verticalCenter: parent.verticalCenter
                 color: control.visualProgress > 0
                        ? control.resolvedInactiveTrackColor
@@ -396,7 +418,7 @@ Control {
                 width: MeoTheme.sliderStopSizeExpressive
                 height: width
                 radius: width / 2
-                x: Math.max(0, parent.width - control.renderedTrackHeight / 2 - width / 2)
+                x: Math.max(0, parent.width - control.trackCornerRadius - width / 2)
                 anchors.verticalCenter: parent.verticalCenter
                 color: control.visualProgress >= 1
                        ? control.resolvedInactiveTrackColor
@@ -511,11 +533,12 @@ Control {
 
             Rectangle {
                 id: valueLabel
+                objectName: "meoSliderValueIndicator"
                 x: control.horizontal ? (parent.width - width) / 2 : parent.width + 12 * control.themeGlobalScale
-                y: control.horizontal ? -height - 12 * control.themeGlobalScale : (parent.height - height) / 2
-                width: Math.max(32 * control.themeGlobalScale,
-                                labelText.implicitWidth + 16 * control.themeGlobalScale)
-                height: 28 * control.themeGlobalScale
+                y: control.horizontal ? -height - MeoTheme.sliderValueIndicatorGap : (parent.height - height) / 2
+                width: Math.max(MeoTheme.sliderValueIndicatorSize,
+                                labelText.implicitWidth + 20 * control.themeGlobalScale)
+                height: MeoTheme.sliderValueIndicatorSize
                 radius: height / 2
                 color: control.themeInverseSurface
                 visible: control.valueLabelEnabled && (internalSlider.pressed || internalSlider.hovered)
@@ -527,8 +550,8 @@ Control {
                     text: control.discrete ? control.value.toFixed(0) : control.value.toFixed(1)
                     color: control.themeOnInverseSurface
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: control.fontLabelSmall.size * control.themeGlobalScale
-                    font.weight: control.fontLabelSmall.weight
+                    font.pixelSize: MeoTheme.labelLarge.size * control.themeGlobalScale
+                    font.weight: MeoTheme.labelLarge.weight
                 }
 
                 Rectangle {

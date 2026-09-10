@@ -76,6 +76,8 @@ Control {
     readonly property real pressedThumbWidth: MeoTheme.sliderThumbPressedWidthExpressive
     readonly property real thumbHeight: expressiveThumbHeight
     readonly property real thumbGap: MeoTheme.sliderThumbGapExpressive
+    readonly property real trackCornerRadius: MeoTheme.sliderTrackCornerRadiusForSize(size)
+    readonly property real trackInsideCornerRadius: MeoTheme.sliderTrackInsideCornerRadius
     readonly property real firstTrackX: internalSlider.first.visualPosition * internalSlider.availableWidth
     readonly property real secondTrackX: internalSlider.second.visualPosition * internalSlider.availableWidth
     readonly property real lowerTrackX: Math.min(firstTrackX, secondTrackX)
@@ -126,7 +128,7 @@ Control {
                 anchors.verticalCenter: parent.verticalCenter
                 width: parent.width
                 height: control.renderedTrackHeight
-                radius: height / 2
+                radius: Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedInactiveTrackColor
             }
 
@@ -138,7 +140,7 @@ Control {
                 x: control.lowerTrackX
                 width: Math.max(0, control.upperTrackX - control.lowerTrackX)
                 height: standardTrack.height
-                radius: height / 2
+                radius: Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -153,7 +155,11 @@ Control {
                 x: 0
                 width: Math.max(0, control.lowerTrackX - control.thumbGap)
                 height: control.renderedTrackHeight
-                radius: height / 2
+                radius: 0
+                topLeftRadius: Math.min(control.trackCornerRadius, width / 2, height / 2)
+                bottomLeftRadius: topLeftRadius
+                topRightRadius: Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                bottomRightRadius: topRightRadius
                 color: control.resolvedInactiveTrackColor
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
             }
@@ -166,7 +172,7 @@ Control {
                 x: Math.min(parent.width, control.lowerTrackX + control.thumbGap)
                 width: Math.max(0, control.upperTrackX - control.lowerTrackX - control.thumbGap * 2)
                 height: control.renderedTrackHeight
-                radius: height / 2
+                radius: Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -180,7 +186,11 @@ Control {
                 x: Math.min(parent.width, control.upperTrackX + control.thumbGap)
                 width: Math.max(0, parent.width - x)
                 height: control.renderedTrackHeight
-                radius: height / 2
+                radius: 0
+                topLeftRadius: Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
+                bottomLeftRadius: topLeftRadius
+                topRightRadius: Math.min(control.trackCornerRadius, width / 2, height / 2)
+                bottomRightRadius: topRightRadius
                 color: control.resolvedInactiveTrackColor
                 Behavior on x { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
                 Behavior on width { NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -212,7 +222,7 @@ Control {
                 width: MeoTheme.sliderStopSizeExpressive
                 height: width
                 radius: width / 2
-                x: Math.max(0, control.renderedTrackHeight / 2 - width / 2)
+                x: Math.max(0, control.trackCornerRadius - width / 2)
                 anchors.verticalCenter: parent.verticalCenter
                 color: control.resolvedActiveTrackColor
             }
@@ -223,7 +233,7 @@ Control {
                 width: MeoTheme.sliderStopSizeExpressive
                 height: width
                 radius: width / 2
-                x: Math.max(0, parent.width - control.renderedTrackHeight / 2 - width / 2)
+                x: Math.max(0, parent.width - control.trackCornerRadius - width / 2)
                 anchors.verticalCenter: parent.verticalCenter
                 color: control.resolvedActiveTrackColor
             }
@@ -342,10 +352,10 @@ Control {
         Rectangle {
             visible: control.valueLabelEnabled && rangeThumb.sliderHandle.pressed
             anchors.bottom: parent.top
-            anchors.bottomMargin: 10 * control.themeGlobalScale
+            anchors.bottomMargin: MeoTheme.sliderValueIndicatorGap
             anchors.horizontalCenter: parent.horizontalCenter
-            width: Math.max(36 * control.themeGlobalScale, valueText.implicitWidth + 18 * control.themeGlobalScale)
-            height: 32 * control.themeGlobalScale
+            width: Math.max(MeoTheme.sliderValueIndicatorSize, valueText.implicitWidth + 20 * control.themeGlobalScale)
+            height: MeoTheme.sliderValueIndicatorSize
             radius: height / 2
             color: control.themeInverseSurface
 
@@ -354,8 +364,8 @@ Control {
                 anchors.centerIn: parent
                 text: control.discrete ? Math.round(rangeThumb.displayValue).toString() : rangeThumb.displayValue.toFixed(1)
                 color: control.themeOnInverseSurface
-                font.pixelSize: 12 * control.themeGlobalScale
-                font.weight: Font.Medium
+                font.pixelSize: MeoTheme.labelLarge.size * control.themeGlobalScale
+                font.weight: MeoTheme.labelLarge.weight
             }
         }
 

@@ -216,12 +216,15 @@ Item {
 
             const iconButton = findChild(quickSlider, "quickControlIconButton")
             const valueSlider = findChild(quickSlider, "quickControlValueSlider")
+            const nativeSlider = findChild(quickSlider, "meoSliderNative")
             verify(iconButton !== null)
             verify(valueSlider !== null)
-            compare(iconButton.width, 52 * MeoTheme.globalScale)
-            compare(iconButton.height, 56 * MeoTheme.globalScale)
+            verify(nativeSlider !== null)
+            compare(iconButton.width, 48 * MeoTheme.globalScale)
+            compare(iconButton.height, 48 * MeoTheme.globalScale)
+            compare(quickSlider.implicitHeight, 52 * MeoTheme.globalScale)
             verify(iconButton.activeFocusOnTab)
-            verify(valueSlider.activeFocusOnTab)
+            verify(nativeSlider.activeFocusOnTab)
 
             iconButton.forceActiveFocus(Qt.TabFocusReason)
             keyClick(Qt.Key_Space)

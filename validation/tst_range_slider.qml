@@ -23,6 +23,7 @@ Item {
             range.secondValue = 78
             range.discrete = false
             range.expressive = false
+            range.size = "xs"
             range.wavy = false
             range.enabled = true
         }
@@ -56,7 +57,24 @@ Item {
             compare(range.trackHeight, MeoTheme.sliderTrackHeightXS)
             compare(range.thumbHeight, MeoTheme.sliderThumbHeightXS)
             compare(range.pressedThumbWidth, MeoTheme.sliderThumbPressedWidthExpressive)
+            compare(range.trackCornerRadius, MeoTheme.sliderTrackCornerRadiusXS)
             verify(range.endStopEnabled)
+        }
+
+        function test_splitTrackUsesSharedAsymmetricCorners() {
+            range.expressive = true
+            range.size = "l"
+            const leading = findChild(range, "meoRangeSliderSplitLeadingTrack")
+            const active = findChild(range, "meoRangeSliderSplitActiveTrack")
+            const trailing = findChild(range, "meoRangeSliderSplitTrailingTrack")
+            verify(leading !== null)
+            verify(active !== null)
+            verify(trailing !== null)
+            compare(leading.topLeftRadius, MeoTheme.sliderTrackCornerRadiusL)
+            compare(leading.topRightRadius, MeoTheme.sliderTrackInsideCornerRadius)
+            compare(active.radius, MeoTheme.sliderTrackInsideCornerRadius)
+            compare(trailing.topLeftRadius, MeoTheme.sliderTrackInsideCornerRadius)
+            compare(trailing.topRightRadius, MeoTheme.sliderTrackCornerRadiusL)
         }
 
         function test_discreteAndDisabledConfiguration() {

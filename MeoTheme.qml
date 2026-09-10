@@ -687,6 +687,15 @@ QtObject {
     readonly property real sliderTrackHeightL: 56 * globalScale
     readonly property real sliderTrackHeightXL: 96 * globalScale
 
+    // External corners and trailing-stop insets for the five M3 Expressive
+    // sizes. S-XL intentionally do not use half the track height.
+    readonly property real sliderTrackCornerRadiusXS: 8 * globalScale
+    readonly property real sliderTrackCornerRadiusS: 8 * globalScale
+    readonly property real sliderTrackCornerRadiusM: 12 * globalScale
+    readonly property real sliderTrackCornerRadiusL: 16 * globalScale
+    readonly property real sliderTrackCornerRadiusXL: 28 * globalScale
+    readonly property real sliderTrackInsideCornerRadius: 2 * globalScale
+
     readonly property real sliderThumbWidthExpressive: 4 * globalScale
     readonly property real sliderThumbPressedWidthExpressive: 2 * globalScale
     readonly property real sliderThumbHeightXS: 44 * globalScale
@@ -698,6 +707,26 @@ QtObject {
     readonly property real sliderThumbHeightExpressive: sliderThumbHeightXS
     readonly property real sliderThumbGapExpressive: 6 * globalScale
     readonly property real sliderStopSizeExpressive: 4 * globalScale
+    readonly property real sliderValueIndicatorSize: 40 * globalScale
+    readonly property real sliderValueIndicatorGap: 12 * globalScale
+    readonly property real sliderInsetIconSizeM: 24 * globalScale
+    readonly property real sliderInsetIconSizeL: 24 * globalScale
+    readonly property real sliderInsetIconSizeXL: 32 * globalScale
+
+    function sliderTrackCornerRadiusForSize(size) {
+        if (size === "s") return sliderTrackCornerRadiusS
+        if (size === "m") return sliderTrackCornerRadiusM
+        if (size === "l") return sliderTrackCornerRadiusL
+        if (size === "xl") return sliderTrackCornerRadiusXL
+        return sliderTrackCornerRadiusXS
+    }
+
+    function sliderInsetIconSizeForSize(size) {
+        if (size === "m") return sliderInsetIconSizeM
+        if (size === "l") return sliderInsetIconSizeL
+        if (size === "xl") return sliderInsetIconSizeXL
+        return 0
+    }
 
     // Pixel-style connected surfaces use one large outer silhouette and a
     // barely rounded inner join separated by the surrounding surface.  These
