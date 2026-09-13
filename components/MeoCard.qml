@@ -36,6 +36,42 @@ Frame {
     readonly property bool reducedMotion: MeoTheme.reduceMotion
 
     readonly property real effectiveRadius: compact ? Math.min(radius, 20 * themeGlobalScale) : radius
+    readonly property real activeRadius: !interactive ? effectiveRadius
+                                         : tapHandler.pressed
+                                           ? Math.max(14 * themeGlobalScale,
+                                                      effectiveRadius - 8 * themeGlobalScale)
+                                           : effectiveRadius
+    property bool _radiusSpringReady: false
+    property bool _scaleSpringReady: false
+
+    MeoSpringValue {
+        id: cardRadiusSpring
+        motionProfile: "pixel"
+        speed: "fast"
+        valueThreshold: 0.05 * control.themeGlobalScale
+        velocityThreshold: 0.1
+        targetValue: control.activeRadius
+        enabled: control._radiusSpringReady && control.interactive && !control.reducedMotion
+        Component.onCompleted: {
+            value = targetValue
+            control._radiusSpringReady = true
+        }
+    }
+
+    MeoSpringValue {
+        id: cardScaleSpring
+        motionProfile: "pixel"
+        speed: "fast"
+        valueThreshold: 0.0005
+        velocityThreshold: 0.002
+        targetValue: control.interactive && control.bouncy && tapHandler.pressed ? 0.985 : 1
+        enabled: control._scaleSpringReady && control.interactive
+                 && control.bouncy && !control.reducedMotion
+        Component.onCompleted: {
+            value = targetValue
+            control._scaleSpringReady = true
+        }
+    }
     function compositeColor(foreground, opacity, background) {
         // AndroidX resolves disabled Card tokens by compositing a translucent
         // token over the card surface. Theme colors are opaque, so the result
@@ -92,11 +128,7 @@ Frame {
             objectName: "meoCardShape"
             anchors.fill: parent
             type: control.shape
-            radius: {
-                if (!control.interactive) return control.effectiveRadius
-                if (tapHandler.pressed) return Math.max(14 * control.themeGlobalScale, control.effectiveRadius - 8 * control.themeGlobalScale)
-                return control.effectiveRadius
-            }
+            radius: control.interactive ? cardRadiusSpring.value : control.effectiveRadius
             color: control.containerColor
             strokeColor: {
                 if (control.selected) return control.themePrimary
@@ -112,7 +144,7 @@ Frame {
             strokeWidth: control.selected ? 2 * control.themeGlobalScale
                                           : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
-            scale: control.interactive && control.bouncy && !control.reducedMotion ? (tapHandler.pressed ? 0.985 : 1.0) : 1.0
+            scale: control.interactive && control.bouncy ? cardScaleSpring.value : 1
 
             layer.enabled: control.visible && control.elevation > 0
             layer.effect: MultiEffect {
@@ -139,20 +171,6 @@ Frame {
             Behavior on color {
                 enabled: !control.reducedMotion
                 ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
-            }
-            Behavior on radius {
-                enabled: !control.reducedMotion
-                NumberAnimation {
-                    duration: control.motionShape
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                }
-            }
-            Behavior on scale {
-                enabled: !control.reducedMotion
-                NumberAnimation {
-                    duration: control.motionFast
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                }
             }
         }
     }

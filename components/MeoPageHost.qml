@@ -24,8 +24,27 @@ Item {
     // The host owns the viewport, so make every loaded page fill it instead of
     // requiring each page root to repeat anchors.fill: parent.
     property bool fillLoadedItem: true
+    // A host that knows the target page geometry can provide a detailed
+    // skeleton. Without one, MeoLoadingFeedback falls back to the compact M3E
+    // indicator after its anti-flash delay.
+    property Component loadingPlaceholder: null
+    property int loadingDelay: loadingPlaceholder !== null ? 0 : MeoTheme.loadingFeedbackDelay
+    // A page that has finished constructing must never be held behind a
+    // cosmetic minimum display time. Callers can opt into a longer hold for a
+    // special transition, but the latency-safe default reveals content on the
+    // same turn that Loader reports it ready.
+    property int loadingMinimumVisibleDuration: 0
+    property string loadingAccessibleName: qsTr("Loading page")
     readonly property var currentItem: activeSlot === 0 ? firstLoader.item : secondLoader.item
+    // Route identity follows the page that has completed its visual handoff.
+    // readyPageKey identifies the most recently constructed page and is useful
+    // to hosts that need to acknowledge an asynchronous load before the
+    // transition settles.
+    readonly property string currentPageKey: committedPageKey
+    readonly property string readyPageKey: loadedPageKey
     readonly property bool transitioning: pageTransition.running
+    readonly property bool loading: requestInFlight
+    readonly property bool loadingFeedbackVisible: loadingFeedback.feedbackVisible
     readonly property int enterDuration: MeoTheme.motionDurationPageEnter
     readonly property int exitDuration: MeoTheme.motionDurationPageExit
 
@@ -36,6 +55,15 @@ Item {
     property bool initialized: false
     property bool componentReady: false
     property bool requestQueued: false
+    property bool transitionRequestPending: false
+    property bool requestInFlight: false
+    property int requestSerial: 0
+    property int pendingDirection: 1
+    property int transitionDirection: 1
+    property string pendingPageKey: ""
+    property string committedPageKey: ""
+    property string loadedPageKey: ""
+    property var pendingComponentProperties: ({})
     property var incomingLoader: firstLoader
     property var outgoingLoader: secondLoader
 
@@ -43,12 +71,6 @@ Item {
 
     function loaderForSlot(slot) {
         return slot === 0 ? firstLoader : secondLoader
-    }
-
-    function finishTransition() {
-        if (!pageTransition.running)
-            return
-        pageTransition.complete()
     }
 
     function applyProperties(item, properties) {
@@ -65,6 +87,17 @@ Item {
         loader.item.y = 0
         loader.item.width = loader.width
         loader.item.height = loader.height
+    }
+
+    function clearLoader(loader) {
+        if (!loader)
+            return
+        loader.sourceComponent = null
+        loader.source = ""
+        loader.opacity = 0
+        loader.x = 0
+        loader.scale = 1
+        loader.enabled = false
     }
 
     function schedulePageRequest() {
@@ -103,12 +136,31 @@ Item {
         const hasComponent = !!sourceComponent
         if (!hasUrl && !hasComponent)
             return
-        finishTransition()
+
+        // A new destination must never complete the active animation by
+        // jumping it to its final frame. Keep the current handoff continuous,
+        // coalesce repeated navigation to the latest public source/key, and
+        // load that destination as soon as the two-slot handoff is complete.
+        if (pageTransition.running) {
+            transitionRequestPending = true
+            return
+        }
+
+        transitionRequestPending = false
+        requestInFlight = true
+        requestSerial += 1
+        pendingDirection = direction < 0 ? -1 : 1
+        pendingPageKey = pageKey
+        pendingComponentProperties = componentProperties || ({})
         pendingSlot = initialized ? 1 - activeSlot : 0
         incomingLoader = loaderForSlot(pendingSlot)
         outgoingLoader = loaderForSlot(activeSlot)
+        incomingLoader.requestId = requestSerial
         if (hasComponent) {
             incomingLoader.source = ""
+            // Clearing first also makes a changed pageKey reload the same
+            // Component with a fresh construction-property snapshot.
+            incomingLoader.sourceComponent = null
             incomingLoader.sourceComponent = sourceComponent
         } else {
             incomingLoader.sourceComponent = null
@@ -116,17 +168,23 @@ Item {
         }
     }
 
-    function beginTransition(loader) {
+    function beginTransition(loader, loadedRequestId) {
+        if (loader !== incomingLoader || loadedRequestId !== requestSerial)
+            return
+        requestInFlight = false
         sizeLoadedItem(loader)
         if (loader.sourceComponent)
-            applyProperties(loader.item, componentProperties)
+            applyProperties(loader.item, pendingComponentProperties)
+        loadedPageKey = pendingPageKey
         pageLoaded(loader.item)
         if (!initialized) {
             activeSlot = pendingSlot
             initialized = true
+            committedPageKey = pendingPageKey
             loader.opacity = 1
             loader.x = 0
             loader.scale = 1
+            loader.enabled = true
             return
         }
 
@@ -135,20 +193,24 @@ Item {
             incomingLoader.x = 0
             incomingLoader.scale = 1
             activeSlot = pendingSlot
+            committedPageKey = pendingPageKey
             if (outgoingLoader !== incomingLoader)
-                outgoingLoader.source = ""
-            outgoingLoader.opacity = 0
-            outgoingLoader.x = 0
-            outgoingLoader.scale = 1
+                clearLoader(outgoingLoader)
+            incomingLoader.enabled = true
+            if (transitionRequestPending)
+                schedulePageRequest()
             return
         }
 
+        transitionDirection = pendingDirection
         incomingLoader.opacity = 0
-        incomingLoader.x = MeoTheme.reduceMotion ? 0 : transitionDistance * (direction < 0 ? -1 : 1)
-        incomingLoader.scale = MeoTheme.reduceMotion ? 1 : 0.992
+        incomingLoader.x = transitionDistance * transitionDirection
+        incomingLoader.scale = 0.992
+        incomingLoader.enabled = true
         outgoingLoader.opacity = 1
         outgoingLoader.x = 0
         outgoingLoader.scale = 1
+        outgoingLoader.enabled = false
         pageTransition.restart()
     }
 
@@ -166,6 +228,7 @@ Item {
 
     Loader {
         id: firstLoader
+        property int requestId: 0
         asynchronous: control.asynchronous
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -174,13 +237,19 @@ Item {
         onHeightChanged: control.sizeLoadedItem(firstLoader)
         onLoaded: {
             control.sizeLoadedItem(firstLoader)
+            const loadedRequestId = firstLoader.requestId
             if (firstLoader === control.incomingLoader)
-                Qt.callLater(function() { control.beginTransition(firstLoader) })
+                Qt.callLater(function() { control.beginTransition(firstLoader, loadedRequestId) })
+        }
+        onStatusChanged: {
+            if (status === Loader.Error && firstLoader === control.incomingLoader)
+                control.requestInFlight = false
         }
     }
 
     Loader {
         id: secondLoader
+        property int requestId: 0
         asynchronous: control.asynchronous
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -190,9 +259,26 @@ Item {
         onHeightChanged: control.sizeLoadedItem(secondLoader)
         onLoaded: {
             control.sizeLoadedItem(secondLoader)
+            const loadedRequestId = secondLoader.requestId
             if (secondLoader === control.incomingLoader)
-                Qt.callLater(function() { control.beginTransition(secondLoader) })
+                Qt.callLater(function() { control.beginTransition(secondLoader, loadedRequestId) })
         }
+        onStatusChanged: {
+            if (status === Loader.Error && secondLoader === control.incomingLoader)
+                control.requestInFlight = false
+        }
+    }
+
+    MeoLoadingFeedback {
+        id: loadingFeedback
+        objectName: "meoPageHostLoadingFeedback"
+        anchors.fill: parent
+        z: 100
+        active: control.requestInFlight
+        delay: control.loadingDelay
+        minimumVisibleDuration: control.loadingMinimumVisibleDuration
+        placeholder: control.loadingPlaceholder
+        accessibleName: control.loadingAccessibleName
     }
 
     ParallelAnimation {
@@ -201,7 +287,6 @@ Item {
         NumberAnimation {
             target: control.incomingLoader
             property: "opacity"
-            from: 0
             to: 1
             duration: control.enterDuration
             easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
@@ -230,17 +315,18 @@ Item {
         NumberAnimation {
             target: control.outgoingLoader
             property: "x"
-            to: MeoTheme.reduceMotion ? 0 : -control.transitionDistance * 0.35 * (control.direction < 0 ? -1 : 1)
+            to: -control.transitionDistance * 0.35 * control.transitionDirection
             duration: control.exitDuration
             easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardAccelerate
         }
 
         onFinished: {
             control.activeSlot = control.pendingSlot
-            control.outgoingLoader.source = ""
-            control.outgoingLoader.opacity = 0
-            control.outgoingLoader.x = 0
-            control.outgoingLoader.scale = 1
+            control.committedPageKey = control.pendingPageKey
+            control.clearLoader(control.outgoingLoader)
+            control.incomingLoader.enabled = true
+            if (control.transitionRequestPending)
+                control.schedulePageRequest()
         }
     }
 }

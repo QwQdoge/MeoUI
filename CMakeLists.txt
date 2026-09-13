@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(MeoUI VERSION 1.0.3 LANGUAGES CXX)
+project(MeoUI VERSION 1.0.4 LANGUAGES CXX)
 include(CTest)
 set(CMAKE_AUTOMOC ON)
 include(GNUInstallDirs)
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml ShaderTools)
 
 # The token runtime is the single metric/state source for both the QML module
 # and native renderers such as Meo QStyle.  It intentionally contains no
@@ -151,6 +151,7 @@ qt_add_qml_module(meoui_module
         components/MeoSplitButton.qml
         components/MeoButtonGroup.qml
         components/MeoLoadingIndicator.qml
+        components/MeoLoadingFeedback.qml
         components/MeoFABMenu.qml
         components/MeoDockedToolbar.qml
         components/MeoFloatingToolbar.qml
@@ -173,8 +174,15 @@ qt_add_qml_module(meoui_module
         components/MeoRadioButton.qml
         components/MeoFAB.qml
         components/MeoCard.qml
+        components/MeoAmbientClock.qml
+        components/MeoAuthenticationSurface.qml
+        components/MeoPrivacyNotificationSummary.qml
+        components/MeoWeatherStatus.qml
         components/MeoCachedImage.qml
         components/MeoMediaCard.qml
+        components/MeoContextMenu.qml
+        components/MeoWidget.qml
+        components/MeoWidgetSheet.qml
         components/MeoChip.qml
         components/MeoProgressBar.qml
         components/MeoDialog.qml
@@ -272,6 +280,15 @@ qt_add_qml_module(meoui_module
         assets/fonts/Roboto-Medium.ttf
         assets/fonts/Roboto-Bold.ttf
         assets/icons/meo-ai-f.svg
+)
+
+# The state layer combines shape clipping, hover/focus tint, the pointer-origin
+# soft ripple, and the focus ring in one fragment pass. This avoids stacking
+# dynamic MultiEffect blur and mask textures on every interactive delegate.
+qt_add_shaders(meoui_module "meoui_state_layer_shaders"
+    PREFIX "/qt/qml/MeoUI"
+    FILES
+        shaders/state_layer.frag
 )
 
 target_link_libraries(meoui_module PUBLIC MeoUI::Tokens Qt6::Core Qt6::Quick Qt6::QuickControls2)

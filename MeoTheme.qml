@@ -450,11 +450,18 @@ QtObject {
     readonly property var motionDurationSlow: motionDurationMedium3
     readonly property int motionDurationPanelState: motionDurationShort2
     // Expressive input feedback must acknowledge the press before a spatial
-    // transition can visually take over.  Keep ripple timing separate from
-    // page/popup motion so every control shares the same fast press contract.
+    // transition can visually take over. Keep the ripple phases separate so
+    // MeoStateLayer can reproduce AndroidX Material3's current bounded-ripple
+    // contract instead of approximating it with the generic duration scale.
     readonly property int motionDurationPress: motionDurationShort1
-    readonly property int motionDurationRippleExpand: motionDurationShort4
-    readonly property int motionDurationRippleFade: motionDurationShort2
+    readonly property int motionDurationRippleFadeIn: motionDurationFor(75)
+    readonly property int motionDurationRippleExpand: motionDurationFor(225)
+    readonly property int motionDurationRippleFade: motionDurationFor(150)
+    readonly property int motionDurationStateHoverEnter: motionDurationFor(15)
+    readonly property int motionDurationStateFocusEnter: motionDurationFor(45)
+    readonly property int motionDurationStateDragEnter: motionDurationFor(45)
+    readonly property int motionDurationStateExit: motionDurationFor(15)
+    readonly property int motionDurationStateDragExit: motionDurationFor(150)
     readonly property int motionDurationPopupEffectsEnter: motionDurationMedium1
     readonly property int motionDurationPopupEffectsExit: motionDurationShort3
     readonly property int motionDurationDisclosureEnter: motionDurationMedium2
@@ -498,6 +505,13 @@ QtObject {
     readonly property int motionDurationProgressCircularPhase: motionDurationFor(1333)
     readonly property int motionDurationLoadingMorph: motionDurationFor(650)
     readonly property int motionDurationLoadingRotation: motionDurationFor(4666)
+    // Perceived-performance thresholds are separate from the indicator's
+    // internal Pixel motion. A short operation should keep the immediate press
+    // feedback without flashing a loader; once shown, feedback remains long
+    // enough to be understood instead of flickering for a single frame.
+    readonly property int loadingFeedbackDelay: 120
+    readonly property int loadingFeedbackMinimumVisible: 300
+    readonly property int motionDurationLoadingFeedbackFade: motionDurationShort2
     readonly property int motionDurationHoldRelease: motionDurationShort1
     readonly property int motionStaggerDelay: motionDurationShort1
     readonly property int motionSubmenuDelay: motionDurationShort2
@@ -511,6 +525,9 @@ QtObject {
     ]
     readonly property list<real> motionEasingEmphasizedAccelerate: [0.3, 0, 0.8, 0.15]
     readonly property list<real> motionEasingEmphasizedDecelerate: [0.05, 0.7, 0.1, 1]
+    // AndroidX RippleAnimation uses FastOutSlowInEasing for radius and
+    // LinearEasing for alpha and center interpolation.
+    readonly property list<real> motionEasingRippleRadius: [0.4, 0, 0.2, 1]
     readonly property list<real> motionEasingLinear: [0, 0, 1, 1]
     readonly property list<real> motionEasingEnter: motionEasingStandardDecelerate
     readonly property list<real> motionEasingExit: motionEasingStandardAccelerate
@@ -570,6 +587,10 @@ QtObject {
     readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10)
     readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.10)
     readonly property real stateOpacityDragged: metricToken("stateOpacityDragged", 0.16)
+    readonly property real rippleStartRadiusFactor: 0.30
+    readonly property real rippleBoundedExtraRadius: 10 * globalScale
+    readonly property real rippleEdgeFeather: 2 * globalScale
+    readonly property real stateMaskEdgeFeather: Math.max(0.75, globalScale)
 
     // Semantic feedback and surface roles used by products consuming MeoUI.
     readonly property real disabledContainerOpacity: 0.12

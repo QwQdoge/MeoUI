@@ -15,18 +15,20 @@ const tokenSections = {
   ],
   motion: [
     ["motionDurationInstant", "50", "Near-instant feedback"],
-    ["motionDurationFast", "150", "Hover, color, opacity, press scale"],
-    ["motionDurationMedium", "300", "Selected state, indicator movement"],
-    ["motionDurationSlow", "450", "Larger surfaces and page-level changes"],
-    ["motionDurationRippleExpand", "400", "Circular ripple expansion"],
-    ["motionDurationRippleFade", "300", "Ripple fade-out"],
+    ["motionDurationFast", "100", "Fast effects and recurring feedback"],
+    ["motionDurationMedium", "250", "Selected state and compact transitions"],
+    ["motionDurationSlow", "350", "Larger surfaces and page entrance"],
+    ["motionDurationRippleFadeIn", "75", "Bounded ripple alpha entrance"],
+    ["motionDurationRippleExpand", "225", "Bounded ripple radius and center"],
+    ["motionDurationRippleFade", "150", "Ripple release fade-out"],
     ["motionEasingStandard", "[0.2, 0, 0, 1]", "Most property changes"],
-    ["motionEasingEmphasized", "[0.05, 0.7, 0.1, 1]", "Shape, ripple, selected transitions"]
+    ["motionEasingRippleRadius", "[0.4, 0, 0.2, 1]", "Material ripple radius"],
+    ["motionEasingEmphasized", "[0.05, 0.7, 0.1, 1]", "Legacy spatial transitions"]
   ],
   state: [
-    ["stateOpacityHover", "0.10", "Hover state layer"],
-    ["stateOpacityFocus", "0.12", "Keyboard focus state"],
-    ["stateOpacityPressed", "0.14", "Pressed and ripple state"],
+    ["stateOpacityHover", "0.08", "Hover state layer"],
+    ["stateOpacityFocus", "0.10", "Keyboard focus state"],
+    ["stateOpacityPressed", "0.10", "Pressed and ripple state"],
     ["stateOpacityDragged", "0.16", "Dragged state"]
   ],
   shape: [
@@ -81,7 +83,8 @@ const components = [
   ["Atomic", "MeoDivider", "Visual separator."],
   ["Atomic", "MeoBadge", "Small count or status marker."],
   ["Atomic", "MeoAvatar", "User or object avatar."],
-  ["Atomic", "MeoSkeleton", "Loading placeholder."],
+  ["Atomic", "MeoSkeleton", "Position-declared loading placeholder."],
+  ["Atomic", "MeoLoadingFeedback", "Delayed compact loading or immediate detailed skeleton feedback."],
   ["Atomic", "MeoShape", "Expressive shape primitive."],
   ["Inputs", "MeoTextField", "Single-line text input."],
   ["Inputs", "MeoTextArea", "Multi-line text input."],

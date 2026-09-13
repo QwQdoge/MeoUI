@@ -14,6 +14,8 @@ Control {
     property bool wide: false
     property bool busy: false
     property bool unavailable: false
+    property bool optimisticFeedback: true
+    property int optimisticTimeout: 1200
     property string motionProfile: "pixel"
     property string inactiveIconShape: "Circle"
     property string activeIconShape: "Cookie4Sided"
@@ -24,6 +26,7 @@ Control {
     // system: both variants continue to consume the active Meo dynamic roles.
     property string visualStyle: "standard" // "standard" | "pixel"
     readonly property bool pixelStyle: visualStyle === "pixel"
+    readonly property bool visualActive: _optimisticPending ? _optimisticActive : active
     readonly property color activeContainerColor: MeoTheme.primaryContainer
     readonly property color activeContentColor: MeoTheme.contentOnPrimaryContainer
     property bool detailsEnabled: false
@@ -44,6 +47,8 @@ Control {
         : qsTr("Remove tile from Quick Settings")
     property bool showCompactLabel: false
     property int modelIndex: -1
+    property bool _optimisticPending: false
+    property bool _optimisticActive: false
     // AOSP Android 16 QPR2 defines 80dp quick-settings tiles with 28dp corners.
     // The Pixel-like variant keeps those logical values without claiming that
     // its host-specific arrangement is a generic Material component.
@@ -66,9 +71,9 @@ Control {
     implicitHeight: (pixelStyle ? 80 : (wide ? 72 : 96)) * MeoTheme.globalScale
     // Keep the tab-focus capability stable while entering edit mode. The
     // focused control is redirected before its visual action changes.
-    activeFocusOnTab: enabled && !busy && !unavailable
+    activeFocusOnTab: enabled && !unavailable
     z: dragHandler.active ? 100 : 0
-    opacity: !enabled || busy || unavailable ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
+    opacity: !enabled || unavailable ? MeoTheme.disabledContentOpacity : (dragHandler.active ? 0.76 : 1)
     Behavior on opacity {
         enabled: !MeoTheme.reduceMotion
         NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
@@ -77,7 +82,7 @@ Control {
     Accessible.name: title
     Accessible.description: supportingText
     Accessible.checkable: true
-    Accessible.checked: active
+    Accessible.checked: visualActive
     Accessible.focusable: activeFocusOnTab
     Accessible.onPressAction: activateMain()
     Keys.onReturnPressed: activateMain()
@@ -106,14 +111,20 @@ Control {
         motionProfile: control.motionProfile
         speed: "fast"
         value: 0
-        targetValue: control.active ? 1 : 0
+        targetValue: control.visualActive ? 1 : 0
     }
 
     function activateMain() {
         if (enabled && !busy && !unavailable && editMode && editSelectable)
             editSelectionRequested()
-        else if (enabled && !busy && !unavailable && !editMode)
+        else if (enabled && !busy && !unavailable && !editMode) {
+            if (optimisticFeedback) {
+                _optimisticActive = !active
+                _optimisticPending = true
+                optimisticRollback.restart()
+            }
             triggered()
+        }
     }
 
     function requestDetails() {
@@ -131,6 +142,35 @@ Control {
             control.forceActiveFocus(Qt.OtherFocusReason)
     }
 
+    onActiveChanged: {
+        if (_optimisticPending && active === _optimisticActive) {
+            _optimisticPending = false
+            optimisticRollback.stop()
+        }
+    }
+    onBusyChanged: {
+        if (!busy && _optimisticPending) {
+            Qt.callLater(function() {
+                if (!control.busy && control._optimisticPending) {
+                    control._optimisticPending = false
+                    optimisticRollback.stop()
+                }
+            })
+        }
+    }
+
+    Timer {
+        id: optimisticRollback
+        interval: Math.max(1, control.optimisticTimeout)
+        repeat: false
+        onTriggered: {
+            if (!control.busy)
+                control._optimisticPending = false
+            else
+                restart()
+        }
+    }
+
     background: Item {
         MeoShape {
             id: stateShape
@@ -142,7 +182,7 @@ Control {
             height: control.visualHeight
             type: "round"
             radius: control.pixelStyle ? MeoTheme.shapeExtraLarge : MeoTheme.shapeFull
-            color: control.active ? control.activeContainerColor : MeoTheme.surfaceContainerHighest
+            color: control.visualActive ? control.activeContainerColor : MeoTheme.surfaceContainerHighest
             strokeWidth: control.activeFocus || (control.editMode && control.editSelected)
                          ? control.focusStrokeWidth : 0
             strokeColor: control.focusStrokeColor
@@ -158,7 +198,7 @@ Control {
                 hovered: pointer.containsMouse
                 pressed: pointer.pressed
                 focused: control.activeFocus
-                color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+                color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
             }
         }
     }
@@ -179,8 +219,8 @@ Control {
             MeoIcon {
                 icon: control.iconName
                 size: 24
-                fill: control.active
-                color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+                fill: control.visualActive
+                color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
             }
             ColumnLayout {
                 visible: control.wide
@@ -192,7 +232,7 @@ Control {
                     typeRole: "label"
                     typeSize: "medium"
                     emphasized: true
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
                     elide: Text.ElideRight
                 }
                 MeoText {
@@ -201,7 +241,7 @@ Control {
                     visible: text !== ""
                     typeRole: "body"
                     typeSize: "small"
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
                     elide: Text.ElideRight
                 }
             }
@@ -232,10 +272,10 @@ Control {
                     fromShape: control.inactiveIconShape
                     toShape: control.activeIconShape
                     morphProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
-                                                                  : (control.active ? 1 : 0)
+                                                                  : (control.visualActive ? 1 : 0)
                     rawSpringProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
                                                                        : morphProgress
-                    color: control.active
+                    color: control.visualActive
                            ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
                                      control.activeContentColor.b, 0.16)
                            : MeoTheme.surfaceContainerHigh
@@ -245,8 +285,8 @@ Control {
                     anchors.centerIn: parent
                     icon: control.iconName
                     size: 20
-                    fill: control.active
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+                    fill: control.visualActive
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
                 }
             }
 
@@ -260,7 +300,7 @@ Control {
                     typeRole: "label"
                     typeSize: "medium"
                     emphasized: true
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
                     elide: Text.ElideRight
                 }
 
@@ -270,7 +310,7 @@ Control {
                     visible: text !== ""
                     typeRole: "body"
                     typeSize: "small"
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
                     elide: Text.ElideRight
                 }
             }
@@ -286,8 +326,8 @@ Control {
             anchors.topMargin: (control.visualHeight - height) / 2
             icon: control.iconName
             size: 24
-            fill: control.active
-            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+            fill: control.visualActive
+            color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
         }
 
         ColumnLayout {
@@ -308,10 +348,10 @@ Control {
                     fromShape: control.inactiveIconShape
                     toShape: control.activeIconShape
                     morphProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
-                                                                  : (control.active ? 1 : 0)
+                                                                  : (control.visualActive ? 1 : 0)
                     rawSpringProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
                                                                        : morphProgress
-                    color: control.active
+                    color: control.visualActive
                            ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
                                      control.activeContentColor.b, 0.16)
                            : MeoTheme.surfaceContainerHigh
@@ -321,8 +361,8 @@ Control {
                     anchors.centerIn: parent
                     icon: control.iconName
                     size: 20
-                    fill: control.active
-                    color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+                    fill: control.visualActive
+                    color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
                 }
             }
 
@@ -333,7 +373,7 @@ Control {
                 typeRole: "label"
                 typeSize: "medium"
                 emphasized: true
-                color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+                color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
                 horizontalAlignment: Text.AlignHCenter
                 elide: Text.ElideRight
             }
@@ -348,20 +388,39 @@ Control {
             text: control.title
             typeRole: "label"
             typeSize: "small"
-            emphasized: control.active
+            emphasized: control.visualActive
             horizontalAlignment: Text.AlignHCenter
-            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+            color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
             elide: Text.ElideRight
         }
         MeoIcon {
-            visible: control.busy || control.unavailable
+            visible: control.unavailable
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.margins: MeoTheme.space8
-            icon: control.busy ? "progress_activity" : "block"
+            icon: "block"
             size: 18
-            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
-            Accessible.name: control.busy ? qsTr("Working") : qsTr("Unavailable")
+            color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+            Accessible.name: qsTr("Unavailable")
+        }
+
+        MeoLoadingFeedback {
+            objectName: "quickSettingsLoadingFeedback"
+            width: 48 * MeoTheme.globalScale
+            height: width
+            x: control.wide
+               ? (control.pixelStyle ? MeoTheme.space16
+                                     : MeoTheme.space4)
+               : (parent.width - width) / 2
+                 - ((!control.pixelStyle && control.detailsEnabled && !control.editMode)
+                    ? 22 * MeoTheme.globalScale : 0)
+            y: (control.visualHeight - height) / 2
+            active: control.busy
+            delay: 0
+            minimumVisibleDuration: 0
+            accessibleName: control.title !== ""
+                            ? qsTr("Updating %1").arg(control.title)
+                            : qsTr("Updating Quick Settings")
         }
         MeoIconButton {
             objectName: "quickSettingsRemoveButton"
@@ -422,13 +481,13 @@ Control {
             hovered: detailsButton.hovered
             pressed: detailsButton.pressed
             focused: detailsButton.visualFocus
-            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurface
+            color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurface
         }
 
         contentItem: MeoIcon {
             icon: "chevron_right"
             size: 18
-            color: control.active ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
+            color: control.visualActive ? control.activeContentColor : MeoTheme.contentOnSurfaceVariant
         }
     }
 

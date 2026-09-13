@@ -182,10 +182,19 @@ Control {
                 openMenu()
             event.accepted = true
         } else if (event.key === Qt.Key_Down) {
-            moveSelection(1)
+            // Popup focus transfer is asynchronous. Route navigation by
+            // semantic state so the first key after opening cannot mutate the
+            // committed value merely because focus has not reached the list.
+            if (menu.opened)
+                moveHighlight(1)
+            else
+                moveSelection(1)
             event.accepted = true
         } else if (event.key === Qt.Key_Up) {
-            moveSelection(-1)
+            if (menu.opened)
+                moveHighlight(-1)
+            else
+                moveSelection(-1)
             event.accepted = true
         } else if (event.key === Qt.Key_Escape && menu.opened) {
             menu.close()
@@ -284,6 +293,10 @@ Control {
                 ? control.currentIndex : (control.optionCount > 0 ? 0 : -1)
             if (optionList.currentIndex >= 0)
                 optionList.positionViewAtIndex(optionList.currentIndex, ListView.Contain)
+            // `opened` is the public ready boundary. Establish keyboard focus
+            // in the same turn so an immediate arrow key is never dropped
+            // during the popup entrance animation.
+            optionList.forceActiveFocus(Qt.PopupFocusReason)
         }
 
         contentItem: ListView {

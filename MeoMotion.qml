@@ -7,13 +7,13 @@ import MeoUI
 //
 // Source reference (Apache-2.0): AndroidX Compose Material3 MotionScheme.kt,
 // StandardMotionTokens.kt and ExpressiveMotionTokens.kt at androidx-main
-// bf48f4c018c001f2b10baab00a2710ab283fed0f. The equations below are an
+// 27cf9a7d5788aa0f5f2d8b6699ce279560daf326. The equations below are an
 // independent QML implementation of the damped-harmonic solution documented
 // by AndroidX SpringSimulation.kt; no upstream source is copied.
 QtObject {
     id: motion
 
-    readonly property string androidxRevision: "bf48f4c018c001f2b10baab00a2710ab283fed0f"
+    readonly property string androidxRevision: "27cf9a7d5788aa0f5f2d8b6699ce279560daf326"
     readonly property string androidxMotionSource: "androidx.compose.material3.MotionScheme"
     readonly property bool isExpressive: MeoTheme.isExpressive
 
@@ -95,7 +95,16 @@ QtObject {
     function scaledElapsed(elapsed, motionScale) {
         if (MeoTheme.reduceMotion || Number(motionScale) <= 0)
             return Number.MAX_SAFE_INTEGER
-        return Math.max(0, elapsed) * Math.max(0, Number(motionScale))
+        // motionScale is a duration multiplier everywhere else in MeoTheme:
+        // 2x means slower/longer and 0.5x means faster/shorter. Dividing the
+        // sampled spring time keeps physics motion consistent with tweens.
+        return Math.max(0, elapsed) / Math.max(0.000001, Number(motionScale))
+    }
+
+    function scaledMaximumDuration(milliseconds, motionScale) {
+        if (MeoTheme.reduceMotion || Number(motionScale) <= 0)
+            return 0
+        return Math.max(0, Math.round(milliseconds * Number(motionScale)))
     }
 
     // Returns value and velocity after elapsedMilliseconds for a unit-mass spec.

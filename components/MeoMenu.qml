@@ -10,6 +10,11 @@ MeoMotionPopup {
     // trailingIcon, checked, selected, enabled, action, subItems, vibrant,
     // and type (item, label, separator).
     property var model: []
+    // Context menus use the same accessibility and keyboard contract as a
+    // regular popup menu, but have a slightly roomier Pixel/MD3 surface.  A
+    // separate public MeoContextMenu wrapper owns pointer positioning so
+    // applications do not reimplement that behavior per right-click target.
+    property string surfaceStyle: "menu" // "menu" | "context"
     property bool vibrant: false
     property real itemSpacing: 0
     property real menuPadding: 8 * themeGlobalScale
@@ -39,6 +44,10 @@ MeoMotionPopup {
     readonly property color themeOutline: MeoTheme.outline
     readonly property color themeOutlineVariant: MeoTheme.outlineVariant
     readonly property real themeGlobalScale: MeoTheme.globalScale
+    readonly property bool isContextMenu: surfaceStyle === "context"
+    readonly property real surfaceCornerRadius: isContextMenu
+                                                   ? MeoTheme.shapeLargeIncreased
+                                                   : MeoTheme.shapeLarge
     readonly property real menuWidth: Math.max(minimumMenuWidth,
                                                Math.min(maximumMenuWidth, preferredMenuWidth))
     readonly property bool submenuOpened: submenu.opened
@@ -239,8 +248,10 @@ MeoMotionPopup {
     }
 
     background: Rectangle {
-        color: control.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-        radius: MeoTheme.shapeLarge
+        color: control.vibrant ? control.themeTertiaryContainer
+                               : control.isContextMenu ? MeoTheme.surfaceContainer
+                                                       : control.themeSurfaceContainerLow
+        radius: control.surfaceCornerRadius
         border.width: 1 * control.themeGlobalScale
         border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
     }

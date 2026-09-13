@@ -180,6 +180,21 @@ Button {
                                                                                : buttonHeight / 2)
     readonly property real activeRadius: usesRoundSquareShape && pressed
                                         ? pressedRadius : restingRadius
+    property bool _radiusSpringReady: false
+
+    MeoSpringValue {
+        id: buttonRadiusSpring
+        motionProfile: "pixel"
+        speed: "fast"
+        valueThreshold: 0.05 * control.themeGlobalScale
+        velocityThreshold: 0.1
+        targetValue: control.activeRadius
+        enabled: control._radiusSpringReady && control.bouncy && !MeoTheme.reduceMotion
+        Component.onCompleted: {
+            value = targetValue
+            control._radiusSpringReady = true
+        }
+    }
 
     implicitHeight: buttonHeight
     implicitWidth: Math.max((effectiveType === "text" ? 48 : 64) * themeGlobalScale,
@@ -261,7 +276,7 @@ Button {
             id: buttonShape
             anchors.fill: parent
             type: (control.shape === "round" || control.shape === "square") ? "rect" : control.shape
-            radius: control.activeRadius
+            radius: control.bouncy ? buttonRadiusSpring.value : control.activeRadius
             color: control.baseContainerColor
             strokeColor: control.effectiveType === "outlined" && !(control.isToggleButton && control.isSelected)
                          ? (control.enabled ? control.themeOutlineVariant
@@ -295,13 +310,6 @@ Button {
             }
 
             Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
-            Behavior on radius {
-                enabled: control.bouncy && !MeoTheme.reduceMotion
-                NumberAnimation {
-                    duration: control.motionShape
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== "undefined" && typeof MeoTheme.motionEasingEmphasizedDecelerate !== "undefined") ? MeoTheme.motionEasingEmphasizedDecelerate : [0.05, 0.7, 0.1, 1]
-                }
-            }
         }
     }
 }

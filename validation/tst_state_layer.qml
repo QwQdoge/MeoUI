@@ -73,13 +73,35 @@ Item {
         }
 
         function test_motionAndCornerContracts() {
+            compare(stateLayer.renderBackend,
+                    stateLayer.softwareRendering ? "software-fallback"
+                                                 : "single-pass-shader")
             compare(stateLayer.topLeftRadius, stateLayer.radius)
             compare(stateLayer.topRightRadius, stateLayer.radius)
             compare(stateLayer.bottomLeftRadius, stateLayer.radius)
             compare(stateLayer.bottomRightRadius, stateLayer.radius)
 
+            compare(stateLayer.hoverDuration, MeoTheme.motionDurationStateHoverEnter)
+            compare(stateLayer.focusDuration, MeoTheme.motionDurationStateFocusEnter)
+            compare(stateLayer.dragEnterDuration, MeoTheme.motionDurationStateDragEnter)
+            compare(stateLayer.dragExitDuration, MeoTheme.motionDurationStateDragExit)
+            compare(stateLayer.rippleFadeInDuration, MeoTheme.motionDurationRippleFadeIn)
             compare(stateLayer.rippleExpandDuration, MeoTheme.motionDurationRippleExpand)
             compare(stateLayer.rippleFadeDuration, MeoTheme.motionDurationRippleFade)
+            compare(stateLayer.rippleFadeInDuration, MeoTheme.motionDurationFor(75))
+            compare(stateLayer.rippleExpandDuration, MeoTheme.motionDurationFor(225))
+            compare(stateLayer.rippleFadeDuration, MeoTheme.motionDurationFor(150))
+        }
+
+        function test_internalPointerTrackingUsesActualPressPoint() {
+            mousePress(stateLayer, 31, 19, Qt.LeftButton)
+            tryCompare(stateLayer, "rippleActive", true, 100)
+            verify(Math.abs(stateLayer.rippleOriginX - 31) < 1)
+            verify(Math.abs(stateLayer.rippleOriginY - 19) < 1)
+            mouseRelease(stateLayer, 31, 19, Qt.LeftButton)
+            tryCompare(stateLayer, "rippleActive", false,
+                       stateLayer.rippleExpandDuration
+                       + stateLayer.rippleFadeDuration + 250)
         }
 
         function test_keyboardRippleStartsFromTheCenterAndReleasesResources() {
@@ -98,6 +120,20 @@ Item {
             stateLayer.trigger(12, 14)
             compare(stateLayer.rippleOriginX, 12)
             compare(stateLayer.rippleOriginY, 14)
+            compare(stateLayer.rippleCenterX, 12)
+            compare(stateLayer.rippleCenterY, 14)
+            verify(Math.abs(stateLayer.rippleRadius
+                            - Math.max(stateLayer.width, stateLayer.height) * 0.3) < 0.1)
+            const expectedTarget = Math.sqrt(stateLayer.width * stateLayer.width
+                                             + stateLayer.height * stateLayer.height) / 2
+                                   + 10 * MeoTheme.globalScale
+            verify(Math.abs(stateLayer.rippleTargetRadius - expectedTarget) < 0.1)
+            wait(stateLayer.rippleExpandDuration + 30)
+            verify(Math.abs(stateLayer.rippleCenterX - stateLayer.width / 2) < 0.5)
+            verify(Math.abs(stateLayer.rippleCenterY - stateLayer.height / 2) < 0.5)
+            stateLayer.releaseRipple()
+            tryCompare(stateLayer, "rippleActive", false,
+                       stateLayer.rippleFadeDuration + 250)
 
             stateLayer.rippleOriginMode = "center"
             stateLayer.trigger(12, 14)

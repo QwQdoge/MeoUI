@@ -33,13 +33,20 @@ text—without copying another product's branding, wording, or layout.
 - Use 28dp group-end corners, 1dp internal member corners, and a 2dp gap that
   reveals the page `surface`. A 1dp `outlineVariant` line is an explicit compact
   alternative, not the Pixel-style default.
-- Every interactive row uses `MeoStateLayer`: 8% hover darkening over 100ms,
-  followed by 10% pressed darkening through a click-point-origin soft-edge
-  circular ripple. The press acknowledges in 50ms, expands with the emphasized
-  decelerate curve for 200ms, remains fully expanded for the complete hold, and
-  fades with the standard curve for 100ms after release. Keyboard activation
-  originates from the control center. Disabled rows do not render pointer
-  feedback, and Reduce Motion removes spatial ripple animation immediately.
+- Every interactive row uses `MeoStateLayer`: 8% hover darkening enters and
+  exits linearly in 15ms; focus and drag enter in 45ms, while drag exits in
+  150ms. A press starts a 10% soft-edge circular ripple at the exact pointer
+  position. Following AndroidX Material3 ripple, its start radius is 30% of the
+  largest control dimension, its bounded target covers the control diagonal
+  plus 10dp, alpha enters linearly in 75ms, and radius expands in 225ms with
+  FastOutSlowIn while the center converges linearly toward the control center.
+  It remains fully expanded for the complete hold and fades linearly in 150ms
+  after release. Keyboard activation originates from the control center.
+  Disabled rows do not render pointer feedback, and Reduce Motion removes
+  spatial ripple animation immediately.
+  The shared state layer renders the rounded mask, base state, soft ripple edge,
+  and focus ring in one fragment pass. Do not reintroduce stacked blur/mask
+  `MultiEffect` layers in individual controls.
 - Settings detail navigation uses asymmetric semantic motion: a 350ms
   emphasized-decelerate entrance and a 250ms standard-accelerate exit. Reduce
   Motion resolves both durations to zero without changing navigation state.
@@ -62,3 +69,10 @@ must not imply that mount, unmount, format, repair, encryption, partitioning,
 or backup is implemented unless a verified backend, privilege model, and
 recovery flow are present. When they are not, use a transparent external
 handoff and say which system tool owns the action.
+# Loading and immediate action feedback
+
+- A press/ripple is rendered from the pointer location in the same input turn; backend work must not delay that acknowledgement.
+- Use `MeoLoadingFeedback` when an action may outlive the press. Unknown result geometry uses the fixed 48dp M3 Expressive indicator after the shared 120ms anti-flash delay.
+- When the destination geometry is known, provide `placeholder`; the detailed `MeoSkeleton` layout appears immediately and preserves the final content positions.
+- Feedback that becomes visible remains for at least 300ms to avoid a one-frame flash. `MeoLoadingIndicator`, `MeoSkeleton`, and the feedback fade all follow shared Reduce Motion policy.
+- Toggle-like controls may preview the requested state immediately, but the owning backend remains authoritative and must confirm or cause a rollback.

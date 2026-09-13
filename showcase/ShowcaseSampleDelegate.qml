@@ -118,6 +118,9 @@ Item {
         if (name === "MeoTopAppBar") return topAppBarSample
         if (name === "MeoBottomAppBar") return bottomAppBarSample
         if (name === "MeoMenu") return menuSample
+        if (name === "MeoContextMenu") return contextMenuSample
+        if (name === "MeoWidget") return meoWidgetSample
+        if (name === "MeoWidgetSheet") return meoWidgetSheetSample
         if (name === "MeoDataTable") return dataTableSample
         if (name === "MeoListItem") return listItemSample
         if (name === "MeoListView") return listViewSample
@@ -129,11 +132,13 @@ Item {
         if (name === "MeoSegmentedList") return segmentedListSample
         if (name === "MeoStatusCenter") return statusCenterSample
         if (name === "MeoStatusStrip") return statusStripSample
+        if (name === "MeoAmbientClock") return ambientClockSample
         if (name === "MeoBadge") return badgeSample
         if (name === "MeoAvatar") return avatarSample
         if (name === "MeoDivider") return dividerSample
         if (name === "MeoSkeleton") return skeletonSample
         if (name === "MeoCard") return cardSample
+        if (name === "MeoAuthenticationSurface") return authenticationSurfaceSample
         if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
@@ -154,6 +159,7 @@ Item {
         if (name === "MeoRichTooltip") return richTooltipSample
         if (name === "MeoProgressBar") return progressSample
         if (name === "MeoLoadingIndicator") return loadingSample
+        if (name === "MeoLoadingFeedback") return loadingFeedbackSample
         if (name === "MeoPullToRefresh") return pullRefreshSample
         if (name === "MeoEmptyState") return emptyStateSample
         if (name === "MeoSearchBar") return searchBarSample
@@ -167,6 +173,8 @@ Item {
         if (name === "MeoPageIndicator") return pageIndicatorSample
         if (name === "MeoMediaCard") return mediaCardSample
         if (name === "MeoMediaController") return mediaSample
+        if (name === "MeoWeatherStatus") return weatherStatusSample
+        if (name === "MeoPrivacyNotificationSummary") return privacyNotificationSample
         if (name === "MeoToolbar") return toolbarSample
         if (name === "MeoDockedToolbar") return dockedToolbarSample
         if (name === "MeoFloatingToolbar") return floatingToolbarSample
@@ -313,6 +321,7 @@ Item {
                         color: MeoTheme.surfaceContainer
 
                         MeoStateLayer {
+                            id: sampleStateLayer
                             anchors.fill: parent
                             radius: parent.radius
                             color: MeoTheme.primary
@@ -325,7 +334,9 @@ Item {
 
                     MeoText {
                         width: 132 * MeoTheme.globalScale
-                        text: modelData.label
+                        text: modelData.label + (sampleStateLayer._renderedBaseOpacity > 0
+                              ? " · " + Math.round(sampleStateLayer._renderedBaseOpacity * 100) + "%"
+                              : (sampleStateLayer._renderedFocusOpacity > 0 ? " · focus" : ""))
                         horizontalAlignment: Text.AlignHCenter
                         typeRole: "label"
                         typeSize: "medium"
@@ -1631,6 +1642,160 @@ Item {
             }
         }
     }
+    Component {
+        id: contextMenuSample
+        Item {
+            id: contextMenuRoot
+            width: 520 * MeoTheme.globalScale
+            height: 292 * MeoTheme.globalScale
+
+            MeoCard {
+                id: contextTarget
+                anchors.centerIn: parent
+                width: 312 * MeoTheme.globalScale
+                height: 168 * MeoTheme.globalScale
+                type: "filled"
+                interactive: true
+
+                Column {
+                    anchors.centerIn: parent
+                    width: parent.width - 2 * MeoTheme.space24
+                    spacing: MeoTheme.space8
+                    MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "widgets"; size: 32; color: MeoTheme.primary }
+                    MeoText { width: parent.width; text: "Widget card"; typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                    MeoText { width: parent.width; text: "Right-click or use the action"; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    onClicked: function(mouse) {
+                        if (mouse.button === Qt.RightButton)
+                            contextMenu.openAtPoint(contextTarget, mouse.x, mouse.y)
+                    }
+                }
+            }
+
+            MeoButton {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                text: "Open context menu"
+                icon.name: "more_vert"
+                onClicked: contextMenu.openAtPoint(contextTarget,
+                                                    contextTarget.width / 2,
+                                                    contextTarget.height / 2)
+            }
+
+            MeoContextMenu {
+                id: contextMenu
+                parent: contextMenuRoot
+                z: 10
+                model: [
+                    { "label": "Add to desktop", "icon": "add" },
+                    { "label": "Show alignment guides", "icon": "grid_on", "selected": true },
+                    { "type": "separator" },
+                    { "label": "More options", "icon": "more_horiz", "subItems": [{ "label": "Inspect", "icon": "visibility" }] },
+                    { "label": "Unavailable action", "icon": "block", "enabled": false }
+                ]
+            }
+        }
+    }
+    Component {
+        id: meoWidgetSample
+        Row {
+            width: 620 * MeoTheme.globalScale
+            height: 252 * MeoTheme.globalScale
+            spacing: MeoTheme.space16
+
+            MeoWidget {
+                id: framedWidget
+                width: 288 * MeoTheme.globalScale
+                height: parent.height
+                widgetId: "weather"
+                preferredSize: MeoWidget.SizeMedium
+                supportedSizes: [MeoWidget.SizeSmall, MeoWidget.SizeWide,
+                                 MeoWidget.SizeMedium, MeoWidget.SizeLarge]
+                privacy: MeoWidget.Location
+                refreshPolicy: MeoWidget.Periodic
+                supportedSurfaces: [MeoWidget.Desktop, MeoWidget.LockScreen]
+                accessibleName: "Weather"
+
+                Column {
+                    anchors.centerIn: parent
+                    width: parent.width - 2 * MeoTheme.space16
+                    spacing: MeoTheme.space8
+                    MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "partly_cloudy_day"; size: 40; color: MeoTheme.primary }
+                    MeoText { width: parent.width; text: "22°"; typeRole: "display"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                    MeoText { width: parent.width; text: "Location privacy · periodic cache"; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+                }
+            }
+
+            MeoWidget {
+                width: 288 * MeoTheme.globalScale
+                height: parent.height
+                widgetId: "media"
+                preferredSize: MeoWidget.SizeLarge
+                supportedSizes: [MeoWidget.SizeWide, MeoWidget.SizeMedium,
+                                 MeoWidget.SizeLarge]
+                privacy: MeoWidget.Media
+                refreshPolicy: MeoWidget.EventDriven
+                supportedSurfaces: [MeoWidget.Desktop, MeoWidget.LockScreen]
+                frameMode: MeoWidget.Adaptive
+                wantsOwnBackground: true
+                accessibleName: "Media"
+
+                MeoCard {
+                    anchors.fill: parent
+                    type: "filled"
+                    Column {
+                        anchors.centerIn: parent
+                        width: parent.width - 2 * MeoTheme.space16
+                        spacing: MeoTheme.space8
+                        MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "music_note"; size: 36; color: MeoTheme.primary }
+                        MeoText { width: parent.width; text: "Adaptive widget frame"; typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                        MeoText { width: parent.width; text: "The content keeps its own surface."; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+                    }
+                }
+            }
+        }
+    }
+    Component {
+        id: meoWidgetSheetSample
+        MeoWidgetSheet {
+            width: 1120 * MeoTheme.globalScale
+            height: 660 * MeoTheme.globalScale
+            // The full sheet uses desktop dimensions. Keep that layout legible
+            // inside the narrower Showcase documentation page without changing
+            // the product component's responsive contract.
+            scale: 0.8
+            transformOrigin: Item.TopLeft
+            selectedWidgetKey: "meo:media"
+            catalog: [
+                {
+                    "host": "meo", "id": "clock", "title": "Meo clock",
+                    "description": "Large date, time, and optional cached weather.",
+                    "icon": "schedule", "defaultWidth": 320, "defaultHeight": 224,
+                    "available": true
+                },
+                {
+                    "host": "meo", "id": "media", "title": "Meo media",
+                    "description": "Current-session playback controls.",
+                    "icon": "music_note", "defaultWidth": 384, "defaultHeight": 176,
+                    "available": true
+                },
+                {
+                    "host": "plasma", "id": "org.kde.plasma.digitalclock",
+                    "title": "Digital Clock", "description": "Time and calendar.",
+                    "icon": "schedule", "available": true
+                },
+                {
+                    "host": "plasma", "id": "org.kde.plasma.systemmonitor",
+                    "title": "System Monitor", "description": "Sensors and resource use.",
+                    "icon": "monitoring", "available": true
+                }
+            ]
+        }
+    }
     Component { id: dataTableSample; MeoDataTable { width: 520 * MeoTheme.globalScale; columns: control.tableColumns; model: control.tableRows; selectable: true; sortProperty: "calories" } }
     Component {
         id: listItemSample
@@ -1965,6 +2130,45 @@ Item {
             SurfaceCard { title: "Selected"; cardType: "filled"; selected: true }
             SurfaceCard { title: "Interactive"; cardType: "elevated"; interactive: true }
             SurfaceCard { title: "Disabled"; cardType: "filled"; enabledState: false }
+        }
+    }
+
+    Component {
+        id: authenticationSurfaceSample
+        Row {
+            spacing: MeoTheme.space24
+
+            MeoAuthenticationSurface {
+                width: 360 * MeoTheme.globalScale
+                title: "Unlock Meo"
+                supportingText: "Your password stays with the platform authenticator."
+                status: "fingerprint"
+                statusText: "Or scan your fingerprint"
+                MeoTextField {
+                    Layout.fillWidth: true
+                    label: "Password"
+                    isPassword: true
+                }
+                MeoButton {
+                    Layout.fillWidth: true
+                    text: "Unlock"
+                    icon.name: "lock_open"
+                }
+            }
+
+            MeoAuthenticationSurface {
+                width: 360 * MeoTheme.globalScale
+                title: "Try again"
+                status: "failed"
+                errorText: "Unlocking failed"
+                Component.onCompleted: triggerFailure()
+                MeoTextField {
+                    Layout.fillWidth: true
+                    label: "Password"
+                    isPassword: true
+                    isError: true
+                }
+            }
         }
     }
 
@@ -2343,6 +2547,58 @@ Item {
         }
     }
     Component {
+        id: loadingFeedbackSample
+        Row {
+            spacing: MeoTheme.space24
+
+            Column {
+                width: 180 * MeoTheme.globalScale
+                spacing: MeoTheme.space8
+                SampleLabel { label: "Unknown position · compact" }
+                Item {
+                    width: parent.width
+                    height: 120 * MeoTheme.globalScale
+                    MeoLoadingFeedback {
+                        anchors.fill: parent
+                        active: true
+                        delay: 0
+                        minimumVisibleDuration: 0
+                    }
+                }
+            }
+
+            Column {
+                width: 360 * MeoTheme.globalScale
+                spacing: MeoTheme.space8
+                SampleLabel { label: "Declared positions · detailed skeleton" }
+                Item {
+                    width: parent.width
+                    height: 120 * MeoTheme.globalScale
+                    MeoLoadingFeedback {
+                        anchors.fill: parent
+                        active: true
+                        minimumVisibleDuration: 0
+                        placeholder: Component {
+                            Row {
+                                anchors.fill: parent
+                                spacing: MeoTheme.space12
+                                MeoSkeleton { type: "avatar"; anchors.verticalCenter: parent.verticalCenter }
+                                Column {
+                                    width: parent.width - 52 * MeoTheme.globalScale
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    spacing: MeoTheme.space8
+                                    MeoSkeleton { type: "text"; width: parent.width * 0.72 }
+                                    MeoSkeleton { type: "text"; width: parent.width }
+                                    MeoSkeleton { type: "pill"; width: 112 * MeoTheme.globalScale; height: 28 * MeoTheme.globalScale }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Component {
         id: pullRefreshSample
         Row {
             spacing: MeoTheme.space24
@@ -2591,6 +2847,55 @@ Item {
                     scale: 0.23
                     transformOrigin: Item.TopLeft
                 }
+            }
+        }
+    }
+    Component {
+        id: weatherStatusSample
+        Row {
+            spacing: MeoTheme.space32
+
+            MeoWeatherStatus {
+                available: true
+                temperatureText: "28 °C"
+                condition: "Partly cloudy"
+                location: "Singapore"
+                showLocation: true
+                iconName: "weather-partly-cloudy"
+            }
+
+            MeoWeatherStatus {
+                available: true
+                stale: true
+                temperatureText: "28 °C"
+                condition: "Stale data is hidden"
+            }
+        }
+    }
+    Component {
+        id: privacyNotificationSample
+        Column {
+            width: 440 * MeoTheme.globalScale
+            spacing: MeoTheme.space12
+
+            MeoPrivacyNotificationSummary {
+                width: parent.width
+                privacyLevel: "count"
+                notificationCount: 3
+            }
+            MeoPrivacyNotificationSummary {
+                width: parent.width
+                privacyLevel: "app-name"
+                notificationCount: 2
+                applicationName: "Messages"
+            }
+            MeoPrivacyNotificationSummary {
+                width: parent.width
+                privacyLevel: "full-content"
+                notificationCount: 1
+                applicationName: "Calendar"
+                summary: "Design review starts in 10 minutes"
+                body: "Meeting room and invite details appear only when explicitly enabled."
             }
         }
     }
@@ -3389,6 +3694,26 @@ Item {
                 { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: "Attention required" },
                 { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: "Hidden optional status" }
             ]
+        }
+    }
+
+    Component {
+        id: ambientClockSample
+        Row {
+            spacing: MeoTheme.space32
+            MeoAmbientClock {
+                timeText: "14:30"
+                dateText: "Monday, August 21"
+            }
+            MeoAmbientClock {
+                timeText: "14:30:45"
+                dateText: "Monday, August 21"
+                showSeconds: true
+            }
+            MeoAmbientClock {
+                timeText: "2:30 PM"
+                showDate: false
+            }
         }
     }
 

@@ -33,6 +33,8 @@ Item {
             tile.visualStyle = "pixel"
             tile.busy = false
             tile.unavailable = false
+            tile.optimisticFeedback = true
+            tile.optimisticTimeout = 1200
             tile.detailsEnabled = true
             tile.detailsOnLongPress = true
             tile.editMode = false
@@ -101,12 +103,41 @@ Item {
         function test_busyAndUnavailableStateBlockActions() {
             tile.busy = true
             tile.unavailable = false
-            verify(!tile.activeFocusOnTab)
+            verify(tile.activeFocusOnTab)
+            compare(tile.opacity, 1)
+            const loading = findChild(tile, "quickSettingsLoadingFeedback")
+            verify(loading !== null)
+            compare(loading.feedbackVisible, true)
+            compare(Math.round(loading.x), Math.round(MeoTheme.space16))
+            compare(Math.round(loading.y), Math.round((tile.visualHeight - loading.height) / 2))
             tile.busy = false
             tile.unavailable = true
             verify(!tile.activeFocusOnTab)
-            wait(MeoTheme.motionDurationState + 20)
-            verify(tile.opacity <= MeoTheme.disabledContentOpacity)
+            tryCompare(tile, "opacity", MeoTheme.disabledContentOpacity)
+        }
+
+        function test_toggleAcknowledgesImmediatelyAndBackendCanConfirm() {
+            tile.active = false
+            compare(tile.visualActive, false)
+            tile.activateMain()
+            compare(triggeredSpy.count, 1)
+            compare(tile.visualActive, true)
+
+            tile.busy = true
+            tile.active = true
+            compare(tile.visualActive, true)
+            tile.busy = false
+            compare(tile.visualActive, true)
+        }
+
+        function test_failedOptimisticToggleRollsBackWhenBusyEnds() {
+            tile.active = false
+            tile.activateMain()
+            compare(tile.visualActive, true)
+            tile.busy = true
+            tile.busy = false
+            wait(0)
+            compare(tile.visualActive, false)
         }
     }
 }

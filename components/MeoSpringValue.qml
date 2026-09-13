@@ -13,7 +13,9 @@ QtObject {
     property string motionProfile: "pixel"
     property string speed: "default"
     property var spring: MeoMotion.spatialSpec(motionProfile, speed)
-    property int maximumRunDuration: MeoMotion.maximumDuration(motionProfile, speed)
+    property int maximumRunDuration: MeoMotion.scaledMaximumDuration(
+                                         MeoMotion.maximumDuration(motionProfile, speed),
+                                         MeoTheme.effectiveMotionScale)
     property bool enabled: !MeoTheme.reduceMotion
     property real valueThreshold: 0.001
     property real velocityThreshold: 0.01

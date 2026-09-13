@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 import ".." as Meo
 
 Item {
@@ -22,8 +21,9 @@ Item {
     property color color: theme.contentOnSurface
     property color overlayColor: theme.scrim
     property color focusColor: theme.primary
-    property real rippleFeather: 2 * themeGlobalScale
-    property real rippleStartRadius: 6 * themeGlobalScale
+    property real rippleFeather: theme.rippleEdgeFeather
+    property real rippleStartRadius: Math.max(width, height) * theme.rippleStartRadiusFactor
+    property real rippleBoundedExtraRadius: theme.rippleBoundedExtraRadius
     property real radius: 0
     // Connected groups need one continuous outer silhouette: only the first
     // and last item inherit the container corners.  Keep this in the shared
@@ -57,19 +57,68 @@ Item {
     readonly property real focusOpacity: theme.stateOpacityFocus
     readonly property real pressedOpacity: theme.stateOpacityPressed
     readonly property real draggedOpacity: theme.stateOpacityDragged
-    readonly property int hoverDuration: theme.motionDurationFast
+    readonly property int hoverDuration: theme.motionDurationStateHoverEnter
+    readonly property int focusDuration: theme.motionDurationStateFocusEnter
+    readonly property int dragEnterDuration: theme.motionDurationStateDragEnter
+    readonly property int stateExitDuration: theme.motionDurationStateExit
+    readonly property int dragExitDuration: theme.motionDurationStateDragExit
     readonly property int pressDuration: theme.motionDurationPress
+    readonly property int rippleFadeInDuration: theme.motionDurationRippleFadeIn
     readonly property int rippleExpandDuration: theme.motionDurationRippleExpand
     readonly property int rippleFadeDuration: theme.motionDurationRippleFade
     // This exposes the lifetime boundary for hosts and tests.  The ripple
     // surface is not painted between interactions, so it cannot become a
     // permanent GPU workload on a dense list.
-    readonly property bool rippleActive: rippleLayer.opacity > 0
+    property bool _rippleInProgress: false
+    property int _stateTransitionDuration: hoverDuration
+    readonly property bool rippleActive: _rippleInProgress
     readonly property real rippleOriginX: rippleLayer.originX
     readonly property real rippleOriginY: rippleLayer.originY
+    readonly property real rippleCenterX: rippleLayer.centerX
+    readonly property real rippleCenterY: rippleLayer.centerY
     readonly property real rippleOpacity: rippleLayer.opacity
     readonly property real rippleRadius: rippleLayer.radiusValue
     readonly property real rippleTargetRadius: rippleLayer.targetRadius
+    readonly property real baseStateTargetOpacity: {
+        if (!enabled) return 0
+        if (dragged) return draggedOpacity
+        // Pointer presses are painted by the circular ripple itself. Avoid
+        // stacking a second full-surface pressed tint beneath it.
+        if (rippleActive && rippleEnabled) return 0
+        if (pressed) return theme.stateOpacityPressed
+        if (hovered) return theme.stateOpacityHover
+        if (focused) return theme.stateOpacityFocus
+        return 0
+    }
+    readonly property real focusRingTargetOpacity: enabled && focused
+                                                   && focusRingEnabled ? 0.78 : 0
+    readonly property real _renderedBaseOpacity: stateLayerShader.baseOpacity
+    readonly property real _renderedFocusOpacity: stateLayerShader.focusOpacity
+    readonly property bool softwareRendering: GraphicsInfo.api === GraphicsInfo.Software
+    readonly property string renderBackend: softwareRendering
+                                                ? "software-fallback"
+                                                : "single-pass-shader"
+
+    function animateBaseState() {
+        baseOpacityAnimation.stop()
+        baseOpacityAnimation.from = stateLayerShader.baseOpacity
+        baseOpacityAnimation.to = baseStateTargetOpacity
+        baseOpacityAnimation.start()
+    }
+
+    function animateFocusRing() {
+        focusOpacityAnimation.stop()
+        focusOpacityAnimation.from = stateLayerShader.focusOpacity
+        focusOpacityAnimation.to = focusRingTargetOpacity
+        focusOpacityAnimation.start()
+    }
+
+    onBaseStateTargetOpacityChanged: animateBaseState()
+    onFocusRingTargetOpacityChanged: animateFocusRing()
+    Component.onCompleted: {
+        stateLayerShader.baseOpacity = baseStateTargetOpacity
+        stateLayerShader.focusOpacity = focusRingTargetOpacity
+    }
 
     anchors.fill: parent
     width: parent ? parent.width : 0
@@ -105,6 +154,9 @@ Item {
         if (!control.enabled || !control.rippleEnabled || theme.reduceMotion)
             return
         rippleExpand.stop()
+        rippleCenterXAnimation.stop()
+        rippleCenterYAnimation.stop()
+        rippleFadeIn.stop()
         rippleFade.stop()
         rippleMinimumLifetime.stop()
         _releasePending = false
@@ -112,10 +164,16 @@ Item {
         const requestedY = control.rippleOriginMode === "pointer" ? y : control.height / 2
         rippleLayer.originX = Math.max(0, Math.min(control.width, requestedX))
         rippleLayer.originY = Math.max(0, Math.min(control.height, requestedY))
+        rippleLayer.centerX = rippleLayer.originX
+        rippleLayer.centerY = rippleLayer.originY
         rippleLayer.radiusValue = control.rippleStartRadius
-        rippleLayer.opacity = control.pressedOpacity
+        rippleLayer.opacity = 0
+        _rippleInProgress = true
         rippleMinimumLifetime.restart()
+        rippleFadeIn.start()
         rippleExpand.start()
+        rippleCenterXAnimation.start()
+        rippleCenterYAnimation.start()
     }
 
     property bool _releasePending: false
@@ -124,6 +182,13 @@ Item {
         if (!rippleActive)
             return
         _releasePending = true
+        // AndroidX immediately draws the ripple at final press alpha when a
+        // quick release arrives before fade-in completes, but still lets the
+        // radius and center finish their 225ms reveal before fading out.
+        if (rippleFadeIn.running) {
+            rippleFadeIn.stop()
+            rippleLayer.opacity = control.pressedOpacity
+        }
         if (!rippleMinimumLifetime.running) {
             _releasePending = false
             rippleFade.restart()
@@ -158,12 +223,25 @@ Item {
             releaseRipple()
     }
 
+    onHoveredChanged: {
+        if (!dragged && !pressed)
+            _stateTransitionDuration = hovered ? hoverDuration : stateExitDuration
+    }
+    onFocusedChanged: {
+        if (!dragged && !pressed && !hovered)
+            _stateTransitionDuration = focused ? focusDuration : stateExitDuration
+    }
+
     // A drag is a continuous state, not another click.  Stop the expanding
     // ripple immediately so sliders and draggable list items cannot leave a
     // delayed press flash behind after the pointer crosses the drag threshold.
     onDraggedChanged: {
+        _stateTransitionDuration = dragged ? dragEnterDuration : dragExitDuration
         if (dragged) {
             rippleExpand.stop()
+            rippleCenterXAnimation.stop()
+            rippleCenterYAnimation.stop()
+            rippleFadeIn.stop()
             rippleMinimumLifetime.stop()
             _releasePending = false
             rippleFade.restart()
@@ -182,81 +260,95 @@ Item {
         }
     }
 
-    Item {
-        id: maskedLayer
+    ShaderEffect {
+        id: stateLayerShader
         anchors.fill: parent
-        visible: baseLayer.opacity > 0 || control.rippleActive
-        layer.enabled: visible && control.maskRadius > 0
-        layer.effect: MultiEffect {
-            maskEnabled: true
-            maskThresholdMin: 0.5
-            // Rectangle + radius is intentionally self-contained here.  The
-            // state layer is used by every primitive, so importing the module
-            // it belongs to would create a runtime self-import cycle.
-            maskSource: Rectangle {
-                width: control.width
-                height: control.height
-                radius: control.maskRadius
-                topLeftRadius: control.maskTopLeftRadius
-                topRightRadius: control.maskTopRightRadius
-                bottomLeftRadius: control.maskBottomLeftRadius
-                bottomRightRadius: control.maskBottomRightRadius
-            }
-        }
+        visible: !control.softwareRendering
+                 && control.enabled
+                 && (control.hovered || control.focused || control.pressed
+                     || control.dragged || control.rippleActive)
+        blending: true
+        fragmentShader: "qrc:/qt/qml/MeoUI/shaders/state_layer.frag.qsb"
+
+        property color overlayColor: control.overlayColor
+        property color focusColor: control.focusColor
+        property vector4d dimensions: Qt.vector4d(control.width, control.height,
+                                                   control.theme.stateMaskEdgeFeather, 0)
+        property vector4d cornerRadii: Qt.vector4d(control.maskTopLeftRadius,
+                                                   control.maskTopRightRadius,
+                                                   control.maskBottomRightRadius,
+                                                   control.maskBottomLeftRadius)
+        property vector4d rippleData: Qt.vector4d(rippleLayer.centerX,
+                                                  rippleLayer.centerY,
+                                                  rippleLayer.radiusValue,
+                                                  control.rippleFeather)
+        property vector4d opacityData: Qt.vector4d(baseOpacity, rippleOpacity,
+                                                   focusOpacity, focusWidth)
+
+        property real baseOpacity: 0
+        property real rippleOpacity: control.rippleActive ? rippleLayer.opacity : 0
+        property real focusOpacity: 0
+        property real focusWidth: focusOpacity > 0
+                                  ? Math.max(2, 2 * control.themeGlobalScale) : 0
+    }
+
+    NumberAnimation {
+        id: baseOpacityAnimation
+        target: stateLayerShader
+        property: "baseOpacity"
+        duration: control._stateTransitionDuration
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
+    }
+
+    NumberAnimation {
+        id: focusOpacityAnimation
+        target: stateLayerShader
+        property: "focusOpacity"
+        duration: control.focused ? control.focusDuration : control.stateExitDuration
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
+    }
+
+    // Qt's software scenegraph does not execute ShaderEffect. Keep this
+    // compatibility path strictly behind the renderer check so offscreen
+    // tests and emergency software sessions retain feedback, while normal
+    // Wayland/OpenGL/Vulkan rendering pays only for the single shader pass.
+    // Deliberately use basic scenegraph geometry here: stacking MultiEffect
+    // masks and blur passes is precisely the frame-time spike this component
+    // is intended to remove.
+    Item {
+        id: softwareFallback
+        anchors.fill: parent
+        visible: control.softwareRendering && control.enabled
+                 && (control.hovered || control.focused || control.pressed
+                     || control.dragged || control.rippleActive)
 
         Rectangle {
-            id: baseLayer
+            id: fallbackBase
             anchors.fill: parent
             color: control.overlayColor
-            opacity: {
-                if (!control.enabled) return 0
-                if (control.dragged) return control.draggedOpacity
-                // Pointer presses are painted by the circular ripple itself.
-                // Avoid stacking a second full-surface pressed tint beneath it.
-                if (control.rippleActive && control.rippleEnabled) return 0
-                if (control.pressed) return control.pressedOpacity
-                if (control.hovered) return control.hoverOpacity
-                if (control.focused) return control.focusOpacity
-                return 0
-            }
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: control.pressed ? control.pressDuration : control.hoverDuration
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
-                }
-            }
-        }
-
-        Item {
-            id: rippleLayer
-            property real originX: control.width / 2
-            property real originY: control.height / 2
-            property real radiusValue: 0
-            readonly property real targetRadius: Math.sqrt(Math.pow(Math.max(originX, control.width - originX), 2)
-                                                        + Math.pow(Math.max(originY, control.height - originY), 2))
-            x: originX - radiusValue
-            y: originY - radiusValue
-            width: radiusValue * 2
-            height: radiusValue * 2
-            opacity: 0
-            visible: opacity > 0
-
-            Rectangle {
-                anchors.fill: parent
-                radius: width / 2
-                color: control.overlayColor
-                layer.enabled: rippleLayer.visible && control.rippleFeather > 0
-                layer.effect: MultiEffect {
-                    blurEnabled: true
-                    blur: 0.28
-                    blurMax: Math.max(4, Math.ceil(control.rippleFeather * 4))
-                    autoPaddingEnabled: true
-                }
-            }
+            opacity: stateLayerShader.baseOpacity
+            radius: control.maskRadius
+            topLeftRadius: control.maskTopLeftRadius
+            topRightRadius: control.maskTopRightRadius
+            bottomLeftRadius: control.maskBottomLeftRadius
+            bottomRightRadius: control.maskBottomRightRadius
         }
 
         Rectangle {
+            x: rippleLayer.centerX - rippleLayer.radiusValue
+            y: rippleLayer.centerY - rippleLayer.radiusValue
+            width: rippleLayer.radiusValue * 2
+            height: width
+            radius: width / 2
+            visible: control.rippleActive
+            opacity: rippleLayer.opacity
+            color: control.overlayColor
+        }
+
+        Rectangle {
+            id: fallbackFocus
             anchors.fill: parent
             color: "transparent"
             radius: control.maskRadius
@@ -264,14 +356,34 @@ Item {
             topRightRadius: control.maskTopRightRadius
             bottomLeftRadius: control.maskBottomLeftRadius
             bottomRightRadius: control.maskBottomRightRadius
-            border.width: control.focused && control.focusRingEnabled ? Math.max(2, 2 * control.themeGlobalScale) : 0
+            border.width: stateLayerShader.focusWidth
             border.color: control.focusColor
-            opacity: control.enabled && control.focused && control.focusRingEnabled ? 0.78 : 0
-
-            Behavior on opacity {
-                NumberAnimation { duration: control.hoverDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard }
-            }
+            opacity: stateLayerShader.focusOpacity
         }
+    }
+
+    QtObject {
+        id: rippleLayer
+        property real originX: control.width / 2
+        property real originY: control.height / 2
+        property real centerX: originX
+        property real centerY: originY
+        property real radiusValue: 0
+        property real opacity: 0
+        readonly property real targetRadius: Math.sqrt(control.width * control.width
+                                                       + control.height * control.height) / 2
+                                             + control.rippleBoundedExtraRadius
+    }
+
+    NumberAnimation {
+        id: rippleFadeIn
+        target: rippleLayer
+        property: "opacity"
+        from: 0
+        to: control.pressedOpacity
+        duration: control.rippleFadeInDuration
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
     }
 
     NumberAnimation {
@@ -281,7 +393,30 @@ Item {
         from: control.rippleStartRadius
         to: rippleLayer.targetRadius
         duration: control.rippleExpandDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingEmphasizedDecelerate
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingRippleRadius
+    }
+
+    NumberAnimation {
+        id: rippleCenterXAnimation
+        target: rippleLayer
+        property: "centerX"
+        from: rippleLayer.originX
+        to: control.width / 2
+        duration: control.rippleExpandDuration
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
+    }
+
+    NumberAnimation {
+        id: rippleCenterYAnimation
+        target: rippleLayer
+        property: "centerY"
+        from: rippleLayer.originY
+        to: control.height / 2
+        duration: control.rippleExpandDuration
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
     }
 
     NumberAnimation {
@@ -290,7 +425,13 @@ Item {
         property: "opacity"
         to: 0
         duration: control.rippleFadeDuration
-        easing.type: Easing.BezierSpline; easing.bezierCurve: Meo.MeoTheme.motionEasingStandard
+        easing.type: Easing.BezierSpline
+        easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
+        onFinished: {
+            control._rippleInProgress = false
+            rippleLayer.opacity = 0
+            rippleLayer.radiusValue = 0
+        }
     }
 
     Connections {
@@ -299,12 +440,16 @@ Item {
             if (!control.theme.reduceMotion)
                 return
             rippleExpand.stop()
+            rippleCenterXAnimation.stop()
+            rippleCenterYAnimation.stop()
+            rippleFadeIn.stop()
             rippleMinimumLifetime.stop()
             keyboardPendingReset.stop()
             rippleFade.stop()
             control._keyboardRipplePending = false
             control._pointerPressActive = false
             control._releasePending = false
+            control._rippleInProgress = false
             rippleLayer.opacity = 0
             rippleLayer.radiusValue = 0
         }

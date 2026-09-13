@@ -63,6 +63,26 @@ Button {
     readonly property real containerWidth: MeoTheme.iconButtonWidthForSize(size, widthOption)
     readonly property real containerHeight: MeoTheme.iconButtonSizeForSize(size)
     readonly property real minimumTouchTarget: 48 * themeGlobalScale
+    property bool _radiusSpringReady: false
+
+    MeoSpringValue {
+        id: iconButtonRadiusSpring
+        motionProfile: "pixel"
+        speed: "fast"
+        valueThreshold: 0.05 * control.themeGlobalScale
+        velocityThreshold: 0.1
+        targetValue: buttonBackground.usesRoundSquareShape
+                     ? (control.pressed ? buttonBackground.pressedRadius
+                                        : (buttonBackground.selectedSquare
+                                           ? buttonBackground.squareRadius
+                                           : buttonBackground.height / 2))
+                     : buttonBackground.height / 2
+        enabled: control._radiusSpringReady && !MeoTheme.reduceMotion
+        Component.onCompleted: {
+            value = targetValue
+            control._radiusSpringReady = true
+        }
+    }
 
     // AndroidX keeps the visual container independent from the accessibility
     // target. XS and S therefore retain their 32/40dp appearance inside a
@@ -77,6 +97,7 @@ Button {
     Accessible.checked: isToggle ? isSelected : false
 
     background: Item {
+        id: buttonBackground
         objectName: "meoIconButtonBackground"
         width: control.containerWidth
         height: control.containerHeight
@@ -102,10 +123,7 @@ Button {
             objectName: "meoIconButtonShape"
             anchors.fill: parent
             type: (control.shape === "circle" || control.shape === "square") ? "rect" : control.shape
-            radius: parent.usesRoundSquareShape
-                    ? (control.pressed ? parent.pressedRadius
-                                       : (parent.selectedSquare ? parent.squareRadius : height / 2))
-                    : height / 2
+            radius: iconButtonRadiusSpring.value
             color: {
                 if (!control.enabled) {
                     if (control.effectiveType === "standard" || control.effectiveType === "outlined")
@@ -134,13 +152,6 @@ Button {
             strokeWidth: control.effectiveType === "outlined" && !control.isSelected
                          ? MeoTheme.strokeWidthThin : 0
 
-            Behavior on radius {
-                enabled: !MeoTheme.reduceMotion
-                NumberAnimation {
-                    duration: MeoTheme.motionDurationShapeEnter
-                    easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                }
-            }
             Behavior on color {
                 enabled: !MeoTheme.reduceMotion
                 ColorAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }

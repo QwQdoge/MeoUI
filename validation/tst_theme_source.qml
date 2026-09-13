@@ -140,6 +140,13 @@ Item {
             MeoTheme.reduceMotion = savedReduceMotion
         }
 
+        function test_loadingFeedbackThresholdsAreCentralized() {
+            compare(MeoTheme.loadingFeedbackDelay, 120)
+            compare(MeoTheme.loadingFeedbackMinimumVisible, 300)
+            compare(MeoTheme.motionDurationLoadingFeedbackFade,
+                    MeoTheme.motionDurationShort2)
+        }
+
         function test_profileMotionUsesOfficialSchemesAndBounds() {
             compare(MeoMotion.spatialSpec("calm", "fast").stiffness, 1400)
             compare(MeoMotion.spatialSpec("pixel", "default").stiffness, 380)
@@ -156,10 +163,14 @@ Item {
         function test_scaledElapsedRespectsMotionScaleAndReducedMotion() {
             const savedReduceMotion = MeoTheme.reduceMotion
             MeoTheme.reduceMotion = false
-            compare(MeoMotion.scaledElapsed(100, 0.5), 50)
+            compare(MeoMotion.scaledElapsed(100, 0.5), 200)
+            compare(MeoMotion.scaledElapsed(100, 2), 50)
+            compare(MeoMotion.scaledMaximumDuration(500, 0.5), 250)
+            compare(MeoMotion.scaledMaximumDuration(500, 2), 1000)
             compare(MeoMotion.scaledElapsed(100, 0), Number.MAX_SAFE_INTEGER)
             MeoTheme.reduceMotion = true
             compare(MeoMotion.scaledElapsed(100, 1), Number.MAX_SAFE_INTEGER)
+            compare(MeoMotion.scaledMaximumDuration(500, 1), 0)
             MeoTheme.reduceMotion = savedReduceMotion
         }
     }
