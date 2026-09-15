@@ -2,6 +2,13 @@
 
 MeoUI 是 MeoArch 共用的 Qt Quick / QML Material Design 3 设计系统。它拥有可复用的主题 token、组件、控件、模式和布局；Plasma/KDE 集成属于 `meo-kde`，具体应用流程属于各应用仓库。
 
+## License
+
+MeoUI 原创代码采用 MIT License，见 [LICENSE](LICENSE)。字体、Material
+Symbols、AndroidX/DankMaterialShell 衍生实现以及仓库内开发工具保留各自的
+Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+
 ## 目录 / Layout
 
 - `MeoTheme.qml`、`MeoWindowMetrics.qml`：共享主题与窗口尺寸契约。

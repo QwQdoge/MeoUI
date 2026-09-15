@@ -1,16 +1,18 @@
 pkgbase = meoui-qml
-	pkgdesc = Material Design 3 QML component library
-	pkgver = 1.0.1
-	pkgrel = 1
+	pkgdesc = MeoUI Qt Quick Material Design 3 component library
+	pkgver = 1.0.4beta1
+	pkgrel = 2
 	url = https://github.com/QwQdoge/MeoUI
 	arch = x86_64
 	arch = aarch64
 	license = MIT
+	license = Apache-2.0
+	license = OFL-1.1
 	makedepends = cmake
 	makedepends = ninja
 	makedepends = qt6-tools
+	makedepends = qt6-shadertools
 	depends = qt6-declarative
-	source = meoui-qml-1.0.1.tar.gz::https://github.com/QwQdoge/MeoUI/archive/refs/tags/v1.0.1.tar.gz
-	sha256sums = SKIP
+	depends = hicolor-icon-theme
 
 pkgname = meoui-qml

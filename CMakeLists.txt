@@ -355,6 +355,16 @@ install(FILES assets/icons/meo-ai-f.svg
     DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
     RENAME meo-ai.svg
 )
+install(FILES LICENSE THIRD_PARTY_NOTICES.md
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/meoui-qml"
+)
+install(FILES
+    assets/licenses/Apache-2.0.txt
+    assets/licenses/DankMaterialShell-MIT.txt
+    assets/fonts/OFL-Roboto.txt
+    assets/fonts/OFL-Comfortaa.txt
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/meoui-qml"
+)
 
 # 新增 Demo 展示程序可执行目标
 if(MEOUI_BUILD_SHOWCASE)
