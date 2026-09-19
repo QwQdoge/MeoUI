@@ -15,13 +15,25 @@ Item {
     property color timeColor: MeoTheme.contentOnSurface
     property color dateColor: MeoTheme.contentOnSurfaceVariant
 
+    // Qt.formatDate() otherwise uses the runtime's ambient locale, which can
+    // disagree with a host application's resolved UI language in an isolated
+    // preview. Tie the fallback clock to the same language that resolves
+    // qsTr(), while still allowing a platform clock service to supply text.
+    readonly property var displayLocale: Qt.locale(Qt.uiLanguage)
+
     readonly property string effectiveTimeText: timeText !== ""
                                                ? timeText
-                                               : Qt.formatTime(dateTime,
-                                                               showSeconds ? "HH:mm:ss" : "HH:mm")
+                                               // Long locale time formats may append a time-zone
+                                               // label. Keep the explicit seconds view compact,
+                                               // while ordinary clocks still follow the resolved
+                                               // locale's preferred short-time convention.
+                                               : (showSeconds
+                                                  ? Qt.formatTime(dateTime, "HH:mm:ss")
+                                                  : Qt.formatTime(dateTime, displayLocale,
+                                                                  Locale.ShortFormat))
     readonly property string effectiveDateText: dateText !== ""
                                                ? dateText
-                                               : Qt.formatDate(dateTime, "dddd, MMMM d")
+                                               : Qt.formatDate(dateTime, displayLocale, Locale.LongFormat)
     readonly property real timePixelSize: (showSeconds ? 72 : 96) * MeoTheme.globalScale
 
     implicitWidth: content.implicitWidth

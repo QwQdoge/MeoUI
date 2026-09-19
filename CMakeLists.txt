@@ -9,7 +9,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(MEOUI_BUILD_SHOWCASE "Build the MeoUI showcase application" ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml ShaderTools)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick QuickControls2 Gui Qml ShaderTools LinguistTools)
+
+if(BUILD_TESTING)
+    find_package(Qt6 REQUIRED COMPONENTS Test)
+endif()
 
 # The token runtime is the single metric/state source for both the QML module
 # and native renderers such as Meo QStyle.  It intentionally contains no
@@ -282,6 +286,35 @@ qt_add_qml_module(meoui_module
         assets/icons/meo-ai-f.svg
 )
 
+# Keep the shared module language-neutral: applications own account-specific
+# language preferences, while MeoUI publishes a normal Qt catalog that a host
+# can load before it creates QML.  The Showcase uses the same catalog so its
+# default language follows the system locale during validation as well.
+set(MEOUI_TRANSLATIONS_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/translations")
+qt_add_lupdate(
+    SOURCE_TARGETS meoui_module
+    TS_FILES translations/meoui_zh_CN.ts
+    LUPDATE_TARGET meoui_update_translations
+)
+qt_add_lrelease(
+    LRELEASE_TARGET meoui_lrelease
+    TS_FILES translations/meoui_zh_CN.ts
+    QM_OUTPUT_DIRECTORY "${MEOUI_TRANSLATIONS_BUILD_DIR}"
+    QM_FILES_OUTPUT_VARIABLE MEOUI_TRANSLATION_QM_FILES
+)
+
+if(BUILD_TESTING)
+    add_executable(meoui_translation_catalog_smoke
+        validation/translation-catalog-smoke.cpp
+    )
+    add_dependencies(meoui_translation_catalog_smoke meoui_lrelease)
+    target_link_libraries(meoui_translation_catalog_smoke PRIVATE Qt6::Core Qt6::Test)
+    target_compile_definitions(meoui_translation_catalog_smoke PRIVATE
+        MEOUI_TRANSLATIONS_BUILD_DIR="${MEOUI_TRANSLATIONS_BUILD_DIR}"
+    )
+    add_test(NAME meoui.translation_catalog COMMAND meoui_translation_catalog_smoke)
+endif()
+
 # The state layer combines shape clipping, hover/focus tint, the pointer-origin
 # soft ripple, and the focus ring in one fragment pass. This avoids stacking
 # dynamic MultiEffect blur and mask textures on every interactive delegate.
@@ -307,6 +340,9 @@ install(TARGETS meoui_tokens
 )
 install(FILES runtime/meotokens.h
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/MeoUI"
+)
+install(FILES ${MEOUI_TRANSLATION_QM_FILES}
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/meoui-qml/translations"
 )
 install(TARGETS meoui_moduleplugin
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/qt6/qml/MeoUI"
@@ -395,8 +431,11 @@ if(MEOUI_BUILD_SHOWCASE)
     # qmltestrunner as well as the standalone Showcase. Building only the app
     # must never leave an older plugin beside fresh QML cache files.
     add_dependencies(MeoShowcaseDemo meoui_moduleplugin)
+    add_dependencies(MeoShowcaseDemo meoui_lrelease)
     target_compile_definitions(MeoShowcaseDemo PRIVATE
         MEOUI_DEFAULT_OUTPUT_ROOT="${MEOUI_DEFAULT_OUTPUT_ROOT}"
+        MEOUI_TRANSLATIONS_BUILD_DIR="${MEOUI_TRANSLATIONS_BUILD_DIR}"
+        MEOUI_TRANSLATIONS_INSTALL_DIR="${CMAKE_INSTALL_FULL_DATADIR}/meoui-qml/translations"
     )
 
     # 移除不支持的 qt_import_qml_modules，改用设置 target 属性

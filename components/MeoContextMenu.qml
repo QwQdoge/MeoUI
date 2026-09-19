@@ -1,10 +1,11 @@
 import QtQuick
 import MeoUI
+import "." as Components
 
 // A pointer-positioned MD3 context menu.  It deliberately extends MeoMenu so
 // keyboard traversal, RTL, selection, submenu, and accessibility behavior
 // cannot drift between a button menu and a right-click menu.
-MeoMenu {
+Components.MeoMenu {
     id: control
 
     objectName: "meoContextMenu"

@@ -14,7 +14,11 @@ MeoCard {
 
     property date selectedDate: new Date()
     property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
-    property string headline: "Select date"
+    // Keep labels, month names, and the calendar's week layout aligned with
+    // the host's active UI locale. Applications can bind this to an explicit
+    // account language without changing the date value contract.
+    property var uiLocale: Qt.locale()
+    property string headline: qsTr("Select date")
     readonly property alias calendarControl: calendar
 
     signal dateSelected(date selected)
@@ -57,7 +61,7 @@ MeoCard {
     function monthEntries() {
         const months = []
         for (let month = 0; month < 12; ++month) {
-            const label = Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), "MMMM")
+            const label = Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), uiLocale, "MMMM")
             months.push({
                 label: label,
                 selected: month === displayDate.getMonth(),
@@ -115,7 +119,7 @@ MeoCard {
 
             MeoButton {
                 id: monthButton
-                text: Qt.formatDate(control.displayDate, "MMMM")
+                text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM")
                 type: "text"
                 size: "s"
                 icon.name: "arrow_drop_down"
@@ -161,6 +165,7 @@ MeoCard {
             Layout.preferredHeight: implicitHeight
             selectedDate: control.selectedDate
             displayDate: control.displayDate
+            uiLocale: control.uiLocale
             interactive: control.interactive
             showHeader: false
             onDateSelected: function(date) {

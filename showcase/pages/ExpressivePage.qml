@@ -10,8 +10,8 @@ ShowcaseCategoryPage {
 
     // 🌟 1. Expressive XS-XL Sizing Scale
     ShowcaseSection {
-        title: "Expressive XS-XL Sizing Scale"
-        subtitle: "A 5-step expressive scale for buttons and chips mapping container heights from 24dp to 72dp."
+        title: qsTr("Expressive control sizes")
+        subtitle: qsTr("Compare five button and chip sizes from extra-small to extra-large.")
         width: parent.width
 
         ColumnLayout {
@@ -19,7 +19,7 @@ ShowcaseCategoryPage {
             spacing: MeoTheme.space16
 
             MeoText {
-                text: "MeoButton Sizing Scale"
+                text: qsTr("MeoButton sizes")
                 typeRole: "title"
                 typeSize: "small"
                 emphasized: true
@@ -29,15 +29,15 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space16
 
-                MeoButton { text: "XS Button"; size: "xs"; type: "filled" }
-                MeoButton { text: "S Button"; size: "s"; type: "filled" }
-                MeoButton { text: "M Button"; size: "m"; type: "filled" }
-                MeoButton { text: "L Button"; size: "l"; type: "filled" }
-                MeoButton { text: "XL Button"; size: "xl"; type: "filled" }
+                MeoButton { text: qsTr("XS button"); size: "xs"; type: "filled" }
+                MeoButton { text: qsTr("S button"); size: "s"; type: "filled" }
+                MeoButton { text: qsTr("M button"); size: "m"; type: "filled" }
+                MeoButton { text: qsTr("L button"); size: "l"; type: "filled" }
+                MeoButton { text: qsTr("XL button"); size: "xl"; type: "filled" }
             }
 
             MeoText {
-                text: "MeoChip Sizing Scale"
+                text: qsTr("MeoChip sizes")
                 typeRole: "title"
                 typeSize: "small"
                 emphasized: true
@@ -47,19 +47,19 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space16
 
-                MeoChip { label: "XS Chip"; size: "xs"; icon: "tag" }
-                MeoChip { label: "S Chip"; size: "s"; icon: "tag" }
-                MeoChip { label: "M Chip"; size: "m"; icon: "tag" }
-                MeoChip { label: "L Chip"; size: "l"; icon: "tag" }
-                MeoChip { label: "XL Chip"; size: "xl"; icon: "tag" }
+                MeoChip { label: qsTr("XS chip"); size: "xs"; icon: "tag" }
+                MeoChip { label: qsTr("S chip"); size: "s"; icon: "tag" }
+                MeoChip { label: qsTr("M chip"); size: "m"; icon: "tag" }
+                MeoChip { label: qsTr("L chip"); size: "l"; icon: "tag" }
+                MeoChip { label: qsTr("XL chip"); size: "xl"; icon: "tag" }
             }
         }
     }
 
     // 🌟 2. Official 35 MaterialShapes Gallery
     ShowcaseSection {
-        title: "Complete 35 MaterialShapes Gallery"
-        subtitle: "All 35 official Android Material 3 Expressive shapes rendered from normalized vector geometry."
+        title: qsTr("Material Shapes gallery")
+        subtitle: qsTr("Browse all 35 Material 3 expressive shapes rendered from their vector geometry.")
         width: parent.width
 
         Flow {
@@ -114,8 +114,8 @@ ShowcaseCategoryPage {
 
     // 🌟 3. Shape Morphing Playground (MeoShapeMorph)
     ShowcaseSection {
-        title: "Shape Morphing Lab (MeoShapeMorph Engine)"
-        subtitle: "Topological control point interpolation between shapes with spring scale bounce and local rotation."
+        title: qsTr("Shape morphing")
+        subtitle: qsTr("Choose two shapes and adjust the transition, rotation, and spring response.")
         width: parent.width
 
         ColumnLayout {
@@ -143,9 +143,10 @@ ShowcaseCategoryPage {
 
                     RowLayout {
                         spacing: MeoTheme.space8
-                        MeoText { text: "From Shape:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
+                        MeoText { text: qsTr("From shape:"); typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
                         MeoExposedDropdown {
                             id: fromCombo
+                            label: qsTr("Starting shape")
                             model: ["SoftBurst", "Circle", "Cookie9Sided", "Pentagon", "Pill", "Sunny", "Cookie4Sided", "Oval", "Heart"]
                             currentIndex: 0
                         }
@@ -153,9 +154,10 @@ ShowcaseCategoryPage {
 
                     RowLayout {
                         spacing: MeoTheme.space8
-                        MeoText { text: "To Shape:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
+                        MeoText { text: qsTr("To shape:"); typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
                         MeoExposedDropdown {
                             id: toCombo
+                            label: qsTr("Ending shape")
                             model: ["Cookie9Sided", "SoftBurst", "Pentagon", "Pill", "Sunny", "Cookie4Sided", "Oval", "Circle", "Heart"]
                             currentIndex: 0
                         }
@@ -163,9 +165,11 @@ ShowcaseCategoryPage {
 
                     RowLayout {
                         spacing: MeoTheme.space8
-                        MeoText { text: "Progress (0..1):"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
+                        MeoText { text: qsTr("Progress") + " (0–1):"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
                         MeoSlider {
                             id: progressSlider
+                            accessibleName: qsTr("Shape morph progress")
+                            accessibleDescription: qsTr("Adjust how far the shape has changed.")
                             from: 0.0
                             to: 1.0
                             value: 0.5
@@ -174,9 +178,11 @@ ShowcaseCategoryPage {
 
                     RowLayout {
                         spacing: MeoTheme.space8
-                        MeoText { text: "Rotation Angle:"; typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
+                        MeoText { text: qsTr("Rotation angle:"); typeRole: "label"; typeSize: "medium"; Layout.preferredWidth: 100 }
                         MeoSlider {
                             id: rotSlider
+                            accessibleName: qsTr("Shape rotation")
+                            accessibleDescription: qsTr("Adjust the shape rotation in degrees.")
                             from: 0
                             to: 360
                             value: 0
@@ -185,7 +191,7 @@ ShowcaseCategoryPage {
 
                     MeoCheckbox {
                         id: overshootCheck
-                        label: "Enable Spring Scale Bounce Overshoot"
+                        label: qsTr("Use spring scale bounce")
                         checked: true
                     }
                 }
@@ -195,8 +201,8 @@ ShowcaseCategoryPage {
 
     // 🌟 4. M3 Expressive Loading Indicator Suite
     ShowcaseSection {
-        title: "M3 Expressive Loading Indicator Suite"
-        subtitle: "Indeterminate 7-shape morphing sequence, contained morphing, determinate morphing, wavy linear and wavy circular progress indicators."
+        title: qsTr("Expressive loading indicators")
+        subtitle: qsTr("Compare looping, contained, known-progress, and wavy loading states.")
         width: parent.width
 
         ColumnLayout {
@@ -215,7 +221,7 @@ ShowcaseCategoryPage {
                         size: "m"
                         Layout.alignment: Qt.AlignHCenter
                     }
-                    MeoText { text: "Indeterminate Uncontained (7-Shape Loop)"; typeRole: "label"; typeSize: "small" }
+                    MeoText { text: qsTr("Looping indicator (seven shapes)"); typeRole: "label"; typeSize: "small" }
                 }
 
                 ColumnLayout {
@@ -226,7 +232,7 @@ ShowcaseCategoryPage {
                         size: "m"
                         Layout.alignment: Qt.AlignHCenter
                     }
-                    MeoText { text: "Contained Morphing (48dp Container)"; typeRole: "label"; typeSize: "small" }
+                    MeoText { text: qsTr("Contained morphing indicator"); typeRole: "label"; typeSize: "small" }
                 }
 
                 ColumnLayout {
@@ -238,16 +244,18 @@ ShowcaseCategoryPage {
                         size: "m"
                         Layout.alignment: Qt.AlignHCenter
                     }
-                    MeoText { text: "Determinate Morph (Circle -> SoftBurst)"; typeRole: "label"; typeSize: "small" }
+                    MeoText { text: qsTr("Known-progress morphing indicator"); typeRole: "label"; typeSize: "small" }
                 }
             }
 
             RowLayout {
                 spacing: MeoTheme.space12
                 Layout.alignment: Qt.AlignHCenter
-                MeoText { text: "Determinate Progress:"; typeRole: "label"; typeSize: "medium" }
+                MeoText { text: qsTr("Known progress:"); typeRole: "label"; typeSize: "medium" }
                 MeoSlider {
                     id: detSlider
+                    accessibleName: qsTr("Known progress")
+                    accessibleDescription: qsTr("Adjust the progress shown by the indicators.")
                     from: 0.0
                     to: 1.0
                     value: 0.65
@@ -259,7 +267,7 @@ ShowcaseCategoryPage {
                 spacing: MeoTheme.space12
                 Layout.fillWidth: true
 
-                MeoText { text: "M3E Wavy Progress Indicators (Sine Wave Equation):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoText { text: qsTr("Wavy progress indicators"); typeRole: "title"; typeSize: "small"; emphasized: true }
 
                 RowLayout {
                     spacing: MeoTheme.space24
@@ -285,15 +293,15 @@ ShowcaseCategoryPage {
 
     // 🌟 5. M3 Expressive Range Slider
     ShowcaseSection {
-        title: "M3 Expressive Range Slider"
-        subtitle: "MD3 Expressive wavy range sliders."
+        title: qsTr("Expressive range slider")
+        subtitle: qsTr("Adjust a range with a wavy progress track.")
         width: parent.width
 
         ColumnLayout {
             width: parent.width
             spacing: MeoTheme.space24
 
-            MeoText { text: "Wavy Range Slider:"; typeRole: "title"; typeSize: "small"; emphasized: true }
+            MeoText { text: qsTr("Wavy range slider:"); typeRole: "title"; typeSize: "small"; emphasized: true }
 
             RowLayout {
                 spacing: MeoTheme.space24
@@ -309,8 +317,8 @@ ShowcaseCategoryPage {
 
     // 🌟 5. Bouncy Interactive Cards & Surfaces
     ShowcaseSection {
-        title: "Bouncy Interactive Cards & Surfaces (MeoMotionSurface)"
-        subtitle: "MD3 Cards and Motion Surfaces with bouncy=true scale smoothly on hover and press, utilizing standard overshoot curves."
+        title: qsTr("Responsive cards and surfaces")
+        subtitle: qsTr("These samples grow gently on hover and press, then settle with a soft spring.")
         width: parent.width
 
         RowLayout {
@@ -328,7 +336,7 @@ ShowcaseCategoryPage {
                     anchors.centerIn: parent
                     spacing: MeoTheme.space4
                     MeoText { text: "MeoMotionSurface"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Interactive & Bouncy"; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Interactive and springy"); typeRole: "body"; typeSize: "small" }
                 }
             }
 
@@ -338,12 +346,13 @@ ShowcaseCategoryPage {
                 type: "filled"
                 interactive: true
                 bouncy: true
+                Accessible.name: qsTr("Filled interactive card")
 
                 Column {
                     anchors.centerIn: parent
                     spacing: MeoTheme.space4
-                    MeoText { text: "Filled Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Interactive & Bouncy"; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Filled card"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                    MeoText { text: qsTr("Interactive and springy"); typeRole: "body"; typeSize: "small" }
                 }
             }
 
@@ -353,12 +362,13 @@ ShowcaseCategoryPage {
                 type: "outlined"
                 interactive: true
                 bouncy: true
+                Accessible.name: qsTr("Outlined interactive card")
 
                 Column {
                     anchors.centerIn: parent
                     spacing: MeoTheme.space4
-                    MeoText { text: "Outlined Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Interactive & Bouncy"; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Outlined card"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                    MeoText { text: qsTr("Interactive and springy"); typeRole: "body"; typeSize: "small" }
                 }
             }
         }
@@ -366,8 +376,8 @@ ShowcaseCategoryPage {
 
     // 🌟 6. Account Switcher Widget Integration
     ShowcaseSection {
-        title: "Account Switcher Widget"
-        subtitle: "MD3 Expressive account identity and switching component with dynamic menu states."
+        title: qsTr("Account switcher")
+        subtitle: qsTr("Preview account identity and the menu states used to switch accounts.")
         width: parent.width
 
         RowLayout {

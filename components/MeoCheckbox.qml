@@ -9,6 +9,11 @@ Control {
     // 🌟 核心属性
     property bool checked: false
     property bool indeterminate: false // 🌟 New: Indeterminate state support
+    // A controlled checkbox asks its owner to update the source of truth
+    // through toggled(nextChecked), instead of assigning a bound property and
+    // silently disconnecting that QML binding. The default remains the
+    // self-managed behavior used by existing standalone controls.
+    property bool controlled: false
     property string label: ""
     property string text: label
     property string size: "m" // "xs" | "s" | "m" | "l" | "xl"
@@ -103,13 +108,12 @@ Control {
     function toggleSelection() {
         if (!enabled)
             return
-        if (indeterminate) {
+        const nextChecked = indeterminate ? true : !checked
+        if (!controlled) {
             indeterminate = false
-            checked = true
-        } else {
-            checked = !checked
+            checked = nextChecked
         }
-        toggled(checked)
+        toggled(nextChecked)
     }
 
     Keys.onPressed: function(event) {

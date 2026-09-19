@@ -346,6 +346,8 @@ MeoMotionPopup {
                         objectName: "meoMenuItem_" + index
                         readonly property bool hasSubmenu: control.itemHasSubmenu(modelData)
                         readonly property bool selected: control.itemIsSelected(modelData)
+                        readonly property bool checkable: modelData && typeof modelData === "object"
+                                                         && (modelData.checked !== undefined || modelData.selected !== undefined)
                         readonly property bool vibrantSelection: control.itemUsesVibrantSelection(modelData)
                         readonly property color contentColor: control.rowContentColor(modelData)
                         readonly property color iconColor: control.rowIconColor(modelData)
@@ -357,6 +359,8 @@ MeoMotionPopup {
                         Accessible.role: Accessible.MenuItem
                         Accessible.name: control.itemLabel(modelData)
                         Accessible.description: control.itemSupportingText(modelData)
+                        Accessible.checkable: optionRow.checkable
+                        Accessible.checked: optionRow.selected
                         Accessible.focusable: control.itemIsSelectable(modelData)
                         Accessible.onPressAction: control.activateItem(index, optionRow)
 
@@ -618,6 +622,8 @@ MeoMotionPopup {
                     readonly property var modelData: control.modelItem(submenu.model, index)
                     readonly property bool selectable: control.itemIsSelectable(modelData)
                     readonly property bool selected: control.itemIsSelected(modelData)
+                    readonly property bool checkable: modelData && typeof modelData === "object"
+                                                     && (modelData.checked !== undefined || modelData.selected !== undefined)
                     readonly property color contentColor: control.rowContentColor(modelData, submenu.vibrant)
                     readonly property color iconColor: control.rowIconColor(modelData, submenu.vibrant)
                     width: submenuColumn.width
@@ -630,6 +636,8 @@ MeoMotionPopup {
                     Accessible.role: Accessible.MenuItem
                     Accessible.name: control.itemLabel(modelData)
                     Accessible.description: control.itemSupportingText(modelData)
+                    Accessible.checkable: submenuOptionRow.checkable
+                    Accessible.checked: submenuOptionRow.selected
                     Accessible.focusable: selectable
                     Accessible.onPressAction: submenu.activateItem(index, submenuOptionRow)
 

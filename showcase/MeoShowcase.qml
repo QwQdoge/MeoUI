@@ -10,7 +10,7 @@ ApplicationWindow {
     minimumWidth: 360 * MeoTheme.globalScale
     minimumHeight: 480 * MeoTheme.globalScale
     visible: true
-    title: "MeoUI MD3 Expressive Showcase"
+    title: qsTr("MeoUI MD3 Expressive Showcase")
     color: MeoTheme.background
     property string componentFilter: commandLineValue("--component=")
 

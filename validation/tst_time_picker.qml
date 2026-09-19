@@ -4,6 +4,10 @@ import "../widgets" as Widgets
 
 Item {
     Widgets.MeoTimePicker { id: picker }
+    Widgets.MeoTimePicker {
+        id: localePicker
+        uiLocale: Qt.locale("en_US")
+    }
 
     TestCase {
         name: "MeoTimePicker"
@@ -52,6 +56,13 @@ Item {
             verify(picker.inputMode)
             verify(picker.isPM)
             verify(!picker.use24Hour)
+        }
+
+        function test_localeDefaultUsesTheLocaleHourCycle() {
+            localePicker.uiLocale = Qt.locale("en_US")
+            compare(localePicker.use24Hour, false)
+            localePicker.uiLocale = Qt.locale("zh_CN")
+            compare(localePicker.use24Hour, true)
         }
     }
 }

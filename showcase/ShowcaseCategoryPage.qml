@@ -112,7 +112,7 @@ MeoPageLayout {
                     ShowcaseVariantRow {
                         Layout.fillWidth: true
                         Layout.preferredHeight: implicitHeight
-                        title: "Live sample"
+                        title: qsTr("Live sample")
 
                         ShowcaseSampleDelegate {
                             componentData: modelData

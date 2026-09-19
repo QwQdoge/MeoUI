@@ -9,8 +9,8 @@ MeoMotionPopup {
 
     property string title: ""
     property string message: ""
-    property string confirmText: "Confirm"
-    property string cancelText: "Cancel"
+    property string confirmText: qsTr("Confirm")
+    property string cancelText: qsTr("Cancel")
     property string icon: ""
     property bool showAcceptButton: true
     property bool showRejectButton: true

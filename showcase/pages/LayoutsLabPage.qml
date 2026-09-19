@@ -5,12 +5,24 @@ import MeoUI
 import ".."
 
 ShowcaseCategoryPage {
+    id: layoutsLabPage
     categoryId: "layouts"
+
+    function localizedWidthSizeClass(sizeClass) {
+        switch (sizeClass) {
+        case "compact": return qsTr("Compact")
+        case "medium": return qsTr("Medium")
+        case "expanded": return qsTr("Expanded")
+        case "large": return qsTr("Large")
+        case "extraLarge": return qsTr("Extra large")
+        default: return sizeClass
+        }
+    }
 
     // 🌟 1. Responsive Viewport & Window Metrics Simulator (MeoWindowMetrics)
     ShowcaseSection {
-        title: "Responsive Viewport & Window Metrics Simulator"
-        subtitle: "Live effective-pixel inspector: Compact <600, Medium 600-839, Expanded 840-1199, Large 1200-1599, Extra-large >=1600."
+        title: qsTr("Responsive window sizes")
+        subtitle: qsTr("See how the layout responds from compact to extra-large windows.")
         width: parent.width
 
         ColumnLayout {
@@ -21,7 +33,7 @@ ShowcaseCategoryPage {
                 spacing: MeoTheme.space16
 
                 MeoText {
-                    text: "Current Window Size Class:"
+                    text: qsTr("Current window size:")
                     typeRole: "title"
                     typeSize: "small"
                     emphasized: true
@@ -35,7 +47,7 @@ ShowcaseCategoryPage {
 
                     MeoText {
                         anchors.centerIn: parent
-                        text: windowMetrics.widthSizeClass
+                        text: layoutsLabPage.localizedWidthSizeClass(windowMetrics.widthSizeClass)
                         typeRole: "label"
                         typeSize: "medium"
                         emphasized: true
@@ -54,8 +66,8 @@ ShowcaseCategoryPage {
 
     // 🌟 2. Internal State Layer Inspector (MeoStateLayer)
     ShowcaseSection {
-        title: "Internal State Layer Engine (MeoStateLayer)"
-        subtitle: "Visualization of MD3 overlay opacities for hover (8%), focus (10%), pressed (10%), and dragged (16%)."
+        title: qsTr("State-layer feedback")
+        subtitle: qsTr("Compare the visual feedback for hover, press, and drag states.")
         width: parent.width
 
         RowLayout {
@@ -75,7 +87,7 @@ ShowcaseCategoryPage {
                     color: MeoTheme.primary
                 }
 
-                MeoText { anchors.centerIn: parent; text: "Hover State Layer (10%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+                MeoText { anchors.centerIn: parent; text: qsTr("Hover feedback (10%)"); typeRole: "label"; typeSize: "small"; emphasized: true }
             }
 
             Rectangle {
@@ -91,7 +103,7 @@ ShowcaseCategoryPage {
                     color: MeoTheme.primary
                 }
 
-                MeoText { anchors.centerIn: parent; text: "Pressed State Layer (14%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+                MeoText { anchors.centerIn: parent; text: qsTr("Press feedback (14%)"); typeRole: "label"; typeSize: "small"; emphasized: true }
             }
 
             Rectangle {
@@ -107,15 +119,15 @@ ShowcaseCategoryPage {
                     color: MeoTheme.primary
                 }
 
-                MeoText { anchors.centerIn: parent; text: "Dragged State Layer (16%)"; typeRole: "label"; typeSize: "small"; emphasized: true }
+                MeoText { anchors.centerIn: parent; text: qsTr("Drag feedback (16%)"); typeRole: "label"; typeSize: "small"; emphasized: true }
             }
         }
     }
 
     // 🌟 3. Experimental & Legacy Components
     ShowcaseSection {
-        title: "Experimental & Legacy Components"
-        subtitle: "Internal test scripts and legacy components documented for architectural completeness."
+        title: qsTr("Experimental and legacy components")
+        subtitle: qsTr("These examples help maintain compatibility and are not part of the recommended product surface.")
         width: parent.width
 
         Rectangle {
@@ -137,12 +149,12 @@ ShowcaseCategoryPage {
                         width: 110 * MeoTheme.globalScale
                         radius: MeoTheme.shapeExtraSmall
                         color: MeoTheme.errorContainer
-                        MeoText { anchors.centerIn: parent; text: "EXPERIMENTAL"; typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnErrorContainer }
+                        MeoText { anchors.centerIn: parent; text: qsTr("EXPERIMENTAL"); typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnErrorContainer }
                     }
                 }
 
                 MeoText {
-                    text: "Source: examples/test-import.qml | Purpose: Module import validation script."
+                    text: qsTr("This example verifies that the module can be imported correctly.")
                     typeRole: "body"
                     typeSize: "small"
                     color: MeoTheme.contentOnSurfaceVariant

@@ -17,13 +17,13 @@ ColumnLayout {
         columns: control.width < 520 * MeoTheme.globalScale ? 1 : 2
         rowSpacing: MeoTheme.space8
         columnSpacing: MeoTheme.space8
-        ApiPill { label: "Variants"; value: control.variants }
-        ApiPill { label: "States"; value: control.stateSummary }
+        ApiPill { label: qsTr("Variants"); value: control.variants }
+        ApiPill { label: qsTr("States"); value: control.stateSummary }
     }
 
     ApiPill {
         Layout.fillWidth: true
-        label: "API"
+        label: qsTr("API")
         value: control.api
     }
 

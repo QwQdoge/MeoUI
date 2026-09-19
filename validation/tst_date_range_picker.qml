@@ -19,6 +19,7 @@ Item {
             picker.startDate = new Date(2026, 6, 12)
             picker.endDate = new Date(2026, 6, 20)
             picker.displayDate = new Date(2026, 6, 1)
+            picker.uiLocale = Qt.locale()
         }
 
         function test_reversedEndInputIsNormalized() {
@@ -40,6 +41,13 @@ Item {
             compare(picker.displayDate.getMonth(), 1)
             picker.chooseYear(2028)
             compare(picker.displayDate.getFullYear(), 2028)
+        }
+
+        function test_localeControlsTheFirstGridWeekday() {
+            picker.uiLocale = Qt.locale("zh_CN")
+            const firstVisibleDay = picker.getDateForIndex(0).date
+            compare(firstVisibleDay.getDay(), picker.uiLocale.firstDayOfWeek % 7)
+            verify(picker.weekdayLabel(0).length > 0)
         }
     }
 }

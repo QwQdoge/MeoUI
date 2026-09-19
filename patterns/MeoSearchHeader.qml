@@ -6,7 +6,7 @@ Rectangle {
     id: control
 
     property string title: ""
-    property string placeholder: "Search"
+    property string placeholder: qsTr("Search")
     property string text: ""
     property string leadingIcon: "search"
     property string trailingIcon: ""

@@ -9,8 +9,8 @@ ShowcaseCategoryPage {
 
     // 🌟 1. Account Switcher Widget
     ShowcaseSection {
-        title: "Account Management Widget"
-        subtitle: "MD3 Expressive Account Switcher widget."
+        title: qsTr("Account switcher")
+        subtitle: qsTr("Preview a clear account menu and the states people see when switching accounts.")
         width: parent.width
 
         MeoAccountSwitcher {
@@ -24,8 +24,8 @@ ShowcaseCategoryPage {
 
     // 🌟 2. Page Host Navigation Lifecycle Lab (MeoPageHost)
     ShowcaseSection {
-        title: "Page Host Lifecycle Lab (MeoPageHost)"
-        subtitle: "Page Host container managing page instance lifecycle, route history, and transition states."
+        title: qsTr("Page transitions")
+        subtitle: qsTr("Switch between pages while the host keeps the current view and transition state consistent.")
         width: parent.width
 
         ColumnLayout {
@@ -36,13 +36,13 @@ ShowcaseCategoryPage {
                 spacing: MeoTheme.space16
 
                 MeoButton {
-                    text: "Load Page Alpha"
+                    text: qsTr("Show page Alpha")
                     type: "tonal"
                     onClicked: pageHost.sourceComponent = pageAlphaComp
                 }
 
                 MeoButton {
-                    text: "Load Page Beta"
+                    text: qsTr("Show page Beta")
                     type: "tonal"
                     onClicked: pageHost.sourceComponent = pageBetaComp
                 }
@@ -68,8 +68,8 @@ ShowcaseCategoryPage {
                 id: pageAlphaComp
                 Column {
                     spacing: MeoTheme.space8
-                    MeoText { text: "Active Page: Alpha"; typeRole: "title"; typeSize: "medium"; emphasized: true }
-                    MeoText { text: "Page Host maintains memory lifecycle and clean entry/exit transitions."; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Current page: Alpha"); typeRole: "title"; typeSize: "medium"; emphasized: true }
+                    MeoText { text: qsTr("The page host keeps this page ready while you move between views."); typeRole: "body"; typeSize: "small" }
                 }
             }
 
@@ -77,8 +77,8 @@ ShowcaseCategoryPage {
                 id: pageBetaComp
                 Column {
                     spacing: MeoTheme.space8
-                    MeoText { text: "Active Page: Beta"; typeRole: "title"; typeSize: "medium"; emphasized: true; color: MeoTheme.primary }
-                    MeoText { text: "Swapping page source demonstrates seamless lifecycle management."; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Current page: Beta"); typeRole: "title"; typeSize: "medium"; emphasized: true; color: MeoTheme.primary }
+                    MeoText { text: qsTr("Changing pages keeps the handoff smooth and the view easy to follow."); typeRole: "body"; typeSize: "small" }
                 }
             }
         }

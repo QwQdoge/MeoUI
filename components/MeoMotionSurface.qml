@@ -8,6 +8,10 @@ Item {
     property bool interactive: true
     property bool bouncy: true
     property string surfaceStyle: "theme" // theme | flat | tonal | translucent
+    // A surface outline is a hierarchy cue, never the focus indicator. Keep
+    // the historical default for compatibility; transient tonal hosts can opt
+    // out and rely on their semantic surface/elevation instead.
+    property bool showOutline: true
     property real surfaceOpacity: 1.0
     property string motionProfile: "pixel"
     property color color: MeoTheme.surfaceContainerLowest
@@ -103,11 +107,16 @@ Item {
         }
     }
     Rectangle {
+        id: surfaceContainer
+        objectName: "meoMotionSurfaceContainer"
         anchors.fill: parent
         radius: control.radius
         color: control.resolvedColor
-        border.width: 1
-        border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.16)
+        border.width: control.showOutline ? MeoTheme.strokeWidthThin : 0
+        border.color: control.showOutline
+                      ? Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g,
+                                MeoTheme.outline.b, 0.16)
+                      : "transparent"
         Behavior on radius { NumberAnimation { duration: MeoTheme.motionDurationMedium1; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasized } }
         Behavior on color {
             ColorAnimation {

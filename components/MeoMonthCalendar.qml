@@ -11,11 +11,14 @@ Item {
     property date selectedDate: new Date()
     property date displayDate: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1)
     property date focusedDate: selectedDate
+    // Keep the grid's first weekday and all spoken date labels on the same
+    // locale as the host page. The date value itself stays locale-neutral.
+    property var uiLocale: Qt.locale()
     property bool interactive: true
     // Consumers with their own M3 picker header can reuse the accessible
     // weekday/day grid without duplicating the calendar implementation.
     property bool showHeader: true
-    property int firstDayOfWeek: Qt.locale().firstDayOfWeek
+    property int firstDayOfWeek: uiLocale.firstDayOfWeek
     property bool showWeekNumbers: false
     property var _dayItems: []
     property int _dayItemsRevision: 0
@@ -147,7 +150,7 @@ Item {
 
             MeoText {
                 Layout.fillWidth: true
-                text: Qt.formatDate(control.displayDate, "MMMM yyyy")
+                text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM yyyy")
                 typeRole: "title"
                 typeSize: "medium"
                 emphasized: true
@@ -196,7 +199,7 @@ Item {
                     required property int index
                     width: weekdayGrid.width / (control.showWeekNumbers ? 8 : 7)
                     height: weekdayGrid.height
-                    text: Qt.formatDate(control.dateAt(index), "ddd")
+                    text: Qt.formatDate(control.dateAt(index), control.uiLocale, "ddd")
                     typeRole: "label"
                     typeSize: "small"
                     emphasized: true
@@ -265,7 +268,7 @@ Item {
                     enabled: control.interactive
                     activeFocusOnTab: enabled && (activeFocus || index === control.focusedIndex)
                     Accessible.role: Accessible.Button
-                    Accessible.name: Qt.formatDate(day, Locale.LongFormat)
+                    Accessible.name: Qt.formatDate(day, control.uiLocale, Locale.LongFormat)
                     Accessible.checkable: true
                     Accessible.checked: isSelected
                     Accessible.focusable: enabled

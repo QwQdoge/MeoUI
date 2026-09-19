@@ -14,7 +14,7 @@ MeoTextField {
     signal timeAccepted(string time)
     signal cleared()
 
-    label: "Time"
+    label: qsTr("Time")
     placeholder: format
     leadingIcon: "schedule"
 
@@ -42,7 +42,7 @@ MeoTextField {
         }
 
         isError = parseTime(text) === ""
-        errorText = isError ? "Invalid time" : ""
+        errorText = isError ? qsTr("Invalid time") : ""
     }
 
     onAccepted: commit()
@@ -61,7 +61,7 @@ MeoTextField {
         const parsed = parseTime(text)
         if (parsed === "") {
             isError = true
-            errorText = "Invalid time"
+            errorText = qsTr("Invalid time")
             // Keep invalid input visible so users can correct it in place;
             // resetting to the old value hides the correction context.
             return

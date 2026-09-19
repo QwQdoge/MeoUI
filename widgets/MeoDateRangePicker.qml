@@ -11,8 +11,11 @@ MeoCard {
     property date startDate: new Date(0) // Default to invalid/epoch
     property date endDate: new Date(0)
     property date displayDate: new Date()
+    // The selected dates remain plain Date values; this controls only their
+    // presentation, weekday order, and accessible spoken labels.
+    property var uiLocale: Qt.locale()
     property bool interactive: true
-    property string headline: "Select range"
+    property string headline: qsTr("Select range")
 
     signal rangeSelected(date start, date end)
     signal accepted(date start, date end)
@@ -62,7 +65,9 @@ MeoCard {
             Row {
                 spacing: 12 * control.themeGlobalScale
                 Text {
-                    text: control.hasStartDate ? Qt.formatDate(control.startDate, "MMM d, yyyy") : "Start date"
+                    text: control.hasStartDate
+                          ? Qt.formatDate(control.startDate, control.uiLocale, Locale.ShortFormat)
+                          : qsTr("Start date")
                     font.pixelSize: 18 * control.themeGlobalScale
                     font.weight: Font.Medium
                     color: control.hasStartDate ? control.themeOnSurface : control.themeOnSurfaceVariant
@@ -73,7 +78,9 @@ MeoCard {
                     color: control.themeOnSurfaceVariant
                 }
                 Text {
-                    text: control.hasEndDate ? Qt.formatDate(control.endDate, "MMM d, yyyy") : "End date"
+                    text: control.hasEndDate
+                          ? Qt.formatDate(control.endDate, control.uiLocale, Locale.ShortFormat)
+                          : qsTr("End date")
                     font.pixelSize: 18 * control.themeGlobalScale
                     font.weight: Font.Medium
                     color: control.hasEndDate ? control.themeOnSurface : control.themeOnSurfaceVariant
@@ -88,7 +95,7 @@ MeoCard {
                     id: startInput
                     width: (parent.width - parent.spacing) / 2
                     height: 48 * control.themeGlobalScale
-                    label: "Start"
+                    label: qsTr("Start")
                     format: "yyyy-MM-dd"
                     allowEmpty: true
                     enabled: control.interactive
@@ -101,7 +108,7 @@ MeoCard {
                     id: endInput
                     width: (parent.width - parent.spacing) / 2
                     height: 48 * control.themeGlobalScale
-                    label: "End"
+                    label: qsTr("End")
                     format: "yyyy-MM-dd"
                     allowEmpty: true
                     enabled: control.interactive
@@ -126,7 +133,7 @@ MeoCard {
 
                 MeoButton {
                     id: monthButton
-                    text: Qt.formatDate(control.displayDate, "MMMM")
+                    text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM")
                     type: "text"
                     size: "s"
                     icon.name: "arrow_drop_down"
@@ -153,6 +160,7 @@ MeoCard {
                 MeoIconButton {
                     icon.name: "chevron_left"
                     enabled: control.interactive
+                    Accessible.name: qsTr("Previous month")
                     onClicked: {
                         let d = new Date(control.displayDate)
                         d.setMonth(d.getMonth() - 1)
@@ -162,6 +170,7 @@ MeoCard {
                 MeoIconButton {
                     icon.name: "chevron_right"
                     enabled: control.interactive
+                    Accessible.name: qsTr("Next month")
                     onClicked: {
                         let d = new Date(control.displayDate)
                         d.setMonth(d.getMonth() + 1)
@@ -175,10 +184,10 @@ MeoCard {
         Row {
             width: parent.width
             Repeater {
-                model: ["S", "M", "T", "W", "T", "F", "S"]
+                model: 7
                 delegate: Text {
                     width: (parent.width) / 7
-                    text: modelData
+                    text: control.weekdayLabel(index)
                     horizontalAlignment: Text.AlignHCenter
                     font.pixelSize: 12 * control.themeGlobalScale
                     color: control.themeOnSurfaceVariant
@@ -195,8 +204,15 @@ MeoCard {
             Repeater {
                 model: 42 // 6 weeks
                 delegate: Item {
+                    id: rangeDay
                     width: daysGrid.width / 7
                     height: width
+                    activeFocusOnTab: control.interactive
+                    Accessible.role: Accessible.Button
+                    Accessible.name: Qt.formatDate(dateInfo.date, control.uiLocale, Locale.LongFormat)
+                    Accessible.checkable: isStart || isEnd
+                    Accessible.checked: isStart || isEnd
+                    Accessible.focusable: control.interactive
 
                     readonly property var dateInfo: getDateForIndex(index)
                     readonly property bool isStart: isSameDate(dateInfo.date, control.startDate)
@@ -260,6 +276,7 @@ MeoCard {
                         shape: "circle"
                         hovered: dayPointer.containsMouse
                         pressed: dayPointer.pressed
+                        focused: rangeDay.activeFocus
                         enabled: control.interactive
                         color: (isStart || isEnd) ? control.themeOnPrimary : control.themeOnSurface
                     }
@@ -271,9 +288,14 @@ MeoCard {
                         hoverEnabled: true
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: {
+                            rangeDay.forceActiveFocus(Qt.MouseFocusReason)
                             handleDateClick(dateInfo.date)
                         }
                     }
+
+                    Keys.onReturnPressed: control.handleDateClick(dateInfo.date)
+                    Keys.onEnterPressed: control.handleDateClick(dateInfo.date)
+                    Keys.onSpacePressed: control.handleDateClick(dateInfo.date)
                 }
             }
         }
@@ -298,9 +320,17 @@ MeoCard {
         }
     }
 
+    function weekdayLabel(index) {
+        // 2023-01-01 is a Sunday. Convert QLocale's Monday=1…Sunday=7
+        // convention to JavaScript's Sunday=0 convention before formatting.
+        const dayOffset = (control.uiLocale.firstDayOfWeek % 7 + index) % 7
+        return Qt.formatDate(new Date(2023, 0, 1 + dayOffset), control.uiLocale, "ddd")
+    }
+
     function getDateForIndex(index) {
         let firstDayOfMonth = new Date(control.displayDate.getFullYear(), control.displayDate.getMonth(), 1)
-        let startOffset = firstDayOfMonth.getDay()
+        const firstDayOfWeek = control.uiLocale.firstDayOfWeek % 7
+        const startOffset = (firstDayOfMonth.getDay() - firstDayOfWeek + 7) % 7
         let targetDate = new Date(firstDayOfMonth)
         targetDate.setDate(1 - startOffset + index)
         // Reset time to midnight for accurate comparison
@@ -379,7 +409,7 @@ MeoCard {
         const months = []
         for (let month = 0; month < 12; ++month) {
             months.push({
-                label: Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), "MMMM"),
+                label: Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), uiLocale, "MMMM"),
                 selected: month === displayDate.getMonth(),
                 action: (function(value) { return function() { control.chooseMonth(value) } })(month)
             })

@@ -8,7 +8,7 @@ Rectangle {
     id: control
 
     property string text: ""
-    property string placeholder: "Search..."
+    property string placeholder: qsTr("Search...")
     property Component menuContent: null
     property Component content: null
     property var suggestions: []

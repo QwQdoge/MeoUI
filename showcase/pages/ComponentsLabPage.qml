@@ -10,8 +10,8 @@ ShowcaseCategoryPage {
 
     // 🌟 1. Segmented List Section (MeoSegmentedList)
     ShowcaseSection {
-        title: "Segmented List Component (MeoSegmentedList)"
-        subtitle: "Items with connected corner radii forming unified container shapes for group items."
+        title: qsTr("Segmented list")
+        subtitle: qsTr("Keep related items together in one continuous surface.")
         width: parent.width
 
         ColumnLayout {
@@ -21,10 +21,10 @@ ShowcaseCategoryPage {
             MeoSegmentedList {
                 width: parent.width
                 model: [
-                    { label: "Account Overview", icon: "person", trailingText: "Active" },
-                    { label: "Security & Privacy", icon: "security", trailingText: "Protected" },
-                    { label: "Notifications & Alerts", icon: "notifications", trailingText: "Enabled" },
-                    { label: "Connected Devices", icon: "devices", trailingText: "3 Online" }
+                    { label: qsTr("Account overview"), icon: "person", trailingText: qsTr("Active") },
+                    { label: qsTr("Security and privacy"), icon: "security", trailingText: qsTr("Protected") },
+                    { label: qsTr("Notifications"), icon: "notifications", trailingText: qsTr("Enabled") },
+                    { label: qsTr("Connected devices"), icon: "devices", trailingText: qsTr("3 online") }
                 ]
             }
         }
@@ -32,8 +32,8 @@ ShowcaseCategoryPage {
 
     // 🌟 2. Motion Popup Playground (MeoMotionPopup)
     ShowcaseSection {
-        title: "Motion Popup Playground (MeoMotionPopup)"
-        subtitle: "M3 Expressive motion popup container supporting anchored directional transitions."
+        title: qsTr("Motion popup")
+        subtitle: qsTr("Open a popup that stays anchored and moves smoothly with its controls.")
         width: parent.width
 
         RowLayout {
@@ -41,7 +41,7 @@ ShowcaseCategoryPage {
             Layout.alignment: Qt.AlignLeft
 
             MeoButton {
-                text: "Toggle Motion Popup"
+                text: qsTr("Open motion popup")
                 type: "filled"
                 onClicked: motionPop.open()
             }
@@ -53,9 +53,9 @@ ShowcaseCategoryPage {
 
                 ColumnLayout {
                     spacing: MeoTheme.space8
-                    MeoText { text: "Expressive Motion Popup"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Supports interruptible spring physics and anchor positioning."; typeRole: "body"; typeSize: "small" }
-                    MeoButton { text: "Close"; size: "s"; onClicked: motionPop.close() }
+                    MeoText { text: qsTr("Motion popup"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                    MeoText { text: qsTr("It follows its anchor and responds smoothly when you interact with it."); typeRole: "body"; typeSize: "small" }
+                    MeoButton { text: qsTr("Close"); size: "s"; onClicked: motionPop.close() }
                 }
             }
         }
@@ -63,8 +63,8 @@ ShowcaseCategoryPage {
 
     // 🌟 3. Size Configurations Section
     ShowcaseSection {
-        title: "Media Card Sizes"
-        subtitle: "A 3-step size variant scale ('s', 'm', 'l') with automatically scaled typography and layout metrics."
+        title: qsTr("Media card sizes")
+        subtitle: qsTr("Compare compact, standard, and spacious cards with matching type and spacing.")
         width: parent.width
 
         Flow {
@@ -77,11 +77,11 @@ ShowcaseCategoryPage {
                 type: "filled"
                 mediaSource: "https://picsum.photos/400/300?random=1"
                 aspectRatio: 16/9
-                title: "Small Card"
-                supportingText: "A highly compact size variant designed for grid list layouts and tight spaces."
+                title: qsTr("Compact card")
+                supportingText: qsTr("A space-saving card for dense grids and short lists.")
                 actions: [
-                    { "label": "View" },
-                    { "label": "Share" }
+                    { "label": qsTr("View") },
+                    { "label": qsTr("Share") }
                 ]
             }
 
@@ -91,11 +91,11 @@ ShowcaseCategoryPage {
                 type: "filled"
                 mediaSource: "https://picsum.photos/400/300?random=2"
                 aspectRatio: 16/9
-                title: "Medium Card"
-                supportingText: "The standard default size variant. Excellent balance of media area and readability."
+                title: qsTr("Standard card")
+                supportingText: qsTr("A balanced card for comfortable reading and media previews.")
                 actions: [
-                    { "label": "View" },
-                    { "label": "Share" }
+                    { "label": qsTr("View") },
+                    { "label": qsTr("Share") }
                 ]
             }
 
@@ -105,11 +105,11 @@ ShowcaseCategoryPage {
                 type: "filled"
                 mediaSource: "https://picsum.photos/400/300?random=3"
                 aspectRatio: 16/9
-                title: "Large Card"
-                supportingText: "Generous spacing and prominent typography for high-impact media features."
+                title: qsTr("Spacious card")
+                supportingText: qsTr("Extra room gives featured media and longer text more presence.")
                 actions: [
-                    { "label": "View" },
-                    { "label": "Share" }
+                    { "label": qsTr("View") },
+                    { "label": qsTr("Share") }
                 ]
             }
         }
@@ -117,8 +117,8 @@ ShowcaseCategoryPage {
 
     // 🌟 4. Aspect Ratios Section
     ShowcaseSection {
-        title: "Media Aspect Ratios"
-        subtitle: "Supports customizable media aspect ratios such as 16:9, 4:3, or 1:1 square for different content layouts."
+        title: qsTr("Media aspect ratios")
+        subtitle: qsTr("Choose an aspect ratio that fits video, photography, or square artwork.")
         width: parent.width
 
         Flow {
@@ -129,32 +129,32 @@ ShowcaseCategoryPage {
                 type: "elevated"
                 mediaSource: "https://picsum.photos/400/300?random=4"
                 aspectRatio: 16/9
-                title: "Cinematic 16:9"
-                supportingText: "Perfect for video previews, movie posters, and horizontal landscapes."
+                title: qsTr("Cinematic 16:9")
+                supportingText: qsTr("A wide frame for video previews, posters, and landscapes.")
             }
 
             MeoMediaCard {
                 type: "elevated"
                 mediaSource: "https://picsum.photos/400/300?random=5"
                 aspectRatio: 4/3
-                title: "Classic 4:3"
-                supportingText: "Traditional photograph aspect ratio. Great for portrait and landscape scenes."
+                title: qsTr("Classic 4:3")
+                supportingText: qsTr("A familiar photo frame for portraits and everyday scenes.")
             }
 
             MeoMediaCard {
                 type: "elevated"
                 mediaSource: "https://picsum.photos/400/300?random=6"
                 aspectRatio: 1/1
-                title: "Square 1:1"
-                supportingText: "Modern square crop. Highly popular for product showcases and social media avatars."
+                title: qsTr("Square 1:1")
+                supportingText: qsTr("A balanced square crop for products, artwork, and avatars.")
             }
         }
     }
 
     // 🌟 5. States Section
     ShowcaseSection {
-        title: "Card States & Positions"
-        subtitle: "Demonstrates interactive feedback, selected checkbox indicator, disabled opacity, and horizontal positions."
+        title: qsTr("Card states")
+        subtitle: qsTr("See how a card communicates when it is ready, selected, or unavailable.")
         width: parent.width
 
         ColumnLayout {
@@ -170,10 +170,10 @@ ShowcaseCategoryPage {
                     interactive: true
                     mediaSource: "https://picsum.photos/400/300?random=10"
                     aspectRatio: 16/9
-                    title: "Interactive Card"
-                    supportingText: "Click on this card to see organic hover scaling, smooth pressed response, and ripples."
+                    title: qsTr("Interactive card")
+                    supportingText: qsTr("Select this card to preview hover, press, and ripple feedback.")
                     actions: [
-                        { "label": "Explore" }
+                        { "label": qsTr("Explore") }
                     ]
                 }
 
@@ -182,10 +182,10 @@ ShowcaseCategoryPage {
                     selected: true
                     mediaSource: "https://picsum.photos/400/300?random=11"
                     aspectRatio: 16/9
-                    title: "Selected State"
-                    supportingText: "Features an MD3 check badge in the corner and primaryContainer colored background."
+                    title: qsTr("Selected")
+                    supportingText: qsTr("The check badge and highlighted surface make this selection clear.")
                     actions: [
-                        { "label": "Deselect" }
+                        { "label": qsTr("Deselect") }
                     ]
                 }
 
@@ -194,10 +194,10 @@ ShowcaseCategoryPage {
                     enabled: false
                     mediaSource: "https://picsum.photos/400/300?random=12"
                     aspectRatio: 16/9
-                    title: "Disabled State"
-                    supportingText: "Container and contents are visually dimmed and interaction is completely disabled."
+                    title: qsTr("Unavailable")
+                    supportingText: qsTr("This card is visually muted and cannot be selected right now.")
                     actions: [
-                        { "label": "Action", "enabled": false }
+                        { "label": qsTr("Action"), "enabled": false }
                     ]
                 }
             }

@@ -13,6 +13,22 @@ Item {
         label: "Receive updates"
     }
 
+    property bool externalChecked: false
+    property bool externalIndeterminate: false
+
+    Components.MeoCheckbox {
+        id: controlledCheckbox
+        y: 64
+        label: "Controlled updates"
+        controlled: true
+        checked: root.externalChecked
+        indeterminate: root.externalIndeterminate
+        onToggled: nextChecked => {
+            root.externalIndeterminate = false
+            root.externalChecked = nextChecked
+        }
+    }
+
     TestCase {
         name: "MeoCheckbox"
         when: windowShown
@@ -25,6 +41,8 @@ Item {
             checkbox.size = "m"
             checkbox.LayoutMirroring.enabled = false
             checkbox.LayoutMirroring.childrenInherit = true
+            root.externalChecked = false
+            root.externalIndeterminate = false
             root.forceActiveFocus()
             mouseMove(root, root.width - 1, root.height - 1)
             wait(20)
@@ -43,6 +61,24 @@ Item {
 
             checkbox.toggleSelection()
             compare(checkbox.checked, false)
+        }
+
+        function test_controlledStateKeepsItsBindingAfterPointerAndExternalUpdates() {
+            mouseClick(controlledCheckbox, controlledCheckbox.width / 2,
+                       controlledCheckbox.height / 2, Qt.LeftButton)
+            tryCompare(root, "externalChecked", true, 500)
+            compare(controlledCheckbox.checked, true)
+
+            root.externalChecked = false
+            tryCompare(controlledCheckbox, "checked", false, 500)
+
+            root.externalIndeterminate = true
+            tryCompare(controlledCheckbox, "indeterminate", true, 500)
+            controlledCheckbox.toggleSelection()
+            tryCompare(root, "externalChecked", true, 500)
+            compare(root.externalIndeterminate, false)
+            compare(controlledCheckbox.indeterminate, false)
+            compare(controlledCheckbox.Accessible.checkStateMixed, false)
         }
 
         function test_sizesAndPressKeepIndicatorGeometryStable() {

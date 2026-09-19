@@ -7,7 +7,7 @@ Item {
 
     // 🌟 核心对外属性
     property string text: ""
-    property string placeholder: "Search..."
+    property string placeholder: qsTr("Search...")
     property var filterModel: []
     property var selectedFilterIndices: []
     property bool multiSelectFilters: true

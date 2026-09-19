@@ -6,8 +6,8 @@ Control {
     id: control
 
     // Media model
-    property string title: "Untitled Track"
-    property string artist: "Unknown Artist"
+    property string title: qsTr("Untitled track")
+    property string artist: qsTr("Unknown artist")
     property string album: ""
     property string sourceName: ""
     property string coverSource: ""
@@ -25,7 +25,7 @@ Control {
     property bool shuffleEnabled: false
     property string repeatMode: "off" // "off" | "all" | "one"
     property bool liked: false
-    property string outputDevice: "This device"
+    property string outputDevice: qsTr("This device")
 
     // Pixel media presentations
     property string presentation: "adaptive" // "adaptive" | "compact" | "controlCenter" | "lockScreen" | "fullScreen"
@@ -379,7 +379,7 @@ Control {
         spacing: 16 * control.themeGlobalScale
         MediaActionButton {
             glyph: "shuffle"
-            accessibleName: "Shuffle"
+            accessibleName: qsTr("Shuffle")
             active: control.shuffleEnabled
             onClicked: {
                 control.shuffleEnabled = !control.shuffleEnabled
@@ -388,13 +388,13 @@ Control {
         }
         MediaActionButton {
             glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
-            accessibleName: "Repeat"
+            accessibleName: qsTr("Repeat")
             active: control.repeatMode !== "off"
             onClicked: control.cycleRepeat()
         }
         MediaActionButton {
             glyph: control.liked ? "favorite" : "favorite_border"
-            accessibleName: "Favorite"
+            accessibleName: qsTr("Favorite")
             active: control.liked
             onClicked: {
                 control.liked = !control.liked
@@ -403,7 +403,7 @@ Control {
         }
         MediaActionButton {
             glyph: "devices"
-            accessibleName: "Output device"
+            accessibleName: qsTr("Output device")
             onClicked: control.outputRequested()
         }
     }
@@ -430,7 +430,7 @@ Control {
                     id: compactPlay
                     anchors.verticalCenter: parent.verticalCenter
                     glyph: control.isPlaying ? "pause" : "play_arrow"
-                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
                     prominent: true
                     diameter: 48 * control.themeGlobalScale
                     onClicked: control.togglePlayback()
@@ -471,6 +471,7 @@ Control {
                         padding: 0
                         hoverEnabled: true
                         activeFocusOnTab: enabled
+                        Accessible.name: qsTr("Output device: %1").arg(control.outputDevice)
                         onClicked: control.outputRequested()
 
                         PointHandler {
@@ -530,7 +531,7 @@ Control {
                     id: centerPlay
                     anchors.verticalCenter: parent.verticalCenter
                     glyph: control.isPlaying ? "pause" : "play_arrow"
-                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
                     prominent: true
                     diameter: 56 * control.themeGlobalScale
                     onClicked: control.togglePlayback()
@@ -543,13 +544,13 @@ Control {
                 spacing: 8 * control.themeGlobalScale
                 MediaActionButton {
                     glyph: "skip_previous"
-                    accessibleName: "Previous"
+                    accessibleName: qsTr("Previous")
                     enabled: control.canSkipPrevious
                     onClicked: control.previousRequested()
                 }
                 MediaActionButton {
                     glyph: "skip_next"
-                    accessibleName: "Next"
+                    accessibleName: qsTr("Next")
                     enabled: control.canSkipNext
                     onClicked: control.nextRequested()
                 }
@@ -559,7 +560,7 @@ Control {
                 }
                 MediaActionButton {
                     glyph: control.liked ? "favorite" : "favorite_border"
-                    accessibleName: "Favorite"
+                    accessibleName: qsTr("Favorite")
                     active: control.liked
                     onClicked: {
                         control.liked = !control.liked
@@ -568,7 +569,7 @@ Control {
                 }
                 MediaActionButton {
                     glyph: "more_vert"
-                    accessibleName: "More"
+                    accessibleName: qsTr("More")
                     onClicked: control.outputRequested()
                 }
             }
@@ -601,21 +602,21 @@ Control {
                 spacing: 22 * control.themeGlobalScale
                 MediaActionButton {
                     glyph: "skip_previous"
-                    accessibleName: "Previous"
+                    accessibleName: qsTr("Previous")
                     diameter: 52 * control.themeGlobalScale
                     enabled: control.canSkipPrevious
                     onClicked: control.previousRequested()
                 }
                 MediaActionButton {
                     glyph: control.isPlaying ? "pause" : "play_arrow"
-                    accessibleName: control.isPlaying ? "Pause" : "Play"
+                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
                     prominent: true
                     diameter: 72 * control.themeGlobalScale
                     onClicked: control.togglePlayback()
                 }
                 MediaActionButton {
                     glyph: "skip_next"
-                    accessibleName: "Next"
+                    accessibleName: qsTr("Next")
                     diameter: 52 * control.themeGlobalScale
                     enabled: control.canSkipNext
                     onClicked: control.nextRequested()
@@ -658,21 +659,21 @@ Control {
                     spacing: 24 * control.themeGlobalScale
                     MediaActionButton {
                         glyph: "skip_previous"
-                        accessibleName: "Previous"
+                        accessibleName: qsTr("Previous")
                         diameter: 56 * control.themeGlobalScale
                         enabled: control.canSkipPrevious
                         onClicked: control.previousRequested()
                     }
                     MediaActionButton {
                         glyph: control.isPlaying ? "pause" : "play_arrow"
-                        accessibleName: control.isPlaying ? "Pause" : "Play"
+                        accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
                         prominent: true
                         diameter: 80 * control.themeGlobalScale
                         onClicked: control.togglePlayback()
                     }
                     MediaActionButton {
                         glyph: "skip_next"
-                        accessibleName: "Next"
+                        accessibleName: qsTr("Next")
                         diameter: 56 * control.themeGlobalScale
                         enabled: control.canSkipNext
                         onClicked: control.nextRequested()

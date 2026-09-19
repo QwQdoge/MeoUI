@@ -9,7 +9,7 @@ Flickable {
     clip: true
     boundsBehavior: Flickable.StopAtBounds
 
-    property string title: "Settings"
+    property string title: qsTr("Settings")
     property alias model: repeater.model
     property real padding: (windowMetrics.pageMargin || 16 * themeGlobalScale)
 

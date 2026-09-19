@@ -46,7 +46,7 @@ Control {
     implicitHeight: mainLayout.implicitHeight + padding * 2
     padding: 16 * themeGlobalScale
     Accessible.role: Accessible.Pane
-    Accessible.name: currentAccount ? qsTr("Account switcher for %1").arg(currentAccount.name || "Account") : qsTr("Account switcher")
+    Accessible.name: currentAccount ? qsTr("Account switcher for %1").arg(currentAccount.name || qsTr("Account")) : qsTr("Account switcher")
 
     function selectAccount(index) {
         if (!enabled || index < 0 || index >= accountCount)
@@ -93,7 +93,7 @@ Control {
                 spacing: 0
                 MeoText {
                     width: parent.width
-                    text: control.currentAccount ? (control.currentAccount.name || "Account") : "Account"
+                    text: control.currentAccount ? (control.currentAccount.name || qsTr("Account")) : qsTr("Account")
                     typeRole: "title"
                     typeSize: "small"
                     emphasized: true
@@ -229,9 +229,9 @@ Control {
         id: accountMenu
         width: parent.width
         model: [
-            { label: "Manage Accounts", icon: "manage_accounts", action: () => control.manageAccountsRequested() },
+            { label: qsTr("Manage accounts"), icon: "manage_accounts", action: () => control.manageAccountsRequested() },
             {
-                label: "Sign Out",
+                label: qsTr("Sign out"),
                 icon: "logout",
                 action: () => control.signOutRequested(
                     control.normalizedCurrentIndex,

@@ -10,7 +10,7 @@ Popup {
     property string text: ""
     property var suggestions: []
     property Component content: null
-    property string placeholder: "Search..."
+    property string placeholder: qsTr("Search...")
     property string resultsTitle: ""
 
     // "contained" is the expressive default. "divided" remains available so
@@ -47,8 +47,6 @@ Popup {
     dim: !docked
     focus: true
     closePolicy: docked ? Popup.CloseOnEscape | Popup.CloseOnPressOutside : Popup.CloseOnEscape
-    Accessible.role: Accessible.Dialog
-    Accessible.name: resultsTitle.length > 0 ? resultsTitle : qsTr("Search")
 
     onOpened: searchBar.forceSearchFocus()
 
@@ -60,6 +58,10 @@ Popup {
 
     contentItem: Column {
         id: mainColumn
+        // Popup is not an Item. Keep dialog semantics on the actual content
+        // surface so assistive technology can expose the search view.
+        Accessible.role: Accessible.Dialog
+        Accessible.name: control.resultsTitle.length > 0 ? control.resultsTitle : qsTr("Search")
         width: parent.width
         height: parent.height
         spacing: 0

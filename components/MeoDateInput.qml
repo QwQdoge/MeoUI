@@ -14,7 +14,7 @@ MeoTextField {
     signal dateAccepted(date date)
     signal cleared()
 
-    label: "Date"
+    label: qsTr("Date")
     placeholder: format
     leadingIcon: "calendar_today"
     // M3 date input is composed from an outlined text field in both docked
@@ -45,7 +45,7 @@ MeoTextField {
 
         const d = parseDate(text)
         isError = d === null
-        errorText = isError ? "Invalid date" : ""
+        errorText = isError ? qsTr("Invalid date") : ""
     }
 
     onAccepted: commit()
@@ -64,7 +64,7 @@ MeoTextField {
         const d = parseDate(text)
         if (!d) {
             isError = true
-            errorText = "Invalid date"
+            errorText = qsTr("Invalid date")
             // Preserve invalid input so the error stays visible and the user
             // can correct the exact value rather than re-entering it.
             return

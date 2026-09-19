@@ -112,7 +112,7 @@ MeoMotionPopup {
     contentItem: Item {
         objectName: "meoNavigationRailModalSurface"
         Accessible.role: Accessible.Dialog
-        Accessible.name: "Navigation"
+        Accessible.name: qsTr("Navigation")
 
         MeoNavigationRail {
             id: rail

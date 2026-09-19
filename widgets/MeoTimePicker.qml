@@ -15,10 +15,13 @@ MeoCard {
     property int hours: 10
     property int minutes: 30
     property bool isPM: false
-    property bool use24Hour: false
+    // Follow the host locale by default. An application may still bind or set
+    // use24Hour explicitly when it exposes an account-level preference.
+    property var uiLocale: Qt.locale()
+    property bool use24Hour: uiLocale.timeFormat(Locale.ShortFormat).toLowerCase().indexOf("ap") === -1
     property bool inputMode: false
     property string activeUnit: "hour" // "hour" | "minute"
-    property string headline: "Select time"
+    property string headline: qsTr("Select time")
 
     signal accepted(int hours, int minutes, bool isPM)
     signal rejected()
@@ -134,7 +137,7 @@ MeoCard {
                 id: modeButton
                 anchors.verticalCenter: parent.verticalCenter
                 icon.name: control.inputMode ? "schedule" : "keyboard"
-                Accessible.name: control.inputMode ? "Switch to dial" : "Switch to input"
+                Accessible.name: control.inputMode ? qsTr("Switch to dial") : qsTr("Switch to input")
                 enabled: control.interactive
                 onClicked: control.inputMode = !control.inputMode
             }
@@ -261,13 +264,13 @@ MeoCard {
             layoutDirection: Qt.RightToLeft
 
             MeoButton {
-                text: "OK"
+                text: qsTr("OK")
                 type: "text"
                 enabled: control.interactive
                 onClicked: control.accepted(control.hours, control.minutes, control.isPM)
             }
             MeoButton {
-                text: "Cancel"
+                text: qsTr("Cancel")
                 type: "text"
                 enabled: control.interactive
                 onClicked: control.rejected()
@@ -289,7 +292,7 @@ MeoCard {
         border.width: input && !selected ? MeoTheme.strokeWidthThin : 0
         border.color: control.outlineColor
         Accessible.role: Accessible.Button
-        Accessible.name: isHour ? "Hour" : "Minute"
+        Accessible.name: isHour ? qsTr("Hour") : qsTr("Minute")
         Accessible.focusable: control.interactive
         activeFocusOnTab: control.interactive && !input
 
@@ -374,20 +377,20 @@ MeoCard {
             spacing: 0
 
             Repeater {
-                model: ["AM", "PM"]
+                model: [false, true]
                 delegate: Rectangle {
                     id: periodOption
-                    required property string modelData
+                    required property bool modelData
                     width: parent.width
                     height: parent.height / 2
                     radius: 8 * control.themeScale
-                    readonly property bool selected: (modelData === "PM") === control.isPM
+                    readonly property bool selected: modelData === control.isPM
                     color: selected ? MeoTheme.tertiaryContainer : control.periodContainerColor
                     border.width: MeoTheme.strokeWidthThin
                     border.color: control.outlineColor
                     activeFocusOnTab: control.interactive
                     Accessible.role: Accessible.RadioButton
-                    Accessible.name: modelData
+                    Accessible.name: modelData ? qsTr("PM") : qsTr("AM")
                     Accessible.checked: selected
                     Keys.onPressed: function(event) {
                         if (!event.isAutoRepeat
@@ -395,9 +398,9 @@ MeoCard {
                                     || event.key === Qt.Key_Space))
                             periodStateLayer.triggerFromKeyboard()
                     }
-                    Keys.onReturnPressed: control.isPM = modelData === "PM"
-                    Keys.onEnterPressed: control.isPM = modelData === "PM"
-                    Keys.onSpacePressed: control.isPM = modelData === "PM"
+                    Keys.onReturnPressed: control.isPM = modelData
+                    Keys.onEnterPressed: control.isPM = modelData
+                    Keys.onSpacePressed: control.isPM = modelData
 
                     MeoStateLayer {
                         id: periodStateLayer
@@ -415,7 +418,7 @@ MeoCard {
 
                     Text {
                         anchors.centerIn: parent
-                        text: modelData
+                        text: modelData ? qsTr("PM") : qsTr("AM")
                         color: parent.selected ? MeoTheme.contentOnTertiaryContainer : control.periodTextColor
                         font.family: MeoTheme.typefacePlain
                         font.pixelSize: MeoTheme.labelLarge.size * control.themeScale
@@ -429,7 +432,7 @@ MeoCard {
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                         onClicked: {
                             periodOption.forceActiveFocus(Qt.MouseFocusReason)
-                            control.isPM = modelData === "PM"
+                            control.isPM = modelData
                         }
                     }
                     Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }

@@ -58,6 +58,9 @@ MeoMotionSurface {
     readonly property bool showsNotifications: effectiveMode !== MeoStatusCenter.TimeCalendar
 
     color: MeoTheme.surfaceContainerLow
+    // This is a transient Pixel-style tonal surface, not an input control.
+    // Its children retain their own keyboard-focus treatment.
+    showOutline: false
     // Status Center is a transient Pixel-style surface rather than a generic
     // card.  Its larger semantic corner stays tied to MeoTheme.cornerScale,
     // so desktop accessibility and dynamic-shape preferences reach it too.

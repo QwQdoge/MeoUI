@@ -117,7 +117,7 @@ Item {
             MeoTopAppBar {
                 id: topAppBar
                 width: parent.width
-                title: control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : "App"
+                title: control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : qsTr("App")
                 type: "small"
                 visible: control.isCompact
 

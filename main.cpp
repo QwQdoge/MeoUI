@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLocale>
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QRegularExpression>
@@ -12,6 +13,7 @@
 #include <QTimer>
 #include <QObject>
 #include <QTextStream>
+#include <QTranslator>
 #include <QUrl>
 #include <QWindow>
 #include <Qt>
@@ -21,6 +23,14 @@ QFile *gLogFile = nullptr;
 
 #ifndef MEOUI_DEFAULT_OUTPUT_ROOT
 #define MEOUI_DEFAULT_OUTPUT_ROOT ""
+#endif
+
+#ifndef MEOUI_TRANSLATIONS_BUILD_DIR
+#define MEOUI_TRANSLATIONS_BUILD_DIR ""
+#endif
+
+#ifndef MEOUI_TRANSLATIONS_INSTALL_DIR
+#define MEOUI_TRANSLATIONS_INSTALL_DIR ""
 #endif
 
 QString optionValue(const QStringList &arguments, const QString &option) {
@@ -35,6 +45,68 @@ QString optionValue(const QStringList &arguments, const QString &option) {
     }
   }
   return {};
+}
+
+QString normalizedUiLanguage(const QString &requestedLanguage) {
+  const QLocale locale(requestedLanguage.trimmed().isEmpty()
+                           ? QLocale::system()
+                           : QLocale(requestedLanguage));
+  // MeoUI currently ships a Simplified Chinese catalog. Keep every
+  // Chinese-language desktop in the Chinese product experience instead of
+  // falling back to English merely because its regional locale differs.
+  if (locale.language() == QLocale::Chinese)
+    return QStringLiteral("zh_CN");
+  const QString name = locale.name();
+  return name == QStringLiteral("C") ? QStringLiteral("en_US") : name;
+}
+
+QString selectedUiLanguage(const QStringList &arguments) {
+  const QString override = optionValue(arguments, QStringLiteral("--ui-language"));
+  return normalizedUiLanguage(override);
+}
+
+bool loadUiTranslation(QGuiApplication &app, QQmlApplicationEngine &engine,
+                       QTranslator &translator, const QString &language) {
+  app.removeTranslator(&translator);
+
+  const QLocale locale(language);
+  // This changes only the Showcase process. It lets shared controls that use
+  // Qt.locale() (dates, weekdays, and hour cycles) follow the same resolved
+  // language as qsTr(), without changing the desktop's global locale.
+  QLocale::setDefault(locale);
+  engine.setUiLanguage(locale.bcp47Name());
+  // This first catalog is Simplified Chinese. normalizedUiLanguage() resolves
+  // Chinese system locales to it so the shared product vocabulary stays
+  // consistent with Settings and the Account surfaces.
+  if (locale.name() != QStringLiteral("zh_CN")) {
+    engine.retranslate();
+    return false;
+  }
+
+  QStringList translationPaths;
+  const QString configuredPath = qEnvironmentVariable("MEOUI_TRANSLATIONS").trimmed();
+  if (!configuredPath.isEmpty())
+    translationPaths.append(configuredPath);
+
+  const QString buildPath = QString::fromUtf8(MEOUI_TRANSLATIONS_BUILD_DIR);
+  if (!buildPath.isEmpty())
+    translationPaths.append(buildPath);
+
+  const QString installedPath = QString::fromUtf8(MEOUI_TRANSLATIONS_INSTALL_DIR);
+  if (!installedPath.isEmpty())
+    translationPaths.append(installedPath);
+
+  bool loaded = false;
+  for (const QString &path : translationPaths) {
+    if (translator.load(QStringLiteral("meoui_zh_CN"), path)) {
+      app.installTranslator(&translator);
+      loaded = true;
+      break;
+    }
+  }
+
+  engine.retranslate();
+  return loaded;
 }
 
 QString absolutePath(const QString &path, const QString &baseDirectory) {
@@ -266,6 +338,12 @@ int main(int argc, char *argv[]) {
   Q_INIT_RESOURCE(meoui_module_raw_qml_0);
 
   QQmlApplicationEngine engine;
+  QTranslator translator;
+  const QString uiLanguage = selectedUiLanguage(app.arguments());
+  const bool translationLoaded = loadUiTranslation(app, engine, translator, uiLanguage);
+  qInfo() << "MeoUI UI language" << uiLanguage
+          << "component locale:" << QLocale().name()
+          << "Chinese catalog loaded:" << translationLoaded;
 
   // 让 QML 引擎能够找到 MeoUI 模块
   engine.addImportPath(app.applicationDirPath() + "/MeoUI");

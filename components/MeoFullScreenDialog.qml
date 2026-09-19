@@ -73,7 +73,7 @@ MeoMotionPopup {
                 // icon inset required by the full-screen dialog spec.
                 anchors.leftMargin: 12 * control.themeGlobalScale
                 anchors.verticalCenter: parent.verticalCenter
-                Accessible.name: "Close dialog"
+                Accessible.name: qsTr("Close dialog")
                 onClicked: {
                     control.closedByUser()
                     control.close()

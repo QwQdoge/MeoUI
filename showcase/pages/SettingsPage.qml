@@ -9,12 +9,12 @@ import ".."
 // canonical category; this page only compares related motion and surfaces.
 MeoPageLayout {
     id: labPage
-    title: "Interaction lab"
-    subtitle: "Compare component states together: stable selection, strong quick-control contrast, progress, loading, and continuous input."
+    title: qsTr("Interaction lab")
+    subtitle: qsTr("Compare selection, quick controls, progress, and continuous input in one place.")
 
     ShowcaseSection {
-        title: "Selection and click states"
-        subtitle: "Selection changes the surface and state layer; it does not reflow neighbouring controls."
+        title: qsTr("Selection and press states")
+        subtitle: qsTr("Selections update the surface and feedback without shifting nearby controls.")
         width: parent.width
 
         ColumnLayout {
@@ -23,24 +23,24 @@ MeoPageLayout {
 
             MeoButtonGroup {
                 Layout.fillWidth: true
-                model: ["Day", "Week", "Month"]
+                model: [qsTr("Day"), qsTr("Week"), qsTr("Month")]
                 type: "outlined"
             }
 
             MeoSegmentedButtons {
                 Layout.fillWidth: true
                 model: [
-                    { "label": "List", "icon": "view_list" },
-                    { "label": "Grid", "icon": "grid_view" },
-                    { "label": "Cards", "icon": "dashboard" }
+                    { "label": qsTr("List"), "icon": "view_list" },
+                    { "label": qsTr("Grid"), "icon": "grid_view" },
+                    { "label": qsTr("Cards"), "icon": "dashboard" }
                 ]
             }
         }
     }
 
     ShowcaseSection {
-        title: "Quick controls"
-        subtitle: "The active tile and active slider segment use primary/onPrimary; inactive surfaces stay neutral."
+        title: qsTr("Quick controls")
+        subtitle: qsTr("Active controls use clear contrast while inactive controls stay calm and easy to scan.")
         width: parent.width
 
         Flow {
@@ -48,20 +48,20 @@ MeoPageLayout {
             spacing: MeoTheme.space12
 
             MeoQuickSettingsTile {
-                title: "Internet"
-                supportingText: "Meo Wi-Fi"
+                title: qsTr("Internet")
+                supportingText: qsTr("Meo Wi-Fi")
                 iconName: "wifi"
                 active: true
                 wide: true
                 visualStyle: "pixel"
             }
             MeoQuickSettingsTile {
-                title: "Bluetooth"
+                title: qsTr("Bluetooth")
                 iconName: "bluetooth"
                 visualStyle: "pixel"
             }
             MeoQuickSettingsTile {
-                title: "Flashlight"
+                title: qsTr("Flashlight")
                 iconName: "flashlight_on"
                 visualStyle: "pixel"
             }
@@ -70,15 +70,15 @@ MeoPageLayout {
         MeoQuickControlSlider {
             width: parent.width
             iconName: "light_mode"
-            label: "Brightness"
-            accessibleName: "Brightness"
+            label: qsTr("Brightness")
+            accessibleName: qsTr("Brightness")
             value: 68
         }
     }
 
     ShowcaseSection {
-        title: "Progress and loading"
-        subtitle: "Determinate states use a clear primary arc or segment. Indeterminate animation stops when reduced motion is enabled."
+        title: qsTr("Progress and loading")
+        subtitle: qsTr("Known progress stays clear; loading animation pauses when reduced motion is on.")
         width: parent.width
 
         ColumnLayout {
@@ -123,8 +123,8 @@ MeoPageLayout {
     }
 
     ShowcaseSection {
-        title: "Continuous input"
-        subtitle: "The split slider keeps a clear primary active rail, neutral inactive rail, and a thin draggable divider."
+        title: qsTr("Continuous input")
+        subtitle: qsTr("The split slider keeps the current value, remaining range, and handle easy to distinguish.")
         width: parent.width
 
         MeoSlider {

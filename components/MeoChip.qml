@@ -108,6 +108,13 @@ Control {
         clicked()
     }
 
+    function dismiss() {
+        if (!enabled || !closable)
+            return
+        closed()
+        deleted()
+    }
+
     background: Rectangle {
         id: chipBg
         objectName: "meoChipBackground"
@@ -225,11 +232,29 @@ Control {
         }
 
         Item {
+            id: closeButton
             objectName: "meoChipCloseButton"
             visible: control.closable
             width: 24 * control.themeGlobalScale
             height: width
             anchors.verticalCenter: parent.verticalCenter
+            activeFocusOnTab: closeButton.visible && control.enabled
+            Accessible.role: Accessible.Button
+            Accessible.name: control.label !== "" ? qsTr("Remove %1").arg(control.label)
+                                                  : qsTr("Remove item")
+            Accessible.focusable: closeButton.visible && control.enabled
+            Accessible.onPressAction: control.dismiss()
+            Keys.onReturnPressed: control.dismiss()
+            Keys.onEnterPressed: control.dismiss()
+            Keys.onSpacePressed: control.dismiss()
+
+            Rectangle {
+                anchors.fill: parent
+                radius: width / 2
+                color: "transparent"
+                border.width: closeButton.activeFocus ? MeoTheme.strokeWidthMedium : 0
+                border.color: control.themePrimary
+            }
 
             MeoIcon {
                 anchors.centerIn: parent
@@ -246,10 +271,10 @@ Control {
                 hoverEnabled: true
                 enabled: control.enabled
                 cursorShape: Qt.PointingHandCursor
-                onClicked: {
+                onClicked: function(mouse) {
                     mouse.accepted = true
-                    control.closed()
-                    control.deleted()
+                    closeButton.forceActiveFocus(Qt.MouseFocusReason)
+                    control.dismiss()
                 }
             }
         }

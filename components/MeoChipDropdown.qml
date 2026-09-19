@@ -59,6 +59,17 @@ Control {
 
     opacity: control.enabled ? 1.0 : MeoTheme.disabledContentOpacity
     activeFocusOnTab: control.enabled
+    readonly property int selectedCount: control.selectedIndices
+                                       && typeof control.selectedIndices.length === "number"
+                                       ? control.selectedIndices.length : 0
+    Accessible.role: Accessible.ComboBox
+    Accessible.name: control.label !== "" ? control.label : qsTr("Multi-select menu")
+    Accessible.description: qsTr("%1 selected. %2")
+                            .arg(control.selectedCount)
+                            .arg(menu.opened ? qsTr("Expanded") : qsTr("Collapsed"))
+    Accessible.focusable: control.enabled
+    Accessible.readOnly: true
+    Accessible.onPressAction: control.toggleMenu()
     Behavior on opacity { NumberAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
     readonly property var currentFont: {
@@ -89,15 +100,32 @@ Control {
         return type === "filled" ? themeOnSurfaceVariant : themeOutline;
     }
 
+    function openMenu() {
+        if (!control.enabled)
+            return
+        control.forceActiveFocus(Qt.ShortcutFocusReason)
+        menu.openFrom(control)
+    }
+
+    function toggleMenu() {
+        if (menu.opened)
+            menu.close()
+        else
+            openMenu()
+    }
+
     Keys.onPressed: function(event) {
         if (!event.isAutoRepeat
                 && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                    || event.key === Qt.Key_Space))
+                    || event.key === Qt.Key_Space)) {
             dropdownStateLayer.triggerFromKeyboard()
+            control.toggleMenu()
+            event.accepted = true
+        } else if (event.key === Qt.Key_Escape && menu.opened) {
+            menu.close()
+            event.accepted = true
+        }
     }
-    Keys.onReturnPressed: menu.open()
-    Keys.onEnterPressed: menu.open()
-    Keys.onSpacePressed: menu.open()
 
     // 🌟 Background MouseArea positioned at the top of the content hierarchy visually
     // to avoid blocking clicks on child chip actions.
@@ -109,7 +137,7 @@ Control {
         hoverEnabled: true
         onClicked: {
             control.forceActiveFocus()
-            menu.open()
+            control.toggleMenu()
         }
     }
 
@@ -326,7 +354,7 @@ Control {
             id: counterLabel
             anchors.right: parent.right
             visible: control.showCounter
-            text: control.selectedIndices ? (control.selectedIndices.length + " selected") : "0 selected"
+            text: qsTr("%1 selected").arg(control.selectedCount)
             font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
             font.family: MeoTheme.typefacePlain
             color: control.themeOnSurfaceVariant
@@ -345,6 +373,7 @@ Control {
                 m.push({
                     label: control.model[i],
                     icon: isSel ? "check" : "",
+                    checked: isSel,
                     isVibrant: isSel,
                     action: (function(idx) {
                         return function() {

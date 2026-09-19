@@ -10,8 +10,8 @@ ShowcaseCategoryPage {
 
     // 🌟 Sizing scale variants (XS to XL) for Checkboxes, Radio Buttons, and Switches
     ShowcaseSection {
-        title: "Selection Component XS-XL Sizing Scale"
-        subtitle: "Demonstrates 5-step sizing scales mapped from compact to expansive layouts, utilizing variable labels."
+        title: qsTr("Selection control sizes")
+        subtitle: qsTr("Compare compact through extra-large controls without changing their labels or behavior.")
         width: parent.width
 
         ColumnLayout {
@@ -20,7 +20,7 @@ ShowcaseCategoryPage {
 
             // Checkboxes Size Scale
             MeoText {
-                text: "MeoCheckbox Sizes"
+                text: qsTr("MeoCheckbox sizes")
                 typeRole: "title"
                 typeSize: "small"
                 emphasized: true
@@ -28,16 +28,16 @@ ShowcaseCategoryPage {
             Flow {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space16
-                MeoCheckbox { label: "XS Checkbox"; size: "xs"; checked: true }
-                MeoCheckbox { label: "S Checkbox"; size: "s"; checked: true }
-                MeoCheckbox { label: "M Checkbox"; size: "m"; checked: true }
-                MeoCheckbox { label: "L Checkbox"; size: "l"; checked: true }
-                MeoCheckbox { label: "XL Checkbox"; size: "xl"; checked: true }
+                MeoCheckbox { label: qsTr("XS checkbox"); size: "xs"; checked: true }
+                MeoCheckbox { label: qsTr("S checkbox"); size: "s"; checked: true }
+                MeoCheckbox { label: qsTr("M checkbox"); size: "m"; checked: true }
+                MeoCheckbox { label: qsTr("L checkbox"); size: "l"; checked: true }
+                MeoCheckbox { label: qsTr("XL checkbox"); size: "xl"; checked: true }
             }
 
             // Radio Buttons Size Scale
             MeoText {
-                text: "MeoRadioButton Sizes"
+                text: qsTr("MeoRadioButton sizes")
                 typeRole: "title"
                 typeSize: "small"
                 emphasized: true
@@ -45,16 +45,16 @@ ShowcaseCategoryPage {
             Flow {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space16
-                MeoRadioButton { label: "XS Radio"; size: "xs"; checked: true }
-                MeoRadioButton { label: "S Radio"; size: "s"; checked: true }
-                MeoRadioButton { label: "M Radio"; size: "m"; checked: true }
-                MeoRadioButton { label: "L Radio"; size: "l"; checked: true }
-                MeoRadioButton { label: "XL Radio"; size: "xl"; checked: true }
+                MeoRadioButton { label: qsTr("XS radio button"); size: "xs"; checked: true }
+                MeoRadioButton { label: qsTr("S radio button"); size: "s"; checked: true }
+                MeoRadioButton { label: qsTr("M radio button"); size: "m"; checked: true }
+                MeoRadioButton { label: qsTr("L radio button"); size: "l"; checked: true }
+                MeoRadioButton { label: qsTr("XL radio button"); size: "xl"; checked: true }
             }
 
             // Switches Size Scale
             MeoText {
-                text: "MeoSwitch Sizes"
+                text: qsTr("MeoSwitch sizes")
                 typeRole: "title"
                 typeSize: "small"
                 emphasized: true
@@ -62,19 +62,19 @@ ShowcaseCategoryPage {
             Flow {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space16
-                MeoSwitch { label: "XS Switch"; size: "xs"; checked: true }
-                MeoSwitch { label: "S Switch"; size: "s"; checked: true }
-                MeoSwitch { label: "M Switch"; size: "m"; checked: true }
-                MeoSwitch { label: "L Switch"; size: "l"; checked: true }
-                MeoSwitch { label: "XL Switch"; size: "xl"; checked: true }
+                MeoSwitch { label: qsTr("XS switch"); size: "xs"; checked: true }
+                MeoSwitch { label: qsTr("S switch"); size: "s"; checked: true }
+                MeoSwitch { label: qsTr("M switch"); size: "m"; checked: true }
+                MeoSwitch { label: qsTr("L switch"); size: "l"; checked: true }
+                MeoSwitch { label: qsTr("XL switch"); size: "xl"; checked: true }
             }
         }
     }
 
     // 🌟 Thickness Variants (Thin, Medium, Thick)
     ShowcaseSection {
-        title: "Thickness and Outline Variants"
-        subtitle: "Visualizes the semantic outline thickness tokens from MeoTheme applied directly to Selection controls."
+        title: qsTr("Outline thickness")
+        subtitle: qsTr("Compare thin, medium, and thick outlines on the same selection controls.")
         width: parent.width
 
         RowLayout {
@@ -95,14 +95,14 @@ ShowcaseCategoryPage {
                     spacing: MeoTheme.space8
 
                     MeoText {
-                        text: "Thin (strokeWidthThin: 1dp)"
+                        text: qsTr("Thin") + " (strokeWidthThin: 1dp)"
                         typeRole: "label"
                         typeSize: "medium"
                         emphasized: true
                     }
-                    MeoCheckbox { label: "Thin Outline"; thickness: "thin"; checked: false }
-                    MeoRadioButton { label: "Thin Outline"; thickness: "thin"; checked: false }
-                    MeoSwitch { label: "Thin Track"; thickness: "thin"; checked: false }
+                    MeoCheckbox { label: qsTr("Thin outline"); thickness: "thin"; checked: false }
+                    MeoRadioButton { label: qsTr("Thin outline"); thickness: "thin"; checked: false }
+                    MeoSwitch { label: qsTr("Thin track"); thickness: "thin"; checked: false }
                 }
             }
 
@@ -120,14 +120,14 @@ ShowcaseCategoryPage {
                     spacing: MeoTheme.space8
 
                     MeoText {
-                        text: "Medium (strokeWidthMedium: 2dp)"
+                        text: qsTr("Medium") + " (strokeWidthMedium: 2dp)"
                         typeRole: "label"
                         typeSize: "medium"
                         emphasized: true
                     }
-                    MeoCheckbox { label: "Medium Outline"; thickness: "medium"; checked: false }
-                    MeoRadioButton { label: "Medium Outline"; thickness: "medium"; checked: false }
-                    MeoSwitch { label: "Medium Track"; thickness: "medium"; checked: false }
+                    MeoCheckbox { label: qsTr("Medium outline"); thickness: "medium"; checked: false }
+                    MeoRadioButton { label: qsTr("Medium outline"); thickness: "medium"; checked: false }
+                    MeoSwitch { label: qsTr("Medium track"); thickness: "medium"; checked: false }
                 }
             }
 
@@ -145,14 +145,14 @@ ShowcaseCategoryPage {
                     spacing: MeoTheme.space8
 
                     MeoText {
-                        text: "Thick (strokeWidthThick: 3dp)"
+                        text: qsTr("Thick") + " (strokeWidthThick: 3dp)"
                         typeRole: "label"
                         typeSize: "medium"
                         emphasized: true
                     }
-                    MeoCheckbox { label: "Thick Outline"; thickness: "thick"; checked: false }
-                    MeoRadioButton { label: "Thick Outline"; thickness: "thick"; checked: false }
-                    MeoSwitch { label: "Thick Track"; thickness: "thick"; checked: false }
+                    MeoCheckbox { label: qsTr("Thick outline"); thickness: "thick"; checked: false }
+                    MeoRadioButton { label: qsTr("Thick outline"); thickness: "thick"; checked: false }
+                    MeoSwitch { label: qsTr("Thick track"); thickness: "thick"; checked: false }
                 }
             }
         }
@@ -160,8 +160,8 @@ ShowcaseCategoryPage {
 
     // 🌟 Interaction States (Normal, Checked, Indeterminate, Error, Disabled, Focused)
     ShowcaseSection {
-        title: "Interactive States and Feedback"
-        subtitle: "A detailed matrix highlighting complete state coverage for MD3 compliance."
+        title: qsTr("States and feedback")
+        subtitle: qsTr("Review the normal, selected, unavailable, and error states people may encounter.")
         width: parent.width
 
         GridLayout {
@@ -175,13 +175,13 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space12
 
-                MeoText { text: "MeoCheckbox States"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                MeoCheckbox { label: "Normal (Unchecked)"; checked: false }
-                MeoCheckbox { label: "Normal (Checked)"; checked: true }
-                MeoCheckbox { label: "Indeterminate"; indeterminate: true }
-                MeoCheckbox { label: "Error State"; isError: true; errorText: "Invalid choice!" }
-                MeoCheckbox { label: "With Helper Text"; helperText: "This is optional." }
-                MeoCheckbox { label: "Disabled State"; enabled: false; checked: true }
+                MeoText { text: qsTr("MeoCheckbox states"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoCheckbox { label: qsTr("Normal (not selected)"); checked: false }
+                MeoCheckbox { label: qsTr("Normal (selected)"); checked: true }
+                MeoCheckbox { label: qsTr("Partly selected"); indeterminate: true }
+                MeoCheckbox { label: qsTr("Needs attention"); isError: true; errorText: qsTr("Choose a valid option.") }
+                MeoCheckbox { label: qsTr("Helpful context"); helperText: qsTr("Use this when it applies.") }
+                MeoCheckbox { label: qsTr("Unavailable"); enabled: false; checked: true }
             }
 
             // Radio Button States Column
@@ -189,13 +189,13 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space12
 
-                MeoText { text: "MeoRadioButton States"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                MeoRadioButton { label: "Normal (Unchecked)"; checked: false }
-                MeoRadioButton { label: "Normal (Checked)"; checked: true }
-                MeoRadioButton { label: "Error State"; isError: true; errorText: "Please select one!" }
-                MeoRadioButton { label: "With Helper Text"; helperText: "Choose wisely." }
-                MeoRadioButton { label: "Disabled (Unchecked)"; enabled: false; checked: false }
-                MeoRadioButton { label: "Disabled (Checked)"; enabled: false; checked: true }
+                MeoText { text: qsTr("MeoRadioButton states"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoRadioButton { label: qsTr("Normal (not selected)"); checked: false }
+                MeoRadioButton { label: qsTr("Normal (selected)"); checked: true }
+                MeoRadioButton { label: qsTr("Needs attention"); isError: true; errorText: qsTr("Select one option to continue.") }
+                MeoRadioButton { label: qsTr("Helpful context"); helperText: qsTr("Choose the option that works best for you.") }
+                MeoRadioButton { label: qsTr("Unavailable (not selected)"); enabled: false; checked: false }
+                MeoRadioButton { label: qsTr("Unavailable (selected)"); enabled: false; checked: true }
             }
 
             // Switch States Column
@@ -203,13 +203,13 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
                 spacing: MeoTheme.space12
 
-                MeoText { text: "MeoSwitch States"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                MeoSwitch { label: "Normal (Unchecked)"; checked: false }
-                MeoSwitch { label: "Normal (Checked)"; checked: true }
-                MeoSwitch { label: "Without Thumb Icon"; checked: true; showIcon: false }
-                MeoSwitch { label: "Error State"; isError: true; errorText: "Turn off immediately!" }
-                MeoSwitch { label: "With Helper Text"; helperText: "Controls system power." }
-                MeoSwitch { label: "Disabled State"; enabled: false; checked: true }
+                MeoText { text: qsTr("MeoSwitch states"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoSwitch { label: qsTr("Normal (off)"); checked: false }
+                MeoSwitch { label: qsTr("Normal (on)"); checked: true }
+                MeoSwitch { label: qsTr("Without thumb icon"); checked: true; showIcon: false }
+                MeoSwitch { label: qsTr("Needs attention"); isError: true; errorText: qsTr("Turn this off before continuing.") }
+                MeoSwitch { label: qsTr("Helpful context"); helperText: qsTr("This setting controls system power.") }
+                MeoSwitch { label: qsTr("Unavailable"); enabled: false; checked: true }
             }
         }
     }

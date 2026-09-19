@@ -8,7 +8,7 @@ Rectangle {
     // Search is an input surface, not a compact page transition.  Its bounds
     // and pill silhouette stay stable while focus and query state change.
     property string text: ""
-    property string placeholder: "Search..."
+    property string placeholder: qsTr("Search...")
     property string leadingIcon: "search"
     property string trailingIcon: "person"
     property bool active: false // 🌟 MD3 Expressive: Active state for transition
@@ -98,9 +98,9 @@ Rectangle {
             background: null
             placeholderText: control.placeholder
             text: control.text
-            font.pixelSize: fontBodyLarge.size * control.themeGlobalScale
-            font.weight: fontBodyLarge.weight
-            font.letterSpacing: (fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
+            font.pixelSize: control.fontBodyLarge.size * control.themeGlobalScale
+            font.weight: control.fontBodyLarge.weight
+            font.letterSpacing: (control.fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
             color: control.themeOnSurface
             placeholderTextColor: control.themeOnSurfaceVariant
             anchors.verticalCenter: parent.verticalCenter

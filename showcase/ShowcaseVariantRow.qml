@@ -5,7 +5,7 @@ import MeoUI
 ColumnLayout {
     id: control
 
-    property string title: "Variants"
+    property string title: qsTr("Variants")
     default property alias content: body.data
 
     width: parent ? parent.width : implicitWidth

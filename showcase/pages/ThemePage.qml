@@ -10,8 +10,8 @@ ShowcaseCategoryPage {
 
     // 🌟 1. Dynamic Theme Tokens Tuner (Sliders & Switches)
     ShowcaseSection {
-        title: "Dynamic Theme Tokens & Corner Radius Tuner (主题与圆角参数调整)"
-        subtitle: "Drag sliders to dynamically adjust corner radius scale (0.2x–2.5x), font scale, global UI scale, and dark mode in real time."
+        title: qsTr("Theme and corner radius")
+        subtitle: qsTr("Adjust corner radius, type, interface scale, motion, and color mode to preview the theme in real time.")
         width: parent.width
 
         ColumnLayout {
@@ -24,19 +24,19 @@ ShowcaseCategoryPage {
                 Layout.fillWidth: true
 
                 MeoSwitch {
-                    label: "Dark Mode (深色模式)"
+                    label: qsTr("Dark mode")
                     checked: MeoTheme.isDarkMode
                     onToggled: (val) => { MeoTheme.isDarkMode = val }
                 }
 
                 MeoSwitch {
-                    label: "Expressive Motion (M3E 表达性微动效)"
+                    label: qsTr("Expressive motion")
                     checked: MeoTheme.isExpressive
                     onToggled: (val) => { MeoTheme.isExpressive = val }
                 }
 
                 MeoSwitch {
-                    label: "Reduced Motion (减弱动画)"
+                    label: qsTr("Reduced motion")
                     checked: MeoTheme.reduceMotion
                     onToggled: (val) => { MeoTheme.reduceMotion = val }
                 }
@@ -53,12 +53,14 @@ ShowcaseCategoryPage {
                     Layout.fillWidth: true
 
                     RowLayout {
-                        MeoText { text: "Corner Radius Scale (圆角倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: qsTr("Corner radius scale:"); typeRole: "title"; typeSize: "small"; emphasized: true }
                         MeoText { text: Math.round(MeoTheme.cornerScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
                     MeoSlider {
                         Layout.fillWidth: true
+                        accessibleName: qsTr("Corner radius scale")
+                        accessibleDescription: qsTr("Adjust the roundness of component corners.")
                         from: 0.2
                         to: 2.5
                         value: MeoTheme.cornerScale
@@ -72,12 +74,14 @@ ShowcaseCategoryPage {
                     Layout.fillWidth: true
 
                     RowLayout {
-                        MeoText { text: "Global UI Scale (全局界面缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: qsTr("Interface scale:"); typeRole: "title"; typeSize: "small"; emphasized: true }
                         MeoText { text: Math.round(MeoTheme.globalScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
                     MeoSlider {
                         Layout.fillWidth: true
+                        accessibleName: qsTr("Interface scale")
+                        accessibleDescription: qsTr("Adjust the size of the interface preview.")
                         from: 0.8
                         to: 1.5
                         value: MeoTheme.globalScale
@@ -97,12 +101,14 @@ ShowcaseCategoryPage {
                     Layout.fillWidth: true
 
                     RowLayout {
-                        MeoText { text: "Font Size Scale (字号缩放):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: qsTr("Text size:"); typeRole: "title"; typeSize: "small"; emphasized: true }
                         MeoText { text: Math.round(MeoTheme.fontScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
                     MeoSlider {
                         Layout.fillWidth: true
+                        accessibleName: qsTr("Text size")
+                        accessibleDescription: qsTr("Adjust the size of text in the preview.")
                         from: 0.8
                         to: 1.4
                         value: MeoTheme.fontScale
@@ -116,12 +122,14 @@ ShowcaseCategoryPage {
                     Layout.fillWidth: true
 
                     RowLayout {
-                        MeoText { text: "Motion Speed Scale (动画时长倍率):"; typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: qsTr("Motion speed:"); typeRole: "title"; typeSize: "small"; emphasized: true }
                         MeoText { text: Math.round(MeoTheme.motionScale * 100) + "%"; typeRole: "label"; typeSize: "medium"; color: MeoTheme.primary; emphasized: true }
                     }
 
                     MeoSlider {
                         Layout.fillWidth: true
+                        accessibleName: qsTr("Motion speed")
+                        accessibleDescription: qsTr("Adjust how quickly motion plays in the preview.")
                         from: 0.5
                         to: 2.0
                         value: MeoTheme.motionScale
@@ -132,7 +140,7 @@ ShowcaseCategoryPage {
 
             // Reset Button
             MeoButton {
-                text: "Reset Tokens to Default (重置默认参数)"
+                text: qsTr("Reset theme settings")
                 type: "tonal"
                 icon.name: "refresh"
                 onClicked: {
@@ -149,8 +157,8 @@ ShowcaseCategoryPage {
 
     // 🌟 2. Live Components Reaction Test Ground (真实组件动态生效预览)
     ShowcaseSection {
-        title: "Live Component Corner & Scale Preview (实时组件圆角与尺寸联动)"
-        subtitle: "Components automatically update their corner radii, padding, scale, and colors as tokens change above."
+        title: qsTr("Live component preview")
+        subtitle: qsTr("Components update their corners, spacing, size, and color as you adjust the theme above.")
         width: parent.width
 
         Flow {
@@ -158,31 +166,31 @@ ShowcaseCategoryPage {
             spacing: MeoTheme.space16
 
             MeoButton {
-                text: "Filled Button"
+                text: qsTr("Filled button")
                 type: "filled"
                 size: "m"
             }
 
             MeoButton {
-                text: "Tonal Button"
+                text: qsTr("Tonal button")
                 type: "tonal"
                 size: "m"
             }
 
             MeoButton {
-                text: "Outlined Button"
+                text: qsTr("Outlined button")
                 type: "outlined"
                 size: "m"
             }
 
             MeoChip {
-                label: "Filter Chip"
+                label: qsTr("Filter chip")
                 icon: "filter_list"
                 selected: true
             }
 
             MeoTextField {
-                placeholder: "Live TextField..."
+                placeholder: qsTr("Try typing here…")
                 width: 220 * MeoTheme.globalScale
             }
 
@@ -192,12 +200,13 @@ ShowcaseCategoryPage {
                 type: "elevated"
                 interactive: true
                 bouncy: true
+                Accessible.name: qsTr("Dynamic shape card")
 
                 Column {
                     anchors.centerIn: parent
                     spacing: MeoTheme.space4
-                    MeoText { text: "Dynamic Shape Card"; typeRole: "title"; typeSize: "small"; emphasized: true }
-                    MeoText { text: "Radius: " + Math.round(MeoTheme.cardRadius) + "px"; typeRole: "body"; typeSize: "small" }
+                    MeoText { text: qsTr("Dynamic shape card"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                    MeoText { text: qsTr("Radius: %1 px").arg(Math.round(MeoTheme.cardRadius)); typeRole: "body"; typeSize: "small" }
                 }
             }
         }
@@ -205,8 +214,8 @@ ShowcaseCategoryPage {
 
     // 🌟 3. Semantic Corner Tokens Readout (语义圆角 Token 实时读数)
     ShowcaseSection {
-        title: "Semantic Corner Radius Tokens Readout (语义圆角实时 Token 读数)"
-        subtitle: "Current active pixel radius values computed from globalScale * cornerScale."
+        title: qsTr("Corner radius tokens")
+        subtitle: qsTr("See the current pixel radius calculated from the interface and corner-radius scales.")
         width: parent.width
 
         Flow {
@@ -247,8 +256,8 @@ ShowcaseCategoryPage {
 
     // 4. Cross-toolkit semantic geometry contract
     ShowcaseSection {
-        title: "Control Geometry Contract (跨工具包控件几何契约)"
-        subtitle: "The same semantic roles drive MeoUI, Plasma surfaces, native Qt controls, and KWin decoration."
+        title: qsTr("Control geometry")
+        subtitle: qsTr("The same semantic geometry keeps MeoUI, Plasma, native Qt controls, and KWin decoration consistent.")
         width: parent.width
 
         Flow {
@@ -257,13 +266,13 @@ ShowcaseCategoryPage {
 
             Column {
                 spacing: MeoTheme.space8
-                MeoText { text: "Button · " + Math.round(MeoTheme.controlHeight) + " px"; typeRole: "label"; typeSize: "medium"; emphasized: true }
-                MeoButton { text: "Primary action"; type: "filled"; size: "s" }
+                MeoText { text: qsTr("Button · %1 px").arg(Math.round(MeoTheme.controlHeight)); typeRole: "label"; typeSize: "medium"; emphasized: true }
+                MeoButton { text: qsTr("Primary action"); type: "filled"; size: "s" }
             }
 
             Column {
                 spacing: MeoTheme.space8
-                MeoText { text: "Icon targets · 32–56 px"; typeRole: "label"; typeSize: "medium"; emphasized: true }
+                MeoText { text: qsTr("Icon targets · 32–56 px"); typeRole: "label"; typeSize: "medium"; emphasized: true }
                 Row {
                     spacing: MeoTheme.space8
                     Repeater {
@@ -273,7 +282,7 @@ ShowcaseCategoryPage {
                             size: modelData
                             type: modelData === "m" ? "tonal" : "outlined"
                             icon.name: "favorite"
-                            Accessible.name: "Icon button size " + modelData
+                            Accessible.name: qsTr("Favorite icon button, %1 size").arg(modelData)
                         }
                     }
                 }
@@ -281,15 +290,15 @@ ShowcaseCategoryPage {
 
             Column {
                 spacing: MeoTheme.space8
-                MeoText { text: "Surface roles"; typeRole: "label"; typeSize: "medium"; emphasized: true }
+                MeoText { text: qsTr("Surface roles"); typeRole: "label"; typeSize: "medium"; emphasized: true }
                 Row {
                     spacing: MeoTheme.space8
                     Repeater {
                         model: [
-                            { label: "Control", radius: MeoTheme.controlRadius },
-                            { label: "Window", radius: MeoTheme.windowRadius },
-                            { label: "Card", radius: MeoTheme.cardRadius },
-                            { label: "Dialog", radius: MeoTheme.dialogRadius }
+                            { label: qsTr("Control"), radius: MeoTheme.controlRadius },
+                            { label: qsTr("Window"), radius: MeoTheme.windowRadius },
+                            { label: qsTr("Card"), radius: MeoTheme.cardRadius },
+                            { label: qsTr("Dialog"), radius: MeoTheme.dialogRadius }
                         ]
                         delegate: Rectangle {
                             required property var modelData

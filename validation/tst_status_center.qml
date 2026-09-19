@@ -19,6 +19,7 @@ Item {
         function test_staticPreviewAndResponsiveThreshold() {
             verify(!statusCenter.updateTimeAutomatically)
             compare(statusCenter.unreadCount, 3)
+            compare(statusCenter.showOutline, false)
             verify(statusCenter.timeText.length > 0)
             verify(statusCenter.dateText.length > 0)
             verify(!statusCenter.compact)

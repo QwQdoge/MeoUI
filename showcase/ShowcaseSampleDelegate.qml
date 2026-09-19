@@ -32,31 +32,31 @@ Item {
     }
 
     readonly property var navItems: [
-        { "label": "Home", "icon": "home" },
-        { "label": "Explore", "icon": "explore", "badgeText": "3" },
-        { "label": "Profile", "icon": "person" }
+        { "label": qsTr("Home"), "icon": "home" },
+        { "label": qsTr("Explore"), "icon": "explore", "badgeText": "3" },
+        { "label": qsTr("Profile"), "icon": "person" }
     ]
     readonly property var chipItems: [
-        { "label": "All", "icon": "apps" },
-        { "label": "Design", "icon": "palette" },
-        { "label": "Code", "icon": "code" }
+        { "label": qsTr("All"), "icon": "apps" },
+        { "label": qsTr("Design"), "icon": "palette" },
+        { "label": qsTr("Code"), "icon": "code" }
     ]
     readonly property var tableColumns: [
-        { "label": "Dessert", "property": "name", "width": 160, "sortable": true },
-        { "label": "Calories", "property": "calories", "width": 100, "sortable": true },
-        { "label": "Status", "property": "status", "width": 100 }
+        { "label": qsTr("Dessert"), "property": "name", "width": 160, "sortable": true },
+        { "label": qsTr("Calories"), "property": "calories", "width": 100, "sortable": true },
+        { "label": qsTr("Status"), "property": "status", "width": 100 }
     ]
     readonly property var tableRows: [
-        { "name": "Cupcake", "calories": 305, "status": "High", "selected": true },
-        { "name": "Donut", "calories": 452, "status": "High" },
-        { "name": "Eclair", "calories": 262, "status": "Normal" }
+        { "name": qsTr("Cupcake"), "calories": 305, "status": qsTr("High"), "selected": true },
+        { "name": qsTr("Donut"), "calories": 452, "status": qsTr("High") },
+        { "name": qsTr("Eclair"), "calories": 262, "status": qsTr("Normal") }
     ]
     readonly property var carouselItems: [
-        { "title": "Color", "icon": "palette" },
-        { "title": "Type", "icon": "text_fields" },
-        { "title": "Motion", "icon": "animation" },
-        { "title": "Shape", "icon": "category" },
-        { "title": "Layout", "icon": "view_quilt" }
+        { "title": qsTr("Color"), "icon": "palette" },
+        { "title": qsTr("Type"), "icon": "text_fields" },
+        { "title": qsTr("Motion"), "icon": "animation" },
+        { "title": qsTr("Shape"), "icon": "category" },
+        { "title": qsTr("Layout"), "icon": "view_quilt" }
     ]
 
     Loader {
@@ -209,11 +209,11 @@ Item {
         id: foundationsSample
         Flow {
             spacing: MeoTheme.space8
-            TokenSwatch { label: "Primary"; swatchColor: MeoTheme.primary; contentColor: MeoTheme.contentOnPrimary }
-            TokenSwatch { label: "Primary container"; swatchColor: MeoTheme.primaryContainer; contentColor: MeoTheme.contentOnPrimaryContainer }
-            TokenSwatch { label: "Surface low"; swatchColor: MeoTheme.surfaceContainerLow; contentColor: MeoTheme.contentOnSurface }
-            TokenSwatch { label: "Error"; swatchColor: MeoTheme.error; contentColor: MeoTheme.contentOnError }
-            TokenSwatch { label: "Inverse surface"; swatchColor: MeoTheme.inverseSurface; contentColor: MeoTheme.contentOnInverseSurface }
+            TokenSwatch { label: qsTr("Primary"); swatchColor: MeoTheme.primary; contentColor: MeoTheme.contentOnPrimary }
+            TokenSwatch { label: qsTr("Primary container"); swatchColor: MeoTheme.primaryContainer; contentColor: MeoTheme.contentOnPrimaryContainer }
+            TokenSwatch { label: qsTr("Surface low"); swatchColor: MeoTheme.surfaceContainerLow; contentColor: MeoTheme.contentOnSurface }
+            TokenSwatch { label: qsTr("Error"); swatchColor: MeoTheme.error; contentColor: MeoTheme.contentOnError }
+            TokenSwatch { label: qsTr("Inverse surface"); swatchColor: MeoTheme.inverseSurface; contentColor: MeoTheme.contentOnInverseSurface }
         }
     }
     Component {
@@ -223,12 +223,12 @@ Item {
 
             Repeater {
                 model: [
-                    { "label": "Default spatial", "spec": MeoMotion.defaultSpatial },
-                    { "label": "Fast spatial", "spec": MeoMotion.fastSpatial },
-                    { "label": "Slow spatial", "spec": MeoMotion.slowSpatial },
-                    { "label": "Default effects", "spec": MeoMotion.defaultEffects },
-                    { "label": "Fast effects", "spec": MeoMotion.fastEffects },
-                    { "label": "Slow effects", "spec": MeoMotion.slowEffects }
+                    { "label": qsTr("Default spatial"), "spec": MeoMotion.defaultSpatial },
+                    { "label": qsTr("Fast spatial"), "spec": MeoMotion.fastSpatial },
+                    { "label": qsTr("Slow spatial"), "spec": MeoMotion.slowSpatial },
+                    { "label": qsTr("Default effects"), "spec": MeoMotion.defaultEffects },
+                    { "label": qsTr("Fast effects"), "spec": MeoMotion.fastEffects },
+                    { "label": qsTr("Slow effects"), "spec": MeoMotion.slowEffects }
                 ]
                 delegate: MeoChip {
                     required property int index
@@ -241,12 +241,12 @@ Item {
 
             Repeater {
                 model: [
-                    { "label": "State", "duration": MeoTheme.motionDurationState },
-                    { "label": "Selection", "duration": MeoTheme.motionDurationSelection },
-                    { "label": "Popup enter", "duration": MeoTheme.motionDurationPopupEffectsEnter },
-                    { "label": "Page enter", "duration": MeoTheme.motionDurationPageEnter },
-                    { "label": "Sheet enter", "duration": MeoTheme.motionDurationSheetEnter },
-                    { "label": "Indicator cycle", "duration": MeoTheme.motionDurationIndeterminateCycle }
+                    { "label": qsTr("State"), "duration": MeoTheme.motionDurationState },
+                    { "label": qsTr("Selection"), "duration": MeoTheme.motionDurationSelection },
+                    { "label": qsTr("Popup enter"), "duration": MeoTheme.motionDurationPopupEffectsEnter },
+                    { "label": qsTr("Page enter"), "duration": MeoTheme.motionDurationPageEnter },
+                    { "label": qsTr("Sheet enter"), "duration": MeoTheme.motionDurationSheetEnter },
+                    { "label": qsTr("Indicator cycle"), "duration": MeoTheme.motionDurationIndeterminateCycle }
                 ]
                 delegate: MeoChip {
                     required property var modelData
@@ -255,8 +255,8 @@ Item {
             }
         }
     }
-    Component { id: windowMetricsSample; Flow { spacing: MeoTheme.space8; Repeater { model: [{"label":"Compact","width":599},{"label":"Medium","width":600},{"label":"Expanded","width":840},{"label":"Large","width":1200},{"label":"Extra-large","width":1600}]; delegate: MeoChip { required property var modelData; label: modelData.label + " · " + modelData.width; selected: modelData.width === 840 } } } }
-    Component { id: textSample; Column { spacing: MeoTheme.space4; MeoText { text: "Display title"; typeRole: "title"; typeSize: "big"; emphasized: true; color: MeoTheme.contentOnSurface } MeoText { text: "Roboto body text with semantic type tokens."; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
+    Component { id: windowMetricsSample; Flow { spacing: MeoTheme.space8; Repeater { model: [{"label":qsTr("Compact"),"width":599},{"label":qsTr("Medium"),"width":600},{"label":qsTr("Expanded"),"width":840},{"label":qsTr("Large"),"width":1200},{"label":qsTr("Extra-large"),"width":1600}]; delegate: MeoChip { required property var modelData; label: modelData.label + " · " + modelData.width; selected: modelData.width === 840 } } } }
+    Component { id: textSample; Column { spacing: MeoTheme.space4; MeoText { text: qsTr("Display title"); typeRole: "title"; typeSize: "big"; emphasized: true; color: MeoTheme.contentOnSurface } MeoText { text: qsTr("Roboto body text with semantic type tokens."); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
     Component {
         id: iconSample
 
@@ -265,11 +265,11 @@ Item {
 
             Repeater {
                 model: [
-                    { "label": "Regular", "icon": "palette" },
-                    { "label": "Filled", "icon": "favorite", "fill": true },
-                    { "label": "Bold", "icon": "edit", "weight": 700 },
-                    { "label": "Grade", "icon": "auto_awesome", "grade": 200 },
-                    { "label": "48 opsz", "icon": "search", "opticalSize": 48 }
+                    { "label": qsTr("Regular"), "icon": "palette" },
+                    { "label": qsTr("Filled"), "icon": "favorite", "fill": true },
+                    { "label": qsTr("Bold"), "icon": "edit", "weight": 700 },
+                    { "label": qsTr("Grade"), "icon": "auto_awesome", "grade": 200 },
+                    { "label": qsTr("48 opsz"), "icon": "search", "opticalSize": 48 }
                 ]
 
                 delegate: Column {
@@ -303,11 +303,11 @@ Item {
 
             Repeater {
                 model: [
-                    { "label": "Rest" },
-                    { "label": "Hover", "hovered": true },
-                    { "label": "Focus", "focused": true },
-                    { "label": "Pressed", "pressed": true },
-                    { "label": "Dragged", "dragged": true }
+                    { "label": qsTr("Rest") },
+                    { "label": qsTr("Hover"), "hovered": true },
+                    { "label": qsTr("Focus"), "focused": true },
+                    { "label": qsTr("Pressed"), "pressed": true },
+                    { "label": qsTr("Dragged"), "dragged": true }
                 ]
 
                 delegate: Column {
@@ -336,7 +336,7 @@ Item {
                         width: 132 * MeoTheme.globalScale
                         text: modelData.label + (sampleStateLayer._renderedBaseOpacity > 0
                               ? " · " + Math.round(sampleStateLayer._renderedBaseOpacity * 100) + "%"
-                              : (sampleStateLayer._renderedFocusOpacity > 0 ? " · focus" : ""))
+                              : (sampleStateLayer._renderedFocusOpacity > 0 ? " · " + qsTr("focus") : ""))
                         horizontalAlignment: Text.AlignHCenter
                         typeRole: "label"
                         typeSize: "medium"
@@ -353,58 +353,58 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space12
 
-            SampleLabel { label: "Type" }
-            SampleLabel { label: "Text" }
-            SampleLabel { label: "With icon" }
-            SampleLabel { label: "Disabled" }
-            SampleLabel { label: "Loading" }
+            SampleLabel { label: qsTr("Type") }
+            SampleLabel { label: qsTr("Text") }
+            SampleLabel { label: qsTr("With icon") }
+            SampleLabel { label: qsTr("Disabled") }
+            SampleLabel { label: qsTr("Loading") }
 
-            SampleLabel { label: "Filled" }
-            MeoButton { text: "Filled"; type: "filled" }
-            MeoButton { text: "Icon"; type: "filled"; icon.name: "add" }
-            MeoButton { text: "Filled"; type: "filled"; enabled: false }
-            MeoButton { text: "Loading"; type: "filled"; loading: true; loadingWithContainer: true }
+            SampleLabel { label: qsTr("Filled") }
+            MeoButton { text: qsTr("Filled"); type: "filled" }
+            MeoButton { text: qsTr("Icon"); type: "filled"; icon.name: "add" }
+            MeoButton { text: qsTr("Filled"); type: "filled"; enabled: false }
+            MeoButton { text: qsTr("Loading"); type: "filled"; loading: true; loadingWithContainer: true }
 
-            SampleLabel { label: "Tonal" }
-            MeoButton { text: "Tonal"; type: "tonal" }
-            MeoButton { text: "Icon"; type: "tonal"; icon.name: "star" }
-            MeoButton { text: "Tonal"; type: "tonal"; enabled: false }
-            MeoButton { text: "Loading"; type: "tonal"; loading: true }
+            SampleLabel { label: qsTr("Tonal") }
+            MeoButton { text: qsTr("Tonal"); type: "tonal" }
+            MeoButton { text: qsTr("Icon"); type: "tonal"; icon.name: "star" }
+            MeoButton { text: qsTr("Tonal"); type: "tonal"; enabled: false }
+            MeoButton { text: qsTr("Loading"); type: "tonal"; loading: true }
 
-            SampleLabel { label: "Outlined" }
-            MeoButton { text: "Outlined"; type: "outlined" }
-            MeoButton { text: "Icon"; type: "outlined"; icon.name: "add" }
-            MeoButton { text: "Outlined"; type: "outlined"; enabled: false }
-            MeoButton { text: "Loading"; type: "outlined"; loading: true }
+            SampleLabel { label: qsTr("Outlined") }
+            MeoButton { text: qsTr("Outlined"); type: "outlined" }
+            MeoButton { text: qsTr("Icon"); type: "outlined"; icon.name: "add" }
+            MeoButton { text: qsTr("Outlined"); type: "outlined"; enabled: false }
+            MeoButton { text: qsTr("Loading"); type: "outlined"; loading: true }
 
-            SampleLabel { label: "Elevated" }
-            MeoButton { text: "Elevated"; type: "elevated" }
-            MeoButton { text: "Icon"; type: "elevated"; icon.name: "add" }
-            MeoButton { text: "Elevated"; type: "elevated"; enabled: false }
-            MeoButton { text: "Loading"; type: "elevated"; loading: true }
+            SampleLabel { label: qsTr("Elevated") }
+            MeoButton { text: qsTr("Elevated"); type: "elevated" }
+            MeoButton { text: qsTr("Icon"); type: "elevated"; icon.name: "add" }
+            MeoButton { text: qsTr("Elevated"); type: "elevated"; enabled: false }
+            MeoButton { text: qsTr("Loading"); type: "elevated"; loading: true }
 
-            SampleLabel { label: "Text" }
-            MeoButton { text: "Text"; type: "text" }
-            MeoButton { text: "Icon"; type: "text"; icon.name: "add" }
-            MeoButton { text: "Text"; type: "text"; enabled: false }
-            MeoButton { text: "Loading"; type: "text"; loading: true }
+            SampleLabel { label: qsTr("Text") }
+            MeoButton { text: qsTr("Text"); type: "text" }
+            MeoButton { text: qsTr("Icon"); type: "text"; icon.name: "add" }
+            MeoButton { text: qsTr("Text"); type: "text"; enabled: false }
+            MeoButton { text: qsTr("Loading"); type: "text"; loading: true }
 
-            SampleLabel { label: "Toggle" }
-            MeoButton { text: "Filled off"; type: "filled"; toggle: true }
-            MeoButton { text: "Filled on"; type: "filled"; toggle: true; selected: true }
-            MeoButton { text: "Outlined on"; type: "outlined"; toggle: true; selected: true }
-            MeoButton { text: "Tonal on"; type: "tonal"; toggle: true; selected: true }
+            SampleLabel { label: qsTr("Toggle") }
+            MeoButton { text: qsTr("Filled off"); type: "filled"; toggle: true }
+            MeoButton { text: qsTr("Filled on"); type: "filled"; toggle: true; selected: true }
+            MeoButton { text: qsTr("Outlined on"); type: "outlined"; toggle: true; selected: true }
+            MeoButton { text: qsTr("Tonal on"); type: "tonal"; toggle: true; selected: true }
 
-            SampleLabel { label: "M3E size" }
+            SampleLabel { label: qsTr("M3E size") }
             Row {
                 Layout.columnSpan: 4
                 spacing: MeoTheme.space8
 
-                MeoButton { text: "XS"; type: "filled"; size: "xs" }
-                MeoButton { text: "S"; type: "filled"; size: "s" }
-                MeoButton { text: "M"; type: "filled"; size: "m" }
-                MeoButton { text: "L"; type: "filled"; size: "l" }
-                MeoButton { text: "XL"; type: "filled"; size: "xl" }
+                MeoButton { text: qsTr("XS"); type: "filled"; size: "xs" }
+                MeoButton { text: qsTr("S"); type: "filled"; size: "s" }
+                MeoButton { text: qsTr("M"); type: "filled"; size: "m" }
+                MeoButton { text: qsTr("L"); type: "filled"; size: "l" }
+                MeoButton { text: qsTr("XL"); type: "filled"; size: "xl" }
             }
         }
     }
@@ -416,21 +416,21 @@ Item {
             rowSpacing: MeoTheme.space16
             columnSpacing: MeoTheme.space24
 
-            IconButtonColumn { label: "Standard"; buttonType: "standard"; buttonIcon: "settings" }
-            IconButtonColumn { label: "Filled (default)"; buttonType: "filled"; buttonIcon: "favorite" }
-            IconButtonColumn { label: "Tonal"; buttonType: "tonal"; buttonIcon: "bookmark"; badgeDot: true }
-            IconButtonColumn { label: "Outlined"; buttonType: "outlined"; buttonIcon: "share" }
-            IconButtonColumn { label: "Selected"; buttonType: "standard"; buttonIcon: "star"; toggle: true; selected: true }
-            IconButtonColumn { label: "Selected"; buttonType: "filled"; buttonIcon: "favorite"; toggle: true; selected: true }
-            IconButtonColumn { label: "Selected"; buttonType: "tonal"; buttonIcon: "bookmark"; toggle: true; selected: true }
-            IconButtonColumn { label: "Selected"; buttonType: "outlined"; buttonIcon: "share"; toggle: true; selected: true }
-            IconButtonColumn { label: "Narrow XS"; buttonType: "filled"; buttonIcon: "add"; buttonSize: "xs"; buttonWidth: "narrow" }
-            IconButtonColumn { label: "Uniform M"; buttonType: "filled"; buttonIcon: "edit"; buttonSize: "m" }
-            IconButtonColumn { label: "Wide S"; buttonType: "filled"; buttonIcon: "wifi"; buttonWidth: "wide" }
-            IconButtonColumn { label: "Disabled"; buttonType: "standard"; buttonIcon: "settings"; enabledState: false }
-            IconButtonColumn { label: "Disabled"; buttonType: "filled"; buttonIcon: "favorite"; enabledState: false }
-            IconButtonColumn { label: "Disabled"; buttonType: "tonal"; buttonIcon: "bookmark"; enabledState: false }
-            IconButtonColumn { label: "Disabled"; buttonType: "outlined"; buttonIcon: "share"; enabledState: false }
+            IconButtonColumn { label: qsTr("Standard"); buttonType: "standard"; buttonIcon: "settings" }
+            IconButtonColumn { label: qsTr("Filled (default)"); buttonType: "filled"; buttonIcon: "favorite" }
+            IconButtonColumn { label: qsTr("Tonal"); buttonType: "tonal"; buttonIcon: "bookmark"; badgeDot: true }
+            IconButtonColumn { label: qsTr("Outlined"); buttonType: "outlined"; buttonIcon: "share" }
+            IconButtonColumn { label: qsTr("Selected"); buttonType: "standard"; buttonIcon: "star"; toggle: true; selected: true }
+            IconButtonColumn { label: qsTr("Selected"); buttonType: "filled"; buttonIcon: "favorite"; toggle: true; selected: true }
+            IconButtonColumn { label: qsTr("Selected"); buttonType: "tonal"; buttonIcon: "bookmark"; toggle: true; selected: true }
+            IconButtonColumn { label: qsTr("Selected"); buttonType: "outlined"; buttonIcon: "share"; toggle: true; selected: true }
+            IconButtonColumn { label: qsTr("Narrow XS"); buttonType: "filled"; buttonIcon: "add"; buttonSize: "xs"; buttonWidth: "narrow" }
+            IconButtonColumn { label: qsTr("Uniform M"); buttonType: "filled"; buttonIcon: "edit"; buttonSize: "m" }
+            IconButtonColumn { label: qsTr("Wide S"); buttonType: "filled"; buttonIcon: "wifi"; buttonWidth: "wide" }
+            IconButtonColumn { label: qsTr("Disabled"); buttonType: "standard"; buttonIcon: "settings"; enabledState: false }
+            IconButtonColumn { label: qsTr("Disabled"); buttonType: "filled"; buttonIcon: "favorite"; enabledState: false }
+            IconButtonColumn { label: qsTr("Disabled"); buttonType: "tonal"; buttonIcon: "bookmark"; enabledState: false }
+            IconButtonColumn { label: qsTr("Disabled"); buttonType: "outlined"; buttonIcon: "share"; enabledState: false }
         }
     }
 
@@ -438,12 +438,12 @@ Item {
         id: fabSample
         Flow {
             spacing: MeoTheme.space24
-            FabColumn { label: "Small"; fabType: "small"; fabIcon: "edit" }
-            FabColumn { label: "Regular"; fabType: "regular"; fabIcon: "add" }
-            FabColumn { label: "Medium"; fabType: "medium"; fabIcon: "edit"; fabColorStyle: "secondary" }
-            FabColumn { label: "Large"; fabType: "large"; fabIcon: "palette" }
-            FabColumn { label: "Extended"; fabType: "extended"; fabIcon: "send"; fabText: "Send" }
-            FabColumn { label: "Collapsed"; fabType: "extended"; fabIcon: "send"; fabText: "Send"; fabCollapsed: true }
+            FabColumn { label: qsTr("Small"); fabType: "small"; fabIcon: "edit" }
+            FabColumn { label: qsTr("Regular"); fabType: "regular"; fabIcon: "add" }
+            FabColumn { label: qsTr("Medium"); fabType: "medium"; fabIcon: "edit"; fabColorStyle: "secondary" }
+            FabColumn { label: qsTr("Large"); fabType: "large"; fabIcon: "palette" }
+            FabColumn { label: qsTr("Extended"); fabType: "extended"; fabIcon: "send"; fabText: qsTr("Send") }
+            FabColumn { label: qsTr("Collapsed"); fabType: "extended"; fabIcon: "send"; fabText: qsTr("Send"); fabCollapsed: true }
         }
     }
     Component {
@@ -461,8 +461,8 @@ Item {
                 opened: true
                 enableScrim: false
                 model: [
-                    { "label": "Note", "icon": "note_add" },
-                    { "label": "Task", "icon": "check" }
+                    { "label": qsTr("Note"), "icon": "note_add" },
+                    { "label": qsTr("Task"), "icon": "check" }
                 ]
             }
             MeoFABMenu {
@@ -483,16 +483,16 @@ Item {
             Flow {
                 width: parent.width
                 spacing: MeoTheme.space12
-                MeoSplitButton { text: "Create"; icon: "add"; type: "filled"; size: "xs"; menuModel: control.chipItems }
-                MeoSplitButton { text: "Save"; icon: "save"; type: "tonal"; size: "s"; menuModel: control.chipItems }
-                MeoSplitButton { text: "Export"; icon: "download"; type: "outlined"; size: "m"; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Create"); icon: "add"; type: "filled"; size: "xs"; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Save"); icon: "save"; type: "tonal"; size: "s"; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Export"); icon: "download"; type: "outlined"; size: "m"; menuModel: control.chipItems }
             }
             Flow {
                 width: parent.width
                 spacing: MeoTheme.space12
-                MeoSplitButton { text: "Add"; icon: "add"; type: "elevated"; size: "l"; menuModel: control.chipItems }
-                MeoSplitButton { text: "Deploy"; icon: "rocket_launch"; type: "filled"; size: "xl"; menuModel: control.chipItems }
-                MeoSplitButton { text: "Disabled"; icon: "block"; type: "filled"; size: "s"; enabled: false; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Add"); icon: "add"; type: "elevated"; size: "l"; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Deploy"); icon: "rocket_launch"; type: "filled"; size: "xl"; menuModel: control.chipItems }
+                MeoSplitButton { text: qsTr("Disabled"); icon: "block"; type: "filled"; size: "s"; enabled: false; menuModel: control.chipItems }
             }
         }
     }
@@ -501,30 +501,30 @@ Item {
         Grid {
             columns: 2
             spacing: MeoTheme.space8
-            SampleLabel { label: "1. Standard: selection expands and changes shape" }
+            SampleLabel { label: qsTr("1. Standard: selection expands and changes shape") }
             MeoButtonGroup {
                 type: "tonal"
                 model: [
-                    { "label": "Bluetooth", "icon": "bluetooth", "compactWhenUnselected": true },
-                    { "label": "Timer", "icon": "timer", "compactWhenUnselected": true },
-                    { "label": "Share", "icon": "share", "compactWhenUnselected": true }
+                    { "label": qsTr("Bluetooth"), "icon": "bluetooth", "compactWhenUnselected": true },
+                    { "label": qsTr("Timer"), "icon": "timer", "compactWhenUnselected": true },
+                    { "label": qsTr("Share"), "icon": "share", "compactWhenUnselected": true }
                 ]
                 currentIndex: 1
             }
-            SampleLabel { label: "2. Standard action trio" }
-            MeoButtonGroup { type: "filled"; model: [{ "label": "Back", "icon": "arrow_back" }, { "label": "Pause", "icon": "pause" }, { "label": "Next", "icon": "arrow_forward" }]; currentIndex: 1 }
-            SampleLabel { label: "3. Connected: stable view selection" }
-            MeoButtonGroup { width: 420 * MeoTheme.globalScale; variant: "connected"; type: "outlined"; model: [{ "label": "List", "icon": "view_list" }, { "label": "Grid", "icon": "grid_view" }, { "label": "Map", "icon": "map" }]; currentIndex: 1 }
-            SampleLabel { label: "4. Connected multi-select" }
-            MeoButtonGroup { width: 420 * MeoTheme.globalScale; variant: "connected"; type: "outlined"; multiSelect: true; selectedIndices: [0, 2]; model: [{ "label": "Photos" }, { "label": "Videos" }, { "label": "Files" }] }
-            SampleLabel { label: "5. Disabled" }
-            MeoButtonGroup { model: [{ "label": "Day" }, { "label": "Week" }, { "label": "Month" }]; currentIndex: 1; enabled: false }
-            SampleLabel { label: "6. Standard size spacing (XS / S; M shown above)" }
+            SampleLabel { label: qsTr("2. Standard action trio") }
+            MeoButtonGroup { type: "filled"; model: [{ "label": qsTr("Back"), "icon": "arrow_back" }, { "label": qsTr("Pause"), "icon": "pause" }, { "label": qsTr("Next"), "icon": "arrow_forward" }]; currentIndex: 1 }
+            SampleLabel { label: qsTr("3. Connected: stable view selection") }
+            MeoButtonGroup { width: 420 * MeoTheme.globalScale; variant: "connected"; type: "outlined"; model: [{ "label": qsTr("List"), "icon": "view_list" }, { "label": qsTr("Grid"), "icon": "grid_view" }, { "label": qsTr("Map"), "icon": "map" }]; currentIndex: 1 }
+            SampleLabel { label: qsTr("4. Connected multi-select") }
+            MeoButtonGroup { width: 420 * MeoTheme.globalScale; variant: "connected"; type: "outlined"; multiSelect: true; selectedIndices: [0, 2]; model: [{ "label": qsTr("Photos") }, { "label": qsTr("Videos") }, { "label": qsTr("Files") }] }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoButtonGroup { model: [{ "label": qsTr("Day") }, { "label": qsTr("Week") }, { "label": qsTr("Month") }]; currentIndex: 1; enabled: false }
+            SampleLabel { label: qsTr("6. Standard size spacing (XS / S; M shown above)") }
             Flow {
                 width: 590 * MeoTheme.globalScale
                 spacing: MeoTheme.space12
-                MeoButtonGroup { size: "xs"; model: [{ "label": "A" }, { "label": "B" }, { "label": "C" }] }
-                MeoButtonGroup { size: "s"; model: [{ "label": "A" }, { "label": "B" }, { "label": "C" }] }
+                MeoButtonGroup { size: "xs"; model: [{ "label": qsTr("A") }, { "label": qsTr("B") }, { "label": qsTr("C") }] }
+                MeoButtonGroup { size: "s"; model: [{ "label": qsTr("A") }, { "label": qsTr("B") }, { "label": qsTr("C") }] }
             }
         }
     }
@@ -532,16 +532,16 @@ Item {
         id: segmentedSample
         Column {
             spacing: MeoTheme.space8
-            SampleLabel { label: "Single selection" }
-            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: ["List", "Grid", "Map"]; currentIndex: 1 }
-            SampleLabel { label: "Single with icons" }
-            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: [{ "label": "List", "icon": "view_list" }, { "label": "Grid", "icon": "grid_view" }, { "label": "Map", "icon": "map" }]; currentIndex: 1 }
-            SampleLabel { label: "Multi selection" }
-            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: ["Bold", "Italic", "Underline"]; multiSelect: true; selectedIndices: [0, 2] }
-            SampleLabel { label: "Disabled" }
-            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: ["List", "Grid", "Map"]; currentIndex: 1; enabled: false }
-            SampleLabel { label: "Compact" }
-            MeoSegmentedButtons { width: 300 * MeoTheme.globalScale; size: "xs"; model: ["A", "B", "C"]; currentIndex: 1 }
+            SampleLabel { label: qsTr("Single selection") }
+            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: [qsTr("List"), qsTr("Grid"), qsTr("Map")]; currentIndex: 1 }
+            SampleLabel { label: qsTr("Single with icons") }
+            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: [{ "label": qsTr("List"), "icon": "view_list" }, { "label": qsTr("Grid"), "icon": "grid_view" }, { "label": qsTr("Map"), "icon": "map" }]; currentIndex: 1 }
+            SampleLabel { label: qsTr("Multi selection") }
+            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: [qsTr("Bold"), qsTr("Italic"), qsTr("Underline")]; multiSelect: true; selectedIndices: [0, 2] }
+            SampleLabel { label: qsTr("Disabled") }
+            MeoSegmentedButtons { width: 420 * MeoTheme.globalScale; model: [qsTr("List"), qsTr("Grid"), qsTr("Map")]; currentIndex: 1; enabled: false }
+            SampleLabel { label: qsTr("Compact") }
+            MeoSegmentedButtons { width: 300 * MeoTheme.globalScale; size: "xs"; model: [qsTr("A"), qsTr("B"), qsTr("C")]; currentIndex: 1 }
         }
     }
     Component {
@@ -554,52 +554,52 @@ Item {
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "filled"
-                label: "Filled"
-                placeholder: "Filled input"
-                helperText: "Supporting text"
+                label: qsTr("Filled")
+                placeholder: qsTr("Filled input")
+                helperText: qsTr("Supporting text")
             }
 
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "outlined"
-                label: "Outlined"
-                placeholder: "Outlined input"
+                label: qsTr("Outlined")
+                placeholder: qsTr("Outlined input")
             }
 
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "filled"
-                label: "Search"
+                label: qsTr("Search")
                 leadingIcon: "search"
                 trailingIcon: "close"
                 showClearButton: true
-                text: "Material"
+                text: qsTr("Material")
             }
 
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "outlined"
-                label: "Password"
-                placeholder: "Enter password"
+                label: qsTr("Password")
+                placeholder: qsTr("Enter password")
                 trailingIcon: "visibility"
                 echoMode: TextInput.Password
-                text: "secret"
+                text: qsTr("secret")
             }
 
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "filled"
-                label: "Error"
-                text: "bad input"
+                label: qsTr("Error")
+                text: qsTr("bad input")
                 isError: true
-                errorText: "Invalid input"
+                errorText: qsTr("Invalid input")
             }
 
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "outlined"
-                label: "Counter"
-                text: "Short note"
+                label: qsTr("Counter")
+                text: qsTr("Short note")
                 maxLength: 24
                 showCounter: true
             }
@@ -607,7 +607,7 @@ Item {
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "filled"
-                label: "Prefix / suffix"
+                label: qsTr("Prefix / suffix")
                 prefixText: "$"
                 suffixText: "USD"
                 text: "128"
@@ -616,8 +616,8 @@ Item {
             MeoTextField {
                 width: 280 * MeoTheme.globalScale
                 type: "outlined"
-                label: "Disabled"
-                text: "Disabled"
+                label: qsTr("Disabled")
+                text: qsTr("Disabled")
                 enabled: false
             }
         }
@@ -627,11 +627,11 @@ Item {
         Grid {
             columns: 3
             spacing: MeoTheme.space12
-            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: "Summary"; placeholder: "Write a short summary"; helperText: "Filled" }
-            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: "Description"; type: "outlined"; text: "Outlined multi-line input" }
-            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: "Notes"; text: "Too short"; isError: true; errorText: "Add more detail" }
-            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: "Bio"; text: "A concise profile"; maxLength: 40; showCounter: true }
-            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: "Disabled"; text: "Unavailable"; enabled: false }
+            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: qsTr("Summary"); placeholder: qsTr("Write a short summary"); helperText: qsTr("Filled") }
+            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: qsTr("Description"); type: "outlined"; text: qsTr("Outlined multi-line input") }
+            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: qsTr("Notes"); text: qsTr("Too short"); isError: true; errorText: qsTr("Add more detail") }
+            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: qsTr("Bio"); text: qsTr("A concise profile"); maxLength: 40; showCounter: true }
+            MeoTextArea { width: 272 * MeoTheme.globalScale; height: 124 * MeoTheme.globalScale; label: qsTr("Disabled"); text: qsTr("Unavailable"); enabled: false }
         }
     }
     Component {
@@ -639,13 +639,13 @@ Item {
         Grid {
             columns: 3
             spacing: MeoTheme.space12
-            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: "Environment"; model: ["Development", "Staging", "Production"]; currentIndex: 0 }
-            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: "Region"; type: "outlined"; model: ["Americas", "Europe", "Asia"]; currentIndex: 2 }
-            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: "Workspace"; model: ["Personal", "Team"]; isError: true; errorText: "Choose a workspace" }
+            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Environment"); model: [qsTr("Development"), qsTr("Staging"), qsTr("Production")]; currentIndex: 0 }
+            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Region"); type: "outlined"; model: [qsTr("Americas"), qsTr("Europe"), qsTr("Asia")]; currentIndex: 2 }
+            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Workspace"); model: [qsTr("Personal"), qsTr("Team")]; isError: true; errorText: qsTr("Choose a workspace") }
             MeoExposedDropdown {
                 width: 260 * MeoTheme.globalScale
-                label: "Open menu"
-                model: ["Inbox", "Later", "Archived"]
+                label: qsTr("Open menu")
+                model: [qsTr("Inbox"), qsTr("Later"), qsTr("Archived")]
                 Timer {
                     interval: 300
                     running: true
@@ -653,7 +653,7 @@ Item {
                     onTriggered: parent.openMenu()
                 }
             }
-            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: "Disabled"; model: ["Unavailable"]; currentIndex: 0; enabled: false }
+            MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Disabled"); model: [qsTr("Unavailable")]; currentIndex: 0; enabled: false }
         }
     }
     Component {
@@ -664,27 +664,27 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "ISO value" }
+                SampleLabel { label: qsTr("ISO value") }
                 MeoDateInput { width: 220 * MeoTheme.globalScale; value: new Date(2026, 7, 31) }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Slash format" }
+                SampleLabel { label: qsTr("Slash format") }
                 MeoDateInput { width: 220 * MeoTheme.globalScale; format: "yyyy/MM/dd"; value: new Date(2024, 1, 29) }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Empty allowed" }
+                SampleLabel { label: qsTr("Empty allowed") }
                 MeoDateInput { width: 220 * MeoTheme.globalScale; allowEmpty: true; value: new Date(0) }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Clear affordance" }
+                SampleLabel { label: qsTr("Clear affordance") }
                 MeoDateInput { width: 220 * MeoTheme.globalScale; value: new Date(2025, 11, 24); showClearButton: true }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Validation error" }
+                SampleLabel { label: qsTr("Validation error") }
                 MeoDateInput {
                     width: 220 * MeoTheme.globalScale
                     Timer {
@@ -697,7 +697,7 @@ Item {
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
+                SampleLabel { label: qsTr("Disabled") }
                 MeoDateInput { width: 220 * MeoTheme.globalScale; value: new Date(2027, 0, 1); enabled: false }
             }
         }
@@ -710,22 +710,22 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Morning" }
+                SampleLabel { label: qsTr("Morning") }
                 MeoTimeInput { width: 220 * MeoTheme.globalScale; value: "09:30" }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Clear affordance" }
+                SampleLabel { label: qsTr("Clear affordance") }
                 MeoTimeInput { width: 220 * MeoTheme.globalScale; value: "18:45"; showClearButton: true }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Empty allowed" }
+                SampleLabel { label: qsTr("Empty allowed") }
                 MeoTimeInput { width: 220 * MeoTheme.globalScale; allowEmpty: true }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Validation error" }
+                SampleLabel { label: qsTr("Validation error") }
                 MeoTimeInput {
                     width: 220 * MeoTheme.globalScale
                     Timer {
@@ -738,7 +738,7 @@ Item {
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
+                SampleLabel { label: qsTr("Disabled") }
                 MeoTimeInput { width: 220 * MeoTheme.globalScale; value: "07:15"; enabled: false }
             }
         }
@@ -777,27 +777,27 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Step 2" }
+                SampleLabel { label: qsTr("Step 2") }
                 MeoSpinBox { from: 0; to: 100; value: 42; stepSize: 2 }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Minimum" }
+                SampleLabel { label: qsTr("Minimum") }
                 MeoSpinBox { from: 0; to: 10; value: 0 }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Maximum" }
+                SampleLabel { label: qsTr("Maximum") }
                 MeoSpinBox { from: 0; to: 10; value: 10 }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Read only" }
+                SampleLabel { label: qsTr("Read only") }
                 MeoSpinBox { from: -5; to: 5; value: -2; editable: false }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
+                SampleLabel { label: qsTr("Disabled") }
                 MeoSpinBox { from: 0; to: 10; value: 6; enabled: false }
             }
         }
@@ -822,11 +822,11 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space24
 
-            MeoCheckbox { label: "Checked"; checked: true }
-            MeoCheckbox { label: "Unchecked" }
-            MeoCheckbox { label: "Indeterminate"; indeterminate: true }
-            MeoCheckbox { label: "Error"; checked: true; isError: true; errorText: "Required" }
-            MeoCheckbox { label: "Disabled"; checked: true; enabled: false }
+            MeoCheckbox { label: qsTr("Checked"); checked: true }
+            MeoCheckbox { label: qsTr("Unchecked") }
+            MeoCheckbox { label: qsTr("Indeterminate"); indeterminate: true }
+            MeoCheckbox { label: qsTr("Error"); checked: true; isError: true; errorText: qsTr("Required") }
+            MeoCheckbox { label: qsTr("Disabled"); checked: true; enabled: false }
         }
     }
     Component {
@@ -836,11 +836,11 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space24
 
-            MeoRadioButton { label: "Selected"; checked: true }
-            MeoRadioButton { label: "Unselected" }
-            MeoRadioButton { label: "Error"; checked: true; isError: true; errorText: "Choose an option" }
-            MeoRadioButton { label: "Disabled selected"; checked: true; enabled: false }
-            MeoRadioButton { label: "Disabled"; enabled: false }
+            MeoRadioButton { label: qsTr("Selected"); checked: true }
+            MeoRadioButton { label: qsTr("Unselected") }
+            MeoRadioButton { label: qsTr("Error"); checked: true; isError: true; errorText: qsTr("Choose an option") }
+            MeoRadioButton { label: qsTr("Disabled selected"); checked: true; enabled: false }
+            MeoRadioButton { label: qsTr("Disabled"); enabled: false }
         }
     }
     Component {
@@ -850,12 +850,12 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space24
 
-            MeoSwitch { label: "No icons"; checked: true }
-            MeoSwitch { label: "Selected icon"; checked: true; showIcon: true; icon: "check" }
-            MeoSwitch { label: "Both icons"; uncheckedIcon: "close" }
-            MeoSwitch { label: "Error"; checked: true; showIcon: true; icon: "check"; isError: true; errorText: "Unavailable" }
-            MeoSwitch { label: "Disabled on"; checked: true; showIcon: true; icon: "check"; enabled: false }
-            MeoSwitch { label: "Disabled off"; uncheckedIcon: "close"; enabled: false }
+            MeoSwitch { label: qsTr("No icons"); checked: true }
+            MeoSwitch { label: qsTr("Selected icon"); checked: true; showIcon: true; icon: "check" }
+            MeoSwitch { label: qsTr("Both icons"); uncheckedIcon: "close" }
+            MeoSwitch { label: qsTr("Error"); checked: true; showIcon: true; icon: "check"; isError: true; errorText: qsTr("Unavailable") }
+            MeoSwitch { label: qsTr("Disabled on"); checked: true; showIcon: true; icon: "check"; enabled: false }
+            MeoSwitch { label: qsTr("Disabled off"); uncheckedIcon: "close"; enabled: false }
         }
     }
     Component {
@@ -864,7 +864,7 @@ Item {
             width: 520 * MeoTheme.globalScale
             spacing: MeoTheme.space12
 
-            SampleLabel { label: "1. XS — 16 / 44 / R8" }
+            SampleLabel { label: qsTr("1. XS — 16 / 44 / R8") }
             MeoSlider {
                 width: parent.width
                 value: 50
@@ -872,7 +872,7 @@ Item {
                 size: "xs"
             }
 
-            SampleLabel { label: "2. S — 24 / 44 / R8, discrete stops" }
+            SampleLabel { label: qsTr("2. S — 24 / 44 / R8, discrete stops") }
             MeoSlider {
                 width: parent.width
                 value: 40
@@ -882,7 +882,7 @@ Item {
                 stepSize: 10
             }
 
-            SampleLabel { label: "3. M — 40 / 52 / R12, 24dp inset icon" }
+            SampleLabel { label: qsTr("3. M — 40 / 52 / R12, 24dp inset icon") }
             MeoSlider {
                 width: parent.width
                 value: 48
@@ -891,7 +891,7 @@ Item {
                 insetIcon: "volume_up"
             }
 
-            SampleLabel { label: "4. L — 56 / 68 / R16, 24dp inset icon" }
+            SampleLabel { label: qsTr("4. L — 56 / 68 / R16, 24dp inset icon") }
             MeoSlider {
                 width: parent.width
                 value: 56
@@ -900,7 +900,7 @@ Item {
                 insetIcon: "volume_up"
             }
 
-            SampleLabel { label: "5. XL — 96 / 108 / R28, 32dp inset icon" }
+            SampleLabel { label: qsTr("5. XL — 96 / 108 / R28, 32dp inset icon") }
             MeoSlider {
                 width: parent.width
                 value: 64
@@ -914,7 +914,7 @@ Item {
 
                 Column {
                     spacing: MeoTheme.space8
-                    SampleLabel { label: "Value indicator" }
+                    SampleLabel { label: qsTr("Value indicator") }
                     MeoSlider {
                         width: 320 * MeoTheme.globalScale
                         value: 50
@@ -925,7 +925,7 @@ Item {
 
                 Column {
                     spacing: MeoTheme.space8
-                    SampleLabel { label: "Vertical" }
+                    SampleLabel { label: qsTr("Vertical") }
                     MeoSlider {
                         width: 52 * MeoTheme.globalScale
                         height: 180 * MeoTheme.globalScale
@@ -944,27 +944,27 @@ Item {
             spacing: MeoTheme.space16
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "1. Vertical always on" }
+                SampleLabel { label: qsTr("1. Vertical always on") }
                 MeoScrollBar { height: 120 * MeoTheme.globalScale; orientation: Qt.Vertical; policy: ScrollBar.AlwaysOn; position: 0.28; size: 0.35 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "2. Horizontal always on" }
+                SampleLabel { label: qsTr("2. Horizontal always on") }
                 MeoScrollBar { width: 132 * MeoTheme.globalScale; orientation: Qt.Horizontal; policy: ScrollBar.AlwaysOn; position: 0.28; size: 0.35 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "3. Vertical auto" }
+                SampleLabel { label: qsTr("3. Vertical auto") }
                 MeoScrollBar { height: 120 * MeoTheme.globalScale; orientation: Qt.Vertical; policy: ScrollBar.AsNeeded; active: true; position: 0.52; size: 0.30 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "4. Horizontal auto" }
+                SampleLabel { label: qsTr("4. Horizontal auto") }
                 MeoScrollBar { width: 132 * MeoTheme.globalScale; orientation: Qt.Horizontal; policy: ScrollBar.AsNeeded; active: true; position: 0.52; size: 0.30 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "5. Disabled" }
+                SampleLabel { label: qsTr("5. Disabled") }
                 MeoScrollBar { height: 120 * MeoTheme.globalScale; orientation: Qt.Vertical; policy: ScrollBar.AlwaysOn; position: 0.28; size: 0.35; enabled: false }
             }
         }
@@ -976,19 +976,19 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space16
 
-            SampleLabel { label: "1. Standard range" }
+            SampleLabel { label: qsTr("1. Standard range") }
             MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 24; secondValue: 78 }
 
-            SampleLabel { label: "2. Expressive split" }
+            SampleLabel { label: qsTr("2. Expressive split") }
             MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 24; secondValue: 78; expressive: true; trackStyle: "split" }
 
-            SampleLabel { label: "3. Discrete stops" }
+            SampleLabel { label: qsTr("3. Discrete stops") }
             MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 20; secondValue: 80; discrete: true; stepSize: 20 }
 
-            SampleLabel { label: "4. Narrow range" }
+            SampleLabel { label: qsTr("4. Narrow range") }
             MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 46; secondValue: 54 }
 
-            SampleLabel { label: "5. Disabled" }
+            SampleLabel { label: qsTr("5. Disabled") }
             MeoRangeSlider { width: 360 * MeoTheme.globalScale; firstValue: 24; secondValue: 78; enabled: false }
         }
     }
@@ -998,23 +998,23 @@ Item {
             width: 360 * MeoTheme.globalScale
             spacing: MeoTheme.space12
 
-            SampleLabel { label: "1. Low" }
-            MeoQuickControlSlider { width: parent.width; iconName: "light_mode"; label: "Brightness"; accessibleName: "Brightness"; iconAccessibleName: "Display options"; value: 24 }
+            SampleLabel { label: qsTr("1. Low") }
+            MeoQuickControlSlider { width: parent.width; iconName: "light_mode"; label: qsTr("Brightness"); accessibleName: qsTr("Brightness"); iconAccessibleName: qsTr("Display options"); value: 24 }
 
-            SampleLabel { label: "2. Mid" }
-            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: "Output volume"; accessibleName: "Output volume"; iconAccessibleName: "Mute output"; value: 52 }
+            SampleLabel { label: qsTr("2. Mid") }
+            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: qsTr("Output volume"); accessibleName: qsTr("Output volume"); iconAccessibleName: qsTr("Mute output"); value: 52 }
 
-            SampleLabel { label: "3. High" }
-            MeoQuickControlSlider { width: parent.width; iconName: "wifi"; label: "Wi-Fi strength"; accessibleName: "Wi-Fi strength"; iconAccessibleName: "Network options"; value: 88 }
+            SampleLabel { label: qsTr("3. High") }
+            MeoQuickControlSlider { width: parent.width; iconName: "wifi"; label: qsTr("Wi-Fi strength"); accessibleName: qsTr("Wi-Fi strength"); iconAccessibleName: qsTr("Network options"); value: 88 }
 
-            SampleLabel { label: "4. Details expanded" }
-            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: "Output volume"; accessibleName: "Output volume"; iconAccessibleName: "Mute output"; value: 64; detailsAvailable: true; expanded: true }
+            SampleLabel { label: qsTr("4. Details expanded") }
+            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: qsTr("Output volume"); accessibleName: qsTr("Output volume"); iconAccessibleName: qsTr("Mute output"); value: 64; detailsAvailable: true; expanded: true }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoQuickControlSlider { width: parent.width; iconName: "light_mode"; label: "Brightness"; accessibleName: "Brightness"; iconAccessibleName: "Display options"; value: 38; enabled: false }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoQuickControlSlider { width: parent.width; iconName: "light_mode"; label: qsTr("Brightness"); accessibleName: qsTr("Brightness"); iconAccessibleName: qsTr("Display options"); value: 38; enabled: false }
 
-            SampleLabel { label: "6. External value animation" }
-            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: "Hardware volume"; accessibleName: "Hardware volume"; value: 76; animateExternalChanges: true; motionProfile: "pixel" }
+            SampleLabel { label: qsTr("6. External value animation") }
+            MeoQuickControlSlider { width: parent.width; iconName: "volume_up"; label: qsTr("Hardware volume"); accessibleName: qsTr("Hardware volume"); value: 76; animateExternalChanges: true; motionProfile: "pixel" }
         }
     }
     Component {
@@ -1024,23 +1024,23 @@ Item {
             rowSpacing: MeoTheme.space12
             columnSpacing: MeoTheme.space16
 
-            SampleLabel { label: "1. Pixel wide active" }
-            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Connected"; iconName: "wifi"; active: true; wide: true; visualStyle: "pixel"; detailsEnabled: true }
+            SampleLabel { label: qsTr("1. Pixel wide active") }
+            MeoQuickSettingsTile { title: qsTr("Wi-Fi"); supportingText: qsTr("Connected"); iconName: "wifi"; active: true; wide: true; visualStyle: "pixel"; detailsEnabled: true }
 
-            SampleLabel { label: "2. Pixel wide inactive" }
-            MeoQuickSettingsTile { title: "Bluetooth"; supportingText: "Off"; iconName: "bluetooth"; wide: true; visualStyle: "pixel" }
+            SampleLabel { label: qsTr("2. Pixel wide inactive") }
+            MeoQuickSettingsTile { title: qsTr("Bluetooth"); supportingText: qsTr("Off"); iconName: "bluetooth"; wide: true; visualStyle: "pixel" }
 
-            SampleLabel { label: "3. Pixel compact active" }
-            MeoQuickSettingsTile { title: "Flashlight"; iconName: "flashlight_on"; active: true; wide: false; visualStyle: "pixel" }
+            SampleLabel { label: qsTr("3. Pixel compact active") }
+            MeoQuickSettingsTile { title: qsTr("Flashlight"); iconName: "flashlight_on"; active: true; wide: false; visualStyle: "pixel" }
 
-            SampleLabel { label: "4. Pixel compact inactive" }
-            MeoQuickSettingsTile { title: "Airplane"; iconName: "flight"; wide: false; visualStyle: "pixel" }
+            SampleLabel { label: qsTr("4. Pixel compact inactive") }
+            MeoQuickSettingsTile { title: qsTr("Airplane"); iconName: "flight"; wide: false; visualStyle: "pixel" }
 
-            SampleLabel { label: "5. Edit state" }
-            MeoQuickSettingsTile { title: "Quick Share"; supportingText: "Contacts"; iconName: "share"; active: true; wide: true; visualStyle: "pixel"; editMode: true; editSelected: true }
+            SampleLabel { label: qsTr("5. Edit state") }
+            MeoQuickSettingsTile { title: qsTr("Quick Share"); supportingText: qsTr("Contacts"); iconName: "share"; active: true; wide: true; visualStyle: "pixel"; editMode: true; editSelected: true }
 
-            SampleLabel { label: "6. Busy / unavailable" }
-            MeoQuickSettingsTile { title: "Wi-Fi"; supportingText: "Waiting for NetworkManager"; iconName: "wifi"; wide: true; visualStyle: "pixel"; busy: true }
+            SampleLabel { label: qsTr("6. Busy / unavailable") }
+            MeoQuickSettingsTile { title: qsTr("Wi-Fi"); supportingText: qsTr("Waiting for NetworkManager"); iconName: "wifi"; wide: true; visualStyle: "pixel"; busy: true }
         }
     }
     Component {
@@ -1050,20 +1050,20 @@ Item {
             rowSpacing: MeoTheme.space16
             columnSpacing: MeoTheme.space24
 
-            SampleLabel { label: "1. Checkbox mixed" }
-            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": "Design", "checked": true }, { "label": "Code", "checked": false }, { "label": "Research", "checked": true }] }
+            SampleLabel { label: qsTr("1. Checkbox mixed") }
+            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": qsTr("Design"), "checked": true }, { "label": qsTr("Code"), "checked": false }, { "label": qsTr("Research"), "checked": true }] }
 
-            SampleLabel { label: "2. Checkbox all selected" }
-            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": "Alerts", "checked": true }, { "label": "Updates", "checked": true }] }
+            SampleLabel { label: qsTr("2. Checkbox all selected") }
+            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": qsTr("Alerts"), "checked": true }, { "label": qsTr("Updates"), "checked": true }] }
 
-            SampleLabel { label: "3. Radio selection" }
-            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "radio"; model: [{ "label": "Light", "checked": false }, { "label": "System", "checked": true }, { "label": "Dark", "checked": false }] }
+            SampleLabel { label: qsTr("3. Radio selection") }
+            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "radio"; model: [{ "label": qsTr("Light"), "checked": false }, { "label": qsTr("System"), "checked": true }, { "label": qsTr("Dark"), "checked": false }] }
 
-            SampleLabel { label: "4. Supporting text" }
-            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "radio"; model: [{ "label": "Automatic", "supportingText": "Follow the device", "checked": true }, { "label": "Manual", "supportingText": "Choose a fixed mode", "checked": false }] }
+            SampleLabel { label: qsTr("4. Supporting text") }
+            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "radio"; model: [{ "label": qsTr("Automatic"), "supportingText": qsTr("Follow the device"), "checked": true }, { "label": qsTr("Manual"), "supportingText": qsTr("Choose a fixed mode"), "checked": false }] }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": "Design", "checked": true }, { "label": "Code", "checked": false }]; enabled: false }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoSelectionGroup { width: 360 * MeoTheme.globalScale; type: "checkbox"; showSelectAll: true; model: [{ "label": qsTr("Design"), "checked": true }, { "label": qsTr("Code"), "checked": false }]; enabled: false }
         }
     }
     Component {
@@ -1072,20 +1072,20 @@ Item {
             width: 520 * MeoTheme.globalScale
             spacing: MeoTheme.space12
 
-            SampleLabel { label: "1. Single selection" }
-            MeoFilterGroup { width: parent.width; model: ["All", "Open", "Archived"]; currentIndex: 0 }
+            SampleLabel { label: qsTr("1. Single selection") }
+            MeoFilterGroup { width: parent.width; model: [qsTr("All"), qsTr("Open"), qsTr("Archived")]; currentIndex: 0 }
 
-            SampleLabel { label: "2. Multiple selection" }
-            MeoFilterGroup { width: parent.width; multiSelect: true; selectedIndices: [0, 2]; model: ["Updates", "Assigned", "Mentioned"] }
+            SampleLabel { label: qsTr("2. Multiple selection") }
+            MeoFilterGroup { width: parent.width; multiSelect: true; selectedIndices: [0, 2]; model: [qsTr("Updates"), qsTr("Assigned"), qsTr("Mentioned")] }
 
-            SampleLabel { label: "3. With icons" }
-            MeoFilterGroup { width: parent.width; model: [{ "label": "Design", "icon": "palette" }, { "label": "Code", "icon": "code" }, { "label": "Docs", "icon": "article" }]; currentIndex: 1 }
+            SampleLabel { label: qsTr("3. With icons") }
+            MeoFilterGroup { width: parent.width; model: [{ "label": qsTr("Design"), "icon": "palette" }, { "label": qsTr("Code"), "icon": "code" }, { "label": qsTr("Docs"), "icon": "article" }]; currentIndex: 1 }
 
-            SampleLabel { label: "4. Required selection" }
-            MeoFilterGroup { width: parent.width; allowEmptySelection: false; currentIndex: 1; model: ["List", "Grid", "Cards"] }
+            SampleLabel { label: qsTr("4. Required selection") }
+            MeoFilterGroup { width: parent.width; allowEmptySelection: false; currentIndex: 1; model: [qsTr("List"), qsTr("Grid"), qsTr("Cards")] }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoFilterGroup { width: parent.width; model: [{ "label": "Available" }, { "label": "Unavailable", "enabled": false }, { "label": "Selected" }]; currentIndex: 2 }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoFilterGroup { width: parent.width; model: [{ "label": qsTr("Available") }, { "label": qsTr("Unavailable"), "enabled": false }, { "label": qsTr("Selected") }]; currentIndex: 2 }
         }
     }
     Component {
@@ -1095,20 +1095,20 @@ Item {
             rowSpacing: MeoTheme.space16
             columnSpacing: MeoTheme.space24
 
-            SampleLabel { label: "1. Horizontal current" }
-            MeoStepper { width: 420 * MeoTheme.globalScale; model: ["Account", "Profile", "Review"]; currentIndex: 1 }
+            SampleLabel { label: qsTr("1. Horizontal current") }
+            MeoStepper { width: 420 * MeoTheme.globalScale; model: [qsTr("Account"), qsTr("Profile"), qsTr("Review")]; currentIndex: 1 }
 
-            SampleLabel { label: "2. Vertical completed" }
-            MeoStepper { height: 220 * MeoTheme.globalScale; orientation: "vertical"; model: ["Draft", "Check", "Publish"]; currentIndex: 3 }
+            SampleLabel { label: qsTr("2. Vertical completed") }
+            MeoStepper { height: 220 * MeoTheme.globalScale; orientation: "vertical"; model: [qsTr("Draft"), qsTr("Check"), qsTr("Publish")]; currentIndex: 3 }
 
-            SampleLabel { label: "3. First step" }
-            MeoStepper { width: 420 * MeoTheme.globalScale; model: ["Choose", "Configure", "Finish"]; currentIndex: 0 }
+            SampleLabel { label: qsTr("3. First step") }
+            MeoStepper { width: 420 * MeoTheme.globalScale; model: [qsTr("Choose"), qsTr("Configure"), qsTr("Finish")]; currentIndex: 0 }
 
-            SampleLabel { label: "4. Interactive" }
-            MeoStepper { height: 220 * MeoTheme.globalScale; orientation: "vertical"; model: ["Source", "Preview", "Save"]; currentIndex: 1; interactive: true }
+            SampleLabel { label: qsTr("4. Interactive") }
+            MeoStepper { height: 220 * MeoTheme.globalScale; orientation: "vertical"; model: [qsTr("Source"), qsTr("Preview"), qsTr("Save")]; currentIndex: 1; interactive: true }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoStepper { width: 420 * MeoTheme.globalScale; model: ["Sign in", "Verify", "Done"]; currentIndex: 1; enabled: false }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoStepper { width: 420 * MeoTheme.globalScale; model: [qsTr("Sign in"), qsTr("Verify"), qsTr("Done")]; currentIndex: 1; enabled: false }
         }
     }
     Component {
@@ -1117,61 +1117,61 @@ Item {
             width: 440 * MeoTheme.globalScale
             spacing: MeoTheme.space8
 
-            SampleLabel { label: "1. Always labels · active indicator" }
+            SampleLabel { label: qsTr("1. Always labels · active indicator") }
             MeoNavigationBar {
                 width: parent.width
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "explore", "label": "Explore", "icon": "explore" },
-                    { "id": "library", "label": "Library", "icon": "folder" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "explore", "label": qsTr("Explore"), "icon": "explore" },
+                    { "id": "library", "label": qsTr("Library"), "icon": "folder" }
                 ]
                 currentId: "explore"
             }
 
-            SampleLabel { label: "2. Selected label" }
+            SampleLabel { label: qsTr("2. Selected label") }
             MeoNavigationBar {
                 width: parent.width
                 labelType: "selected"
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "browse", "label": "Browse", "icon": "explore" },
-                    { "id": "radio", "label": "Radio", "icon": "radio" },
-                    { "id": "library", "label": "Library", "icon": "folder" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "browse", "label": qsTr("Browse"), "icon": "explore" },
+                    { "id": "radio", "label": qsTr("Radio"), "icon": "radio" },
+                    { "id": "library", "label": qsTr("Library"), "icon": "folder" }
                 ]
                 currentId: "home"
             }
 
-            SampleLabel { label: "3. Icon-only with notification dot" }
+            SampleLabel { label: qsTr("3. Icon-only with notification dot") }
             MeoNavigationBar {
                 width: parent.width
                 labelType: "none"
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "inbox", "label": "Inbox", "icon": "inbox", "badgeDot": true },
-                    { "id": "saved", "label": "Saved", "icon": "favorite" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "inbox", "label": qsTr("Inbox"), "icon": "inbox", "badgeDot": true },
+                    { "id": "saved", "label": qsTr("Saved"), "icon": "favorite" }
                 ]
                 currentId: "inbox"
             }
 
-            SampleLabel { label: "4. Numeric badge" }
+            SampleLabel { label: qsTr("4. Numeric badge") }
             MeoNavigationBar {
                 width: parent.width
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "updates", "label": "Updates", "icon": "notifications", "badgeText": "24" },
-                    { "id": "settings", "label": "Settings", "icon": "settings" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "updates", "label": qsTr("Updates"), "icon": "notifications", "badgeText": "24" },
+                    { "id": "settings", "label": qsTr("Settings"), "icon": "settings" }
                 ]
                 currentId: "updates"
             }
 
-            SampleLabel { label: "5. Disabled destination" }
+            SampleLabel { label: qsTr("5. Disabled destination") }
             MeoNavigationBar {
                 width: parent.width
                 compact: true
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "locked", "label": "Locked", "icon": "lock", "enabled": false },
-                    { "id": "profile", "label": "Profile", "icon": "person" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "locked", "label": qsTr("Locked"), "icon": "lock", "enabled": false },
+                    { "id": "profile", "label": qsTr("Profile"), "icon": "person" }
                 ]
                 currentId: "profile"
             }
@@ -1185,23 +1185,23 @@ Item {
             rowSpacing: MeoTheme.space24
             columnSpacing: MeoTheme.space24
             readonly property var railItems: [
-                { "id": "inbox", "label": "Inbox", "icon": "inbox", "badgeText": "24" },
-                { "id": "outbox", "label": "Outbox", "icon": "send" },
-                { "id": "favorites", "label": "Favorites", "icon": "favorite" },
-                { "id": "trash", "label": "Trash", "icon": "delete" },
-                { "type": "header", "label": "Labels" },
-                { "id": "label", "label": "Label", "icon": "folder", "badgeDot": true }
+                { "id": "inbox", "label": qsTr("Inbox"), "icon": "inbox", "badgeText": "24" },
+                { "id": "outbox", "label": qsTr("Outbox"), "icon": "send" },
+                { "id": "favorites", "label": qsTr("Favorites"), "icon": "favorite" },
+                { "id": "trash", "label": qsTr("Trash"), "icon": "delete" },
+                { "type": "header", "label": qsTr("Labels") },
+                { "id": "label", "label": qsTr("Label"), "icon": "folder", "badgeDot": true }
             ]
             readonly property var compactRailItems: [
-                { "id": "inbox", "label": "Inbox", "icon": "inbox", "badgeText": "24" },
-                { "id": "outbox", "label": "Outbox", "icon": "send" },
-                { "id": "favorites", "label": "Favorites", "icon": "favorite" },
-                { "id": "trash", "label": "Trash", "icon": "delete" }
+                { "id": "inbox", "label": qsTr("Inbox"), "icon": "inbox", "badgeText": "24" },
+                { "id": "outbox", "label": qsTr("Outbox"), "icon": "send" },
+                { "id": "favorites", "label": qsTr("Favorites"), "icon": "favorite" },
+                { "id": "trash", "label": qsTr("Trash"), "icon": "delete" }
             ]
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Collapsed · 96dp" }
+                SampleLabel { label: qsTr("Collapsed · 96dp") }
                 MeoNavigationRail {
                     height: 380 * MeoTheme.globalScale
                     model: railExamples.compactRailItems
@@ -1222,7 +1222,7 @@ Item {
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Collapsed · selected label" }
+                SampleLabel { label: qsTr("Collapsed · selected label") }
                 MeoNavigationRail {
                     height: 380 * MeoTheme.globalScale
                     model: railExamples.compactRailItems
@@ -1233,7 +1233,7 @@ Item {
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Expanded · 220dp" }
+                SampleLabel { label: qsTr("Expanded · 220dp") }
                 MeoNavigationRail {
                     height: 380 * MeoTheme.globalScale
                     model: railExamples.compactRailItems
@@ -1245,7 +1245,7 @@ Item {
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Expanded · menu and FAB" }
+                SampleLabel { label: qsTr("Expanded · menu and FAB") }
                 MeoNavigationRail {
                     height: 500 * MeoTheme.globalScale
                     model: railExamples.railItems
@@ -1256,7 +1256,7 @@ Item {
                         Row {
                             spacing: MeoTheme.space8
                             MeoIconButton { icon.name: "menu"; type: "standard" }
-                            MeoButton { text: "Compose"; type: "filled"; icon.name: "edit" }
+                            MeoButton { text: qsTr("Compose"); type: "filled"; icon.name: "edit" }
                         }
                     }
                 }
@@ -1264,7 +1264,7 @@ Item {
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Expanded · 360dp groups" }
+                SampleLabel { label: qsTr("Expanded · 360dp groups") }
                 MeoNavigationRail {
                     height: 500 * MeoTheme.globalScale
                     model: railExamples.railItems
@@ -1279,8 +1279,8 @@ Item {
         id: navigationDrawerSample
         Column {
             spacing: MeoTheme.space8
-            SampleLabel { label: "Legacy compatibility · 360dp baseline; prefer expanded MeoNavigationRail" }
-            MeoNavigationDrawer { width: 360 * MeoTheme.globalScale; height: 300 * MeoTheme.globalScale; model: control.navItems; currentIndex: 0; title: "MeoUI" }
+            SampleLabel { label: qsTr("Legacy compatibility · 360dp baseline; prefer expanded MeoNavigationRail") }
+            MeoNavigationDrawer { width: 360 * MeoTheme.globalScale; height: 300 * MeoTheme.globalScale; model: control.navItems; currentIndex: 0; title: qsTr("MeoUI") }
         }
     }
     Component {
@@ -1295,7 +1295,7 @@ Item {
             }
 
             MeoButton {
-                text: "Open modal navigation rail"
+                text: qsTr("Open modal navigation rail")
                 icon.name: "menu"
                 onClicked: modalRail.open()
             }
@@ -1310,7 +1310,7 @@ Item {
                     Row {
                         spacing: MeoTheme.space8
                         MeoIconButton { icon.name: "menu"; type: "standard" }
-                        MeoButton { text: "Compose"; icon.name: "edit" }
+                        MeoButton { text: qsTr("Compose"); icon.name: "edit" }
                     }
                 }
             }
@@ -1327,7 +1327,7 @@ Item {
                 onTriggered: drawer.open()
             }
 
-            MeoButton { text: "Open modal navigation rail"; icon.name: "menu"; onClicked: drawer.open() }
+            MeoButton { text: qsTr("Open modal navigation rail"); icon.name: "menu"; onClicked: drawer.open() }
             MeoNavigationDrawerModal { id: drawer; model: control.navItems }
         }
     }
@@ -1338,11 +1338,11 @@ Item {
             width: 360 * MeoTheme.globalScale
             spacing: MeoTheme.space4
 
-            MeoNavigationDrawerItem { width: parent.width; label: "Inbox"; icon: "inbox"; selected: true; badgeText: "8" }
-            MeoNavigationDrawerItem { width: parent.width; label: "Archive"; icon: "archive" }
-            MeoNavigationDrawerItem { width: parent.width; label: "Updates"; icon: "update"; mode: "group"; selected: true; supportingText: "Grouped row"; showDivider: true; roundedBottom: false }
-            MeoNavigationDrawerItem { width: parent.width; label: "Advanced"; icon: "tune"; mode: "group"; supportingText: "Supporting text"; roundedTop: false }
-            MeoNavigationDrawerItem { width: parent.width; label: "Settings"; icon: "settings"; selected: true; visualStyle: "settings" }
+            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Inbox"); icon: "inbox"; selected: true; badgeText: "8" }
+            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Archive"); icon: "archive" }
+            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Updates"); icon: "update"; mode: "group"; selected: true; supportingText: qsTr("Grouped row"); showDivider: true; roundedBottom: false }
+            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Advanced"); icon: "tune"; mode: "group"; supportingText: qsTr("Supporting text"); roundedTop: false }
+            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Settings"); icon: "settings"; selected: true; visualStyle: "settings" }
         }
     }
     Component {
@@ -1355,12 +1355,12 @@ Item {
                 id: navigationSuite
                 anchors.fill: parent
                 model: [
-                    { "id": "home", "label": "Home", "icon": "home" },
-                    { "id": "explore", "label": "Explore", "icon": "explore", "badgeText": "3" },
-                    { "id": "profile", "label": "Profile", "icon": "person" },
-                    { "id": "library", "label": "Library", "icon": "library_music" },
-                    { "id": "settings", "label": "Settings", "icon": "settings" },
-                    { "id": "help", "label": "Help", "icon": "help" }
+                    { "id": "home", "label": qsTr("Home"), "icon": "home" },
+                    { "id": "explore", "label": qsTr("Explore"), "icon": "explore", "badgeText": "3" },
+                    { "id": "profile", "label": qsTr("Profile"), "icon": "person" },
+                    { "id": "library", "label": qsTr("Library"), "icon": "library_music" },
+                    { "id": "settings", "label": qsTr("Settings"), "icon": "settings" },
+                    { "id": "help", "label": qsTr("Help"), "icon": "help" }
                 ]
                 currentIndex: 0
                 availableWidth: width
@@ -1388,32 +1388,32 @@ Item {
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "1. Icons" }
-                MeoBreadcrumbs { model: [{ "label": "Home", "icon": "home" }, { "label": "Library", "icon": "folder" }, { "label": "Component" }] }
+                SampleLabel { label: qsTr("1. Icons") }
+                MeoBreadcrumbs { model: [{ "label": qsTr("Home"), "icon": "home" }, { "label": qsTr("Library"), "icon": "folder" }, { "label": qsTr("Component") }] }
             }
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "2. Text-only" }
-                MeoBreadcrumbs { model: [{ "label": "Home" }, { "label": "Articles" }, { "label": "M3 navigation" }] }
+                SampleLabel { label: qsTr("2. Text-only") }
+                MeoBreadcrumbs { model: [{ "label": qsTr("Home") }, { "label": qsTr("Articles") }, { "label": qsTr("M3 navigation") }] }
             }
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "3. Custom separator" }
-                MeoBreadcrumbs { separator: "arrow_forward"; model: [{ "label": "Drive", "icon": "folder" }, { "label": "Shared" }, { "label": "Preview" }] }
+                SampleLabel { label: qsTr("3. Custom separator") }
+                MeoBreadcrumbs { separator: "arrow_forward"; model: [{ "label": qsTr("Drive"), "icon": "folder" }, { "label": qsTr("Shared") }, { "label": qsTr("Preview") }] }
             }
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "4. Explicit current item" }
-                MeoBreadcrumbs { currentIndex: 1; model: [{ "label": "Projects", "icon": "folder" }, { "label": "MeoUI" }, { "label": "Archive" }] }
+                SampleLabel { label: qsTr("4. Explicit current item") }
+                MeoBreadcrumbs { currentIndex: 1; model: [{ "label": qsTr("Projects"), "icon": "folder" }, { "label": qsTr("MeoUI") }, { "label": qsTr("Archive") }] }
             }
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "5. Disabled link" }
-                MeoBreadcrumbs { model: [{ "label": "Home", "icon": "home" }, { "label": "Restricted", "enabled": false }, { "label": "Current" }] }
+                SampleLabel { label: qsTr("5. Disabled link") }
+                MeoBreadcrumbs { model: [{ "label": qsTr("Home"), "icon": "home" }, { "label": qsTr("Restricted"), "enabled": false }, { "label": qsTr("Current") }] }
             }
         }
     }
@@ -1426,25 +1426,25 @@ Item {
                 width: 340 * MeoTheme.globalScale
                 spacing: MeoTheme.space12
 
-                SampleLabel { label: "1. Primary with icons" }
+                SampleLabel { label: qsTr("1. Primary with icons") }
                 MeoTabs {
                     width: parent.width
-                    model: [{ "label": "Video", "icon": "videocam" }, { "label": "Photos", "icon": "photo", "badgeDot": true }, { "label": "Audio", "icon": "audiotrack" }]
+                    model: [{ "label": qsTr("Video"), "icon": "videocam" }, { "label": qsTr("Photos"), "icon": "photo", "badgeDot": true }, { "label": qsTr("Audio"), "icon": "audiotrack" }]
                     currentIndex: 1
                 }
 
-                SampleLabel { label: "2. Primary text" }
+                SampleLabel { label: qsTr("2. Primary text") }
                 MeoTabs {
                     width: parent.width
-                    model: ["Overview", "Specs", "Reviews"]
+                    model: [qsTr("Overview"), qsTr("Specs"), qsTr("Reviews")]
                     currentIndex: 0
                 }
 
-                SampleLabel { label: "3. Secondary" }
+                SampleLabel { label: qsTr("3. Secondary") }
                 MeoTabs {
                     width: parent.width
                     type: "secondary"
-                    model: ["Explore", "Flights", "Trips"]
+                    model: [qsTr("Explore"), qsTr("Flights"), qsTr("Trips")]
                     currentIndex: 2
                 }
             }
@@ -1453,19 +1453,19 @@ Item {
                 width: 340 * MeoTheme.globalScale
                 spacing: MeoTheme.space12
 
-                SampleLabel { label: "4. Expressive pill" }
+                SampleLabel { label: qsTr("4. Expressive pill") }
                 MeoTabs {
                     width: parent.width
                     style: "expressive"
-                    model: [{ "label": "For you", "icon": "auto_awesome" }, { "label": "Following", "icon": "groups" }, { "label": "Saved", "icon": "bookmark" }]
+                    model: [{ "label": qsTr("For you"), "icon": "auto_awesome" }, { "label": qsTr("Following"), "icon": "groups" }, { "label": qsTr("Saved"), "icon": "bookmark" }]
                     currentIndex: 0
                 }
 
-                SampleLabel { label: "5. Scrollable" }
+                SampleLabel { label: qsTr("5. Scrollable") }
                 MeoTabs {
                     width: parent.width
                     isScrollable: true
-                    model: ["Overview", "Specifications", "Reviews", "Support"]
+                    model: [qsTr("Overview"), qsTr("Specifications"), qsTr("Reviews"), qsTr("Support")]
                     currentIndex: 1
                 }
             }
@@ -1481,28 +1481,28 @@ Item {
                 width: 372 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
 
-                SampleLabel { label: "1. Small" }
+                SampleLabel { label: qsTr("1. Small") }
                 MeoTopAppBar {
                     width: parent.width
-                    title: "Inbox"
+                    title: qsTr("Inbox")
                     type: "small"
                     navigationIcon: Component { MeoIconButton { icon.name: "menu"; type: "standard" } }
                     actions: [Component { MeoIconButton { icon.name: "search" } }, Component { MeoIconButton { icon.name: "more_vert" } }]
                 }
 
-                SampleLabel { label: "2. Center-aligned" }
+                SampleLabel { label: qsTr("2. Center-aligned") }
                 MeoTopAppBar {
                     width: parent.width
-                    title: "Now playing"
+                    title: qsTr("Now playing")
                     type: "center"
                     navigationIcon: Component { MeoIconButton { icon.name: "arrow_back"; type: "standard" } }
                     actions: [Component { MeoIconButton { icon.name: "cast" } }]
                 }
 
-                SampleLabel { label: "3. Medium" }
+                SampleLabel { label: qsTr("3. Medium") }
                 MeoTopAppBar {
                     width: parent.width
-                    title: "Library"
+                    title: qsTr("Library")
                     type: "medium"
                     navigationIcon: Component { MeoIconButton { icon.name: "arrow_back"; type: "standard" } }
                     actions: [Component { MeoIconButton { icon.name: "search" } }, Component { MeoIconButton { icon.name: "favorite" } }]
@@ -1513,10 +1513,10 @@ Item {
                 width: 372 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
 
-                SampleLabel { label: "4. Large flexible · collapsed pose" }
+                SampleLabel { label: qsTr("4. Large flexible · collapsed pose") }
                 MeoTopAppBar {
                     width: parent.width
-                    title: "Discover"
+                    title: qsTr("Discover")
                     type: "large"
                     flexible: true
                     scrollProgress: 0
@@ -1524,10 +1524,10 @@ Item {
                     actions: [Component { MeoIconButton { icon.name: "search" } }]
                 }
 
-                SampleLabel { label: "5. Contextual selection" }
+                SampleLabel { label: qsTr("5. Contextual selection") }
                 MeoTopAppBar {
                     width: parent.width
-                    title: "Ignored when contextual"
+                    title: qsTr("Ignored when contextual")
                     type: "small"
                     isContextual: true
                     selectionCount: 3
@@ -1558,13 +1558,13 @@ Item {
                 spacing: MeoTheme.space12
 
                 MeoText {
-                    text: "M3 menus"
+                    text: qsTr("M3 menus")
                     typeRole: "title"
                     typeSize: "small"
                 }
 
                 MeoText {
-                    text: "Standard, vibrant, checked, keyboard, shortcuts, labels, dividers, and submenus."
+                    text: qsTr("Standard, vibrant, checked, keyboard, shortcuts, labels, dividers, and submenus.")
                     typeRole: "body"
                     typeSize: "small"
                     color: MeoTheme.contentOnSurfaceVariant
@@ -1572,9 +1572,9 @@ Item {
 
                 Flow {
                     spacing: MeoTheme.space8
-                    MeoButton { text: "Open standard"; icon.name: "more_vert"; onClicked: standardMenu.openFrom(this) }
-                    MeoButton { text: "Open vibrant"; type: "tonal"; icon.name: "palette"; onClicked: vibrantMenu.openFrom(this) }
-                    MeoButton { text: "Open submenu"; type: "outlined"; icon.name: "arrow_right"; onClicked: standardMenu.openSubmenu(4, standardMenu.model[4], standardMenu.menuItemAt(4)) }
+                    MeoButton { text: qsTr("Open standard"); icon.name: "more_vert"; onClicked: standardMenu.openFrom(this) }
+                    MeoButton { text: qsTr("Open vibrant"); type: "tonal"; icon.name: "palette"; onClicked: vibrantMenu.openFrom(this) }
+                    MeoButton { text: qsTr("Open submenu"); type: "outlined"; icon.name: "arrow_right"; onClicked: standardMenu.openSubmenu(4, standardMenu.model[4], standardMenu.menuItemAt(4)) }
                 }
             }
 
@@ -1614,14 +1614,14 @@ Item {
                 y: 112 * MeoTheme.globalScale
                 itemSpacing: MeoTheme.space4
                 model: [
-                    { "type": "label", "label": "EDIT" },
-                    { "label": "Copy", "icon": "content_copy", "trailingText": "Ctrl+C" },
-                    { "label": "Share", "icon": "share", "selected": true },
-                    { "label": "Offline mode", "icon": "cloud_off", "checked": true, "supportingText": "Saved locally" },
-                    { "label": "More tools", "icon": "folder", "subItems": [{ "label": "Document", "icon": "article" }, { "label": "Image", "icon": "image", "selected": true }, { "label": "Slides", "icon": "slideshow" }] },
+                    { "type": "label", "label": qsTr("EDIT") },
+                    { "label": qsTr("Copy"), "icon": "content_copy", "trailingText": "Ctrl+C" },
+                    { "label": qsTr("Share"), "icon": "share", "selected": true },
+                    { "label": qsTr("Offline mode"), "icon": "cloud_off", "checked": true, "supportingText": qsTr("Saved locally") },
+                    { "label": qsTr("More tools"), "icon": "folder", "subItems": [{ "label": qsTr("Document"), "icon": "article" }, { "label": qsTr("Image"), "icon": "image", "selected": true }, { "label": qsTr("Slides"), "icon": "slideshow" }] },
                     { "type": "separator" },
-                    { "label": "Paste", "icon": "content_paste", "trailingText": "Ctrl+V", "enabled": false },
-                    { "label": "Delete", "icon": "delete", "trailingIcon": "keyboard_return" }
+                    { "label": qsTr("Paste"), "icon": "content_paste", "trailingText": "Ctrl+V", "enabled": false },
+                    { "label": qsTr("Delete"), "icon": "delete", "trailingIcon": "keyboard_return" }
                 ]
             }
 
@@ -1634,10 +1634,10 @@ Item {
                 vibrant: true
                 itemSpacing: MeoTheme.space4
                 model: [
-                    { "label": "Create", "icon": "edit" },
-                    { "label": "Offline mode", "icon": "cloud_off", "checked": true },
-                    { "label": "Settings", "icon": "settings" },
-                    { "label": "Help & feedback", "icon": "help" }
+                    { "label": qsTr("Create"), "icon": "edit" },
+                    { "label": qsTr("Offline mode"), "icon": "cloud_off", "checked": true },
+                    { "label": qsTr("Settings"), "icon": "settings" },
+                    { "label": qsTr("Help & feedback"), "icon": "help" }
                 ]
             }
         }
@@ -1662,8 +1662,8 @@ Item {
                     width: parent.width - 2 * MeoTheme.space24
                     spacing: MeoTheme.space8
                     MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "widgets"; size: 32; color: MeoTheme.primary }
-                    MeoText { width: parent.width; text: "Widget card"; typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
-                    MeoText { width: parent.width; text: "Right-click or use the action"; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter }
+                    MeoText { width: parent.width; text: qsTr("Widget card"); typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                    MeoText { width: parent.width; text: qsTr("Right-click or use the action"); typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter }
                 }
 
                 MouseArea {
@@ -1679,7 +1679,7 @@ Item {
             MeoButton {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
-                text: "Open context menu"
+                text: qsTr("Open context menu")
                 icon.name: "more_vert"
                 onClicked: contextMenu.openAtPoint(contextTarget,
                                                     contextTarget.width / 2,
@@ -1691,11 +1691,11 @@ Item {
                 parent: contextMenuRoot
                 z: 10
                 model: [
-                    { "label": "Add to desktop", "icon": "add" },
-                    { "label": "Show alignment guides", "icon": "grid_on", "selected": true },
+                    { "label": qsTr("Add to desktop"), "icon": "add" },
+                    { "label": qsTr("Show alignment guides"), "icon": "grid_on", "selected": true },
                     { "type": "separator" },
-                    { "label": "More options", "icon": "more_horiz", "subItems": [{ "label": "Inspect", "icon": "visibility" }] },
-                    { "label": "Unavailable action", "icon": "block", "enabled": false }
+                    { "label": qsTr("More options"), "icon": "more_horiz", "subItems": [{ "label": qsTr("Inspect"), "icon": "visibility" }] },
+                    { "label": qsTr("Unavailable action"), "icon": "block", "enabled": false }
                 ]
             }
         }
@@ -1718,7 +1718,7 @@ Item {
                 privacy: MeoWidget.Location
                 refreshPolicy: MeoWidget.Periodic
                 supportedSurfaces: [MeoWidget.Desktop, MeoWidget.LockScreen]
-                accessibleName: "Weather"
+                accessibleName: qsTr("Weather")
 
                 Column {
                     anchors.centerIn: parent
@@ -1726,7 +1726,7 @@ Item {
                     spacing: MeoTheme.space8
                     MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "partly_cloudy_day"; size: 40; color: MeoTheme.primary }
                     MeoText { width: parent.width; text: "22°"; typeRole: "display"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
-                    MeoText { width: parent.width; text: "Location privacy · periodic cache"; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+                    MeoText { width: parent.width; text: qsTr("Location privacy · periodic cache"); typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
                 }
             }
 
@@ -1742,7 +1742,7 @@ Item {
                 supportedSurfaces: [MeoWidget.Desktop, MeoWidget.LockScreen]
                 frameMode: MeoWidget.Adaptive
                 wantsOwnBackground: true
-                accessibleName: "Media"
+                accessibleName: qsTr("Media")
 
                 MeoCard {
                     anchors.fill: parent
@@ -1752,8 +1752,8 @@ Item {
                         width: parent.width - 2 * MeoTheme.space16
                         spacing: MeoTheme.space8
                         MeoIcon { anchors.horizontalCenter: parent.horizontalCenter; icon: "music_note"; size: 36; color: MeoTheme.primary }
-                        MeoText { width: parent.width; text: "Adaptive widget frame"; typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
-                        MeoText { width: parent.width; text: "The content keeps its own surface."; typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
+                        MeoText { width: parent.width; text: qsTr("Adaptive widget frame"); typeRole: "title"; typeSize: "small"; emphasized: true; horizontalAlignment: Text.AlignHCenter }
+                        MeoText { width: parent.width; text: qsTr("The content keeps its own surface."); typeRole: "body"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap }
                     }
                 }
             }
@@ -1772,25 +1772,25 @@ Item {
             selectedWidgetKey: "meo:media"
             catalog: [
                 {
-                    "host": "meo", "id": "clock", "title": "Meo clock",
-                    "description": "Large date, time, and optional cached weather.",
+                    "host": "meo", "id": "clock", "title": qsTr("Meo clock"),
+                    "description": qsTr("Large date, time, and cached weather when available."),
                     "icon": "schedule", "defaultWidth": 320, "defaultHeight": 224,
                     "available": true
                 },
                 {
-                    "host": "meo", "id": "media", "title": "Meo media",
-                    "description": "Current-session playback controls.",
+                    "host": "meo", "id": "media", "title": qsTr("Meo media"),
+                    "description": qsTr("Playback controls for the current session."),
                     "icon": "music_note", "defaultWidth": 384, "defaultHeight": 176,
                     "available": true
                 },
                 {
                     "host": "plasma", "id": "org.kde.plasma.digitalclock",
-                    "title": "Digital Clock", "description": "Time and calendar.",
+                    "title": qsTr("Digital Clock"), "description": qsTr("Time and calendar."),
                     "icon": "schedule", "available": true
                 },
                 {
                     "host": "plasma", "id": "org.kde.plasma.systemmonitor",
-                    "title": "System Monitor", "description": "Sensors and resource use.",
+                    "title": qsTr("System Monitor"), "description": qsTr("Sensors and resource use."),
                     "icon": "monitoring", "available": true
                 }
             ]
@@ -1803,14 +1803,14 @@ Item {
             width: 420 * MeoTheme.globalScale
             spacing: MeoTheme.space4
 
-            SampleLabel { label: "1. One-line with badge" }
-            MeoListItem { width: parent.width; headline: "Inbox"; leadingIcon: "inbox"; badgeText: "3" }
+            SampleLabel { label: qsTr("1. One-line with badge") }
+            MeoListItem { width: parent.width; headline: qsTr("Inbox"); leadingIcon: "inbox"; badgeText: "3" }
 
-            SampleLabel { label: "2. Supporting text" }
+            SampleLabel { label: qsTr("2. Supporting text") }
             MeoListItem {
                 width: parent.width
-                headline: "Release notes"
-                supportingText: "Updated 10 minutes ago"
+                headline: qsTr("Release notes")
+                supportingText: qsTr("Updated 10 minutes ago")
                 leadingComponentSize: 36
                 leadingComponent: Component {
                     Rectangle {
@@ -1828,35 +1828,37 @@ Item {
                 }
             }
 
-            SampleLabel { label: "3. Tonal selected" }
-            MeoListItem { width: parent.width; headline: "Selected row"; supportingText: "Secondary container"; leadingIcon: "check_circle"; selected: true; isSegmented: true }
+            SampleLabel { label: qsTr("3. Tonal selected") }
+            MeoListItem { width: parent.width; headline: qsTr("Selected row"); supportingText: qsTr("Secondary container"); leadingIcon: "check_circle"; selected: true; isSegmented: true }
 
-            SampleLabel { label: "4. Expressive vibrant" }
-            MeoListItem { width: parent.width; headline: "Pinned item"; supportingText: "Primary in expressive mode"; leadingIcon: "push_pin"; selected: true; isSegmented: true; vibrant: true }
+            SampleLabel { label: qsTr("4. Expressive vibrant") }
+            MeoListItem { width: parent.width; headline: qsTr("Pinned item"); supportingText: qsTr("Primary in expressive mode"); leadingIcon: "push_pin"; selected: true; isSegmented: true; vibrant: true }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoListItem { width: parent.width; headline: "Unavailable item"; supportingText: "This action is disabled"; leadingIcon: "block"; enabled: false }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoListItem { width: parent.width; headline: qsTr("Unavailable item"); supportingText: qsTr("This action is disabled"); leadingIcon: "block"; enabled: false }
         }
     }
     Component {
         id: listViewSample
         Item {
+            id: listViewRoot
             width: 420 * MeoTheme.globalScale
             height: 228 * MeoTheme.globalScale
 
-            ListModel {
-                id: transitionRows
-                ListElement { title: "Connected network"; detail: "Stable displacement" }
-                ListElement { title: "Media playback"; detail: "Semantic insert transition" }
-                ListElement { title: "Background job"; detail: "Reduced motion safe" }
-            }
+            readonly property var transitionRows: [
+                { "title": qsTr("Connected network"), "detail": qsTr("Stable displacement") },
+                { "title": qsTr("Media playback"), "detail": qsTr("Semantic insert transition") },
+                { "title": qsTr("Background job"), "detail": qsTr("Reduced motion safe") }
+            ]
 
             MeoListView {
                 anchors.fill: parent
                 clip: true
-                model: transitionRows
+                model: listViewRoot.transitionRows
                 spacing: MeoTheme.space4
                 delegate: MeoListItem {
+                    required property int index
+                    readonly property int lastIndex: 2
                     required property string title
                     required property string detail
                     width: ListView.view.width
@@ -1864,7 +1866,7 @@ Item {
                     supportingText: detail
                     leadingIcon: index === 0 ? "wifi" : index === 1 ? "music_note" : "download"
                     isSegmented: true
-                    roundingStrategy: index === 0 ? "top" : index === transitionRows.count - 1 ? "bottom" : "none"
+                    roundingStrategy: index === 0 ? "top" : index === lastIndex ? "bottom" : "none"
                 }
             }
         }
@@ -1873,12 +1875,12 @@ Item {
         id: listTransitionsSample
         Flow {
             spacing: MeoTheme.space8
-            MeoChip { label: "Insert " + MeoTheme.motionDurationListInsert + " ms"; selected: true }
-            MeoChip { label: "Remove " + MeoTheme.motionDurationListRemove + " ms" }
-            MeoChip { label: "Stagger " + MeoListTransitions.staggerDelay + " ms × " + MeoListTransitions.staggerCap }
+            MeoChip { label: qsTr("Insert") + " " + MeoTheme.motionDurationListInsert + " ms"; selected: true }
+            MeoChip { label: qsTr("Remove") + " " + MeoTheme.motionDurationListRemove + " ms" }
+            MeoChip { label: qsTr("Stagger") + " " + MeoListTransitions.staggerDelay + " ms × " + MeoListTransitions.staggerCap }
             MeoText {
                 width: 360 * MeoTheme.globalScale
-                text: MeoTheme.reduceMotion ? "Reduced motion: transitions are disabled." : "Insert, displacement, and reorder share semantic motion."
+                text: MeoTheme.reduceMotion ? qsTr("Reduced motion: transitions are disabled.") : qsTr("Insert, displacement, and reorder share semantic motion.")
                 typeRole: "body"
                 typeSize: "small"
                 wrapMode: Text.WordWrap
@@ -1894,32 +1896,32 @@ Item {
             Column {
                 width: 170 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "1. Standard"; horizontalAlignment: Text.AlignHCenter }
-                MeoListHeader { width: parent.width; text: "Recent" }
+                SampleLabel { width: parent.width; label: qsTr("1. Standard"); horizontalAlignment: Text.AlignHCenter }
+                MeoListHeader { width: parent.width; text: qsTr("Recent") }
             }
             Column {
                 width: 170 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "2. Emphasized"; horizontalAlignment: Text.AlignHCenter }
-                MeoListHeader { width: parent.width; text: "Pinned"; type: "emphasized" }
+                SampleLabel { width: parent.width; label: qsTr("2. Emphasized"); horizontalAlignment: Text.AlignHCenter }
+                MeoListHeader { width: parent.width; text: qsTr("Pinned"); type: "emphasized" }
             }
             Column {
                 width: 170 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "3. Compact padding"; horizontalAlignment: Text.AlignHCenter }
-                MeoListHeader { width: parent.width; text: "Today"; leftPadding: 8 * MeoTheme.globalScale; rightPadding: 8 * MeoTheme.globalScale }
+                SampleLabel { width: parent.width; label: qsTr("3. Compact padding"); horizontalAlignment: Text.AlignHCenter }
+                MeoListHeader { width: parent.width; text: qsTr("Today"); leftPadding: 8 * MeoTheme.globalScale; rightPadding: 8 * MeoTheme.globalScale }
             }
             Column {
                 width: 170 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "4. Long text"; horizontalAlignment: Text.AlignHCenter }
-                MeoListHeader { width: parent.width; text: "Very long section title that truncates"; type: "emphasized" }
+                SampleLabel { width: parent.width; label: qsTr("4. Long text"); horizontalAlignment: Text.AlignHCenter }
+                MeoListHeader { width: parent.width; text: qsTr("Very long section title that truncates"); type: "emphasized" }
             }
             Column {
                 width: 170 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "5. Spacious"; horizontalAlignment: Text.AlignHCenter }
-                MeoListHeader { width: parent.width; text: "Archives"; topPadding: 8 * MeoTheme.globalScale; bottomPadding: 8 * MeoTheme.globalScale }
+                SampleLabel { width: parent.width; label: qsTr("5. Spacious"); horizontalAlignment: Text.AlignHCenter }
+                MeoListHeader { width: parent.width; text: qsTr("Archives"); topPadding: 8 * MeoTheme.globalScale; bottomPadding: 8 * MeoTheme.globalScale }
             }
         }
     }
@@ -1933,17 +1935,17 @@ Item {
                 width: 360 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
 
-                SampleLabel { label: "Pixel connected surface — 28 / 1 / 2" }
+                SampleLabel { label: qsTr("Pixel connected surface — 28 / 1 / 2") }
 
                 MeoGroupedList {
                     width: parent.width
-                    title: "Recent files"
-                    subtitle: "One outer silhouette; every row remains independently interactive."
+                    title: qsTr("Recent files")
+                    subtitle: qsTr("One outer silhouette; every row remains independently interactive.")
                     selectedIndex: 1
                     model: [
-                        { "label": "Release notes", "icon": "article", "trailingText": "Today" },
-                        { "label": "Component audit", "icon": "fact_check", "supportingText": "Updated 10 minutes ago", "badgeText": "3" },
-                        { "label": "Archived draft", "icon": "archive", "enabled": false }
+                        { "label": qsTr("Release notes"), "icon": "article", "trailingText": qsTr("Today") },
+                        { "label": qsTr("Component audit"), "icon": "fact_check", "supportingText": qsTr("Updated 10 minutes ago"), "badgeText": "3" },
+                        { "label": qsTr("Archived draft"), "icon": "archive", "enabled": false }
                     ]
                 }
             }
@@ -1952,19 +1954,19 @@ Item {
                 width: 360 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
 
-                SampleLabel { label: "Optional 1dp line separator" }
+                SampleLabel { label: qsTr("1dp line separator") }
 
                 MeoGroupedList {
                     width: parent.width
-                    title: "Interaction states"
-                    subtitle: "Hover darkens 8%; press expands from the exact click point."
+                    title: qsTr("Interaction states")
+                    subtitle: qsTr("Hover darkens 8%; press expands from the exact click point.")
                     separatorStyle: "line"
                     dividerInset: 56 * MeoTheme.globalScale
                     showChevron: false
                     model: [
-                        { "label": "Hover or press this row", "icon": "touch_app" },
-                        { "label": "Keyboard focus", "icon": "keyboard", "supportingText": "Tab, then Enter or Space" },
-                        { "label": "Unavailable", "icon": "block", "enabled": false }
+                        { "label": qsTr("Hover or press this row"), "icon": "touch_app" },
+                        { "label": qsTr("Keyboard focus"), "icon": "keyboard", "supportingText": qsTr("Tab, then Enter or Space") },
+                        { "label": qsTr("Unavailable"), "icon": "block", "enabled": false }
                     ]
                 }
             }
@@ -1980,27 +1982,27 @@ Item {
 
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "1. Dot" }
+                SampleLabel { label: qsTr("1. Dot") }
                 MeoBadge { isDot: true }
             }
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "2. Single digit" }
+                SampleLabel { label: qsTr("2. Single digit") }
                 MeoBadge { text: "8" }
             }
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "3. Two digits" }
+                SampleLabel { label: qsTr("3. Two digits") }
                 MeoBadge { text: "24" }
             }
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "4. Overflow" }
+                SampleLabel { label: qsTr("4. Overflow") }
                 MeoBadge { text: "120"; maxCount: 99 }
             }
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "5. Attached target" }
+                SampleLabel { label: qsTr("5. Attached target") }
                 Item {
                     width: 48 * MeoTheme.globalScale
                     height: width
@@ -2017,31 +2019,31 @@ Item {
             Column {
                 width: 86 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "1. Circle"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("1. Circle"); horizontalAlignment: Text.AlignHCenter }
                 MeoAvatar { anchors.horizontalCenter: parent.horizontalCenter; initials: "ME"; size: 32; variant: "circle" }
             }
             Column {
                 width: 86 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "2. Squircle"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("2. Squircle"); horizontalAlignment: Text.AlignHCenter }
                 MeoAvatar { anchors.horizontalCenter: parent.horizontalCenter; initials: "UI"; size: 40; variant: "squircle" }
             }
             Column {
                 width: 86 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "3. Hexagon"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("3. Hexagon"); horizontalAlignment: Text.AlignHCenter }
                 MeoAvatar { anchors.horizontalCenter: parent.horizontalCenter; initials: "M3"; size: 48; variant: "hexagon" }
             }
             Column {
                 width: 104 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "4. Icon fallback"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("4. Icon fallback"); horizontalAlignment: Text.AlignHCenter }
                 MeoAvatar { anchors.horizontalCenter: parent.horizontalCenter; size: 40; variant: "circle" }
             }
             Column {
                 width: 112 * MeoTheme.globalScale
                 spacing: MeoTheme.space6
-                SampleLabel { width: parent.width; label: "5. Large diamond"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("5. Large diamond"); horizontalAlignment: Text.AlignHCenter }
                 MeoAvatar { anchors.horizontalCenter: parent.horizontalCenter; initials: "AI"; size: 56; variant: "diamond" }
             }
         }
@@ -2054,23 +2056,23 @@ Item {
             Column {
                 width: 230 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { label: "1. Horizontal · 1dp" }
+                SampleLabel { label: qsTr("1. Horizontal · 1dp") }
                 MeoDivider { width: parent.width }
-                SampleLabel { label: "2. Horizontal inset · 24dp" }
+                SampleLabel { label: qsTr("2. Horizontal inset · 24dp") }
                 MeoDivider { width: parent.width; leftInset: 24 * MeoTheme.globalScale; rightInset: 24 * MeoTheme.globalScale }
-                SampleLabel { label: "3. Horizontal · 2dp" }
+                SampleLabel { label: qsTr("3. Horizontal · 2dp") }
                 MeoDivider { width: parent.width; thickness: 2 * MeoTheme.globalScale }
             }
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "4. Vertical · 1dp" }
+                SampleLabel { label: qsTr("4. Vertical · 1dp") }
                 MeoDivider { anchors.horizontalCenter: parent.horizontalCenter; orientation: "vertical"; height: 52 * MeoTheme.globalScale }
             }
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "5. Vertical inset · 3dp" }
+                SampleLabel { label: qsTr("5. Vertical inset · 3dp") }
                 MeoDivider {
                     anchors.horizontalCenter: parent.horizontalCenter
                     orientation: "vertical"
@@ -2090,31 +2092,31 @@ Item {
             Column {
                 width: 200 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "1. Text · animated"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("1. Text · animated"); horizontalAlignment: Text.AlignHCenter }
                 MeoSkeleton { type: "text"; width: 180 * MeoTheme.globalScale }
             }
             Column {
                 width: 180 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "2. Text · static"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("2. Text · static"); horizontalAlignment: Text.AlignHCenter }
                 MeoSkeleton { type: "text"; width: 140 * MeoTheme.globalScale; active: false }
             }
             Column {
                 width: 90 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "3. Avatar"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("3. Avatar"); horizontalAlignment: Text.AlignHCenter }
                 MeoSkeleton { type: "avatar" }
             }
             Column {
                 width: 140 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "4. Pill"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("4. Pill"); horizontalAlignment: Text.AlignHCenter }
                 MeoSkeleton { type: "pill" }
             }
             Column {
                 width: 180 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { width: parent.width; label: "5. Card"; horizontalAlignment: Text.AlignHCenter }
+                SampleLabel { width: parent.width; label: qsTr("5. Card"); horizontalAlignment: Text.AlignHCenter }
                 MeoSkeleton { type: "card"; width: 168 * MeoTheme.globalScale; height: 88 * MeoTheme.globalScale }
             }
         }
@@ -2124,12 +2126,12 @@ Item {
         Grid {
             columns: 3
             spacing: MeoTheme.space24
-            SurfaceCard { title: "Elevated"; cardType: "elevated" }
-            SurfaceCard { title: "Filled"; cardType: "filled" }
-            SurfaceCard { title: "Outlined"; cardType: "outlined" }
-            SurfaceCard { title: "Selected"; cardType: "filled"; selected: true }
-            SurfaceCard { title: "Interactive"; cardType: "elevated"; interactive: true }
-            SurfaceCard { title: "Disabled"; cardType: "filled"; enabledState: false }
+            SurfaceCard { title: qsTr("Elevated"); cardType: "elevated" }
+            SurfaceCard { title: qsTr("Filled"); cardType: "filled" }
+            SurfaceCard { title: qsTr("Outlined"); cardType: "outlined" }
+            SurfaceCard { title: qsTr("Selected"); cardType: "filled"; selected: true }
+            SurfaceCard { title: qsTr("Interactive"); cardType: "elevated"; interactive: true }
+            SurfaceCard { title: qsTr("Disabled"); cardType: "filled"; enabledState: false }
         }
     }
 
@@ -2140,31 +2142,31 @@ Item {
 
             MeoAuthenticationSurface {
                 width: 360 * MeoTheme.globalScale
-                title: "Unlock Meo"
-                supportingText: "Your password stays with the platform authenticator."
+                title: qsTr("Unlock Meo")
+                supportingText: qsTr("Your password stays with the platform authenticator.")
                 status: "fingerprint"
-                statusText: "Or scan your fingerprint"
+                statusText: qsTr("Or scan your fingerprint")
                 MeoTextField {
                     Layout.fillWidth: true
-                    label: "Password"
+                    label: qsTr("Password")
                     isPassword: true
                 }
                 MeoButton {
                     Layout.fillWidth: true
-                    text: "Unlock"
+                    text: qsTr("Unlock")
                     icon.name: "lock_open"
                 }
             }
 
             MeoAuthenticationSurface {
                 width: 360 * MeoTheme.globalScale
-                title: "Try again"
+                title: qsTr("Try again")
                 status: "failed"
-                errorText: "Unlocking failed"
+                errorText: qsTr("Unlocking failed")
                 Component.onCompleted: triggerFailure()
                 MeoTextField {
                     Layout.fillWidth: true
-                    label: "Password"
+                    label: qsTr("Password")
                     isPassword: true
                     isError: true
                 }
@@ -2187,24 +2189,24 @@ Item {
                 spacing: MeoTheme.space8
 
                 MeoButton {
-                    text: "Basic dialog"
+                    text: qsTr("Basic dialog")
                     onClicked: basicDialog.open()
                 }
 
                 MeoButton {
-                    text: "Dialog with icon"
+                    text: qsTr("Dialog with icon")
                     type: "tonal"
                     onClicked: iconDialog.open()
                 }
 
                 MeoButton {
-                    text: "Single select"
+                    text: qsTr("Single select")
                     type: "outlined"
                     onClicked: singleSelectDialog.open()
                 }
 
                 MeoButton {
-                    text: "Multi select"
+                    text: qsTr("Multi select")
                     type: "outlined"
                     onClicked: multiSelectDialog.open()
                 }
@@ -2212,49 +2214,49 @@ Item {
 
             MeoDialog {
                 id: basicDialog
-                title: "Basic dialog"
-                message: "This dialog asks for a focused decision."
-                confirmText: "Accept"
-                cancelText: "Cancel"
+                title: qsTr("Basic dialog")
+                message: qsTr("This dialog asks for a focused decision.")
+                confirmText: qsTr("Accept")
+                cancelText: qsTr("Cancel")
             }
 
             MeoDialog {
                 id: iconDialog
                 icon: "info"
-                title: "Dialog with icon"
-                message: "A hero icon reinforces the message."
-                confirmText: "Confirm"
-                cancelText: "Dismiss"
+                title: qsTr("Dialog with icon")
+                message: qsTr("A hero icon reinforces the message.")
+                confirmText: qsTr("Confirm")
+                cancelText: qsTr("Dismiss")
             }
 
             MeoExpressiveDialog {
                 id: singleSelectDialog
-                title: "Choose density"
-                message: "Selection dialogs keep choices in one focused surface."
-                confirmText: "Apply"
-                cancelText: "Cancel"
+                title: qsTr("Choose density")
+                message: qsTr("Selection dialogs keep choices in one focused surface.")
+                confirmText: qsTr("Apply")
+                cancelText: qsTr("Cancel")
                 content: Component {
                     Column {
                         spacing: MeoTheme.space8
-                        MeoRadioButton { label: "Comfortable"; checked: true }
-                        MeoRadioButton { label: "Compact" }
-                        MeoRadioButton { label: "Expanded" }
+                        MeoRadioButton { label: qsTr("Comfortable"); checked: true }
+                        MeoRadioButton { label: qsTr("Compact") }
+                        MeoRadioButton { label: qsTr("Expanded") }
                     }
                 }
             }
 
             MeoExpressiveDialog {
                 id: multiSelectDialog
-                title: "Visible columns"
-                message: "Use checkboxes when multiple items can stay selected."
-                confirmText: "Save"
-                cancelText: "Cancel"
+                title: qsTr("Visible columns")
+                message: qsTr("Use checkboxes when multiple items can stay selected.")
+                confirmText: qsTr("Save")
+                cancelText: qsTr("Cancel")
                 content: Component {
                     Column {
                         spacing: MeoTheme.space8
-                        MeoCheckbox { label: "Name"; checked: true }
-                        MeoCheckbox { label: "Status"; checked: true }
-                        MeoCheckbox { label: "Owner" }
+                        MeoCheckbox { label: qsTr("Name"); checked: true }
+                        MeoCheckbox { label: qsTr("Status"); checked: true }
+                        MeoCheckbox { label: qsTr("Owner") }
                     }
                 }
             }
@@ -2267,29 +2269,29 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Session-ending" }
+                SampleLabel { label: qsTr("Session-ending") }
                 MeoHoldToConfirm {
-                    confirmationText: "Hold to sign out"
-                    holdingText: "Keep holding to sign out…"
+                    confirmationText: qsTr("Hold to sign out")
+                    holdingText: qsTr("Keep holding to sign out…")
                     iconName: "logout"
                     tone: "neutral"
                 }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Destructive" }
+                SampleLabel { label: qsTr("Destructive") }
                 MeoHoldToConfirm {
-                    confirmationText: "Hold to shut down"
-                    holdingText: "Keep holding to shut down…"
+                    confirmationText: qsTr("Hold to shut down")
+                    holdingText: qsTr("Keep holding to shut down…")
                     iconName: "power_settings_new"
                     tone: "error"
                 }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
+                SampleLabel { label: qsTr("Disabled") }
                 MeoHoldToConfirm {
-                    confirmationText: "Hold to restart"
+                    confirmationText: qsTr("Hold to restart")
                     iconName: "restart_alt"
                     tone: "primary"
                     enabled: false
@@ -2309,17 +2311,17 @@ Item {
             }
 
             MeoButton {
-                text: "Open full-screen dialog"
+                text: qsTr("Open full-screen dialog")
                 icon.name: "edit"
                 onClicked: full.open()
             }
 
             MeoFullScreenDialog {
                 id: full
-                title: "Edit event"
+                title: qsTr("Edit event")
                 showDivider: true
-                actions: [{ "text": "Save" }]
-                bottomActions: [{ "text": "Cancel" }, { "text": "Apply" }]
+                actions: [{ "text": qsTr("Save") }]
+                bottomActions: [{ "text": qsTr("Cancel") }, { "text": qsTr("Apply") }]
                 content: Component {
                     Column {
                         width: parent ? parent.width : 0
@@ -2327,15 +2329,15 @@ Item {
 
                         MeoTextField {
                             width: parent.width
-                            label: "Event name"
-                            placeholder: "Design review"
+                            label: qsTr("Event name")
+                            placeholder: qsTr("Design review")
                             type: "outlined"
                         }
 
                         MeoTextField {
                             width: parent.width
-                            label: "Location"
-                            placeholder: "Studio"
+                            label: qsTr("Location")
+                            placeholder: qsTr("Studio")
                             type: "outlined"
                             leadingIcon: "place"
                         }
@@ -2343,7 +2345,7 @@ Item {
                         MeoDivider { width: parent.width }
 
                         MeoText {
-                            text: "Schedule"
+                            text: qsTr("Schedule")
                             typeRole: "title"
                             typeSize: "small"
                             color: MeoTheme.contentOnSurface
@@ -2355,13 +2357,13 @@ Item {
 
                             MeoExposedDropdown {
                                 width: (parent.width - MeoTheme.space12) / 2
-                                label: "From"
+                                label: qsTr("From")
                                 model: ["09:00", "10:00", "11:00"]
                             }
 
                             MeoExposedDropdown {
                                 width: (parent.width - MeoTheme.space12) / 2
-                                label: "To"
+                                label: qsTr("To")
                                 model: ["10:00", "11:00", "12:00"]
                             }
                         }
@@ -2370,22 +2372,22 @@ Item {
             }
         }
     }
-    Component { id: expressiveDialogSample; Column { spacing: MeoTheme.space8; MeoButton { text: "Open expressive dialog"; onClicked: dialog.open() } MeoExpressiveDialog { id: dialog; title: "Expressive"; message: "Custom content and shape."; icon: "auto_awesome" } } }
-    Component { id: bottomSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: "Open bottom sheet"; onClicked: sheet.open() } MeoBottomSheet { id: sheet; content: Component { MeoText { text: "Bottom sheet content"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: standardSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoStandardBottomSheet { anchors.fill: parent; isOpen: true; content: Component { MeoText { text: "Standard sheet"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: sideSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoSideSheet { anchors.right: parent.right; width: 240 * MeoTheme.globalScale; height: parent.height; isOpen: true; content: Component { MeoText { text: "Details"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: modalSideSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: "Open side sheet"; onClicked: sheet.open() } MeoSideSheetModal { id: sheet; content: Component { MeoText { text: "Modal side sheet"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: actionSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: "Open action sheet"; onClicked: sheet.open() } MeoActionSheet { id: sheet; title: "Share"; model: [{ "label": "Messages", "icon": "chat" }, { "label": "Email", "icon": "mail" }] } } }
+    Component { id: expressiveDialogSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open expressive dialog"); onClicked: dialog.open() } MeoExpressiveDialog { id: dialog; title: qsTr("Expressive"); message: qsTr("Custom content and shape."); icon: "auto_awesome" } } }
+    Component { id: bottomSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open bottom sheet"); onClicked: sheet.open() } MeoBottomSheet { id: sheet; content: Component { MeoText { text: qsTr("Bottom sheet content"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
+    Component { id: standardSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoStandardBottomSheet { anchors.fill: parent; isOpen: true; content: Component { MeoText { text: qsTr("Standard sheet"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
+    Component { id: sideSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoSideSheet { anchors.right: parent.right; width: 240 * MeoTheme.globalScale; height: parent.height; isOpen: true; content: Component { MeoText { text: qsTr("Details"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
+    Component { id: modalSideSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open side sheet"); onClicked: sheet.open() } MeoSideSheetModal { id: sheet; content: Component { MeoText { text: qsTr("Modal side sheet"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
+    Component { id: actionSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open action sheet"); onClicked: sheet.open() } MeoActionSheet { id: sheet; title: qsTr("Share"); model: [{ "label": qsTr("Messages"), "icon": "chat" }, { "label": qsTr("Email"), "icon": "mail" }] } } }
     Component {
         id: bannerSample
         Column {
             width: 460 * MeoTheme.globalScale
             spacing: MeoTheme.space8
-            MeoBanner { width: parent.width; title: "Information"; text: "This banner uses a tonal semantic container."; icon: "info" }
-            MeoBanner { width: parent.width; title: "Network restored"; text: "Your work is syncing again."; icon: "cloud_done"; tone: "success" }
-            MeoBanner { width: parent.width; title: "Storage almost full"; text: "Free space before creating a backup."; icon: "error"; tone: "error" }
-            MeoBanner { width: parent.width; text: "This banner includes two actions."; icon: "info"; confirmText: "Action"; cancelText: "Dismiss" }
-            MeoBanner { width: parent.width; title: "Title-only alert"; icon: "notifications" }
+            MeoBanner { width: parent.width; title: qsTr("Information"); text: qsTr("This banner uses a tonal semantic container."); icon: "info" }
+            MeoBanner { width: parent.width; title: qsTr("Network restored"); text: qsTr("Your work is syncing again."); icon: "cloud_done"; tone: "success" }
+            MeoBanner { width: parent.width; title: qsTr("Storage almost full"); text: qsTr("Free space before creating a backup."); icon: "error"; tone: "error" }
+            MeoBanner { width: parent.width; text: qsTr("This banner includes two actions."); icon: "info"; confirmText: qsTr("Action"); cancelText: qsTr("Dismiss") }
+            MeoBanner { width: parent.width; title: qsTr("Title-only alert"); icon: "notifications" }
         }
     }
     Component {
@@ -2397,21 +2399,21 @@ Item {
                 spacing: MeoTheme.space8
 
                 MeoButton {
-                    text: "Show snackbar"
+                    text: qsTr("Show snackbar")
                     type: "filled"
                     onClicked: {
-                        snackbar.message = "Message sent"
+                        snackbar.message = qsTr("Message sent")
                         snackbar.actionText = ""
                         snackbar.open()
                     }
                 }
 
                 MeoButton {
-                    text: "With action"
+                    text: qsTr("With action")
                     type: "outlined"
                     onClicked: {
-                        snackbar.message = "Photo deleted"
-                        snackbar.actionText = "Undo"
+                        snackbar.message = qsTr("Photo deleted")
+                        snackbar.actionText = qsTr("Undo")
                         snackbar.open()
                     }
                 }
@@ -2419,8 +2421,8 @@ Item {
 
             MeoSnackbar {
                 id: snackbar
-                message: "Saved"
-                actionText: "Undo"
+                message: qsTr("Saved")
+                actionText: qsTr("Undo")
                 Component.onCompleted: open()
             }
         }
@@ -2435,7 +2437,7 @@ Item {
             MeoButton {
                 id: hoverButton
                 anchors.centerIn: parent
-                text: "Hover target"
+                text: qsTr("Hover target")
                 type: "outlined"
             }
 
@@ -2449,7 +2451,7 @@ Item {
 
             MeoTooltip {
                 id: tip
-                text: "Tooltip on hover"
+                text: qsTr("Tooltip on hover")
                 x: hoverButton.x + hoverButton.width / 2 - width / 2
                 y: hoverButton.y - height - MeoTheme.space8
                 Component.onCompleted: open()
@@ -2460,12 +2462,12 @@ Item {
         id: richTooltipSample
         Column {
             spacing: MeoTheme.space8
-            MeoButton { text: "Open rich tooltip"; onClicked: tip.open() }
+            MeoButton { text: qsTr("Open rich tooltip"); onClicked: tip.open() }
             MeoRichTooltip {
                 id: tip
-                title: "Rich tooltip"
-                text: "Useful supporting detail with one focused action."
-                actions: [{ "text": "Learn more" }]
+                title: qsTr("Rich tooltip")
+                text: qsTr("Useful supporting detail with one focused action.")
+                actions: [{ "text": qsTr("Learn more") }]
                 Component.onCompleted: open()
             }
         }
@@ -2477,39 +2479,39 @@ Item {
             spacing: MeoTheme.space12
 
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "1. Determinate linear" }
+                SampleLabel { label: qsTr("1. Determinate linear") }
                 MeoProgressBar { width: parent.width; value: 0.42 }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "2. Indeterminate linear" }
+                SampleLabel { label: qsTr("2. Indeterminate linear") }
                 MeoProgressBar { width: parent.width; indeterminate: true }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "3. 8dp linear" }
+                SampleLabel { label: qsTr("3. 8dp linear") }
                 MeoProgressBar { width: parent.width; value: 0.62; isThick: true }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "4. Circle · 4dp" }
+                SampleLabel { label: qsTr("4. Circle · 4dp") }
                 MeoProgressBar { type: "circular"; value: 0.62 }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "5. Circle · 8dp" }
+                SampleLabel { label: qsTr("5. Circle · 8dp") }
                 MeoProgressBar { type: "circular"; value: 0.62; isThick: true }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "6. Wavy circle · 4dp" }
+                SampleLabel { label: qsTr("6. Wavy circle · 4dp") }
                 MeoProgressBar { type: "circular"; value: 0.62; wavy: true }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "7. Wavy circle · 8dp" }
+                SampleLabel { label: qsTr("7. Wavy circle · 8dp") }
                 MeoProgressBar { type: "circular"; value: 0.62; wavy: true; isThick: true }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "8. Linear wave · 10dp bounds" }
+                SampleLabel { label: qsTr("8. Linear wave · 10dp bounds") }
                 MeoProgressBar { width: parent.width; wavy: true; value: 0.72 }
             }
             Column { width: 260 * MeoTheme.globalScale; spacing: MeoTheme.space8
-                SampleLabel { label: "9. Linear wave · 14dp bounds" }
+                SampleLabel { label: qsTr("9. Linear wave · 14dp bounds") }
                 MeoProgressBar { width: parent.width; wavy: true; isThick: true; value: 0.72 }
             }
         }
@@ -2521,27 +2523,27 @@ Item {
             spacing: MeoTheme.space16
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "1. Default · indeterminate" }
+                SampleLabel { label: qsTr("1. Default · indeterminate") }
                 MeoLoadingIndicator { running: true }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "2. Contained · indeterminate" }
+                SampleLabel { label: qsTr("2. Contained · indeterminate") }
                 MeoLoadingIndicator { variant: "contained"; running: true }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "3. Default · 42%" }
+                SampleLabel { label: qsTr("3. Default · 42%") }
                 MeoLoadingIndicator { indeterminate: false; value: 0.42 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "4. Contained · 78%" }
+                SampleLabel { label: qsTr("4. Contained · 78%") }
                 MeoLoadingIndicator { variant: "contained"; indeterminate: false; value: 0.78 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "5. Paused · stable pose" }
+                SampleLabel { label: qsTr("5. Paused · stable pose") }
                 MeoLoadingIndicator { running: false }
             }
         }
@@ -2554,7 +2556,7 @@ Item {
             Column {
                 width: 180 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Unknown position · compact" }
+                SampleLabel { label: qsTr("Unknown position · compact") }
                 Item {
                     width: parent.width
                     height: 120 * MeoTheme.globalScale
@@ -2570,7 +2572,7 @@ Item {
             Column {
                 width: 360 * MeoTheme.globalScale
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Declared positions · detailed skeleton" }
+                SampleLabel { label: qsTr("Declared positions · detailed skeleton") }
                 Item {
                     width: parent.width
                     height: 120 * MeoTheme.globalScale
@@ -2605,46 +2607,46 @@ Item {
 
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Idle (hidden)" }
+                SampleLabel { label: qsTr("Idle (hidden)") }
                 MeoPullToRefresh { pullDistance: 0 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Partial pull · 45%" }
+                SampleLabel { label: qsTr("Partial pull · 45%") }
                 MeoPullToRefresh { pullDistance: 0.45 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Threshold ready" }
+                SampleLabel { label: qsTr("Threshold ready") }
                 MeoPullToRefresh { pullDistance: 1 }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Refreshing" }
+                SampleLabel { label: qsTr("Refreshing") }
                 MeoPullToRefresh { refreshing: true }
             }
             Column {
                 spacing: MeoTheme.space8
-                SampleLabel { label: "Disabled" }
+                SampleLabel { label: qsTr("Disabled") }
                 MeoPullToRefresh { pullDistance: 1; pullEnabled: false }
             }
         }
     }
-    Component { id: emptyStateSample; MeoEmptyState { width: 420 * MeoTheme.globalScale; icon: "inbox"; title: "No messages"; description: "Empty states explain what happened."; actionText: "Refresh" } }
+    Component { id: emptyStateSample; MeoEmptyState { width: 420 * MeoTheme.globalScale; icon: "inbox"; title: qsTr("No messages"); description: qsTr("Empty states explain what happened."); actionText: qsTr("Refresh") } }
     Component {
         id: searchBarSample
         Column {
             spacing: MeoTheme.space8
-            SampleLabel { label: "Standard" }
-            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: "Search components" }
-            SampleLabel { label: "Active query" }
-            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: "Search components"; active: true; text: "MeoTheme" }
-            SampleLabel { label: "Pixel" }
-            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: "Search apps"; visualStyle: "pixel" }
-            SampleLabel { label: "Settings" }
-            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: "Search settings"; visualStyle: "settings" }
-            SampleLabel { label: "Launcher" }
-            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: "Search device"; visualStyle: "launcher" }
+            SampleLabel { label: qsTr("Standard") }
+            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: qsTr("Search components") }
+            SampleLabel { label: qsTr("Active query") }
+            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: qsTr("Search components"); active: true; text: "MeoTheme" }
+            SampleLabel { label: qsTr("Pixel") }
+            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: qsTr("Search apps"); visualStyle: "pixel" }
+            SampleLabel { label: qsTr("Settings") }
+            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: qsTr("Search settings"); visualStyle: "settings" }
+            SampleLabel { label: qsTr("Launcher") }
+            MeoSearchBar { width: 420 * MeoTheme.globalScale; placeholder: qsTr("Search device"); visualStyle: "launcher" }
         }
     }
     Component {
@@ -2652,24 +2654,24 @@ Item {
         Column {
             width: 460 * MeoTheme.globalScale
             spacing: MeoTheme.space16
-            SampleLabel { label: "Contained (recommended)" }
+            SampleLabel { label: qsTr("Contained (recommended)") }
             MeoDockedSearchBar {
                 width: parent.width
-                text: "meo"
-                placeholder: "Search components"
-                resultsTitle: "Results"
+                text: qsTr("meo")
+                placeholder: qsTr("Search components")
+                resultsTitle: qsTr("Results")
                 isExpanded: true
-                suggestions: [{ "label": "MeoTheme tokens", "icon": "palette" }, { "label": "MeoButton usage", "icon": "smart_button" }]
+                suggestions: [{ "label": qsTr("MeoTheme tokens"), "icon": "palette" }, { "label": qsTr("MeoButton usage"), "icon": "smart_button" }]
             }
-            SampleLabel { label: "Divided (legacy compatibility)" }
+            SampleLabel { label: qsTr("Divided (legacy compatibility)") }
             MeoDockedSearchBar {
                 width: parent.width
-                text: "meo"
-                placeholder: "Search components"
-                resultsTitle: "Results"
+                text: qsTr("meo")
+                placeholder: qsTr("Search components")
+                resultsTitle: qsTr("Results")
                 style: "divided"
                 isExpanded: true
-                suggestions: [{ "label": "MeoSlider usage", "icon": "tune" }, { "label": "MeoToolbar actions", "icon": "toolbar" }]
+                suggestions: [{ "label": qsTr("MeoSlider usage"), "icon": "tune" }, { "label": qsTr("MeoToolbar actions"), "icon": "toolbar" }]
             }
         }
     }
@@ -2678,10 +2680,10 @@ Item {
         Column {
             width: 460 * MeoTheme.globalScale
             spacing: MeoTheme.space8
-            SampleLabel { label: "Default" }
-            MeoSearchAppBar { width: parent.width; placeholder: "Searchable page" }
-            SampleLabel { label: "Active input" }
-            MeoSearchAppBar { width: parent.width; placeholder: "Searchable page"; active: true; text: "MeoTheme" }
+            SampleLabel { label: qsTr("Default") }
+            MeoSearchAppBar { width: parent.width; placeholder: qsTr("Searchable page") }
+            SampleLabel { label: qsTr("Active input") }
+            MeoSearchAppBar { width: parent.width; placeholder: qsTr("Searchable page"); active: true; text: "MeoTheme" }
         }
     }
     Component {
@@ -2697,10 +2699,10 @@ Item {
                 dockedWidth: parent.width
                 dockedHeight: parent.height
                 edgeMargin: 0
-                text: "meo"
-                placeholder: "Search components"
-                resultsTitle: "Results"
-                suggestions: [{ "label": "MeoTheme tokens", "icon": "palette" }, { "label": "MeoButton usage", "icon": "smart_button" }, { "label": "MeoSlider usage", "icon": "tune" }]
+                text: qsTr("meo")
+                placeholder: qsTr("Search components")
+                resultsTitle: qsTr("Results")
+                suggestions: [{ "label": qsTr("MeoTheme tokens"), "icon": "palette" }, { "label": qsTr("MeoButton usage"), "icon": "smart_button" }, { "label": qsTr("MeoSlider usage"), "icon": "tune" }]
                 Component.onCompleted: open()
             }
         }
@@ -2710,23 +2712,23 @@ Item {
         Column {
             width: 420 * MeoTheme.globalScale
             spacing: MeoTheme.space8
-            SampleLabel { label: "Query highlight" }
-            MeoSearchSuggestions { width: parent.width; highlightText: "meo"; model: [{ "label": "MeoTheme tokens", "icon": "palette" }, { "label": "MeoButton usage", "icon": "smart_button" }] }
-            SampleLabel { label: "History removal" }
-            MeoSearchSuggestions { width: parent.width; model: [{ "label": "Recent MeoTheme search", "isHistory": true }] }
-            SampleLabel { label: "Literal query" }
-            MeoSearchSuggestions { width: parent.width; highlightText: "["; model: [{ "label": "Search [components]", "icon": "search" }] }
+            SampleLabel { label: qsTr("Query highlight") }
+            MeoSearchSuggestions { width: parent.width; highlightText: "meo"; model: [{ "label": qsTr("MeoTheme tokens"), "icon": "palette" }, { "label": qsTr("MeoButton usage"), "icon": "smart_button" }] }
+            SampleLabel { label: qsTr("History removal") }
+            MeoSearchSuggestions { width: parent.width; model: [{ "label": qsTr("Recent MeoTheme search"), "isHistory": true }] }
+            SampleLabel { label: qsTr("Literal query") }
+            MeoSearchSuggestions { width: parent.width; highlightText: "["; model: [{ "label": qsTr("Search [components]"), "icon": "search" }] }
         }
     }
-    Component { id: searchHeaderSample; MeoSearchHeader { width: 520 * MeoTheme.globalScale; title: "Library"; placeholder: "Search"; actions: [Component { MeoIconButton { icon.name: "help" } }] } }
-    Component { id: searchFilterSample; MeoSearchFilterBar { width: 520 * MeoTheme.globalScale; placeholder: "Search issues"; filterModel: control.chipItems; selectedFilterIndices: [0, 2] } }
+    Component { id: searchHeaderSample; MeoSearchHeader { width: 520 * MeoTheme.globalScale; title: qsTr("Library"); placeholder: qsTr("Search"); actions: [Component { MeoIconButton { icon.name: "help" } }] } }
+    Component { id: searchFilterSample; MeoSearchFilterBar { width: 520 * MeoTheme.globalScale; placeholder: qsTr("Search issues"); filterModel: control.chipItems; selectedFilterIndices: [0, 2] } }
     Component {
         id: carouselSample
         Column {
             width: 560 * MeoTheme.globalScale
             spacing: MeoTheme.space16
 
-            SampleLabel { label: "Multi-browse" }
+            SampleLabel { label: qsTr("Multi-browse") }
             MeoCarousel {
                 width: parent.width
                 itemHeight: 140 * MeoTheme.globalScale
@@ -2735,7 +2737,7 @@ Item {
                 delegate: Component { CarouselTile {} }
             }
 
-            SampleLabel { label: "Hero" }
+            SampleLabel { label: qsTr("Hero") }
             MeoCarousel {
                 width: parent.width
                 itemHeight: 170 * MeoTheme.globalScale
@@ -2744,7 +2746,7 @@ Item {
                 delegate: Component { CarouselTile { tileType: "hero" } }
             }
 
-            SampleLabel { label: "Uncontained" }
+            SampleLabel { label: qsTr("Uncontained") }
             MeoCarousel {
                 width: parent.width
                 itemHeight: 120 * MeoTheme.globalScale
@@ -2760,11 +2762,11 @@ Item {
         Row {
             spacing: MeoTheme.space24
 
-            PageIndicatorColumn { label: "1. First"; count: 5; currentIndex: 0 }
-            PageIndicatorColumn { label: "2. Middle"; count: 5; currentIndex: 2 }
-            PageIndicatorColumn { label: "3. Last"; count: 5; currentIndex: 4 }
-            PageIndicatorColumn { label: "4. Dense"; count: 8; currentIndex: 5; dotSize: 6 * MeoTheme.globalScale; activeDotWidth: 18 * MeoTheme.globalScale }
-            PageIndicatorColumn { label: "5. Vertical click"; count: 4; currentIndex: 1; orientation: "vertical"; interactive: true }
+            PageIndicatorColumn { label: qsTr("1. First"); count: 5; currentIndex: 0 }
+            PageIndicatorColumn { label: qsTr("2. Middle"); count: 5; currentIndex: 2 }
+            PageIndicatorColumn { label: qsTr("3. Last"); count: 5; currentIndex: 4 }
+            PageIndicatorColumn { label: qsTr("4. Dense"); count: 8; currentIndex: 5; dotSize: 6 * MeoTheme.globalScale; activeDotWidth: 18 * MeoTheme.globalScale }
+            PageIndicatorColumn { label: qsTr("5. Vertical click"); count: 4; currentIndex: 1; orientation: "vertical"; interactive: true }
         }
     }
     Component {
@@ -2781,8 +2783,8 @@ Item {
                 MeoMediaController {
                     width: 328 * MeoTheme.globalScale
                     presentation: "compact"
-                    title: "Soul Curve"
-                    artist: "MeoUI Sessions"
+                    title: qsTr("Soul Curve")
+                    artist: qsTr("MeoUI Sessions")
                     isPlaying: true
                     position: 45000
                     scale: 0.65
@@ -2795,8 +2797,8 @@ Item {
                 MeoMediaController {
                     width: 360 * MeoTheme.globalScale
                     presentation: "controlCenter"
-                    title: "Paused track"
-                    artist: "MeoUI Sessions"
+                    title: qsTr("Paused track")
+                    artist: qsTr("MeoUI Sessions")
                     isPlaying: false
                     liked: true
                     repeatMode: "all"
@@ -2810,8 +2812,8 @@ Item {
                 MeoMediaController {
                     width: 360 * MeoTheme.globalScale
                     presentation: "controlCenter"
-                    title: "Unavailable seek"
-                    artist: "Downloaded episode"
+                    title: qsTr("Unavailable seek")
+                    artist: qsTr("Downloaded episode")
                     isPlaying: true
                     canSeek: false
                     canSkipNext: false
@@ -2827,8 +2829,8 @@ Item {
                 MeoMediaController {
                     width: 440 * MeoTheme.globalScale
                     presentation: "lockScreen"
-                    title: "Lock screen"
-                    artist: "Ambient System"
+                    title: qsTr("Lock screen")
+                    artist: qsTr("Ambient System")
                     isPlaying: true
                     scale: 0.34
                     transformOrigin: Item.TopLeft
@@ -2840,8 +2842,8 @@ Item {
                 MeoMediaController {
                     width: 960 * MeoTheme.globalScale
                     presentation: "fullScreen"
-                    title: "Full-screen player"
-                    artist: "MeoUI Orchestra"
+                    title: qsTr("Full-screen player")
+                    artist: qsTr("MeoUI Orchestra")
                     isPlaying: true
                     volume: 0.42
                     scale: 0.23
@@ -2858,8 +2860,8 @@ Item {
             MeoWeatherStatus {
                 available: true
                 temperatureText: "28 °C"
-                condition: "Partly cloudy"
-                location: "Singapore"
+                condition: qsTr("Partly cloudy")
+                location: qsTr("Singapore")
                 showLocation: true
                 iconName: "weather-partly-cloudy"
             }
@@ -2868,7 +2870,7 @@ Item {
                 available: true
                 stale: true
                 temperatureText: "28 °C"
-                condition: "Stale data is hidden"
+                condition: qsTr("Weather data is out of date")
             }
         }
     }
@@ -2887,15 +2889,15 @@ Item {
                 width: parent.width
                 privacyLevel: "app-name"
                 notificationCount: 2
-                applicationName: "Messages"
+                applicationName: qsTr("Messages")
             }
             MeoPrivacyNotificationSummary {
                 width: parent.width
                 privacyLevel: "full-content"
                 notificationCount: 1
-                applicationName: "Calendar"
-                summary: "Design review starts in 10 minutes"
-                body: "Meeting room and invite details appear only when explicitly enabled."
+                applicationName: qsTr("Calendar")
+                summary: qsTr("Design review starts in 10 minutes")
+                body: qsTr("Meeting room and invite details appear when content previews are enabled.")
             }
         }
     }
@@ -2904,32 +2906,32 @@ Item {
         Column {
             width: 704 * MeoTheme.globalScale
             spacing: MeoTheme.space8
-            MeoToolbar { width: parent.width; title: "1. Regular toolbar" }
+            MeoToolbar { width: parent.width; title: qsTr("1. Regular toolbar") }
             MeoToolbar {
                 width: parent.width
-                title: "2. Search"
-                actions: [Component { MeoIconButton { icon.name: "search"; Accessible.name: "Search" } }]
+                title: qsTr("2. Search")
+                actions: [Component { MeoIconButton { icon.name: "search"; Accessible.name: qsTr("Search") } }]
             }
             MeoToolbar {
                 width: parent.width
-                title: "3. Actions"
+                title: qsTr("3. Actions")
                 actions: [
-                    Component { MeoIconButton { icon.name: "edit"; Accessible.name: "Edit" } },
-                    Component { MeoIconButton { icon.name: "more_vert"; Accessible.name: "More options" } }
+                    Component { MeoIconButton { icon.name: "edit"; Accessible.name: qsTr("Edit") } },
+                    Component { MeoIconButton { icon.name: "more_vert"; Accessible.name: qsTr("More options") } }
                 ]
             }
             MeoToolbar {
                 width: parent.width
-                title: "4. Compact toolbar"
+                title: qsTr("4. Compact toolbar")
                 isCompact: true
-                actions: [Component { MeoIconButton { icon.name: "close"; Accessible.name: "Close" } }]
+                actions: [Component { MeoIconButton { icon.name: "close"; Accessible.name: qsTr("Close") } }]
             }
             MeoToolbar {
                 width: parent.width
-                title: "5. Long title elides before actions in a narrow region"
+                title: qsTr("5. Long title elides before actions in a narrow region")
                 actions: [
-                    Component { MeoIconButton { icon.name: "share"; Accessible.name: "Share" } },
-                    Component { MeoIconButton { icon.name: "more_vert"; Accessible.name: "More options" } }
+                    Component { MeoIconButton { icon.name: "share"; Accessible.name: qsTr("Share") } },
+                    Component { MeoIconButton { icon.name: "more_vert"; Accessible.name: qsTr("More options") } }
                 ]
             }
         }
@@ -2945,7 +2947,7 @@ Item {
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "1. Standard selected action" }
+                SampleLabel { label: qsTr("1. Standard selected action") }
                 MeoDockedToolbar {
                     width: parent.width
                     actionIcons: ["arrow_back", "arrow_forward", "view_agenda", "more_vert"]
@@ -2956,30 +2958,30 @@ Item {
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "2. Standard with primary action" }
+                SampleLabel { label: qsTr("2. Standard with primary action") }
                 MeoDockedToolbar {
                     width: parent.width
                     actionIcons: ["archive", "delete", "more_vert"]
                     selectedActionIndex: 0
-                    primaryAction: Component { MeoButton { text: "Create"; type: "filled"; icon.name: "add" } }
+                    primaryAction: Component { MeoButton { text: qsTr("Create"); type: "filled"; icon.name: "add" } }
                 }
             }
 
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "3. Arbitrary action slot" }
+                SampleLabel { label: qsTr("3. Arbitrary action slot") }
                 MeoDockedToolbar {
                     width: parent.width
                     actionIcons: ["format_bold", "format_italic"]
-                    actions: [Component { MeoButton { text: "Back"; type: "text" } }]
+                    actions: [Component { MeoButton { text: qsTr("Back"); type: "text" } }]
                 }
             }
 
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "4. Vibrant" }
+                SampleLabel { label: qsTr("4. Vibrant") }
                 MeoDockedToolbar {
                     width: parent.width
                     colorStyle: "vibrant"
@@ -2991,13 +2993,13 @@ Item {
             Column {
                 width: 344 * MeoTheme.globalScale
                 spacing: MeoTheme.space4
-                SampleLabel { label: "5. Disabled action" }
+                SampleLabel { label: qsTr("5. Disabled action") }
                 MeoDockedToolbar {
                     width: parent.width
                     actionIcons: [
-                        { "icon": "undo", "accessibleName": "Undo" },
-                        { "icon": "redo", "accessibleName": "Redo", "enabled": false },
-                        { "icon": "more_vert", "accessibleName": "More" }
+                        { "icon": "undo", "accessibleName": qsTr("Undo") },
+                        { "icon": "redo", "accessibleName": qsTr("Redo"), "enabled": false },
+                        { "icon": "more_vert", "accessibleName": qsTr("More") }
                     ]
                     selectedActionIndex: 0
                 }
@@ -3033,11 +3035,11 @@ Item {
             columns: 2
             columnSpacing: MeoTheme.space16
             rowSpacing: MeoTheme.space8
-            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: "1. Icon fallback"; email: "hello@meoarch.dev" }
-            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: "2. Initials"; email: "design@meoarch.dev"; avatarInitials: "MD" }
-            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: "3. No dropdown"; email: "local session"; avatarInitials: "LS"; showDropdown: false }
-            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: "4. A deliberately long account name that elides"; email: "very-long-address@meoarch.example"; avatarInitials: "LT" }
-            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: "5. Disabled"; email: "Interaction unavailable"; avatarInitials: "DS"; enabled: false }
+            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: qsTr("1. Icon fallback"); email: "hello@meoarch.dev" }
+            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: qsTr("2. Initials"); email: "design@meoarch.dev"; avatarInitials: "MD" }
+            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: qsTr("3. No dropdown"); email: qsTr("local session"); avatarInitials: "LS"; showDropdown: false }
+            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: qsTr("4. A deliberately long account name that elides"); email: "very-long-address@meoarch.example"; avatarInitials: "LT" }
+            MeoAccountHeader { width: 344 * MeoTheme.globalScale; name: qsTr("5. Disabled"); email: qsTr("Interaction unavailable"); avatarInitials: "DS"; enabled: false }
         }
     }
     Component {
@@ -3045,11 +3047,11 @@ Item {
         Grid {
             columns: 2
             spacing: MeoTheme.space12
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: "1. Settings account"; subtitle: "Local session · shekong-laptop"; initials: "SH" }
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: "2. Initials fallback"; subtitle: "No avatar asset required"; initials: "IF"; avatarColor: MeoTheme.tertiaryContainer; avatarContentColor: MeoTheme.contentOnTertiaryContainer }
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: "3. Read-only identity"; subtitle: "No navigation affordance"; initials: "RO"; showChevron: false; interactive: false }
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: "4. A deliberately long account name that elides"; subtitle: "A deliberately long local session descriptor that also elides"; initials: "LT" }
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: "5. Disabled account"; subtitle: "Interaction unavailable"; initials: "DS"; enabled: false }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("1. Settings account"); subtitle: qsTr("Local session · shekong-laptop"); initials: "SH" }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("2. Initials fallback"); subtitle: qsTr("No avatar asset required"); initials: "IF"; avatarColor: MeoTheme.tertiaryContainer; avatarContentColor: MeoTheme.contentOnTertiaryContainer }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("3. Read-only identity"); subtitle: qsTr("No navigation affordance"); initials: "RO"; showChevron: false; interactive: false }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("4. A deliberately long account name that elides"); subtitle: qsTr("A deliberately long local session descriptor that also elides"); initials: "LT" }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("5. Disabled account"); subtitle: qsTr("Interaction unavailable"); initials: "DS"; enabled: false }
         }
     }
     Component {
@@ -3059,11 +3061,11 @@ Item {
             spacing: MeoTheme.space8
             Repeater {
                 model: [
-                    { "headline": "1. Archive or delete", "supporting": "Both swipe directions", "left": true, "right": true },
-                    { "headline": "2. Archive only", "supporting": "Swipe right only", "left": true, "right": false },
-                    { "headline": "3. Delete only", "supporting": "Swipe left only", "left": false, "right": true },
-                    { "headline": "4. Long content label that elides", "supporting": "Text stays within the row", "left": true, "right": true },
-                    { "headline": "5. Disabled", "supporting": "Swipe unavailable", "left": true, "right": true, "enabled": false }
+                    { "headline": qsTr("1. Archive or delete"), "supporting": qsTr("Both swipe directions"), "left": true, "right": true },
+                    { "headline": qsTr("2. Archive only"), "supporting": qsTr("Swipe right only"), "left": true, "right": false },
+                    { "headline": qsTr("3. Delete only"), "supporting": qsTr("Swipe left only"), "left": false, "right": true },
+                    { "headline": qsTr("4. Long content label that elides"), "supporting": qsTr("Text stays within the row"), "left": true, "right": true },
+                    { "headline": qsTr("5. Disabled"), "supporting": qsTr("Swipe unavailable"), "left": true, "right": true, "enabled": false }
                 ]
                 delegate: MeoSwipeToDismiss {
                     required property var modelData
@@ -3095,62 +3097,62 @@ Item {
         id: chipSample
         Flow {
             spacing: MeoTheme.space8
-            MeoChip { label: "1. Generic"; icon: "bolt" }
-            MeoChip { label: "2. Selected"; selected: true }
-            MeoChip { label: "3. Closable"; closable: true }
-            MeoChip { label: "4. XL"; size: "xl"; selected: true }
-            MeoChip { label: "5. Disabled"; icon: "block"; enabled: false }
+            MeoChip { label: qsTr("1. Generic"); icon: "bolt" }
+            MeoChip { label: qsTr("2. Selected"); selected: true }
+            MeoChip { label: qsTr("3. Closable"); closable: true }
+            MeoChip { label: qsTr("4. XL"); size: "xl"; selected: true }
+            MeoChip { label: qsTr("5. Disabled"); icon: "block"; enabled: false }
         }
     }
     Component {
         id: assistChipSample
         Flow {
             spacing: MeoTheme.space8
-            MeoAssistChip { label: "1. Directions"; icon: "directions" }
-            MeoAssistChip { label: "2. Elevated"; icon: "star"; elevated: true }
-            MeoAssistChip { label: "3. Outlined"; icon: "share"; visualStyle: "outlined" }
-            MeoAssistChip { label: "4. No icon" }
-            MeoAssistChip { label: "5. XL disabled"; icon: "block"; size: "xl"; enabled: false }
+            MeoAssistChip { label: qsTr("1. Directions"); icon: "directions" }
+            MeoAssistChip { label: qsTr("2. Elevated"); icon: "star"; elevated: true }
+            MeoAssistChip { label: qsTr("3. Outlined"); icon: "share"; visualStyle: "outlined" }
+            MeoAssistChip { label: qsTr("4. No icon") }
+            MeoAssistChip { label: qsTr("5. XL disabled"); icon: "block"; size: "xl"; enabled: false }
         }
     }
     Component {
         id: filterChipSample
         Flow {
             spacing: MeoTheme.space8
-            MeoFilterChip { label: "1. Selected"; selected: true }
-            MeoFilterChip { label: "2. Unselected" }
-            MeoFilterChip { label: "3. Icon"; leadingIcon: "palette" }
-            MeoFilterChip { label: "4. No icon" }
-            MeoFilterChip { label: "5. Disabled"; leadingIcon: "code"; enabled: false }
+            MeoFilterChip { label: qsTr("1. Selected"); selected: true }
+            MeoFilterChip { label: qsTr("2. Unselected") }
+            MeoFilterChip { label: qsTr("3. Icon"); leadingIcon: "palette" }
+            MeoFilterChip { label: qsTr("4. No icon") }
+            MeoFilterChip { label: qsTr("5. Disabled"); leadingIcon: "code"; enabled: false }
         }
     }
     Component {
         id: inputChipSample
         Flow {
             spacing: MeoTheme.space8
-            MeoInputChip { label: "1. Avery"; leadingIcon: "person" }
-            MeoInputChip { label: "2. Selected"; leadingIcon: "task_alt"; selected: true }
-            MeoInputChip { label: "3. Icon"; leadingIcon: "attach_file" }
-            MeoInputChip { label: "4. Avatar"; avatarInitials: "AV" }
-            MeoInputChip { label: "5. Disabled"; leadingIcon: "block"; enabled: false }
+            MeoInputChip { label: qsTr("1. Avery"); leadingIcon: "person" }
+            MeoInputChip { label: qsTr("2. Selected"); leadingIcon: "task_alt"; selected: true }
+            MeoInputChip { label: qsTr("3. Icon"); leadingIcon: "attach_file" }
+            MeoInputChip { label: qsTr("4. Avatar"); avatarInitials: "AV" }
+            MeoInputChip { label: qsTr("5. Disabled"); leadingIcon: "block"; enabled: false }
         }
     }
     Component {
         id: suggestionChipSample
         Flow {
             spacing: MeoTheme.space8
-            MeoSuggestionChip { label: "1. Material" }
-            MeoSuggestionChip { label: "2. Icon"; icon: "auto_awesome" }
-            MeoSuggestionChip { label: "3. Outlined"; icon: "tips_and_updates"; visualStyle: "outlined" }
-            MeoSuggestionChip { label: "4. No icon" }
-            MeoSuggestionChip { label: "5. Disabled"; icon: "block"; enabled: false }
+            MeoSuggestionChip { label: qsTr("1. Material") }
+            MeoSuggestionChip { label: qsTr("2. Icon"); icon: "auto_awesome" }
+            MeoSuggestionChip { label: qsTr("3. Outlined"); icon: "tips_and_updates"; visualStyle: "outlined" }
+            MeoSuggestionChip { label: qsTr("4. No icon") }
+            MeoSuggestionChip { label: qsTr("5. Disabled"); icon: "block"; enabled: false }
         }
     }
-    Component { id: pageLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 170 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Column { anchors.fill: parent; anchors.margins: MeoTheme.space16; spacing: MeoTheme.space8; MeoText { text: "Page title"; typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface } MeoText { text: "Max width, padding and section spacing."; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; wrapMode: Text.WordWrap; width: parent.width } } } }
-    Component { id: scaffoldSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainer; MeoText { anchors.centerIn: parent; text: "Top bar + content + bottom bar + FAB slots"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
-    Component { id: appLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Row { anchors.fill: parent; Rectangle { width: 90 * MeoTheme.globalScale; height: parent.height; color: MeoTheme.secondaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.verticalCenter: parent.verticalCenter; text: "Drawer / rail / bottom navigation shell"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; width: 260 * MeoTheme.globalScale; wrapMode: Text.WordWrap } } } }
-    Component { id: dashboardSample; MeoDashboardLayout { width: 520 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; columns: 3; model: [{ "title": "Tokens" }, { "title": "Controls" }, { "title": "Patterns" }]; delegate: Component { Rectangle { property var modelData: ({ "title": "" }); radius: MeoTheme.shapeMedium; color: MeoTheme.surfaceContainerLow; MeoText { anchors.centerIn: parent; text: modelData.title; typeRole: "label"; typeSize: "big"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: feedSample; MeoFeedLayout { width: 420 * MeoTheme.globalScale; height: 190 * MeoTheme.globalScale; model: [{ "title": "Release note" }, { "title": "Component update" }]; delegate: Component { MeoListItem { property var modelData: ({ "title": "" }); width: parent.width; headline: modelData.title; leadingIcon: "article" } } } }
+    Component { id: pageLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 170 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Column { anchors.fill: parent; anchors.margins: MeoTheme.space16; spacing: MeoTheme.space8; MeoText { text: qsTr("Page title"); typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface } MeoText { text: qsTr("Max width, padding and section spacing."); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; wrapMode: Text.WordWrap; width: parent.width } } } }
+    Component { id: scaffoldSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainer; MeoText { anchors.centerIn: parent; text: qsTr("Top bar + content + bottom bar + FAB slots"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
+    Component { id: appLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Row { anchors.fill: parent; Rectangle { width: 90 * MeoTheme.globalScale; height: parent.height; color: MeoTheme.secondaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.verticalCenter: parent.verticalCenter; text: qsTr("Drawer / rail / bottom navigation shell"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; width: 260 * MeoTheme.globalScale; wrapMode: Text.WordWrap } } } }
+    Component { id: dashboardSample; MeoDashboardLayout { width: 520 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; columns: 3; model: [{ "title": qsTr("Tokens") }, { "title": qsTr("Controls") }, { "title": qsTr("Patterns") }]; delegate: Component { Rectangle { property var modelData: ({ "title": "" }); radius: MeoTheme.shapeMedium; color: MeoTheme.surfaceContainerLow; MeoText { anchors.centerIn: parent; text: modelData.title; typeRole: "label"; typeSize: "big"; color: MeoTheme.contentOnSurface } } } } }
+    Component { id: feedSample; MeoFeedLayout { width: 420 * MeoTheme.globalScale; height: 190 * MeoTheme.globalScale; model: [{ "title": qsTr("Release note") }, { "title": qsTr("Component update") }]; delegate: Component { MeoListItem { property var modelData: ({ "title": "" }); width: parent.width; headline: modelData.title; leadingIcon: "article" } } } }
     Component {
         id: listDetailSample
         MeoListDetailLayout {
@@ -3159,7 +3161,7 @@ Item {
             showDetail: true
             listComponent: Component {
                 MeoGroupedList {
-                    model: [{ "label": "Inbox" }, { "label": "Archive" }]
+                    model: [{ "label": qsTr("Inbox") }, { "label": qsTr("Archive") }]
                     selectedIndex: 0
                 }
             }
@@ -3169,7 +3171,7 @@ Item {
                     radius: MeoTheme.shapeLarge
                     MeoText {
                         anchors.centerIn: parent
-                        text: "Detail pane"
+                        text: qsTr("Detail pane")
                         typeRole: "title"
                         typeSize: "small"
                         color: MeoTheme.contentOnSurface
@@ -3178,7 +3180,7 @@ Item {
             }
         }
     }
-    Component { id: settingsSample; MeoSettingsLayout { width: 420 * MeoTheme.globalScale; height: 220 * MeoTheme.globalScale; title: "Settings"; model: [{ "sectionTitle": "Appearance", "items": [{ "title": "Dark theme", "subtitle": "Use dark colors", "icon": "dark_mode", "type": "switch", "checked": true }] }] } }
+    Component { id: settingsSample; MeoSettingsLayout { width: 420 * MeoTheme.globalScale; height: 220 * MeoTheme.globalScale; title: qsTr("Settings"); model: [{ "sectionTitle": qsTr("Appearance"), "items": [{ "title": qsTr("Dark theme"), "subtitle": qsTr("Use dark colors"), "icon": "dark_mode", "type": "switch", "checked": true }] }] } }
     Component {
         id: shapeSample
         Grid {
@@ -3247,25 +3249,25 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Primary seed" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Theme seed"; color: MeoTheme.primary; helperText: "Valid #RRGGBB seed" }
+                SampleLabel { label: qsTr("Primary seed") }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: qsTr("Theme seed"); color: MeoTheme.primary; helperText: qsTr("Valid #RRGGBB seed") }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Tonal seed" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Tonal seed"; color: MeoTheme.tertiary }
+                SampleLabel { label: qsTr("Tonal seed") }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: qsTr("Tonal seed"); color: MeoTheme.tertiary }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Prefilled text" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Accent"; text: "#FF8800" }
+                SampleLabel { label: qsTr("Prefilled text") }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: qsTr("Accent"); text: "#FF8800" }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Validation error" }
+                SampleLabel { label: qsTr("Validation error") }
                 MeoColorField {
                     width: 260 * MeoTheme.globalScale
-                    label: "Theme seed"
+                    label: qsTr("Theme seed")
                     Timer {
                         interval: 100
                         running: true
@@ -3276,8 +3278,8 @@ Item {
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
-                MeoColorField { width: 260 * MeoTheme.globalScale; label: "Locked seed"; color: MeoTheme.secondary; enabled: false }
+                SampleLabel { label: qsTr("Disabled") }
+                MeoColorField { width: 260 * MeoTheme.globalScale; label: qsTr("Locked seed"); color: MeoTheme.secondary; enabled: false }
             }
         }
     }
@@ -3290,28 +3292,28 @@ Item {
 
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Selected with counter" }
-                MeoChipDropdown { width: 320 * MeoTheme.globalScale; label: "Included platforms"; placeholder: "Choose platforms"; model: ["Desktop", "Mobile", "Web"]; selectedIndices: [0, 2]; showCounter: true }
+                SampleLabel { label: qsTr("Selected with counter") }
+                MeoChipDropdown { width: 320 * MeoTheme.globalScale; label: qsTr("Included platforms"); placeholder: qsTr("Choose platforms"); model: [qsTr("Desktop"), qsTr("Mobile"), qsTr("Web")]; selectedIndices: [0, 2]; showCounter: true }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Empty placeholder" }
-                MeoChipDropdown { width: 260 * MeoTheme.globalScale; label: "Categories"; placeholder: "Choose categories"; model: ["Design", "Code", "Research"] }
+                SampleLabel { label: qsTr("Empty placeholder") }
+                MeoChipDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Categories"); placeholder: qsTr("Choose categories"); model: [qsTr("Design"), qsTr("Code"), qsTr("Research")] }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Outlined" }
-                MeoChipDropdown { width: 260 * MeoTheme.globalScale; type: "outlined"; label: "Reviewers"; model: ["Avery", "Mika", "Rin"]; selectedIndices: [1] }
+                SampleLabel { label: qsTr("Outlined") }
+                MeoChipDropdown { width: 260 * MeoTheme.globalScale; type: "outlined"; label: qsTr("Reviewers"); model: ["Avery", "Mika", "Rin"]; selectedIndices: [1] }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Validation error" }
-                MeoChipDropdown { width: 260 * MeoTheme.globalScale; label: "Required tags"; placeholder: "Choose at least one"; model: ["Urgent"]; isError: true; errorText: "Select a tag" }
+                SampleLabel { label: qsTr("Validation error") }
+                MeoChipDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Required tags"); placeholder: qsTr("Choose at least one"); model: [qsTr("Urgent")]; isError: true; errorText: qsTr("Select a tag") }
             }
             Column {
                 spacing: MeoTheme.space4
-                SampleLabel { label: "Disabled" }
-                MeoChipDropdown { width: 260 * MeoTheme.globalScale; type: "outlined"; label: "Disabled"; model: ["Unavailable"]; selectedIndices: [0]; enabled: false }
+                SampleLabel { label: qsTr("Disabled") }
+                MeoChipDropdown { width: 260 * MeoTheme.globalScale; type: "outlined"; label: qsTr("Disabled"); model: [qsTr("Unavailable")]; selectedIndices: [0]; enabled: false }
             }
         }
     }
@@ -3337,20 +3339,20 @@ Item {
             width: 360 * MeoTheme.globalScale
             spacing: MeoTheme.space12
 
-            SampleLabel { label: "1. Labelled value" }
-            MeoSteppedSlider { width: parent.width; title: "Volume"; supportingText: "Room speaker"; value: 60; stepSize: 10; valueSuffix: "%"; showValueLabel: true }
+            SampleLabel { label: qsTr("1. Labelled value") }
+            MeoSteppedSlider { width: parent.width; title: qsTr("Volume"); supportingText: qsTr("Room speaker"); value: 60; stepSize: 10; valueSuffix: "%"; showValueLabel: true }
 
-            SampleLabel { label: "2. Compact steps" }
-            MeoSteppedSlider { width: parent.width; title: "Brightness"; value: 4; from: 0; to: 5; stepSize: 1; showValueLabel: true }
+            SampleLabel { label: qsTr("2. Compact steps") }
+            MeoSteppedSlider { width: parent.width; title: qsTr("Brightness"); value: 4; from: 0; to: 5; stepSize: 1; showValueLabel: true }
 
-            SampleLabel { label: "3. Minimum boundary" }
-            MeoSteppedSlider { width: parent.width; title: "Text size"; value: 0; from: 0; to: 4; stepSize: 1; valueSuffix: "/4"; showValueLabel: true }
+            SampleLabel { label: qsTr("3. Minimum boundary") }
+            MeoSteppedSlider { width: parent.width; title: qsTr("Text size"); value: 0; from: 0; to: 4; stepSize: 1; valueSuffix: "/4"; showValueLabel: true }
 
-            SampleLabel { label: "4. Maximum boundary" }
-            MeoSteppedSlider { width: parent.width; title: "Playback speed"; value: 2; from: 0.5; to: 2; stepSize: 0.25; valueSuffix: "×"; showValueLabel: true }
+            SampleLabel { label: qsTr("4. Maximum boundary") }
+            MeoSteppedSlider { width: parent.width; title: qsTr("Playback speed"); value: 2; from: 0.5; to: 2; stepSize: 0.25; valueSuffix: "×"; showValueLabel: true }
 
-            SampleLabel { label: "5. Disabled" }
-            MeoSteppedSlider { width: parent.width; title: "Contrast"; supportingText: "Unavailable for this display"; value: 50; stepSize: 10; valueSuffix: "%"; showValueLabel: true; enabled: false }
+            SampleLabel { label: qsTr("5. Disabled") }
+            MeoSteppedSlider { width: parent.width; title: qsTr("Contrast"); supportingText: qsTr("Unavailable for this display"); value: 50; stepSize: 10; valueSuffix: "%"; showValueLabel: true; enabled: false }
         }
     }
 
@@ -3370,11 +3372,11 @@ Item {
         id: appGridItemSample
         Flow {
             spacing: MeoTheme.space12
-            MeoAppGridItem { title: "Settings"; iconName: "settings"; selected: true }
-            MeoAppGridItem { title: "Files"; iconName: "folder" }
-            MeoAppGridItem { title: "AI Studio"; iconName: "auto_awesome"; compact: true }
+            MeoAppGridItem { title: qsTr("Settings"); iconName: "settings"; selected: true }
+            MeoAppGridItem { title: qsTr("Files"); iconName: "folder" }
+            MeoAppGridItem { title: qsTr("AI Studio"); iconName: "auto_awesome"; compact: true }
             MeoAppGridItem {
-                title: "Custom"
+                title: qsTr("Custom")
                 iconContent: Component {
                     Rectangle {
                         implicitWidth: 40 * MeoTheme.globalScale
@@ -3390,7 +3392,7 @@ Item {
                     }
                 }
             }
-            MeoAppGridItem { title: "Disabled"; iconName: "lock"; enabled: false }
+            MeoAppGridItem { title: qsTr("Disabled"); iconName: "lock"; enabled: false }
         }
     }
 
@@ -3401,14 +3403,14 @@ Item {
             spacing: MeoTheme.space8
             MeoExpansionPanel {
                 width: parent.width
-                title: "Release notes"
-                subtitle: "What changed in this update"
+                title: qsTr("Release notes")
+                subtitle: qsTr("What changed in this update")
                 icon: "article"
                 expanded: true
                 contentItem: Component {
                     MeoText {
                         width: 408 * MeoTheme.globalScale
-                        text: "Expanded content keeps secondary information available without overwhelming the primary screen."
+                        text: qsTr("Expanded content keeps secondary information available without overwhelming the primary screen.")
                         typeRole: "body"
                         typeSize: "medium"
                         color: MeoTheme.contentOnSurfaceVariant
@@ -3416,8 +3418,8 @@ Item {
                     }
                 }
             }
-            MeoExpansionPanel { width: parent.width; title: "Earlier updates"; icon: "history" }
-            MeoExpansionPanel { width: parent.width; title: "Unavailable section"; subtitle: "Disabled state"; icon: "block"; enabled: false }
+            MeoExpansionPanel { width: parent.width; title: qsTr("Earlier updates"); icon: "history" }
+            MeoExpansionPanel { width: parent.width; title: qsTr("Unavailable section"); subtitle: qsTr("Disabled state"); icon: "block"; enabled: false }
         }
     }
 
@@ -3426,11 +3428,11 @@ Item {
         Column {
             width: 460 * MeoTheme.globalScale
             spacing: MeoTheme.space4
-            MeoSettingsRow { width: parent.width; title: "Wi-Fi"; subtitle: "Meo Network"; leadingIcon: "wifi"; trailingKind: "navigation"; selected: true }
-            MeoSettingsRow { width: parent.width; title: "Dark theme"; subtitle: "Use dark colors"; leadingIcon: "dark_mode"; trailingKind: "switch"; checked: true }
-            MeoSettingsRow { width: parent.width; title: "Storage"; leadingIcon: "storage"; trailingKind: "value"; valueText: "68% used" }
-            MeoSettingsRow { width: parent.width; title: "System update"; leadingIcon: "system_update"; trailingKind: "status"; trailingText: "Up to date"; statusTone: "primary" }
-            MeoSettingsRow { width: parent.width; title: "Reset settings"; leadingIcon: "restart_alt"; trailingKind: "action"; actionText: "Reset"; enabled: false }
+            MeoSettingsRow { width: parent.width; title: qsTr("Wi-Fi"); subtitle: qsTr("Meo Network"); leadingIcon: "wifi"; trailingKind: "navigation"; selected: true }
+            MeoSettingsRow { width: parent.width; title: qsTr("Dark theme"); subtitle: qsTr("Use dark colors"); leadingIcon: "dark_mode"; trailingKind: "switch"; checked: true }
+            MeoSettingsRow { width: parent.width; title: qsTr("Storage"); leadingIcon: "storage"; trailingKind: "value"; valueText: qsTr("68% used") }
+            MeoSettingsRow { width: parent.width; title: qsTr("System update"); leadingIcon: "system_update"; trailingKind: "status"; trailingText: qsTr("Up to date"); statusTone: "primary" }
+            MeoSettingsRow { width: parent.width; title: qsTr("Reset settings"); leadingIcon: "restart_alt"; trailingKind: "action"; actionText: qsTr("Reset"); enabled: false }
         }
     }
 
@@ -3438,13 +3440,13 @@ Item {
         id: segmentedListSample
         MeoSegmentedList {
             width: 420 * MeoTheme.globalScale
-            title: "Recent components"
-            subtitle: "A custom delegate receives its item data and rounded position."
+            title: qsTr("Recent components")
+            subtitle: qsTr("A custom delegate receives its item data and rounded position.")
             selectedIndex: 1
             model: [
-                { "label": "Buttons", "icon": "smart_button", "supportingText": "Action surfaces" },
-                { "label": "Navigation", "icon": "explore", "supportingText": "Tabs and rails" },
-                { "label": "Feedback", "icon": "info", "supportingText": "Progress and messages", "enabled": false }
+                { "label": qsTr("Buttons"), "icon": "smart_button", "supportingText": qsTr("Action surfaces") },
+                { "label": qsTr("Navigation"), "icon": "explore", "supportingText": qsTr("Tabs and rails") },
+                { "label": qsTr("Feedback"), "icon": "info", "supportingText": qsTr("Progress and messages"), "enabled": false }
             ]
             delegate: Component {
                 MeoListItem {
@@ -3464,14 +3466,14 @@ Item {
         Column {
             width: 420 * MeoTheme.globalScale
             spacing: MeoTheme.space2
-            MeoListItem { width: parent.width; headline: "Selected expressive item"; supportingText: "Top rounding"; leadingIcon: "auto_awesome"; selected: true; isSegmented: true; roundingStrategy: "top"; vibrant: true }
-            MeoListItem { width: parent.width; headline: "Adjacent item"; supportingText: "Bottom rounding"; leadingIcon: "palette"; isSegmented: true; roundingStrategy: "bottom" }
+            MeoListItem { width: parent.width; headline: qsTr("Selected expressive item"); supportingText: qsTr("Top rounding"); leadingIcon: "auto_awesome"; selected: true; isSegmented: true; roundingStrategy: "top"; vibrant: true }
+            MeoListItem { width: parent.width; headline: qsTr("Adjacent item"); supportingText: qsTr("Bottom rounding"); leadingIcon: "palette"; isSegmented: true; roundingStrategy: "bottom" }
         }
     }
 
     Component {
         id: fallbackSample
-        MeoText { text: "Sample registered in catalog"; typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant }
+        MeoText { text: qsTr("Sample registered in catalog"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant }
     }
 
     Component {
@@ -3486,7 +3488,7 @@ Item {
                     radius: MeoTheme.shapeLarge
                     MeoText {
                         anchors.centerIn: parent
-                        text: "Hosted page component"
+                        text: qsTr("Hosted page component")
                         typeRole: "title"
                         typeSize: "medium"
                         color: MeoTheme.contentOnSecondaryContainer
@@ -3497,7 +3499,7 @@ Item {
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
                 anchors.margins: MeoTheme.space8
-                text: samplePageHost.enterDuration + "ms in · " + samplePageHost.exitDuration + "ms out"
+                text: samplePageHost.enterDuration + qsTr("ms in · ") + samplePageHost.exitDuration + qsTr("ms out")
                 typeRole: "label"
                 typeSize: "small"
                 color: MeoTheme.contentOnSecondaryContainer
@@ -3511,24 +3513,24 @@ Item {
             width: 520 * MeoTheme.globalScale
             spacing: MeoTheme.space16
 
-            SampleLabel { label: "Navigation and supporting text" }
+            SampleLabel { label: qsTr("Navigation and supporting text") }
             MeoSettingsGroup {
                 width: parent.width
-                title: "Connections"
+                title: qsTr("Connections")
                 model: [
-                    { "title": "Wi-Fi", "subtitle": "Meo Network", "leadingIcon": "wifi", "trailingKind": "navigation", "trailingText": "Connected" },
-                    { "title": "Bluetooth", "subtitle": "Headphones", "leadingIcon": "bluetooth", "trailingKind": "navigation", "badgeText": "2" },
-                    { "title": "Unavailable", "leadingIcon": "block", "trailingKind": "none", "enabled": false }
+                    { "title": qsTr("Wi-Fi"), "subtitle": qsTr("Meo Network"), "leadingIcon": "wifi", "trailingKind": "navigation", "trailingText": qsTr("Connected") },
+                    { "title": qsTr("Bluetooth"), "subtitle": qsTr("Headphones"), "leadingIcon": "bluetooth", "trailingKind": "navigation", "badgeText": "2" },
+                    { "title": qsTr("Unavailable"), "leadingIcon": "block", "trailingKind": "none", "enabled": false }
                 ]
             }
 
-            SampleLabel { label: "Embedded current controls" }
+            SampleLabel { label: qsTr("Embedded current controls") }
             MeoSettingsGroup {
                 width: parent.width
                 model: [
-                    { "title": "Internet sharing", "leadingIcon": "wifi", "trailingKind": "switch", "checked": true },
-                    { "title": "Device volume", "leadingIcon": "volume_up", "trailingKind": "slider", "value": 62, "sliderSize": "m" },
-                    { "title": "Refresh rate", "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
+                    { "title": qsTr("Internet sharing"), "leadingIcon": "wifi", "trailingKind": "switch", "checked": true },
+                    { "title": qsTr("Device volume"), "leadingIcon": "volume_up", "trailingKind": "slider", "value": 62, "sliderSize": "m" },
+                    { "title": qsTr("Refresh rate"), "leadingIcon": "speed", "trailingKind": "value", "valueText": "165 Hz" }
                 ]
             }
         }
@@ -3542,22 +3544,22 @@ Item {
             selectedRoute: "category:devices"
             groups: [
                 {
-                    "title": "Connections",
+                    "title": qsTr("Connections"),
                     "rows": [
-                        { "title": "Network & Internet", "subtitle": "Wi-Fi, VPN, and proxy", "leadingIcon": "wifi", "leadingStyle": "tonal", "route": "category:network" },
-                        { "title": "Connected devices", "subtitle": "Bluetooth and input devices", "leadingIcon": "devices", "leadingStyle": "tonal", "route": "category:devices" }
+                        { "title": qsTr("Network & Internet"), "subtitle": qsTr("Wi-Fi, VPN, and proxy"), "leadingIcon": "wifi", "leadingStyle": "tonal", "route": "category:network" },
+                        { "title": qsTr("Connected devices"), "subtitle": qsTr("Bluetooth and input devices"), "leadingIcon": "devices", "leadingStyle": "tonal", "route": "category:devices" }
                     ]
                 },
                 {
-                    "title": "Personal",
+                    "title": qsTr("Personal"),
                     "rows": [
-                        { "title": "Wallpaper & style", "subtitle": "Dynamic color, icons, and fonts", "leadingIcon": "palette", "leadingStyle": "tonal", "route": "category:style" },
-                        { "title": "Apps & notifications", "subtitle": "Defaults, permissions, and alerts", "leadingIcon": "apps", "leadingStyle": "tonal", "route": "category:apps" }
+                        { "title": qsTr("Wallpaper & style"), "subtitle": qsTr("Dynamic color, icons, and fonts"), "leadingIcon": "palette", "leadingStyle": "tonal", "route": "category:style" },
+                        { "title": qsTr("Apps & notifications"), "subtitle": qsTr("Defaults, permissions, and alerts"), "leadingIcon": "apps", "leadingStyle": "tonal", "route": "category:apps" }
                     ]
                 }
             ]
             searchResults: [
-                { "title": "Wi-Fi", "subtitle": "Network & Internet", "leadingIcon": "wifi", "route": "wifi" }
+                { "title": qsTr("Wi-Fi"), "subtitle": qsTr("Network & Internet"), "leadingIcon": "wifi", "route": "wifi" }
             ]
         }
     }
@@ -3566,17 +3568,17 @@ Item {
         id: settingsTaskSheetSample
         Column {
             spacing: MeoTheme.space8
-            MeoButton { text: "Open settings task"; onClicked: taskSheet.open() }
+            MeoButton { text: qsTr("Open settings task"); onClicked: taskSheet.open() }
             MeoSettingsTaskSheet {
                 id: taskSheet
-                title: "Choose display density"
-                subtitle: "This preview changes nothing outside the Showcase."
-                acceptText: "Apply"
-                rejectText: "Cancel"
+                title: qsTr("Choose display density")
+                subtitle: qsTr("This preview changes nothing outside the Showcase.")
+                acceptText: qsTr("Apply")
+                rejectText: qsTr("Cancel")
                 content: Component {
                     MeoSegmentedButtons {
                         width: 300 * MeoTheme.globalScale
-                        model: ["Compact", "Default", "Comfortable"]
+                        model: [qsTr("Compact"), qsTr("Default"), qsTr("Comfortable")]
                         currentIndex: 1
                     }
                 }
@@ -3589,14 +3591,14 @@ Item {
         MeoQuickSettingsEditor {
             width: 512 * MeoTheme.globalScale
             tiles: [
-                { "title": "Wi-Fi", "supportingText": "Meo Network", "iconName": "wifi", "active": true, "span": 2 },
-                { "title": "Bluetooth", "supportingText": "Headphones", "iconName": "bluetooth", "active": true, "span": 2 },
-                { "title": "Flashlight", "iconName": "flashlight_on", "span": 1 },
-                { "title": "Do not disturb", "iconName": "do_not_disturb_on", "span": 1 }
+                { "title": qsTr("Wi-Fi"), "supportingText": qsTr("Meo Network"), "iconName": "wifi", "active": true, "span": 2 },
+                { "title": qsTr("Bluetooth"), "supportingText": qsTr("Headphones"), "iconName": "bluetooth", "active": true, "span": 2 },
+                { "title": qsTr("Flashlight"), "iconName": "flashlight_on", "span": 1 },
+                { "title": qsTr("Do not disturb"), "iconName": "do_not_disturb_on", "span": 1 }
             ]
             availableTiles: [
-                { "title": "Night light", "iconName": "nightlight" },
-                { "title": "Airplane mode", "iconName": "flight" }
+                { "title": qsTr("Night light"), "iconName": "nightlight" },
+                { "title": qsTr("Airplane mode"), "iconName": "flight" }
             ]
             selectedIndex: 0
         }
@@ -3613,14 +3615,14 @@ Item {
                 Rectangle {
                     color: MeoTheme.surfaceContainerLow
                     radius: MeoTheme.shapeLarge
-                    MeoText { anchors.centerIn: parent; text: "Main pane"; typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface }
+                    MeoText { anchors.centerIn: parent; text: qsTr("Main pane"); typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface }
                 }
             }
             supportingPane: Component {
                 Rectangle {
                     color: MeoTheme.secondaryContainer
                     radius: MeoTheme.shapeLarge
-                    MeoText { anchors.centerIn: parent; text: "Supporting pane"; typeRole: "label"; typeSize: "large"; color: MeoTheme.contentOnSecondaryContainer }
+                    MeoText { anchors.centerIn: parent; text: qsTr("Supporting pane"); typeRole: "label"; typeSize: "large"; color: MeoTheme.contentOnSecondaryContainer }
                 }
             }
         }
@@ -3634,11 +3636,11 @@ Item {
 
             Repeater {
                 model: [
-                    { "label": "Circle → Square", "from": "Circle", "to": "Square", "progress": 0.50 },
-                    { "label": "Pill → Diamond", "from": "Pill", "to": "Diamond", "progress": 0.45 },
-                    { "label": "Soft burst → Cookie", "from": "SoftBurst", "to": "Cookie9Sided", "progress": 0.55 },
-                    { "label": "Triangle → Arrow", "from": "Triangle", "to": "Arrow", "progress": 0.50 },
-                    { "label": "Heart → Flower", "from": "Heart", "to": "Flower", "progress": 0.60 }
+                    { "label": qsTr("Circle → Square"), "from": "Circle", "to": "Square", "progress": 0.50 },
+                    { "label": qsTr("Pill → Diamond"), "from": "Pill", "to": "Diamond", "progress": 0.45 },
+                    { "label": qsTr("Soft burst → Cookie"), "from": "SoftBurst", "to": "Cookie9Sided", "progress": 0.55 },
+                    { "label": qsTr("Triangle → Arrow"), "from": "Triangle", "to": "Arrow", "progress": 0.50 },
+                    { "label": qsTr("Heart → Flower"), "from": "Heart", "to": "Flower", "progress": 0.60 }
                 ]
 
                 delegate: Column {
@@ -3677,8 +3679,8 @@ Item {
             notificationContent: Component {
                 Column {
                     spacing: MeoTheme.space8
-                    MeoListItem { width: parent.width; headline: "Build complete"; supportingText: "Showcase is ready to inspect"; leadingIcon: "task_alt" }
-                    MeoListItem { width: parent.width; headline: "No new warnings"; supportingText: "All checked samples are mapped"; leadingIcon: "info" }
+                    MeoListItem { width: parent.width; headline: qsTr("Build complete"); supportingText: qsTr("Showcase is ready to inspect"); leadingIcon: "task_alt" }
+                    MeoListItem { width: parent.width; headline: qsTr("No new warnings"); supportingText: qsTr("All checked samples are mapped"); leadingIcon: "info" }
                 }
             }
         }
@@ -3688,11 +3690,11 @@ Item {
         id: statusStripSample
         MeoStatusStrip {
             statusModel: [
-                { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: "Connected to MeoNet" },
-                { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: "Volume 64 percent" },
-                { id: "battery", iconName: "battery_full", text: "82%", available: true, active: false, accessibleName: "Battery 82 percent" },
-                { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: "Attention required" },
-                { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: "Hidden optional status" }
+                { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: qsTr("Connected to MeoNet") },
+                { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: qsTr("Volume 64 percent") },
+                { id: "battery", iconName: "battery_full", text: "82%", available: true, active: false, accessibleName: qsTr("Battery 82 percent") },
+                { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: qsTr("Attention required") },
+                { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: qsTr("Bluetooth status is unavailable") }
             ]
         }
     }
@@ -3703,11 +3705,11 @@ Item {
             spacing: MeoTheme.space32
             MeoAmbientClock {
                 timeText: "14:30"
-                dateText: "Monday, August 21"
+                dateText: qsTr("Monday, August 21")
             }
             MeoAmbientClock {
                 timeText: "14:30:45"
-                dateText: "Monday, August 21"
+                dateText: qsTr("Monday, August 21")
                 showSeconds: true
             }
             MeoAmbientClock {
@@ -3723,11 +3725,12 @@ Item {
             width: 320 * MeoTheme.globalScale
             height: 132 * MeoTheme.globalScale
             surfaceStyle: "tonal"
+            showOutline: false
             motionProfile: "pixel"
             animateOnCompleted: true
             MeoText {
                 anchors.centerIn: parent
-                text: "Pixel motion surface"
+                text: qsTr("Pixel motion surface")
                 typeRole: "title"
                 typeSize: "medium"
                 color: MeoTheme.contentOnTertiaryContainer
@@ -3748,7 +3751,7 @@ Item {
             }
             MeoButton {
                 anchors.centerIn: parent
-                text: parent.pressed ? "Release" : "Retarget spring"
+                text: parent.pressed ? qsTr("Release") : qsTr("Retarget spring")
                 scale: sampleSpring.value
                 onPressedChanged: parent.pressed = pressed
             }
@@ -3759,8 +3762,8 @@ Item {
         MeoLaunchSurface {
             width: 520 * MeoTheme.globalScale
             height: 300 * MeoTheme.globalScale
-            appName: "Dolphin"
-            supportingText: "Opening your files"
+            appName: qsTr("Dolphin")
+            supportingText: qsTr("Opening your files")
             fallbackIcon: "folder"
         }
     }
@@ -3772,7 +3775,7 @@ Item {
 
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "Constrained thumbnail" }
+                SampleLabel { label: qsTr("Constrained thumbnail") }
                 MeoCachedImage {
                     width: 112 * MeoTheme.globalScale
                     height: 84 * MeoTheme.globalScale
@@ -3783,7 +3786,7 @@ Item {
             }
             Column {
                 spacing: MeoTheme.space6
-                SampleLabel { label: "Inactive decode" }
+                SampleLabel { label: qsTr("Inactive decode") }
                 MeoCachedImage {
                     width: 112 * MeoTheme.globalScale
                     height: 84 * MeoTheme.globalScale
@@ -3792,7 +3795,7 @@ Item {
                     requestedSourceWidth: 112
                     requestedSourceHeight: 84
                 }
-                MeoText { text: "Paused"; typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant }
+                MeoText { text: qsTr("Paused"); typeRole: "label"; typeSize: "small"; color: MeoTheme.contentOnSurfaceVariant }
             }
         }
     }
@@ -3801,7 +3804,7 @@ Item {
         id: motionPopupSample
         Column {
             spacing: MeoTheme.space8
-            MeoButton { id: motionPopupTrigger; text: "Open motion popup"; onClicked: popup.openFrom(motionPopupTrigger) }
+            MeoButton { id: motionPopupTrigger; text: qsTr("Open motion popup"); onClicked: popup.openFrom(motionPopupTrigger) }
             MeoMotionPopup {
                 id: popup
                 width: 300 * MeoTheme.globalScale
@@ -3811,7 +3814,7 @@ Item {
                 MeoText {
                     anchors.centerIn: parent
                     width: parent.width - 2 * MeoTheme.space24
-                    text: "The same primitive can become a dialog, menu, or sheet."
+                    text: qsTr("The same primitive can become a dialog, menu, or sheet.")
                     typeRole: "body"
                     typeSize: "medium"
                     color: MeoTheme.contentOnSurface
@@ -3835,13 +3838,13 @@ Item {
                 cardSize: "s"
                 type: "filled"
                 mediaSource: parent.poster
-                headerTitle: "MeoUI"
-                headerSubtitle: "Design system"
+                headerTitle: qsTr("MeoUI")
+                headerSubtitle: qsTr("Design system")
                 avatarInitials: "M"
-                title: "Showcase coverage"
-                supportingText: "Top media"
+                title: qsTr("Showcase coverage")
+                supportingText: qsTr("Top media")
                 interactive: true
-                actions: [{ "label": "Open", "icon": "open_in_new", "type": "text" }]
+                actions: [{ "label": qsTr("Open"), "icon": "open_in_new", "type": "text" }]
             }
             MeoMediaCard {
                 width: 224 * MeoTheme.globalScale
@@ -3851,8 +3854,8 @@ Item {
                 mediaSource: parent.poster
                 mediaPosition: "left"
                 aspectRatio: 0.62
-                title: "Media card"
-                supportingText: "Side media layout"
+                title: qsTr("Media card")
+                supportingText: qsTr("Side media layout")
             }
             MeoMediaCard {
                 width: 224 * MeoTheme.globalScale
@@ -3861,8 +3864,8 @@ Item {
                 type: "filled"
                 mediaSource: parent.poster
                 mediaPosition: "bottom"
-                title: "Selected"
-                supportingText: "Bottom media"
+                title: qsTr("Selected")
+                supportingText: qsTr("Bottom media")
                 selected: true
             }
             MeoMediaCard {
@@ -3873,8 +3876,8 @@ Item {
                 mediaSource: parent.poster
                 mediaPosition: "right"
                 aspectRatio: 0.62
-                title: "Elevated"
-                supportingText: "Right media"
+                title: qsTr("Elevated")
+                supportingText: qsTr("Right media")
                 showOverflowButton: true
             }
             MeoMediaCard {
@@ -3882,8 +3885,8 @@ Item {
                 height: 144 * MeoTheme.globalScale
                 cardSize: "s"
                 type: "filled"
-                title: "Disabled"
-                supportingText: "No interaction"
+                title: qsTr("Disabled")
+                supportingText: qsTr("No interaction")
                 enabled: false
                 interactive: true
             }
@@ -3898,25 +3901,25 @@ Item {
             columnSpacing: MeoTheme.space16
             rowSpacing: MeoTheme.space16
             MeoAccountSwitcher { model: []; currentIndex: -3 }
-            MeoAccountSwitcher { model: [{ "name": "Single account", "email": "single@meoarch.dev" }] }
+            MeoAccountSwitcher { model: [{ "name": qsTr("Single account"), "email": "single@meoarch.dev" }] }
             MeoAccountSwitcher {
                 model: [
-                    { "name": "Meo User", "email": "hello@meoarch.dev" },
-                    { "name": "Design Review", "email": "design@meoarch.dev" },
-                    { "name": "Preview", "email": "preview@meoarch.dev" }
+                    { "name": qsTr("Meo User"), "email": "hello@meoarch.dev" },
+                    { "name": qsTr("Design Review"), "email": "design@meoarch.dev" },
+                    { "name": qsTr("Preview"), "email": "preview@meoarch.dev" }
                 ]
                 currentIndex: 0
             }
             MeoAccountSwitcher {
                 model: [
-                    { "name": "Meo User", "email": "hello@meoarch.dev" },
-                    { "name": "Design Review", "email": "design@meoarch.dev" },
-                    { "name": "Preview", "email": "preview@meoarch.dev" }
+                    { "name": qsTr("Meo User"), "email": "hello@meoarch.dev" },
+                    { "name": qsTr("Design Review"), "email": "design@meoarch.dev" },
+                    { "name": qsTr("Preview"), "email": "preview@meoarch.dev" }
                 ]
                 currentIndex: 8
             }
             MeoAccountSwitcher {
-                model: [{ "name": "Disabled account", "email": "unavailable@meoarch.dev" }]
+                model: [{ "name": qsTr("Disabled account"), "email": "unavailable@meoarch.dev" }]
                 enabled: false
             }
         }
