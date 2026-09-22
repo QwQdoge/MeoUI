@@ -7,7 +7,7 @@ if [[ -z "${LC_ALL:-}" ]]; then
 fi
 
 config="Release"
-output_root="${MEO_OUTPUT_ROOT:-/home/shekong/Projects/outputs}"
+output_root="${MEO_OUTPUT_ROOT:-${XDG_STATE_HOME:-${HOME:-.}/.local/state}/meoarch/outputs}"
 build_dir="${MEO_UI_BUILD_DIR:-}"
 install_dir="${MEO_UI_INSTALL_DIR:-}"
 validation_dir="${MEOUI_VALIDATION_DIR:-}"
@@ -74,7 +74,7 @@ while [[ $# -gt 0 ]]; do
 Usage: tools/build-showcase.sh [options]
 
   --config CONFIG          CMake build type (default: Release)
-  --output-root DIR        Outputs root (default: $MEO_OUTPUT_ROOT or /home/shekong/Projects/outputs)
+  --output-root DIR        Outputs root (default: $MEO_OUTPUT_ROOT, then XDG state dir)
   --build-dir DIR          Explicit CMake binary directory
   --install-dir DIR        Explicit staging-install directory
   --validation-dir DIR     Explicit evidence directory for this invocation
