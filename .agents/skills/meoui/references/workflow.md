@@ -1,5 +1,5 @@
 # MeoUI UI workflow
 
-Shared reference: `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/references/workflow.md`.
+Shared reference: `$MEOUI_DESIGN_SYSTEM_DIR/references/workflow.md` when configured; otherwise use the repository-local generated design-system documentation.
 
-Apply the project workflow before and after non-trivial UI changes; scope checks to the actual surface and platform.
+Never assume a developer-specific documentation path. Apply the project workflow before and after non-trivial UI changes; scope checks to the actual surface and platform.
