@@ -17,9 +17,9 @@ Item {
         id: account
         y: 80
         width: 760
-        title: "Shekong"
+        title: "Demo User"
         subtitle: "Local session"
-        initials: "SH"
+        initials: "DU"
     }
 
     MeoSettingsRow {
