@@ -1,10 +1,10 @@
 # Verified MeoUI tokens
 
-Shared reference: `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/references/tokens.md`.
+Shared reference: `$MEOUI_DESIGN_SYSTEM_DIR/references/tokens.md` when configured; otherwise use the repository-local generated design-system documentation.
 
 Primary sources:
 
 - `MeoTheme.qml`
 - `runtime/meotokens.h`
 
-Read the shared reference for the extracted token index. Confirm current values in source before introducing new or changed usage.
+Never assume a developer-specific documentation path. Read the shared reference for the extracted token index and confirm current values in source before introducing new or changed usage.
