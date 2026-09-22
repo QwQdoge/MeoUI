@@ -28,7 +28,9 @@ Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
 
 代码绑定、需要随实现一起维护的公共契约放在 `docs/`。计划、审计、决策记录、Agent 工作日志和历史报告一律放在：
 
-`/home/shekong/Documents/Obsidian Vault/MeoArch/Projects/meo-ui/`
+`$MEO_DOCS_ROOT/Projects/meo-ui/`
+
+不要假定具体用户名、Home、checkout 或 Obsidian 路径；未设置 `$MEO_DOCS_ROOT` 时，应由使用者显式提供记录根目录，而不是回退到某台开发机的绝对路径。
 
 该项目记录目录必须有面向读者的 `README.md`，说明当前记录的目的和索引。不要把这些过程性资料复制回仓库。
 
@@ -36,7 +38,9 @@ Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
 
 持久生成物一律放在：
 
-`/home/shekong/Projects/outputs/meo-ui/{build,install,validation,packages,tmp}/`
+`$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/`
+
+如果未设置 `$MEO_OUTPUT_ROOT`，仓库工具使用平台 XDG state 目录作为可移植默认值，而不是开发者专用路径。
 
 `build/` 放配置和编译结果，`install/` 放暂存安装树，`packages/` 放待发布包及校验资料，`validation/` 放可复查验证证据，`tmp/` 仅作可丢弃工作区。`validation/` 的每次运行使用 UTC 标识 `YYYY-MM-DDTHHMMSSZ-short-label`，例如 `2026-08-26T104500Z-showcase/`，并在该运行目录放一个 `README.md`、日志、覆盖清单和截图/其他证据。`tmp/` 可丢弃，不能作为验收证据。
 
@@ -47,7 +51,7 @@ Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
 1. 运行 `tools/verify-showcase-coverage.py`：它对 `qmldir` 中公开 **QML export** 到 Catalog 和直接示例的映射实施 100% 门禁；这个百分比不自动涵盖 token、C++ runtime API、资源或行为质量。
 2. 对全部交付范围刷新 Showcase，并在本次 validation 记录中保留可读的交付清单：说明每个改动的 token、QML、runtime/API、资源和可见行为如何在 Showcase 或相应证据中被呈现；没有可视化演示的项目必须明确说明理由，不能留下未说明缺口。
 3. 构建并实际运行 `MeoShowcaseDemo`，而不是仅通过静态检查或编译。
-4. 将构建/运行日志、QML 覆盖结果、交付清单和可复查的视觉证据保存到 `/home/shekong/Projects/outputs/meo-ui/validation/<UTC-run-id>/`。
+4. 将构建/运行日志、QML 覆盖结果、交付清单和可复查的视觉证据保存到 `$MEO_OUTPUT_ROOT/meo-ui/validation/<UTC-run-id>/`。
 
 编译、离屏检查和截图分别只能证明其实际覆盖的范围；不要把它们表述成未执行的真实交互验收。
 
