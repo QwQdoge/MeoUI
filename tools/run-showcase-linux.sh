@@ -3,7 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 source_dir="${MEO_UI_SOURCE_DIR:-$script_dir/..}"
-output_root="${MEO_OUTPUT_ROOT:-/home/shekong/Projects/outputs}"
+output_root="${MEO_OUTPUT_ROOT:-${XDG_STATE_HOME:-${HOME:-$source_dir}/.local/state}/meoarch/outputs}"
 build_dir="${MEO_UI_BUILD_DIR:-}"
 validation_dir="${MEOUI_VALIDATION_DIR:-}"
 run_id="${MEOUI_RUN_ID:-}"
@@ -24,7 +24,7 @@ usage() {
 Usage: tools/run-showcase-linux.sh [options] [-- <MeoShowcaseDemo arguments>]
 
   --source-dir DIR         MeoUI source directory
-  --output-root DIR        Outputs root (default: $MEO_OUTPUT_ROOT or /home/shekong/Projects/outputs)
+  --output-root DIR        Outputs root (default: $MEO_OUTPUT_ROOT, then XDG state dir)
   --build-dir DIR          Explicit CMake binary directory
   --validation-dir DIR     Explicit evidence directory for this run
   --run-id ID              UTC run identifier: YYYY-MM-DDTHHMMSSZ-short-label
