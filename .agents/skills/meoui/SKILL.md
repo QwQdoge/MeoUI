@@ -13,12 +13,12 @@ Priority order:
 
 1. Explicit user request.
 2. The current project's live MeoUI implementation and its local architecture.
-3. The verified shared reference at `/home/shekong/Documents/Obsidian Vault/Meo UI/design system/`.
+3. The verified shared reference under `$MEOUI_DESIGN_SYSTEM_DIR` when that variable is configured; otherwise use this repository's generated `docs/design-system/` reference.
 4. Existing reference screenshots and accepted visual evidence.
 5. `$impeccable` principles.
 6. Agent preference.
 
-The source code is authoritative if this reference differs from it. Do not copy tokens or components privately, substitute web/CSS patterns for QML, or use hard-coded visual values when a Meo token or component exists.
+Never assume a developer username, home directory, checkout location, or documentation-vault path. The source code is authoritative if the reference differs from it. Do not copy tokens or components privately, substitute web/CSS patterns for QML, or use hard-coded visual values when a Meo token or component exists.
 
 ## Load only what the task needs
 
@@ -27,7 +27,7 @@ The source code is authoritative if this reference differs from it. Do not copy 
 - Imports, ownership, adaptive layout, runtime, or verification: read `references/architecture.md`.
 - A workflow/review task: read `references/workflow.md`.
 
-These files are lightweight project-local pointers to the shared Obsidian reference. Read the linked source files before changing a disputed fact.
+These files are lightweight project-local pointers to the shared design-system reference. Read the linked source files before changing a disputed fact.
 
 ## Required UI workflow
 
