@@ -166,7 +166,7 @@ Control {
     implicitHeight: {
         if (implicitPresentation === "compact") return 120 * themeGlobalScale
         if (implicitPresentation === "dashboard") return 300 * themeGlobalScale
-        if (implicitPresentation === "lockScreen") return 700 * themeGlobalScale
+        if (implicitPresentation === "lockScreen") return 188 * themeGlobalScale
         if (implicitPresentation === "fullScreen") return 620 * themeGlobalScale
         return 236 * themeGlobalScale
     }
@@ -213,18 +213,8 @@ Control {
         clip: true
         color: control.mediaAccentContainer
 
-        Image {
-            anchors.fill: parent
-            source: control.coverSource
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            cache: true
-            visible: control.showArtwork && control.coverSource !== ""
-        }
-
         Rectangle {
             anchors.fill: parent
-            visible: !control.showArtwork || control.coverSource === ""
             color: control.mediaAccentContainer
             MeoIcon {
                 anchors.centerIn: parent
@@ -232,6 +222,25 @@ Control {
                 size: Math.max(24, artworkRoot.artworkSize / control.themeGlobalScale * 0.34)
                 color: control.mediaOnAccent
                 fill: control.isPlaying
+            }
+        }
+
+        Image {
+            id: artworkImage
+            anchors.fill: parent
+            source: control.showArtwork ? control.coverSource : ""
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            opacity: status === Image.Ready ? 1 : 0
+
+            Behavior on opacity {
+                enabled: !control.reducedMotion
+                NumberAnimation {
+                    duration: control.motionMedium
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                }
             }
         }
 
@@ -473,67 +482,20 @@ Control {
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 6 * control.themeGlobalScale
                     MediaMetadata { width: parent.width; showAlbum: false }
-                    Button {
-                        id: outputPill
-                        visible: control.outputDevice !== ""
-                        height: 28 * control.themeGlobalScale
-                        width: Math.min(parent.width, outputRow.implicitWidth + 20 * control.themeGlobalScale)
-                        padding: 0
-                        hoverEnabled: true
-                        activeFocusOnTab: enabled
-                        Accessible.name: qsTr("Output device: %1").arg(control.outputDevice)
-                        onClicked: control.outputRequested()
-
-                        PointHandler {
-                            acceptedButtons: Qt.LeftButton
-                            onActiveChanged: {
-                                outputStateLayer._pointerPressActive = active
-                                if (active) {
-                                    const localPoint = outputStateLayer.mapFromItem(outputPill,
-                                                                                   point.position.x,
-                                                                                   point.position.y)
-                                    outputStateLayer.trigger(localPoint.x, localPoint.y)
-                                } else {
-                                    outputStateLayer.releaseRipple()
-                                }
-                            }
+                    Row {
+                        visible: control.showSourceSwitcher && control.sourceCount > 1
+                        spacing: 2 * control.themeGlobalScale
+                        MediaActionButton {
+                            glyph: "chevron_left"
+                            accessibleName: qsTr("Previous media player")
+                            diameter: 30 * control.themeGlobalScale
+                            onClicked: control.previousSourceRequested()
                         }
-
-                        background: Item {
-                            clip: true
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: height / 2
-                                color: Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
-                            }
-
-                            MeoStateLayer {
-                                id: outputStateLayer
-                                objectName: "meoMediaOutputStateLayer"
-                                anchors.fill: parent
-                                internalPointerTrackingEnabled: false
-                                radius: height / 2
-                                hovered: outputPill.hovered
-                                pressed: outputPill.pressed
-                                focused: outputPill.visualFocus
-                                pressX: outputPill.pressX
-                                pressY: outputPill.pressY
-                                color: control.themeOnSurface
-                            }
-                        }
-                        contentItem: Row {
-                            id: outputRow
-                            anchors.centerIn: parent
-                            spacing: 6 * control.themeGlobalScale
-                            MeoIcon { icon: "cast"; size: 16; color: control.themeOnSurfaceVariant }
-                            Text {
-                                text: control.outputDevice
-                                font.pixelSize: 11 * control.themeGlobalScale
-                                font.weight: Font.Medium
-                                color: control.themeOnSurfaceVariant
-                                elide: Text.ElideRight
-                            }
+                        MediaActionButton {
+                            glyph: "chevron_right"
+                            accessibleName: qsTr("Next media player")
+                            diameter: 30 * control.themeGlobalScale
+                            onClicked: control.nextSourceRequested()
                         }
                     }
                 }
@@ -569,15 +531,18 @@ Control {
                     height: 1
                 }
                 MediaActionButton {
-                    glyph: control.liked ? "favorite" : "favorite_border"
-                    accessibleName: qsTr("Favorite")
-                    active: control.liked
-                    onClicked: control.likedRequested(!control.liked)
+                    glyph: "shuffle"
+                    accessibleName: qsTr("Shuffle")
+                    active: control.shuffleEnabled
+                    enabled: control.canShuffle
+                    onClicked: control.shuffleRequested(!control.shuffleEnabled)
                 }
                 MediaActionButton {
-                    glyph: "more_vert"
-                    accessibleName: qsTr("More")
-                    onClicked: control.outputRequested()
+                    glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+                    accessibleName: qsTr("Repeat")
+                    active: control.repeatMode !== "off"
+                    enabled: control.canRepeat
+                    onClicked: control.cycleRepeat()
                 }
             }
         }
@@ -826,31 +791,23 @@ Control {
     Component {
         id: lockScreenPresentation
         Column {
-            spacing: 18 * control.themeGlobalScale
-            MediaArtwork {
-                artworkSize: Math.min(parent.width, 300 * control.themeGlobalScale)
-                artworkRadius: 32 * control.themeGlobalScale
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
+            spacing: 14 * control.themeGlobalScale
+
             MediaMetadata {
                 width: parent.width
                 centered: true
-                large: true
-                showAlbum: true
+                large: false
+                showAlbum: false
             }
-            Column {
-                width: parent.width
-                spacing: 4 * control.themeGlobalScale
-                SeekSlider { width: parent.width; height: 44 * control.themeGlobalScale; mediaSize: "m" }
-                TimeLabels { width: parent.width }
-            }
+
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 22 * control.themeGlobalScale
+                spacing: 8 * control.themeGlobalScale
+
                 MediaActionButton {
                     glyph: "skip_previous"
                     accessibleName: qsTr("Previous")
-                    diameter: 52 * control.themeGlobalScale
+                    diameter: 48 * control.themeGlobalScale
                     enabled: control.canSkipPrevious
                     onClicked: control.previousRequested()
                 }
@@ -858,20 +815,16 @@ Control {
                     glyph: control.isPlaying ? "pause" : "play_arrow"
                     accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
                     prominent: true
-                    diameter: 72 * control.themeGlobalScale
+                    diameter: 60 * control.themeGlobalScale
                     onClicked: control.togglePlayback()
                 }
                 MediaActionButton {
                     glyph: "skip_next"
                     accessibleName: qsTr("Next")
-                    diameter: 52 * control.themeGlobalScale
+                    diameter: 48 * control.themeGlobalScale
                     enabled: control.canSkipNext
                     onClicked: control.nextRequested()
                 }
-            }
-            SecondaryActions {
-                visible: control.showSecondaryActions
-                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     }
