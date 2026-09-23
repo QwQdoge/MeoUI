@@ -2772,7 +2772,7 @@ Item {
     Component {
         id: mediaSample
         Grid {
-            columns: 3
+            columns: 2
             columnSpacing: MeoTheme.space16
             rowSpacing: MeoTheme.space16
             width: 704 * MeoTheme.globalScale
