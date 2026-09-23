@@ -157,7 +157,7 @@ Control {
         if (resolvedPresentation === "compact") return 12 * themeGlobalScale
         if (resolvedPresentation === "controlCenter") return 20 * themeGlobalScale
         if (resolvedPresentation === "dashboard") return 24 * themeGlobalScale
-        if (resolvedPresentation === "lockScreen") return 24 * themeGlobalScale
+        if (resolvedPresentation === "lockScreen") return 16 * themeGlobalScale
         return 32 * themeGlobalScale
     }
 
@@ -171,9 +171,9 @@ Control {
     implicitHeight: {
         if (implicitPresentation === "compact") return 120 * themeGlobalScale
         if (implicitPresentation === "dashboard") return 300 * themeGlobalScale
-        if (implicitPresentation === "lockScreen") return 196 * themeGlobalScale
+        if (implicitPresentation === "lockScreen") return 224 * themeGlobalScale
         if (implicitPresentation === "fullScreen") return 620 * themeGlobalScale
-        return 236 * themeGlobalScale
+        return 248 * themeGlobalScale
     }
 
     padding: 0
