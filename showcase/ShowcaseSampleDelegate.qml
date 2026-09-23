@@ -2803,7 +2803,10 @@ Item {
                     isPlaying: false
                     duration: 206000
                     position: 78000
-                    liked: true
+                    sourceName: qsTr("Music")
+                    sourceCount: 2
+                    canShuffle: true
+                    shuffleEnabled: true
                     canRepeat: true
                     repeatMode: "all"
                     scale: 0.6
@@ -2859,10 +2862,11 @@ Item {
                     presentation: "lockScreen"
                     title: qsTr("Lock screen")
                     artist: qsTr("Ambient System")
+                    album: qsTr("Private local artwork")
                     isPlaying: true
                     duration: 260000
                     position: 118000
-                    scale: 0.34
+                    scale: 0.62
                     transformOrigin: Item.TopLeft
                 }
             }
@@ -2879,6 +2883,10 @@ Item {
                     position: 126000
                     canShuffle: true
                     canRepeat: true
+                    showFavoriteAction: true
+                    liked: true
+                    showOutputAction: true
+                    outputDevice: qsTr("Desk speakers")
                     volume: 0.42
                     scale: 0.23
                     transformOrigin: Item.TopLeft
