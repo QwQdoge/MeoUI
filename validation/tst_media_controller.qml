@@ -9,6 +9,17 @@ Item {
         name: "MeoMediaController"
         when: windowShown
 
+        function test_defaultsDoNotFabricatePlaybackProgress() {
+            compare(controller.duration, 0)
+            compare(controller.position, 0)
+        }
+
+        function test_dashboardPresentationIsExplicit() {
+            controller.presentation = "dashboard"
+            compare(controller.resolvedPresentation, "dashboard")
+            controller.presentation = "adaptive"
+        }
+
         function test_externalPlaybackStateIsNormalized() {
             controller.duration = 1000
             controller.position = 1500
