@@ -2786,6 +2786,7 @@ Item {
                     title: qsTr("Soul Curve")
                     artist: qsTr("MeoUI Sessions")
                     isPlaying: true
+                    duration: 180000
                     position: 45000
                     scale: 0.65
                     transformOrigin: Item.TopLeft
@@ -2800,7 +2801,10 @@ Item {
                     title: qsTr("Paused track")
                     artist: qsTr("MeoUI Sessions")
                     isPlaying: false
+                    duration: 206000
+                    position: 78000
                     liked: true
+                    canRepeat: true
                     repeatMode: "all"
                     scale: 0.6
                     transformOrigin: Item.TopLeft
@@ -2824,6 +2828,30 @@ Item {
                 }
             }
             Item {
+                width: 464 * MeoTheme.globalScale
+                height: 194 * MeoTheme.globalScale
+                MeoMediaController {
+                    width: 720 * MeoTheme.globalScale
+                    height: 300 * MeoTheme.globalScale
+                    presentation: "dashboard"
+                    title: qsTr("Desktop now playing")
+                    artist: qsTr("MeoUI Sessions")
+                    album: qsTr("Expressive shell")
+                    sourceName: qsTr("Browser")
+                    isPlaying: true
+                    duration: 242000
+                    position: 93000
+                    canSeek: true
+                    canShuffle: true
+                    canRepeat: true
+                    shuffleEnabled: true
+                    repeatMode: "all"
+                    sourceCount: 3
+                    scale: 0.64
+                    transformOrigin: Item.TopLeft
+                }
+            }
+            Item {
                 width: 224 * MeoTheme.globalScale
                 height: 250 * MeoTheme.globalScale
                 MeoMediaController {
@@ -2832,6 +2860,8 @@ Item {
                     title: qsTr("Lock screen")
                     artist: qsTr("Ambient System")
                     isPlaying: true
+                    duration: 260000
+                    position: 118000
                     scale: 0.34
                     transformOrigin: Item.TopLeft
                 }
@@ -2845,6 +2875,10 @@ Item {
                     title: qsTr("Full-screen player")
                     artist: qsTr("MeoUI Orchestra")
                     isPlaying: true
+                    duration: 314000
+                    position: 126000
+                    canShuffle: true
+                    canRepeat: true
                     volume: 0.42
                     scale: 0.23
                     transformOrigin: Item.TopLeft
