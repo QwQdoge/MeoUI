@@ -12,8 +12,8 @@ Control {
     property string sourceName: ""
     property string coverSource: ""
     property bool isPlaying: false
-    property int duration: 180000
-    property int position: 45000
+    property int duration: 0
+    property int position: 0
     property int bufferedPosition: 0
     property real volume: 0.7
 
@@ -22,13 +22,19 @@ Control {
     property bool canSkipPrevious: true
     property bool canSkipNext: true
     property bool canAdjustVolume: true
+    property bool canShuffle: false
+    property bool canRepeat: false
     property bool shuffleEnabled: false
     property string repeatMode: "off" // "off" | "all" | "one"
     property bool liked: false
     property string outputDevice: qsTr("This device")
+    property int sourceCount: 1
+    property bool showSourceSwitcher: true
+    property bool showCaelestiaAtmosphere: true
 
-    // Pixel media presentations
-    property string presentation: "adaptive" // "adaptive" | "compact" | "controlCenter" | "lockScreen" | "fullScreen"
+    // Pixel/desktop media presentations. `dashboard` is the roomy desktop
+    // surface: Caelestia-inspired hierarchy, but built from MeoUI primitives.
+    property string presentation: "adaptive" // "adaptive" | "compact" | "controlCenter" | "dashboard" | "lockScreen" | "fullScreen"
     property bool showArtwork: true
     property bool showVolume: true
     property bool showSecondaryActions: true
@@ -47,6 +53,8 @@ Control {
     signal repeatRequested(string mode)
     signal likedRequested(bool liked)
     signal outputRequested()
+    signal previousSourceRequested()
+    signal nextSourceRequested()
 
     readonly property bool isDarkMode: MeoTheme.isDarkMode
     readonly property real themeGlobalScale: MeoTheme.globalScale
@@ -112,6 +120,8 @@ Control {
         var effectiveHeight = height / Math.max(0.1, themeGlobalScale)
         if (effectiveWidth >= 820 && effectiveHeight >= 480)
             return "fullScreen"
+        if (effectiveWidth >= 600 && effectiveHeight >= 250)
+            return "dashboard"
         if (effectiveWidth < 330)
             return "compact"
         return "controlCenter"
@@ -123,6 +133,8 @@ Control {
             return tintedSurface(themeSurfaceContainerLow, isDarkMode ? 0.10 : 0.06)
         if (resolvedPresentation === "controlCenter")
             return tintedSurface(themeSurfaceContainerHigh, isDarkMode ? 0.16 : 0.10)
+        if (resolvedPresentation === "dashboard")
+            return tintedSurface(themeSurfaceContainerHigh, isDarkMode ? 0.20 : 0.12)
         if (resolvedPresentation === "lockScreen")
             return tintedSurface(themeSurfaceContainer, isDarkMode ? 0.20 : 0.13)
         return tintedSurface(themeSurface, isDarkMode ? 0.22 : 0.15)
@@ -131,6 +143,7 @@ Control {
     readonly property real cornerRadius: {
         if (resolvedPresentation === "compact") return 20 * themeGlobalScale
         if (resolvedPresentation === "controlCenter") return 28 * themeGlobalScale
+        if (resolvedPresentation === "dashboard") return 32 * themeGlobalScale
         if (resolvedPresentation === "lockScreen") return 32 * themeGlobalScale
         return 36 * themeGlobalScale
     }
@@ -138,18 +151,21 @@ Control {
     readonly property real contentPadding: {
         if (resolvedPresentation === "compact") return 12 * themeGlobalScale
         if (resolvedPresentation === "controlCenter") return 20 * themeGlobalScale
+        if (resolvedPresentation === "dashboard") return 24 * themeGlobalScale
         if (resolvedPresentation === "lockScreen") return 24 * themeGlobalScale
         return 32 * themeGlobalScale
     }
 
     implicitWidth: {
         if (implicitPresentation === "compact") return 328 * themeGlobalScale
+        if (implicitPresentation === "dashboard") return 720 * themeGlobalScale
         if (implicitPresentation === "lockScreen") return 440 * themeGlobalScale
         if (implicitPresentation === "fullScreen") return 960 * themeGlobalScale
         return 460 * themeGlobalScale
     }
     implicitHeight: {
         if (implicitPresentation === "compact") return 120 * themeGlobalScale
+        if (implicitPresentation === "dashboard") return 300 * themeGlobalScale
         if (implicitPresentation === "lockScreen") return 700 * themeGlobalScale
         if (implicitPresentation === "fullScreen") return 620 * themeGlobalScale
         return 236 * themeGlobalScale
@@ -180,6 +196,7 @@ Control {
         anchors.margins: control.contentPadding
         sourceComponent: {
             if (control.resolvedPresentation === "compact") return compactPresentation
+            if (control.resolvedPresentation === "dashboard") return dashboardPresentation
             if (control.resolvedPresentation === "lockScreen") return lockScreenPresentation
             if (control.resolvedPresentation === "fullScreen") return fullScreenPresentation
             return controlCenterPresentation
@@ -349,7 +366,7 @@ Control {
         trackStyle: "split"
         wavy: control.useWavyProgress && control.isPlaying
         valueLabelEnabled: false
-        enabled: control.canSeek
+        enabled: control.canSeek && control.duration > 0
         activeTrackColor: control.mediaAccentContainer
         inactiveTrackColor: control.mediaTrackColor
         thumbColor: control.mediaAccentContainer
@@ -381,6 +398,7 @@ Control {
             glyph: "shuffle"
             accessibleName: qsTr("Shuffle")
             active: control.shuffleEnabled
+            enabled: control.canShuffle
             onClicked: {
                 control.shuffleEnabled = !control.shuffleEnabled
                 control.shuffleRequested(control.shuffleEnabled)
@@ -390,6 +408,7 @@ Control {
             glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
             accessibleName: qsTr("Repeat")
             active: control.repeatMode !== "off"
+            enabled: control.canRepeat
             onClicked: control.cycleRepeat()
         }
         MediaActionButton {
@@ -571,6 +590,250 @@ Control {
                     glyph: "more_vert"
                     accessibleName: qsTr("More")
                     onClicked: control.outputRequested()
+                }
+            }
+        }
+    }
+
+    Component {
+        id: dashboardPresentation
+
+        Item {
+            id: dashboardRoot
+            clip: true
+
+            // Caelestia uses a field of drifting M3 shapes behind media. Keep
+            // the same layered feel without depending on Quickshell/CAVA.
+            Item {
+                anchors.fill: parent
+                visible: control.showCaelestiaAtmosphere
+                opacity: control.isPlaying ? 1 : 0.72
+
+                MeoShape {
+                    width: 104 * control.themeGlobalScale
+                    height: width
+                    x: -20 * control.themeGlobalScale
+                    y: -38 * control.themeGlobalScale
+                    type: "SoftBurst"
+                    rotationAngle: 18
+                    color: control.themePrimaryContainer
+                    opacity: control.isDarkMode ? 0.16 : 0.26
+                }
+                MeoShape {
+                    width: 88 * control.themeGlobalScale
+                    height: width
+                    anchors.right: parent.right
+                    anchors.rightMargin: 42 * control.themeGlobalScale
+                    y: 12 * control.themeGlobalScale
+                    type: "Cookie6Sided"
+                    rotationAngle: -12
+                    color: MeoTheme.secondaryContainer
+                    opacity: control.isDarkMode ? 0.13 : 0.22
+                }
+                MeoShape {
+                    width: 76 * control.themeGlobalScale
+                    height: width
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: -12 * control.themeGlobalScale
+                    anchors.bottomMargin: -18 * control.themeGlobalScale
+                    type: "Clover4Leaf"
+                    rotationAngle: 28
+                    color: MeoTheme.tertiaryContainer
+                    opacity: control.isDarkMode ? 0.12 : 0.20
+                }
+
+                Behavior on opacity {
+                    enabled: !control.reducedMotion
+                    NumberAnimation { duration: control.motionPage; easing.type: Easing.OutCubic }
+                }
+            }
+
+            Row {
+                anchors.fill: parent
+                spacing: 28 * control.themeGlobalScale
+
+                Item {
+                    id: dashboardArtworkPane
+                    width: Math.min(parent.height, 214 * control.themeGlobalScale)
+                    height: parent.height
+
+                    Item {
+                        id: artworkHalo
+                        width: Math.min(parent.width, parent.height) - 10 * control.themeGlobalScale
+                        height: width
+                        anchors.centerIn: parent
+
+                        MeoShape {
+                            anchors.fill: parent
+                            type: "Cookie9Sided"
+                            color: control.mediaAccentContainer
+                            opacity: control.isDarkMode ? 0.38 : 0.52
+                            rotationAngle: artworkHalo.rotation
+                        }
+
+                        RotationAnimation on rotation {
+                            from: 0
+                            to: 360
+                            duration: 32000
+                            loops: Animation.Infinite
+                            running: control.isPlaying && !control.reducedMotion
+                        }
+                    }
+
+                    MediaArtwork {
+                        artworkSize: Math.min(parent.width, parent.height) - 42 * control.themeGlobalScale
+                        artworkRadius: 30 * control.themeGlobalScale
+                        anchors.centerIn: parent
+                    }
+                }
+
+                Column {
+                    width: Math.max(0, parent.width - dashboardArtworkPane.width - parent.spacing)
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 12 * control.themeGlobalScale
+
+                    Row {
+                        width: parent.width
+                        height: Math.max(dashboardMetadata.implicitHeight,
+                                         sourceSwitcher.visible ? 40 * control.themeGlobalScale : 0)
+                        spacing: 10 * control.themeGlobalScale
+
+                        MediaMetadata {
+                            id: dashboardMetadata
+                            width: Math.max(0, parent.width - sourceSwitcher.width - parent.spacing)
+                            large: true
+                            showAlbum: true
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        Row {
+                            id: sourceSwitcher
+                            visible: control.showSourceSwitcher && control.sourceCount > 1
+                            width: visible ? implicitWidth : 0
+                            spacing: 2 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            MediaActionButton {
+                                glyph: "chevron_left"
+                                accessibleName: qsTr("Previous media player")
+                                diameter: 36 * control.themeGlobalScale
+                                onClicked: control.previousSourceRequested()
+                            }
+                            MediaActionButton {
+                                glyph: "chevron_right"
+                                accessibleName: qsTr("Next media player")
+                                diameter: 36 * control.themeGlobalScale
+                                onClicked: control.nextSourceRequested()
+                            }
+                        }
+                    }
+
+                    Column {
+                        width: parent.width
+                        visible: control.duration > 0
+                        spacing: 1 * control.themeGlobalScale
+                        SeekSlider {
+                            width: parent.width
+                            height: 42 * control.themeGlobalScale
+                            mediaSize: "m"
+                        }
+                        TimeLabels { width: parent.width }
+                    }
+
+                    Row {
+                        width: parent.width
+                        height: 64 * control.themeGlobalScale
+                        spacing: 10 * control.themeGlobalScale
+
+                        MediaActionButton {
+                            glyph: "shuffle"
+                            accessibleName: qsTr("Shuffle")
+                            active: control.shuffleEnabled
+                            enabled: control.canShuffle
+                            diameter: 46 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: {
+                                control.shuffleEnabled = !control.shuffleEnabled
+                                control.shuffleRequested(control.shuffleEnabled)
+                            }
+                        }
+                        MediaActionButton {
+                            glyph: "skip_previous"
+                            accessibleName: qsTr("Previous")
+                            enabled: control.canSkipPrevious
+                            diameter: 50 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: control.previousRequested()
+                        }
+                        MediaActionButton {
+                            glyph: control.isPlaying ? "pause" : "play_arrow"
+                            accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
+                            prominent: true
+                            diameter: 64 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: control.togglePlayback()
+                        }
+                        MediaActionButton {
+                            glyph: "skip_next"
+                            accessibleName: qsTr("Next")
+                            enabled: control.canSkipNext
+                            diameter: 50 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: control.nextRequested()
+                        }
+                        MediaActionButton {
+                            glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+                            accessibleName: qsTr("Repeat")
+                            active: control.repeatMode !== "off"
+                            enabled: control.canRepeat
+                            diameter: 46 * control.themeGlobalScale
+                            anchors.verticalCenter: parent.verticalCenter
+                            onClicked: control.cycleRepeat()
+                        }
+
+                        Item {
+                            width: Math.max(0, parent.width - 46 * control.themeGlobalScale * 2
+                                            - 50 * control.themeGlobalScale * 2
+                                            - 64 * control.themeGlobalScale
+                                            - parent.spacing * 5
+                                            - sourcePill.width)
+                            height: 1
+                        }
+
+                        Rectangle {
+                            id: sourcePill
+                            visible: control.sourceName !== ""
+                            width: visible ? Math.min(150 * control.themeGlobalScale,
+                                                      sourceText.implicitWidth + 28 * control.themeGlobalScale) : 0
+                            height: 32 * control.themeGlobalScale
+                            radius: height / 2
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g,
+                                           control.themeOnSurface.b, 0.07)
+
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: 6 * control.themeGlobalScale
+                                MeoIcon {
+                                    icon: "music_note"
+                                    size: 16
+                                    color: control.themeOnSurfaceVariant
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                Text {
+                                    id: sourceText
+                                    text: control.sourceName
+                                    font.family: MeoTheme.typefacePlain
+                                    font.pixelSize: 11 * control.themeGlobalScale
+                                    font.weight: Font.Medium
+                                    color: control.themeOnSurfaceVariant
+                                    elide: Text.ElideRight
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
