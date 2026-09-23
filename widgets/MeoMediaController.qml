@@ -27,10 +27,15 @@ Control {
     property bool shuffleEnabled: false
     property string repeatMode: "off" // "off" | "all" | "one"
     property bool liked: false
-    property string outputDevice: qsTr("This device")
+    // Optional host-owned actions. Keep these disabled by default: a generic
+    // media surface must not imply a favorite/output backend that does not exist.
+    property string outputDevice: ""
+    property bool showFavoriteAction: false
+    property bool showOutputAction: false
     property int sourceCount: 1
     property bool showSourceSwitcher: true
     property bool showCaelestiaAtmosphere: true
+    property bool showBackdropArtwork: true
 
     // Pixel/desktop media presentations. `dashboard` is the roomy desktop
     // surface: Caelestia-inspired hierarchy, but built from MeoUI primitives.
@@ -166,7 +171,7 @@ Control {
     implicitHeight: {
         if (implicitPresentation === "compact") return 120 * themeGlobalScale
         if (implicitPresentation === "dashboard") return 300 * themeGlobalScale
-        if (implicitPresentation === "lockScreen") return 700 * themeGlobalScale
+        if (implicitPresentation === "lockScreen") return 196 * themeGlobalScale
         if (implicitPresentation === "fullScreen") return 620 * themeGlobalScale
         return 236 * themeGlobalScale
     }
@@ -214,17 +219,28 @@ Control {
         color: control.mediaAccentContainer
 
         Image {
+            id: artworkImage
             anchors.fill: parent
             source: control.coverSource
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             cache: true
             visible: control.showArtwork && control.coverSource !== ""
+            opacity: status === Image.Ready ? 1 : 0
+
+            Behavior on opacity {
+                enabled: !control.reducedMotion
+                NumberAnimation {
+                    duration: control.motionMedium
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                }
+            }
         }
 
         Rectangle {
             anchors.fill: parent
-            visible: !control.showArtwork || control.coverSource === ""
+            visible: !control.showArtwork || control.coverSource === "" || artworkImage.status !== Image.Ready
             color: control.mediaAccentContainer
             MeoIcon {
                 anchors.centerIn: parent
@@ -392,6 +408,7 @@ Control {
     component SecondaryActions: Row {
         spacing: 16 * control.themeGlobalScale
         MediaActionButton {
+            visible: control.canShuffle
             glyph: "shuffle"
             accessibleName: qsTr("Shuffle")
             active: control.shuffleEnabled
@@ -399,6 +416,7 @@ Control {
             onClicked: control.shuffleRequested(!control.shuffleEnabled)
         }
         MediaActionButton {
+            visible: control.canRepeat
             glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
             accessibleName: qsTr("Repeat")
             active: control.repeatMode !== "off"
@@ -406,14 +424,17 @@ Control {
             onClicked: control.cycleRepeat()
         }
         MediaActionButton {
+            visible: control.showFavoriteAction
             glyph: control.liked ? "favorite" : "favorite_border"
             accessibleName: qsTr("Favorite")
             active: control.liked
             onClicked: control.likedRequested(!control.liked)
         }
         MediaActionButton {
+            visible: control.showOutputAction
             glyph: "devices"
             accessibleName: qsTr("Output device")
+            enabled: control.outputDevice !== ""
             onClicked: control.outputRequested()
         }
     }
@@ -457,127 +478,111 @@ Control {
 
     Component {
         id: controlCenterPresentation
+
         Column {
             spacing: 12 * control.themeGlobalScale
+
             Row {
                 width: parent.width
                 height: 76 * control.themeGlobalScale
                 spacing: 14 * control.themeGlobalScale
+
                 MediaArtwork {
                     artworkSize: 72 * control.themeGlobalScale
                     artworkRadius: 22 * control.themeGlobalScale
                     anchors.verticalCenter: parent.verticalCenter
                 }
-                Column {
-                    width: Math.max(0, parent.width - 72 * control.themeGlobalScale - centerPlay.width - parent.spacing * 2)
+
+                MediaMetadata {
+                    width: Math.max(0, parent.width - 72 * control.themeGlobalScale
+                                    - sourceSwitcher.width - parent.spacing * 2)
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6 * control.themeGlobalScale
-                    MediaMetadata { width: parent.width; showAlbum: false }
-                    Button {
-                        id: outputPill
-                        visible: control.outputDevice !== ""
-                        height: 28 * control.themeGlobalScale
-                        width: Math.min(parent.width, outputRow.implicitWidth + 20 * control.themeGlobalScale)
-                        padding: 0
-                        hoverEnabled: true
-                        activeFocusOnTab: enabled
-                        Accessible.name: qsTr("Output device: %1").arg(control.outputDevice)
-                        onClicked: control.outputRequested()
+                    showAlbum: true
+                }
 
-                        PointHandler {
-                            acceptedButtons: Qt.LeftButton
-                            onActiveChanged: {
-                                outputStateLayer._pointerPressActive = active
-                                if (active) {
-                                    const localPoint = outputStateLayer.mapFromItem(outputPill,
-                                                                                   point.position.x,
-                                                                                   point.position.y)
-                                    outputStateLayer.trigger(localPoint.x, localPoint.y)
-                                } else {
-                                    outputStateLayer.releaseRipple()
-                                }
-                            }
-                        }
+                Row {
+                    id: sourceSwitcher
+                    visible: control.showSourceSwitcher && control.sourceCount > 1
+                    width: visible ? implicitWidth : 0
+                    spacing: 2 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
 
-                        background: Item {
-                            clip: true
-
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: height / 2
-                                color: Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, 0.06)
-                            }
-
-                            MeoStateLayer {
-                                id: outputStateLayer
-                                objectName: "meoMediaOutputStateLayer"
-                                anchors.fill: parent
-                                internalPointerTrackingEnabled: false
-                                radius: height / 2
-                                hovered: outputPill.hovered
-                                pressed: outputPill.pressed
-                                focused: outputPill.visualFocus
-                                pressX: outputPill.pressX
-                                pressY: outputPill.pressY
-                                color: control.themeOnSurface
-                            }
-                        }
-                        contentItem: Row {
-                            id: outputRow
-                            anchors.centerIn: parent
-                            spacing: 6 * control.themeGlobalScale
-                            MeoIcon { icon: "cast"; size: 16; color: control.themeOnSurfaceVariant }
-                            Text {
-                                text: control.outputDevice
-                                font.pixelSize: 11 * control.themeGlobalScale
-                                font.weight: Font.Medium
-                                color: control.themeOnSurfaceVariant
-                                elide: Text.ElideRight
-                            }
-                        }
+                    MediaActionButton {
+                        glyph: "chevron_left"
+                        accessibleName: qsTr("Previous media player")
+                        diameter: 36 * control.themeGlobalScale
+                        onClicked: control.previousSourceRequested()
+                    }
+                    MediaActionButton {
+                        glyph: "chevron_right"
+                        accessibleName: qsTr("Next media player")
+                        diameter: 36 * control.themeGlobalScale
+                        onClicked: control.nextSourceRequested()
                     }
                 }
-                MediaActionButton {
-                    id: centerPlay
-                    anchors.verticalCenter: parent.verticalCenter
-                    glyph: control.isPlaying ? "pause" : "play_arrow"
-                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
-                    prominent: true
-                    diameter: 56 * control.themeGlobalScale
-                    onClicked: control.togglePlayback()
-                }
             }
-            SeekSlider { width: parent.width; height: 40 * control.themeGlobalScale; mediaSize: "s" }
-            Row {
+
+            Column {
                 width: parent.width
-                height: 44 * control.themeGlobalScale
+                visible: control.duration > 0
+                spacing: 1 * control.themeGlobalScale
+
+                SeekSlider {
+                    width: parent.width
+                    height: 36 * control.themeGlobalScale
+                    mediaSize: "s"
+                }
+                TimeLabels { width: parent.width }
+            }
+
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                height: 56 * control.themeGlobalScale
                 spacing: 8 * control.themeGlobalScale
+
+                MediaActionButton {
+                    visible: control.canShuffle
+                    glyph: "shuffle"
+                    accessibleName: qsTr("Shuffle")
+                    active: control.shuffleEnabled
+                    enabled: control.canShuffle
+                    diameter: 44 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: control.shuffleRequested(!control.shuffleEnabled)
+                }
                 MediaActionButton {
                     glyph: "skip_previous"
                     accessibleName: qsTr("Previous")
                     enabled: control.canSkipPrevious
+                    diameter: 48 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
                     onClicked: control.previousRequested()
+                }
+                MediaActionButton {
+                    glyph: control.isPlaying ? "pause" : "play_arrow"
+                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
+                    prominent: true
+                    diameter: 56 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: control.togglePlayback()
                 }
                 MediaActionButton {
                     glyph: "skip_next"
                     accessibleName: qsTr("Next")
                     enabled: control.canSkipNext
+                    diameter: 48 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
                     onClicked: control.nextRequested()
                 }
-                Item {
-                    width: Math.max(0, parent.width - 44 * control.themeGlobalScale * 4 - parent.spacing * 4)
-                    height: 1
-                }
                 MediaActionButton {
-                    glyph: control.liked ? "favorite" : "favorite_border"
-                    accessibleName: qsTr("Favorite")
-                    active: control.liked
-                    onClicked: control.likedRequested(!control.liked)
-                }
-                MediaActionButton {
-                    glyph: "more_vert"
-                    accessibleName: qsTr("More")
-                    onClicked: control.outputRequested()
+                    visible: control.canRepeat
+                    glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
+                    accessibleName: qsTr("Repeat")
+                    active: control.repeatMode !== "off"
+                    enabled: control.canRepeat
+                    diameter: 44 * control.themeGlobalScale
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: control.cycleRepeat()
                 }
             }
         }
@@ -825,53 +830,87 @@ Control {
 
     Component {
         id: lockScreenPresentation
-        Column {
-            spacing: 18 * control.themeGlobalScale
-            MediaArtwork {
-                artworkSize: Math.min(parent.width, 300 * control.themeGlobalScale)
-                artworkRadius: 32 * control.themeGlobalScale
-                anchors.horizontalCenter: parent.horizontalCenter
+
+        Item {
+            id: lockMediaRoot
+            clip: true
+
+            Image {
+                id: lockBackdrop
+                anchors.fill: parent
+                source: control.coverSource
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+                visible: control.showBackdropArtwork && control.showArtwork && control.coverSource !== ""
+                opacity: status === Image.Ready ? (control.isDarkMode ? 0.24 : 0.18) : 0
+
+                Behavior on opacity {
+                    enabled: !control.reducedMotion
+                    NumberAnimation {
+                        duration: control.motionPage
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                    }
+                }
             }
-            MediaMetadata {
-                width: parent.width
-                centered: true
-                large: true
-                showAlbum: true
+
+            Rectangle {
+                anchors.fill: parent
+                color: control.resolvedContainerColor
+                opacity: lockBackdrop.opacity > 0 ? (control.isDarkMode ? 0.72 : 0.80) : 0
             }
+
             Column {
-                width: parent.width
-                spacing: 4 * control.themeGlobalScale
-                SeekSlider { width: parent.width; height: 44 * control.themeGlobalScale; mediaSize: "m" }
-                TimeLabels { width: parent.width }
-            }
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 22 * control.themeGlobalScale
-                MediaActionButton {
-                    glyph: "skip_previous"
-                    accessibleName: qsTr("Previous")
-                    diameter: 52 * control.themeGlobalScale
-                    enabled: control.canSkipPrevious
-                    onClicked: control.previousRequested()
+                anchors.fill: parent
+                spacing: 8 * control.themeGlobalScale
+
+                MediaMetadata {
+                    width: parent.width
+                    centered: true
+                    large: false
+                    showAlbum: true
                 }
-                MediaActionButton {
-                    glyph: control.isPlaying ? "pause" : "play_arrow"
-                    accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
-                    prominent: true
-                    diameter: 72 * control.themeGlobalScale
-                    onClicked: control.togglePlayback()
+
+                Column {
+                    width: parent.width
+                    visible: control.duration > 0
+                    spacing: 0
+
+                    SeekSlider {
+                        width: parent.width
+                        height: 32 * control.themeGlobalScale
+                        mediaSize: "xs"
+                    }
+                    TimeLabels { width: parent.width }
                 }
-                MediaActionButton {
-                    glyph: "skip_next"
-                    accessibleName: qsTr("Next")
-                    diameter: 52 * control.themeGlobalScale
-                    enabled: control.canSkipNext
-                    onClicked: control.nextRequested()
+
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: 10 * control.themeGlobalScale
+
+                    MediaActionButton {
+                        glyph: "skip_previous"
+                        accessibleName: qsTr("Previous")
+                        diameter: 44 * control.themeGlobalScale
+                        enabled: control.canSkipPrevious
+                        onClicked: control.previousRequested()
+                    }
+                    MediaActionButton {
+                        glyph: control.isPlaying ? "pause" : "play_arrow"
+                        accessibleName: control.isPlaying ? qsTr("Pause") : qsTr("Play")
+                        prominent: true
+                        diameter: 56 * control.themeGlobalScale
+                        onClicked: control.togglePlayback()
+                    }
+                    MediaActionButton {
+                        glyph: "skip_next"
+                        accessibleName: qsTr("Next")
+                        diameter: 44 * control.themeGlobalScale
+                        enabled: control.canSkipNext
+                        onClicked: control.nextRequested()
+                    }
                 }
-            }
-            SecondaryActions {
-                visible: control.showSecondaryActions
-                anchors.horizontalCenter: parent.horizontalCenter
             }
         }
     }
