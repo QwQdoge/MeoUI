@@ -370,10 +370,7 @@ Control {
         activeTrackColor: control.mediaAccentContainer
         inactiveTrackColor: control.mediaTrackColor
         thumbColor: control.mediaAccentContainer
-        onMoved: (newValue) => {
-            control.position = Math.round(newValue)
-            control.seekRequested(control.position)
-        }
+        onMoved: (newValue) => control.seekRequested(Math.round(newValue))
     }
 
     component TimeLabels: Item {
@@ -399,10 +396,7 @@ Control {
             accessibleName: qsTr("Shuffle")
             active: control.shuffleEnabled
             enabled: control.canShuffle
-            onClicked: {
-                control.shuffleEnabled = !control.shuffleEnabled
-                control.shuffleRequested(control.shuffleEnabled)
-            }
+            onClicked: control.shuffleRequested(!control.shuffleEnabled)
         }
         MediaActionButton {
             glyph: control.repeatMode === "one" ? "repeat_one" : "repeat"
@@ -415,10 +409,7 @@ Control {
             glyph: control.liked ? "favorite" : "favorite_border"
             accessibleName: qsTr("Favorite")
             active: control.liked
-            onClicked: {
-                control.liked = !control.liked
-                control.likedRequested(control.liked)
-            }
+            onClicked: control.likedRequested(!control.liked)
         }
         MediaActionButton {
             glyph: "devices"
@@ -581,10 +572,7 @@ Control {
                     glyph: control.liked ? "favorite" : "favorite_border"
                     accessibleName: qsTr("Favorite")
                     active: control.liked
-                    onClicked: {
-                        control.liked = !control.liked
-                        control.likedRequested(control.liked)
-                    }
+                    onClicked: control.likedRequested(!control.liked)
                 }
                 MediaActionButton {
                     glyph: "more_vert"
@@ -669,7 +657,6 @@ Control {
                             type: "Cookie9Sided"
                             color: control.mediaAccentContainer
                             opacity: control.isDarkMode ? 0.38 : 0.52
-                            rotationAngle: artworkHalo.rotation
                         }
 
                         RotationAnimation on rotation {
@@ -753,10 +740,7 @@ Control {
                             enabled: control.canShuffle
                             diameter: 46 * control.themeGlobalScale
                             anchors.verticalCenter: parent.verticalCenter
-                            onClicked: {
-                                control.shuffleEnabled = !control.shuffleEnabled
-                                control.shuffleRequested(control.shuffleEnabled)
-                            }
+                            onClicked: control.shuffleRequested(!control.shuffleEnabled)
                         }
                         MediaActionButton {
                             glyph: "skip_previous"
@@ -969,10 +953,7 @@ Control {
                         activeTrackColor: control.mediaAccentContainer
                         inactiveTrackColor: control.mediaTrackColor
                         thumbColor: control.mediaAccentContainer
-                        onMoved: (newValue) => {
-                            control.volume = newValue
-                            control.volumeRequested(newValue)
-                        }
+                        onMoved: (newValue) => control.volumeRequested(newValue)
                     }
                 }
             }
@@ -980,20 +961,17 @@ Control {
     }
 
     function togglePlayback() {
-        if (isPlaying) {
-            isPlaying = false
+        if (isPlaying)
             pauseRequested()
-        } else {
-            isPlaying = true
+        else
             playRequested()
-        }
     }
 
     function cycleRepeat() {
-        if (repeatMode === "off") repeatMode = "all"
-        else if (repeatMode === "all") repeatMode = "one"
-        else repeatMode = "off"
-        repeatRequested(repeatMode)
+        var nextMode = "off"
+        if (repeatMode === "off") nextMode = "all"
+        else if (repeatMode === "all") nextMode = "one"
+        repeatRequested(nextMode)
     }
 
     function formatTime(ms) {
