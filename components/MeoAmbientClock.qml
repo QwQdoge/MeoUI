@@ -21,6 +21,12 @@ Item {
     // qsTr(), while still allowing a platform clock service to supply text.
     readonly property var displayLocale: Qt.locale(Qt.uiLanguage)
 
+    function shortTimeFormatWithoutSeconds() {
+        var format = String(displayLocale.timeFormat(Locale.ShortFormat))
+        format = format.replace(/([:.])?ss?/g, "")
+        return format.replace(/\\s{2,}/g, " ").trim()
+    }
+
     readonly property string effectiveTimeText: timeText !== ""
                                                ? timeText
                                                // Long locale time formats may append a time-zone
@@ -29,8 +35,8 @@ Item {
                                                // locale's preferred short-time convention.
                                                : (showSeconds
                                                   ? Qt.formatTime(dateTime, "HH:mm:ss")
-                                                  : Qt.formatTime(dateTime, displayLocale,
-                                                                  Locale.ShortFormat))
+                                                  : Qt.formatTime(dateTime,
+                                                                  shortTimeFormatWithoutSeconds()))
     readonly property string effectiveDateText: dateText !== ""
                                                ? dateText
                                                : Qt.formatDate(dateTime, displayLocale, Locale.LongFormat)
