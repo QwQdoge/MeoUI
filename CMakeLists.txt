@@ -291,6 +291,8 @@ qt_add_qml_module(meoui_module
 # can load before it creates QML.  The Showcase uses the same catalog so its
 # default language follows the system locale during validation as well.
 set(MEOUI_TRANSLATIONS_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/translations")
+set_source_files_properties(translations/meoui_zh_CN.ts
+    PROPERTIES OUTPUT_LOCATION "${MEOUI_TRANSLATIONS_BUILD_DIR}")
 qt_add_lupdate(
     SOURCE_TARGETS meoui_module
     TS_FILES translations/meoui_zh_CN.ts
@@ -299,7 +301,6 @@ qt_add_lupdate(
 qt_add_lrelease(
     LRELEASE_TARGET meoui_lrelease
     TS_FILES translations/meoui_zh_CN.ts
-    QM_OUTPUT_DIRECTORY "${MEOUI_TRANSLATIONS_BUILD_DIR}"
     QM_FILES_OUTPUT_VARIABLE MEOUI_TRANSLATION_QM_FILES
 )
 
