@@ -50,3 +50,7 @@ Thumbs.db
 /1200dp
 /showcase/coverage.json
 /artifacts/
+
+# Python tooling cache
+__pycache__/
+*.py[cod]
