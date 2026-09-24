@@ -2853,7 +2853,7 @@ Item {
             }
             Item {
                 width: 224 * MeoTheme.globalScale
-                height: 250 * MeoTheme.globalScale
+                height: 112 * MeoTheme.globalScale
                 MeoMediaController {
                     width: 440 * MeoTheme.globalScale
                     presentation: "lockScreen"
@@ -2862,7 +2862,7 @@ Item {
                     isPlaying: true
                     duration: 260000
                     position: 118000
-                    scale: 0.34
+                    scale: 0.5
                     transformOrigin: Item.TopLeft
                 }
             }

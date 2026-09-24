@@ -20,6 +20,13 @@ Item {
             controller.presentation = "adaptive"
         }
 
+        function test_lockScreenPresentationIsCompact() {
+            controller.presentation = "lockScreen"
+            compare(controller.resolvedPresentation, "lockScreen")
+            verify(controller.implicitHeight <= 200 * controller.themeGlobalScale)
+            controller.presentation = "adaptive"
+        }
+
         function test_externalPlaybackStateIsNormalized() {
             controller.duration = 1000
             controller.position = 1500
