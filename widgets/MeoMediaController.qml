@@ -95,12 +95,16 @@ Control {
             bufferedPosition = duration
     }
     onPositionChanged: {
-        var normalized = Math.max(0, Math.min(duration, position))
+        var normalized = duration > 0
+                         ? Math.max(0, Math.min(duration, position))
+                         : Math.max(0, position)
         if (position !== normalized)
             position = normalized
     }
     onBufferedPositionChanged: {
-        var normalized = Math.max(0, Math.min(duration, bufferedPosition))
+        var normalized = duration > 0
+                         ? Math.max(0, Math.min(duration, bufferedPosition))
+                         : Math.max(0, bufferedPosition)
         if (bufferedPosition !== normalized)
             bufferedPosition = normalized
     }
@@ -638,7 +642,11 @@ Control {
 
                 Behavior on opacity {
                     enabled: !control.reducedMotion
-                    NumberAnimation { duration: control.motionPage; easing.type: Easing.OutCubic }
+                    NumberAnimation {
+                        duration: control.motionPage
+                        easing.type: Easing.BezierSpline
+                        easing.bezierCurve: MeoTheme.motionEasingStandard
+                    }
                 }
             }
 
@@ -667,9 +675,11 @@ Control {
                         RotationAnimation on rotation {
                             from: 0
                             to: 360
-                            duration: 32000
+                            duration: MeoTheme.motionDurationLoadingRotation * 7
                             loops: Animation.Infinite
                             running: control.isPlaying && !control.reducedMotion
+                            easing.type: Easing.BezierSpline
+                            easing.bezierCurve: MeoTheme.motionEasingLinear
                         }
                     }
 
