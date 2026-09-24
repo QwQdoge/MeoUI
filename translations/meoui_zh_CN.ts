@@ -6558,8 +6558,8 @@
     </message>
     <message>
         <location filename="../showcase/ShowcaseSampleDelegate.qml" line="3050"/>
-        <source>Local session · shekong-laptop</source>
-        <translation>本地会话 · shekong-laptop</translation>
+        <source>Local session · meo-laptop</source>
+        <translation>本地会话 · meo-laptop</translation>
     </message>
     <message>
         <location filename="../showcase/ShowcaseSampleDelegate.qml" line="3051"/>
