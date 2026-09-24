@@ -3081,7 +3081,7 @@ Item {
         Grid {
             columns: 2
             spacing: MeoTheme.space12
-            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("1. Settings account"); subtitle: qsTr("Local session · shekong-laptop"); initials: "SH" }
+            MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("1. Settings account"); subtitle: qsTr("Local session · meo-laptop"); initials: "SH" }
             MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("2. Initials fallback"); subtitle: qsTr("No avatar asset required"); initials: "IF"; avatarColor: MeoTheme.tertiaryContainer; avatarContentColor: MeoTheme.contentOnTertiaryContainer }
             MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("3. Read-only identity"); subtitle: qsTr("No navigation affordance"); initials: "RO"; showChevron: false; interactive: false }
             MeoSettingsAccountCard { width: 360 * MeoTheme.globalScale; title: qsTr("4. A deliberately long account name that elides"); subtitle: qsTr("A deliberately long local session descriptor that also elides"); initials: "LT" }
