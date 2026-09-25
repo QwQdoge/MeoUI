@@ -64,6 +64,7 @@ Item {
             compare(popup.entranceScale, MeoMotion.popupClosedScale("pixel"))
             compare(popup.spatialRevealScale, popup.scale)
             compare(popup.transformOrigin, Item.TopLeft)
+            verify(popup.entranceOffset > 0)
 
             popup.placement = "above"
             compare(popup.transformOrigin, Item.BottomLeft)
