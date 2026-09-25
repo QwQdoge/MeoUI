@@ -53,8 +53,6 @@ Popup {
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
     readonly property bool isSideSheet: presentation === MeoMotionPopup.SideSheet
     readonly property bool isFullScreen: presentation === MeoMotionPopup.FullScreen
-    readonly property bool expressiveSpatialEntrance: !MeoTheme.reduceMotion
-                                                       && MeoMotion.usesSpatialOvershoot(motionProfile)
     // Effects and travel stay on semantic Bezier tokens; the scale reveal
     // itself is an interruptible analytic spring shared with other MeoUI
     // transient surfaces.
