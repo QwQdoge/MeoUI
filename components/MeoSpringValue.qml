@@ -71,8 +71,11 @@ QtObject {
             retarget()
     }
     onEnabledChanged: {
+        // Disabling motion is a sampled-value policy change, not an
+        // imperative retarget. Preserve declarative targetValue bindings so
+        // the same spring can resume reacting when motion is enabled again.
         if (!enabled)
-            snapTo(targetValue)
+            snapValue(targetValue)
     }
 
     property Timer driver: Timer {
