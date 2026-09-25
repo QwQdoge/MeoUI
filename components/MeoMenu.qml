@@ -247,6 +247,14 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
+    MeoRevealMotion {
+        id: menuReveal
+        revealed: control.opened
+        motionProfile: control.motionProfile
+        hiddenScale: 0.975
+        hiddenOffsetY: -6 * control.themeGlobalScale
+    }
+
     background: Rectangle {
         color: control.vibrant ? control.themeTertiaryContainer
                                : control.isContextMenu ? MeoTheme.surfaceContainer
@@ -259,6 +267,13 @@ MeoMotionPopup {
     contentItem: Column {
         id: contentColumn
         width: control.availableWidth
+        opacity: menuReveal.opacityValue
+        scale: menuReveal.scaleValue
+        transformOrigin: Item.Top
+        transform: Translate {
+            x: menuReveal.offsetX
+            y: menuReveal.offsetY
+        }
         spacing: control.itemSpacing
         topPadding: control.menuPadding
         bottomPadding: control.menuPadding
@@ -370,9 +385,27 @@ MeoMotionPopup {
                         Keys.onRightPressed: if (hasSubmenu) control.openSubmenu(index, modelData, optionRow)
                         Keys.onLeftPressed: if (control.parentMenu) control.close()
 
+                        MeoInteractionMotion {
+                            id: rowMotion
+                            pressed: itemPointer.pressed
+                            hovered: itemPointer.containsMouse
+                            active: optionRow.selected
+                            motionProfile: control.motionProfile
+                            pressedScale: 0.975
+                            hoverScale: control.motionProfile === "calm" ? 1.0 : 1.006
+                            hoverOffsetY: 0
+                            pressedOffsetY: 0.5 * control.themeGlobalScale
+                        }
+
                         Rectangle {
                             id: rowSurface
                             anchors.fill: parent
+                            scale: rowMotion.scaleValue
+                            transformOrigin: Item.Center
+                            transform: Translate {
+                                x: rowMotion.offsetX
+                                y: rowMotion.offsetY
+                            }
                             anchors.leftMargin: control.menuHorizontalInset
                             anchors.rightMargin: control.menuHorizontalInset
                             radius: optionRow.selected ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
@@ -416,6 +449,12 @@ MeoMotionPopup {
 
                         Row {
                             anchors.fill: rowSurface
+                            scale: rowMotion.scaleValue
+                            transformOrigin: Item.Center
+                            transform: Translate {
+                                x: rowMotion.offsetX
+                                y: rowMotion.offsetY
+                            }
                             anchors.leftMargin: 12 * control.themeGlobalScale
                             anchors.rightMargin: 12 * control.themeGlobalScale
                             spacing: 12 * control.themeGlobalScale
@@ -566,6 +605,15 @@ MeoMotionPopup {
             return true
         }
 
+        MeoRevealMotion {
+            id: submenuReveal
+            revealed: submenu.opened
+            motionProfile: control.motionProfile
+            hiddenScale: 0.975
+            hiddenOffsetX: (submenu.placementMirrored ? 1 : -1) * 6 * control.themeGlobalScale
+            hiddenOffsetY: 0
+        }
+
         onAboutToShow: positionForAnchor()
         onOpened: Qt.callLater(function() {
             // A delegate column can report its final implicit height on the
@@ -593,6 +641,13 @@ MeoMotionPopup {
         contentItem: Column {
             id: submenuColumn
             width: submenu.availableWidth
+            opacity: submenuReveal.opacityValue
+            scale: submenuReveal.scaleValue
+            transformOrigin: submenu.placementMirrored ? Item.Right : Item.Left
+            transform: Translate {
+                x: submenuReveal.offsetX
+                y: submenuReveal.offsetY
+            }
             topPadding: control.menuPadding
             bottomPadding: control.menuPadding
             spacing: control.itemSpacing
@@ -646,6 +701,18 @@ MeoMotionPopup {
                     Keys.onSpacePressed: submenu.activateItem(index, submenuOptionRow)
                     Keys.onLeftPressed: submenu.close()
 
+                    MeoInteractionMotion {
+                        id: submenuRowMotion
+                        pressed: submenuPointer.pressed
+                        hovered: submenuPointer.containsMouse
+                        active: submenuOptionRow.selected
+                        motionProfile: control.motionProfile
+                        pressedScale: 0.975
+                        hoverScale: control.motionProfile === "calm" ? 1.0 : 1.006
+                        hoverOffsetY: 0
+                        pressedOffsetY: 0.5 * control.themeGlobalScale
+                    }
+
                     MeoDivider {
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -673,6 +740,12 @@ MeoMotionPopup {
                     Rectangle {
                         id: submenuRowSurface
                         anchors.fill: parent
+                        scale: submenuRowMotion.scaleValue
+                        transformOrigin: Item.Center
+                        transform: Translate {
+                            x: submenuRowMotion.offsetX
+                            y: submenuRowMotion.offsetY
+                        }
                         anchors.leftMargin: control.menuHorizontalInset
                         anchors.rightMargin: control.menuHorizontalInset
                         radius: control.itemIsSelected(modelData) ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
@@ -707,6 +780,12 @@ MeoMotionPopup {
 
                     Row {
                         anchors.fill: submenuRowSurface
+                        scale: submenuRowMotion.scaleValue
+                        transformOrigin: Item.Center
+                        transform: Translate {
+                            x: submenuRowMotion.offsetX
+                            y: submenuRowMotion.offsetY
+                        }
                         anchors.leftMargin: 12 * control.themeGlobalScale
                         anchors.rightMargin: 12 * control.themeGlobalScale
                         spacing: 12 * control.themeGlobalScale
