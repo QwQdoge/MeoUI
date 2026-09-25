@@ -76,6 +76,16 @@ Item {
             verify(menu.menuItemAt(0) !== null)
         }
 
+        function test_menuUsesSharedMotionSurface() {
+            compare(menu.background.objectName, "meoMenuBackgroundSurface")
+            compare(menu.background.showOutline, false)
+            compare(menu.background.elevation, 2)
+            menu.open()
+            tryCompare(menu, "opened", true, menu.enterDuration + 250)
+            verify(menu.submenuSurface !== null)
+            menu.close()
+        }
+
         function test_selectedAndSubmenuRowContracts() {
             menu.open()
             wait(220)
