@@ -12,6 +12,7 @@ Item {
     height: 0
 
     property bool active: true
+    property bool motionEnabled: true
     property string motionProfile: "pixel"
     property string speed: "default"
     property real openScale: 1.0
@@ -27,6 +28,10 @@ Item {
     property real openOffsetY: openOffset
     property real closedOffsetY: closedOffset
 
+    readonly property bool spatialMotionAllowed: motionEnabled
+                                                  && !MeoTheme.reduceMotion
+                                                  && MeoTheme.effectiveMotionScale > 0
+    readonly property bool resolvedOpenState: active || !spatialMotionAllowed
     readonly property real resolvedScale: scaleSpring.value
     readonly property real resolvedOffsetX: xSpring.value
     readonly property real resolvedOffsetY: ySpring.value
@@ -35,30 +40,33 @@ Item {
 
     MeoSpringValue {
         id: scaleSpring
-        value: control.active || MeoTheme.reduceMotion ? control.openScale : control.closedScale
-        targetValue: control.active || MeoTheme.reduceMotion ? control.openScale : control.closedScale
+        value: control.resolvedOpenState ? control.openScale : control.closedScale
+        targetValue: control.resolvedOpenState ? control.openScale : control.closedScale
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
 
     MeoSpringValue {
         id: xSpring
-        value: control.active || MeoTheme.reduceMotion ? control.openOffsetX : control.closedOffsetX
-        targetValue: control.active || MeoTheme.reduceMotion ? control.openOffsetX : control.closedOffsetX
+        value: control.resolvedOpenState ? control.openOffsetX : control.closedOffsetX
+        targetValue: control.resolvedOpenState ? control.openOffsetX : control.closedOffsetX
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
 
     MeoSpringValue {
         id: ySpring
-        value: control.active || MeoTheme.reduceMotion ? control.openOffsetY : control.closedOffsetY
-        targetValue: control.active || MeoTheme.reduceMotion ? control.openOffsetY : control.closedOffsetY
+        value: control.resolvedOpenState ? control.openOffsetY : control.closedOffsetY
+        targetValue: control.resolvedOpenState ? control.openOffsetY : control.closedOffsetY
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
 
     function snapToActiveState() {
-        const isOpen = active || MeoTheme.reduceMotion
+        const isOpen = resolvedOpenState
         scaleSpring.snapTo(isOpen ? openScale : closedScale)
         xSpring.snapTo(isOpen ? openOffsetX : closedOffsetX)
         ySpring.snapTo(isOpen ? openOffsetY : closedOffsetY)
