@@ -142,6 +142,8 @@ Item {
         if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
+        if (name === "MeoInteractionMotion") return interactionMotionSample
+        if (name === "MeoRevealMotion") return revealMotionSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoHoldToConfirm") return holdToConfirmSample
@@ -3791,6 +3793,76 @@ Item {
             }
         }
     }
+    Component {
+        id: interactionMotionSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 120 * MeoTheme.globalScale
+
+            MeoInteractionMotion {
+                id: interactionMotion
+                pressed: interactionButton.down
+                hovered: interactionButton.hovered
+                active: interactionButton.checked
+            }
+
+            MeoButton {
+                id: interactionButton
+                anchors.centerIn: parent
+                text: qsTr("Hover and press")
+                checkable: true
+                scale: interactionMotion.scaleValue
+                transform: Translate {
+                    x: interactionMotion.offsetX
+                    y: interactionMotion.offsetY
+                }
+            }
+        }
+    }
+    Component {
+        id: revealMotionSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 156 * MeoTheme.globalScale
+            property bool open: false
+
+            MeoButton {
+                id: revealTrigger
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                text: parent.open ? qsTr("Hide transient") : qsTr("Reveal transient")
+                onClicked: parent.open = !parent.open
+            }
+
+            MeoRevealMotion {
+                id: revealMotion
+                revealed: parent.open
+                hiddenOffsetY: -12 * MeoTheme.globalScale
+            }
+
+            MeoCard {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottom: parent.bottom
+                width: 300 * MeoTheme.globalScale
+                height: 82 * MeoTheme.globalScale
+                type: "filled"
+                opacity: revealMotion.opacityValue
+                scale: revealMotion.scaleValue
+                transform: Translate {
+                    x: revealMotion.offsetX
+                    y: revealMotion.offsetY
+                }
+
+                MeoText {
+                    anchors.centerIn: parent
+                    text: qsTr("Reusable spring reveal")
+                    typeRole: "label"
+                    typeSize: "large"
+                }
+            }
+        }
+    }
+
     Component {
         id: launchSurfaceSample
         MeoLaunchSurface {
