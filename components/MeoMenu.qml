@@ -51,6 +51,14 @@ MeoMotionPopup {
     readonly property real menuWidth: Math.max(minimumMenuWidth,
                                                Math.min(maximumMenuWidth, preferredMenuWidth))
     readonly property bool submenuOpened: submenu.opened
+
+    // Keep elevation, outline, and popup motion owned by MeoMotionPopup.
+    // Menus only select semantic colour/radius instead of replacing the
+    // reusable transient-surface background with a local rectangle.
+    surfaceColor: control.vibrant ? control.themeTertiaryContainer
+                                  : control.isContextMenu ? MeoTheme.surfaceContainer
+                                                          : control.themeSurfaceContainerLow
+    surfaceRadius: control.surfaceCornerRadius
     // Read-only inspection handle for integration tests and hosts that need
     // to observe nested transient state without reaching into QML ids.
     readonly property var submenuSurface: submenu
@@ -245,15 +253,6 @@ MeoMotionPopup {
     onClosed: {
         submenuTimer.stop()
         closeSubmenu()
-    }
-
-    background: Rectangle {
-        color: control.vibrant ? control.themeTertiaryContainer
-                               : control.isContextMenu ? MeoTheme.surfaceContainer
-                                                       : control.themeSurfaceContainerLow
-        radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
     }
 
     contentItem: Column {
@@ -510,6 +509,9 @@ MeoMotionPopup {
         property bool placementMirrored: false
         property int currentIndex: -1
         z: control.z + 1
+        surfaceColor: submenu.vibrant ? control.themeTertiaryContainer
+                                      : control.themeSurfaceContainerLow
+        surfaceRadius: MeoTheme.shapeLarge
         width: control.menuWidth
         implicitWidth: control.menuWidth
         implicitHeight: control.menuContentHeight(model)
@@ -581,13 +583,6 @@ MeoMotionPopup {
             interval: 16
             repeat: false
             onTriggered: submenu.positionForAnchor()
-        }
-
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-            radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
         }
 
         contentItem: Column {
