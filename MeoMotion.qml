@@ -77,8 +77,33 @@ QtObject {
         return suffix === "fast" ? 300 : suffix === "slow" ? 550 : 400
     }
 
+    function hoverScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 1.0
+             : normalizedProfile(profile) === "playful" ? 1.025 : 1.015
+    }
+
+    function activeScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 1.0
+             : normalizedProfile(profile) === "playful" ? 1.018 : 1.01
+    }
+
     function pressScale(profile) {
         return normalizedProfile(profile) === "calm" ? 0.98
+             : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
+    }
+
+    function hoverLift(profile) {
+        return normalizedProfile(profile) === "calm" ? 0
+             : normalizedProfile(profile) === "playful" ? 2.5 : 1.25
+    }
+
+    function activeLift(profile) {
+        return normalizedProfile(profile) === "calm" ? 0
+             : normalizedProfile(profile) === "playful" ? 1.5 : 0.75
+    }
+
+    function popupScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 0.985
              : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
     }
 
