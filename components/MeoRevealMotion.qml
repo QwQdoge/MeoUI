@@ -67,8 +67,8 @@ Item {
 
     function snapToActiveState() {
         const isOpen = resolvedOpenState
-        scaleSpring.snapTo(isOpen ? openScale : closedScale)
-        xSpring.snapTo(isOpen ? openOffsetX : closedOffsetX)
-        ySpring.snapTo(isOpen ? openOffsetY : closedOffsetY)
+        scaleSpring.snapValue(isOpen ? openScale : closedScale)
+        xSpring.snapValue(isOpen ? openOffsetX : closedOffsetX)
+        ySpring.snapValue(isOpen ? openOffsetY : closedOffsetY)
     }
 }
