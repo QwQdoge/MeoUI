@@ -48,15 +48,24 @@ Popup {
     property bool _openRequested: false
     property bool _retainingExitContent: false
     property bool _spatialRevealActive: false
+    property string _resolvedPlacement: "below"
+    property real _spatialRestX: 0
+    property real _spatialRestY: 0
+    property bool _spatialPositioning: false
+    property bool _applyingSpatialPosition: false
 
     readonly property bool isMenu: presentation === MeoMotionPopup.Menu
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
     readonly property bool isSideSheet: presentation === MeoMotionPopup.SideSheet
     readonly property bool isFullScreen: presentation === MeoMotionPopup.FullScreen
+    readonly property string effectivePlacement: placement === "auto"
+                                                ? _resolvedPlacement : placement
     // Effects and travel stay on semantic Bezier tokens; the scale reveal
     // itself is an interruptible analytic spring shared with other MeoUI
     // transient surfaces.
     readonly property real spatialRevealScale: popupReveal.resolvedScale
+    readonly property real spatialRevealOffsetX: popupReveal.resolvedOffsetX
+    readonly property real spatialRevealOffsetY: popupReveal.resolvedOffsetY
     readonly property int enterDuration: isMenu ? MeoTheme.motionDurationMenuEnter
                                                  : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetEnter
                                                                                : MeoTheme.motionDurationDialogEnter
@@ -139,6 +148,8 @@ Popup {
                 direction = right >= left ? "right" : "left"
         }
 
+        _resolvedPlacement = direction
+
         if (direction === "above") {
             x = point.x
             y = point.y - popupHeight - placementGap
@@ -164,6 +175,39 @@ Popup {
         y = Math.max(viewportMargin, Math.min(y, maximumY))
     }
 
+    // Qt Quick Controls Popup exposes x/y/scale but is not an Item, so it has
+    // no transform list. Keep a stable resting geometry and project the shared
+    // reveal's X/Y spring values onto Popup coordinates instead. This preserves
+    // the public Popup contract while making the same reveal primitive usable
+    // by ordinary Items, shell surfaces, and native Controls popups.
+    function captureSpatialRestPosition() {
+        if (isBottomSheet || isSideSheet || isFullScreen) {
+            _spatialPositioning = false
+            return
+        }
+        _spatialRestX = x
+        _spatialRestY = y
+        _spatialPositioning = true
+    }
+
+    function applySpatialPosition() {
+        if (!_spatialPositioning)
+            return
+        _applyingSpatialPosition = true
+        x = _spatialRestX + popupReveal.resolvedOffsetX
+        y = _spatialRestY + popupReveal.resolvedOffsetY
+        _applyingSpatialPosition = false
+    }
+
+    onXChanged: {
+        if (_spatialPositioning && !_applyingSpatialPosition)
+            _spatialRestX = x - popupReveal.resolvedOffsetX
+    }
+    onYChanged: {
+        if (_spatialPositioning && !_applyingSpatialPosition)
+            _spatialRestY = y - popupReveal.resolvedOffsetY
+    }
+
     MeoRevealMotion {
         id: popupReveal
         active: control._spatialRevealActive
@@ -173,19 +217,21 @@ Popup {
         // Anchored transient surfaces grow from the trigger-facing edge.
         // Geometry stays fixed; the generic reveal transform supplies the
         // interruptible spatial travel and overshoot.
-        closedOffsetX: control.isMenu && control.placement === "left" ? control.entranceOffset
-                     : control.isMenu && control.placement === "right" ? -control.entranceOffset
+        closedOffsetX: control.isMenu && control.effectivePlacement === "left" ? control.entranceOffset
+                     : control.isMenu && control.effectivePlacement === "right" ? -control.entranceOffset
                      : 0
-        closedOffsetY: control.isMenu && control.placement === "above" ? control.entranceOffset
-                     : control.isMenu && control.placement === "below" ? -control.entranceOffset
+        closedOffsetY: control.isMenu && control.effectivePlacement === "above" ? control.entranceOffset
+                     : control.isMenu && control.effectivePlacement === "below" ? -control.entranceOffset
                      : (!control.isBottomSheet && !control.isSideSheet && !control.isFullScreen
                         ? -control.entranceOffset : 0)
     }
 
     scale: popupReveal.resolvedScale
-    transform: Translate {
-        x: popupReveal.resolvedOffsetX
-        y: popupReveal.resolvedOffsetY
+
+    Connections {
+        target: popupReveal
+        function onResolvedOffsetXChanged() { control.applySpatialPosition() }
+        function onResolvedOffsetYChanged() { control.applySpatialPosition() }
     }
 
     modal: !isMenu
@@ -193,14 +239,13 @@ Popup {
     closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
     transformOrigin: isSideSheet ? Item.Right
                                  : isBottomSheet ? Item.Bottom
-                                 : isMenu && placement === "above" ? Item.BottomLeft
-                                 : isMenu && placement === "left" ? Item.Right
-                                 : isMenu && placement === "right" ? Item.Left
+                                 : isMenu && effectivePlacement === "above" ? Item.BottomLeft
+                                 : isMenu && effectivePlacement === "left" ? Item.Right
+                                 : isMenu && effectivePlacement === "right" ? Item.Left
                                  : isMenu ? Item.TopLeft : Item.Center
 
     onAboutToShow: {
         _spatialRevealActive = false
-        popupReveal.snapToActiveState()
         if (prewarmBeforeOpen) {
             const measuredWidth = measuredImplicitWidth
             const measuredHeight = measuredImplicitHeight
@@ -209,6 +254,9 @@ Popup {
         }
         positionForAnchor()
         clampToViewport()
+        captureSpatialRestPosition()
+        popupReveal.snapToActiveState()
+        applySpatialPosition()
         Qt.callLater(function() {
             if (control.visible || control.opened)
                 control._spatialRevealActive = true
@@ -229,6 +277,13 @@ Popup {
     }
     onClosed: {
         _retainingExitContent = false
+        if (_spatialPositioning) {
+            _applyingSpatialPosition = true
+            x = _spatialRestX
+            y = _spatialRestY
+            _applyingSpatialPosition = false
+            _spatialPositioning = false
+        }
         popupReveal.snapToActiveState()
         if (focusReturnItem && focusReturnItem.visible && focusReturnItem.enabled)
             focusReturnItem.forceActiveFocus(Qt.PopupFocusReason)
@@ -298,21 +353,23 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
+                target: control.isSideSheet ? control : null
                 property: "x"
-                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
-                to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
+                from: control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
+                to: control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
+                target: control.isBottomSheet ? control : null
                 property: "y"
-                // Menus/dialogs keep stable popup geometry; their motion is
-                // supplied by MeoRevealMotion. Bottom sheets still travel by
-                // geometry because their final edge is viewport-relative.
-                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
+                // Menus/dialogs project the shared reveal spring onto x/y.
+                // Bottom sheets still travel by geometry because their final
+                // edge is viewport-relative.
+                from: control.parent && !MeoTheme.reduceMotion
                       ? control.parent.height : control.y
-                to: control.isBottomSheet && control.parent
+                to: control.parent
                     ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline
@@ -331,16 +388,18 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
+                target: control.isSideSheet ? control : null
                 property: "x"
                 from: control.x
-                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
+                to: control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
                 duration: control.exitDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
+                target: control.isBottomSheet ? control : null
                 property: "y"
                 from: control.y
-                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
+                to: control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
                 duration: control.exitDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
