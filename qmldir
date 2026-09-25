@@ -56,6 +56,7 @@ MeoMotionPopup 1.0 components/MeoMotionPopup.qml
 MeoMotionSurface 1.0 components/MeoMotionSurface.qml
 MeoSpringValue 1.0 components/MeoSpringValue.qml
 MeoInteractionMotion 1.0 components/MeoInteractionMotion.qml
+MeoRevealMotion 1.0 components/MeoRevealMotion.qml
 MeoLaunchSurface 1.0 components/MeoLaunchSurface.qml
 MeoMonthCalendar 1.0 components/MeoMonthCalendar.qml
 MeoNavigationDrawerItem 1.0 components/MeoNavigationDrawerItem.qml
