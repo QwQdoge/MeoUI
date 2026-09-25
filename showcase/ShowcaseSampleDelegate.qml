@@ -142,6 +142,7 @@ Item {
         if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
+        if (name === "MeoInteractionMotion") return interactionMotionSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoHoldToConfirm") return holdToConfirmSample
@@ -3788,6 +3789,53 @@ Item {
                 text: parent.pressed ? qsTr("Release") : qsTr("Retarget spring")
                 scale: sampleSpring.value
                 onPressedChanged: parent.pressed = pressed
+            }
+        }
+    }
+    Component {
+        id: interactionMotionSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 120 * MeoTheme.globalScale
+
+            QQC2.AbstractButton {
+                id: interactionTarget
+                anchors.centerIn: parent
+                width: 220 * MeoTheme.globalScale
+                height: 52 * MeoTheme.globalScale
+                hoverEnabled: true
+
+                MeoInteractionMotion {
+                    id: sampleInteraction
+                    hovered: interactionTarget.hovered
+                    pressed: interactionTarget.down
+                }
+
+                transform: [
+                    Scale {
+                        origin.x: interactionTarget.width / 2
+                        origin.y: interactionTarget.height / 2
+                        xScale: sampleInteraction.scale
+                        yScale: sampleInteraction.scale
+                    },
+                    Translate { y: sampleInteraction.offsetY }
+                ]
+
+                background: MeoShape {
+                    type: "round"
+                    radius: MeoTheme.shapeLarge
+                    color: interactionTarget.hovered
+                           ? MeoTheme.surfaceContainerHighest
+                           : MeoTheme.surfaceContainer
+                }
+                contentItem: MeoText {
+                    text: qsTr("Hover and press")
+                    typeRole: "label"
+                    typeSize: "large"
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: MeoTheme.contentOnSurface
+                }
             }
         }
     }
