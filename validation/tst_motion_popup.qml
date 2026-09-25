@@ -63,6 +63,19 @@ Item {
             tryCompare(popup, "contentActive", false)
         }
 
+        function test_anchorAwareOriginAndSpringScaleContract() {
+            popup.placement = "below"
+            popup.openFrom(anchor)
+            tryCompare(popup, "opened", true)
+            compare(popup.transformOrigin, Item.TopLeft)
+            compare(popup.entranceScale, MeoMotion.popupScale(popup.motionProfile))
+            verify(popup.scale > 0)
+            popup.close()
+            tryCompare(popup, "opened", false)
+            compare(popup.scale, 1)
+            popup.placement = "auto"
+        }
+
         function test_childTransientSuppressesParentOutsideDismissal() {
             popup.openFrom(anchor)
             tryCompare(popup, "opened", true)
