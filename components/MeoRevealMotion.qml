@@ -2,8 +2,9 @@ import QtQuick
 import MeoUI
 
 // Reusable interruptible reveal state for transient surfaces and compact
-// panes. Hosts own geometry and simply project resolvedScale/resolvedOffset
-// onto their transform. This keeps reveal spring policy out of shell widgets.
+// panes. Hosts own geometry and project resolvedScale/resolvedOffsetX/Y onto
+// their transform. The legacy scalar openOffset/closedOffset/resolvedOffset
+// remain vertical aliases so existing consumers keep working.
 Item {
     id: control
     visible: false
@@ -15,12 +16,22 @@ Item {
     property string speed: "default"
     property real openScale: 1.0
     property real closedScale: MeoMotion.popupClosedScale(motionProfile)
+
+    // Backwards-compatible vertical offset API.
     property real openOffset: 0
     property real closedOffset: -MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
 
+    // Generic 2D reveal API. By default Y follows the legacy scalar contract.
+    property real openOffsetX: 0
+    property real closedOffsetX: 0
+    property real openOffsetY: openOffset
+    property real closedOffsetY: closedOffset
+
     readonly property real resolvedScale: scaleSpring.value
-    readonly property real resolvedOffset: offsetSpring.value
-    readonly property bool running: scaleSpring.running || offsetSpring.running
+    readonly property real resolvedOffsetX: xSpring.value
+    readonly property real resolvedOffsetY: ySpring.value
+    readonly property real resolvedOffset: resolvedOffsetY
+    readonly property bool running: scaleSpring.running || xSpring.running || ySpring.running
 
     MeoSpringValue {
         id: scaleSpring
@@ -31,15 +42,25 @@ Item {
     }
 
     MeoSpringValue {
-        id: offsetSpring
-        value: control.active || MeoTheme.reduceMotion ? control.openOffset : control.closedOffset
-        targetValue: control.active || MeoTheme.reduceMotion ? control.openOffset : control.closedOffset
+        id: xSpring
+        value: control.active || MeoTheme.reduceMotion ? control.openOffsetX : control.closedOffsetX
+        targetValue: control.active || MeoTheme.reduceMotion ? control.openOffsetX : control.closedOffsetX
+        motionProfile: control.motionProfile
+        speed: control.speed
+    }
+
+    MeoSpringValue {
+        id: ySpring
+        value: control.active || MeoTheme.reduceMotion ? control.openOffsetY : control.closedOffsetY
+        targetValue: control.active || MeoTheme.reduceMotion ? control.openOffsetY : control.closedOffsetY
         motionProfile: control.motionProfile
         speed: control.speed
     }
 
     function snapToActiveState() {
-        scaleSpring.snapTo(active || MeoTheme.reduceMotion ? openScale : closedScale)
-        offsetSpring.snapTo(active || MeoTheme.reduceMotion ? openOffset : closedOffset)
+        const isOpen = active || MeoTheme.reduceMotion
+        scaleSpring.snapTo(isOpen ? openScale : closedScale)
+        xSpring.snapTo(isOpen ? openOffsetX : closedOffsetX)
+        ySpring.snapTo(isOpen ? openOffsetY : closedOffsetY)
     }
 }
