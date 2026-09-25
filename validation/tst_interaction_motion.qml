@@ -17,6 +17,7 @@ Item {
             motion.pressed = false
             motion.active = false
             motion.offsetXTarget = 0
+            motion.motionEnabled = true
             motion.snapToCurrentState()
         }
 
@@ -38,7 +39,24 @@ Item {
         function test_generic_x_offset_is_supported() {
             motion.offsetXTarget = 6
             motion.snapToCurrentState()
-            compare(motion.resolvedOffsetX, MeoTheme.reduceMotion ? 0 : 6)
+            compare(motion.resolvedOffsetX,
+                    motion.spatialMotionAllowed ? 6 : 0)
+        }
+
+        function test_motion_disabled_is_spatially_neutral() {
+            motion.hovered = true
+            motion.pressed = true
+            motion.active = true
+            motion.offsetXTarget = 12
+            motion.motionEnabled = false
+            motion.snapToCurrentState()
+
+            compare(motion.targetScale, 1)
+            compare(motion.targetOffsetX, 0)
+            compare(motion.targetOffsetY, 0)
+            compare(motion.resolvedScale, 1)
+            compare(motion.resolvedOffsetX, 0)
+            compare(motion.resolvedOffsetY, 0)
         }
     }
 }
