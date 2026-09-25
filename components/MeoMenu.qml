@@ -247,13 +247,16 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
-    background: Rectangle {
+    background: MeoMotionSurface {
+        interactive: false
+        bouncy: false
+        surfaceStyle: "theme"
+        showOutline: false
+        elevation: control.isContextMenu ? 3 : 2
+        radius: control.surfaceCornerRadius
         color: control.vibrant ? control.themeTertiaryContainer
                                : control.isContextMenu ? MeoTheme.surfaceContainer
                                                        : control.themeSurfaceContainerLow
-        radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
     }
 
     contentItem: Column {
@@ -583,11 +586,15 @@ MeoMotionPopup {
             onTriggered: submenu.positionForAnchor()
         }
 
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
+        background: MeoMotionSurface {
+            interactive: false
+            bouncy: false
+            surfaceStyle: "theme"
+            showOutline: false
+            elevation: 2
             radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
+            color: submenu.vibrant ? control.themeTertiaryContainer
+                                    : control.themeSurfaceContainerLow
         }
 
         contentItem: Column {
