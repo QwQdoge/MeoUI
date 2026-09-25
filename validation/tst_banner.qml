@@ -31,6 +31,9 @@ Item {
         }
 
         function test_toneChangesResolveThroughTheme() {
+            banner.tone = "warning"
+            compare(banner.containerColor, MeoTheme.warningContainer)
+            compare(banner.contentColor, MeoTheme.contentOnWarningContainer)
             banner.tone = "success"
             compare(banner.containerColor, MeoTheme.successContainer)
             compare(banner.contentColor, MeoTheme.contentOnSuccessContainer)
