@@ -82,6 +82,38 @@ QtObject {
              : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
     }
 
+    // Shared interaction amplitudes for compact controls, cards, toolbar
+    // triggers, and other pressable surfaces.  Components own their state;
+    // motion policy stays here so shells do not invent one-off scale values.
+    function hoverScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 1.0
+             : normalizedProfile(profile) === "playful" ? 1.025 : 1.012
+    }
+
+    function activeScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 1.0
+             : normalizedProfile(profile) === "playful" ? 1.018 : 1.008
+    }
+
+    function interactionScale(profile, hovered, pressed, active) {
+        if (pressed) return pressScale(profile)
+        if (active) return activeScale(profile)
+        if (hovered) return hoverScale(profile)
+        return 1.0
+    }
+
+    function interactionLift(profile, hovered, pressed, active) {
+        if (MeoTheme.reduceMotion || pressed) return 0
+        const normalized = normalizedProfile(profile)
+        if (!hovered && !active) return 0
+        if (normalized === "calm") return 0
+        return normalized === "playful" ? -2.5 : -1.25
+    }
+
+    function usesSpatialOvershoot(profile) {
+        return normalizedProfile(profile) !== "calm"
+    }
+
     function popupOffset(profile) {
         return normalizedProfile(profile) === "calm" ? 4
              : normalizedProfile(profile) === "playful" ? 12 : 8
