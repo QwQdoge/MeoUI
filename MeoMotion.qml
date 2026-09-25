@@ -82,6 +82,28 @@ QtObject {
              : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
     }
 
+    // Small spatial emphasis for pointer hover. These are amplitudes only;
+    // the spring physics remain the Material motion scheme above.
+    function hoverScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 1.0
+             : normalizedProfile(profile) === "playful" ? 1.018 : 1.012
+    }
+
+    function hoverLift(profile) {
+        return normalizedProfile(profile) === "calm" ? 0
+             : normalizedProfile(profile) === "playful" ? -2 : -1
+    }
+
+    function popupEntranceScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 0.985
+             : normalizedProfile(profile) === "playful" ? 0.94 : 0.965
+    }
+
+    function popupExitScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 0.992
+             : normalizedProfile(profile) === "playful" ? 0.965 : 0.98
+    }
+
     function popupOffset(profile) {
         return normalizedProfile(profile) === "calm" ? 4
              : normalizedProfile(profile) === "playful" ? 12 : 8
