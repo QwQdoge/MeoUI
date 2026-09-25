@@ -38,6 +38,26 @@ Item {
             compare(reveal.resolvedOffsetY, 0)
         }
 
+        function test_snapPreservesBoundTargetsForLaterRetargets() {
+            reveal.active = false
+            reveal.snapToActiveState()
+            compare(reveal.resolvedScale, reveal.closedScale)
+
+            reveal.active = true
+            if (reveal.spatialMotionAllowed)
+                tryCompare(reveal, "resolvedScale", reveal.openScale, 1200)
+            else
+                compare(reveal.resolvedScale, reveal.openScale)
+        }
+
+        function test_revealFromClosedSeedsThenRetargets() {
+            reveal.active = true
+            reveal.revealFromClosed()
+            if (reveal.spatialMotionAllowed)
+                compare(reveal.resolvedScale, reveal.closedScale)
+            tryCompare(reveal, "resolvedScale", reveal.openScale, 1200)
+        }
+
         function test_explicitYOverridesLegacyAlias() {
             reveal.active = false
             reveal.closedOffsetY = 9
