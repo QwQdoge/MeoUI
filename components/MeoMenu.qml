@@ -248,6 +248,7 @@ MeoMotionPopup {
     }
 
     background: MeoMotionSurface {
+        objectName: "meoMenuBackgroundSurface"
         interactive: false
         bouncy: false
         surfaceStyle: "theme"
@@ -587,6 +588,7 @@ MeoMotionPopup {
         }
 
         background: MeoMotionSurface {
+            objectName: "meoSubmenuBackgroundSurface"
             interactive: false
             bouncy: false
             surfaceStyle: "theme"
