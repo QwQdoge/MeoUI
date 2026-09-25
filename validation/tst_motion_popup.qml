@@ -56,6 +56,8 @@ Item {
             popup.openFrom(anchor)
             tryCompare(popup, "opened", true)
             compare(popup.contentActive, true)
+            compare(popup.entranceScale, MeoMotion.popupEntranceScale(popup.motionProfile))
+            verify(popup.usesSpringReveal)
             verify(popup.y >= anchor.y + anchor.height)
             verify(popup.x >= popup.viewportMargin)
             popup.close()
