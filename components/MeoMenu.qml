@@ -428,6 +428,9 @@ MeoMotionPopup {
 
                         Row {
                             anchors.fill: rowSurface
+                            scale: rowMotion.scale
+                            transform: Translate { y: rowMotion.offsetY }
+                            transformOrigin: Item.Center
                             anchors.leftMargin: 12 * control.themeGlobalScale
                             anchors.rightMargin: 12 * control.themeGlobalScale
                             spacing: 12 * control.themeGlobalScale
@@ -731,6 +734,9 @@ MeoMotionPopup {
 
                     Row {
                         anchors.fill: submenuRowSurface
+                        scale: submenuRowMotion.scale
+                        transform: Translate { y: submenuRowMotion.offsetY }
+                        transformOrigin: Item.Center
                         anchors.leftMargin: 12 * control.themeGlobalScale
                         anchors.rightMargin: 12 * control.themeGlobalScale
                         spacing: 12 * control.themeGlobalScale
