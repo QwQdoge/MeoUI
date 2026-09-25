@@ -15,6 +15,7 @@ Item {
     visible: false
 
     property bool revealed: false
+    property bool animateInitialReveal: false
     property bool motionEnabled: true
     property string motionProfile: "pixel"
     property string speed: "default"
@@ -28,10 +29,12 @@ Item {
     property real hiddenOffsetX: 0
     property real hiddenOffsetY: -MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
 
-    readonly property real targetScale: revealed ? shownScale : hiddenScale
-    readonly property real targetOpacity: revealed ? shownOpacity : hiddenOpacity
-    readonly property real targetOffsetX: revealed ? shownOffsetX : hiddenOffsetX
-    readonly property real targetOffsetY: revealed ? shownOffsetY : hiddenOffsetY
+    property bool _initialRevealPending: animateInitialReveal && revealed
+    readonly property bool effectiveRevealed: revealed && !_initialRevealPending
+    readonly property real targetScale: effectiveRevealed ? shownScale : hiddenScale
+    readonly property real targetOpacity: effectiveRevealed ? shownOpacity : hiddenOpacity
+    readonly property real targetOffsetX: effectiveRevealed ? shownOffsetX : hiddenOffsetX
+    readonly property real targetOffsetY: effectiveRevealed ? shownOffsetY : hiddenOffsetY
 
     readonly property real scaleValue: scaleSpring.value
     readonly property real opacityValue: opacitySpring.value
@@ -88,10 +91,16 @@ Item {
     }
 
     Component.onCompleted: {
-        scaleSpring.snapTo(targetScale)
-        opacitySpring.snapTo(targetOpacity)
-        xSpring.snapTo(targetOffsetX)
-        ySpring.snapTo(targetOffsetY)
+        scaleSpring.value = targetScale
+        scaleSpring.velocity = 0
+        opacitySpring.value = targetOpacity
+        opacitySpring.velocity = 0
+        xSpring.value = targetOffsetX
+        xSpring.velocity = 0
+        ySpring.value = targetOffsetY
+        ySpring.velocity = 0
         _ready = true
+        if (_initialRevealPending)
+            Qt.callLater(function() { control._initialRevealPending = false })
     }
 }
