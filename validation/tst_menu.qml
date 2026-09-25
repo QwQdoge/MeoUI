@@ -62,13 +62,11 @@ Item {
         }
 
         function test_menu_uses_shared_motion_popup_surface() {
-        const menu = createTemporaryObject(menuComponent, testCase, {})
-        verify(menu)
-        compare(menu.surfaceRadius, menu.surfaceCornerRadius)
-        verify(menu.surfaceColor !== undefined)
-    }
+            compare(menu.surfaceRadius, menu.surfaceCornerRadius)
+            verify(menu.surfaceColor !== undefined)
+        }
 
-    function test_modelHelpersAndKeyboardTraversal() {
+        function test_modelHelpersAndKeyboardTraversal() {
             compare(menu.itemLabel(menu.model[0]), "Copy")
             verify(menu.itemEnabled(menu.model[0]))
             verify(!menu.itemEnabled(menu.model[3]))
