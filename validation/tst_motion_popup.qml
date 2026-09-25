@@ -49,25 +49,30 @@ Item {
             tryCompare(popup, "opened", false)
             tryCompare(popup, "contentActive", false)
             popup.unregisterTransientSurface(null)
+            popup.presentation = MeoMotionPopup.Dialog
+            popup.motionProfile = "pixel"
+            popup.placement = "auto"
         }
 
-        function test_expressiveMenuUsesReusableSpatialOvershootPolicy() {
-        const popup = createTemporaryObject(popupComponent, testCase, {
-            "presentation": MeoMotionPopup.Menu,
-            "motionProfile": "pixel",
-            "placement": "below"
-        })
-        verify(popup)
-        if (!MeoTheme.reduceMotion) {
-            verify(popup.expressiveSpatialEntrance)
-            compare(popup.entranceSpatialEasingType, Easing.OutBack)
-        }
-        compare(popup.transformOrigin, Item.TopLeft)
-        popup.placement = "above"
-        compare(popup.transformOrigin, Item.BottomLeft)
-    }
+        function test_expressiveMenuUsesReusableSpatialPolicy() {
+            popup.presentation = MeoMotionPopup.Menu
+            popup.motionProfile = "pixel"
+            popup.placement = "below"
 
-    function test_openFromPrewarmsAndPlacesBeforeOpening() {
+            if (!MeoTheme.reduceMotion)
+                verify(popup.expressiveSpatialEntrance)
+            compare(popup.entranceSpatialEasingType, Easing.BezierSpline)
+            compare(popup.transformOrigin, Item.TopLeft)
+
+            popup.placement = "above"
+            compare(popup.transformOrigin, Item.BottomLeft)
+            popup.placement = "left"
+            compare(popup.transformOrigin, Item.Right)
+            popup.placement = "right"
+            compare(popup.transformOrigin, Item.Left)
+        }
+
+        function test_openFromPrewarmsAndPlacesBeforeOpening() {
             compare(popup.contentActive, false)
             popup.openFrom(anchor)
             tryCompare(popup, "opened", true)
