@@ -63,9 +63,16 @@ Popup {
     // Effects and travel stay on semantic Bezier tokens; the scale reveal
     // itself is an interruptible analytic spring shared with other MeoUI
     // transient surfaces.
-    readonly property real spatialRevealScale: popupReveal.resolvedScale
-    readonly property real spatialRevealOffsetX: popupReveal.resolvedOffsetX
-    readonly property real spatialRevealOffsetY: popupReveal.resolvedOffsetY
+    // Hidden/fully closed popups expose neutral public geometry. During a
+    // reveal or retained exit, the sampled spring values become the visual
+    // transform. This avoids leaking the seeded closed scale into callers
+    // that merely inspect a popup before it opens.
+    readonly property real spatialRevealScale: (_spatialPositioning || _retainingExitContent)
+                                                ? popupReveal.resolvedScale : 1.0
+    readonly property real spatialRevealOffsetX: (_spatialPositioning || _retainingExitContent)
+                                                  ? popupReveal.resolvedOffsetX : 0.0
+    readonly property real spatialRevealOffsetY: (_spatialPositioning || _retainingExitContent)
+                                                  ? popupReveal.resolvedOffsetY : 0.0
     readonly property int enterDuration: isMenu ? MeoTheme.motionDurationMenuEnter
                                                  : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetEnter
                                                                                : MeoTheme.motionDurationDialogEnter
@@ -226,7 +233,7 @@ Popup {
                         ? -control.entranceOffset : 0)
     }
 
-    scale: popupReveal.resolvedScale
+    scale: spatialRevealScale
 
     Connections {
         target: popupReveal
@@ -353,25 +360,27 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
-                target: control.isSideSheet ? control : null
+                target: control
                 property: "x"
-                from: control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
-                to: control.parent ? control.parent.width - control.width : control.x
-                duration: control.enterDuration
+                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion
+                      ? control.parent.width : control.x
+                to: control.isSideSheet && control.parent
+                    ? control.parent.width - control.width : control.x
+                duration: control.isSideSheet ? control.enterDuration : 0
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
-                target: control.isBottomSheet ? control : null
+                target: control
                 property: "y"
                 // Menus/dialogs project the shared reveal spring onto x/y.
                 // Bottom sheets still travel by geometry because their final
                 // edge is viewport-relative.
-                from: control.parent && !MeoTheme.reduceMotion
+                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
                       ? control.parent.height : control.y
-                to: control.parent
+                to: control.isBottomSheet && control.parent
                     ? control.parent.height - control.height : control.y
-                duration: control.enterDuration
+                duration: control.isBottomSheet ? control.enterDuration : 0
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
@@ -388,19 +397,21 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
-                target: control.isSideSheet ? control : null
+                target: control
                 property: "x"
                 from: control.x
-                to: control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
-                duration: control.exitDuration
+                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion
+                    ? control.parent.width : control.x
+                duration: control.isSideSheet ? control.exitDuration : 0
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
-                target: control.isBottomSheet ? control : null
+                target: control
                 property: "y"
                 from: control.y
-                to: control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
-                duration: control.exitDuration
+                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
+                    ? control.parent.height : control.y
+                duration: control.isBottomSheet ? control.exitDuration : 0
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
         }
