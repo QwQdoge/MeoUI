@@ -28,7 +28,7 @@ Popup {
     property real scrimOpacity: 0.32
     property string motionProfile: "pixel"
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
-    property real entranceScale: 0.98
+    property real entranceScale: MeoMotion.popupClosedScale(motionProfile)
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
@@ -47,6 +47,7 @@ Popup {
     property real placementGap: 8 * MeoTheme.globalScale
     property bool _openRequested: false
     property bool _retainingExitContent: false
+    property bool _spatialRevealActive: false
 
     readonly property bool isMenu: presentation === MeoMotionPopup.Menu
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
@@ -54,10 +55,10 @@ Popup {
     readonly property bool isFullScreen: presentation === MeoMotionPopup.FullScreen
     readonly property bool expressiveSpatialEntrance: !MeoTheme.reduceMotion
                                                        && MeoMotion.usesSpatialOvershoot(motionProfile)
-    // Keep every NumberAnimation on MeoUI's semantic Bezier system. Expressive
-    // character comes from the selected token plus the interruptible spring
-    // primitives used by surfaces/hosts, rather than a one-off easing enum.
-    readonly property int entranceSpatialEasingType: Easing.BezierSpline
+    // Effects and travel stay on semantic Bezier tokens; the scale reveal
+    // itself is an interruptible analytic spring shared with other MeoUI
+    // transient surfaces.
+    readonly property real spatialRevealScale: popupReveal.resolvedScale
     readonly property int enterDuration: isMenu ? MeoTheme.motionDurationMenuEnter
                                                  : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetEnter
                                                                                : MeoTheme.motionDurationDialogEnter
@@ -165,6 +166,17 @@ Popup {
         y = Math.max(viewportMargin, Math.min(y, maximumY))
     }
 
+    MeoRevealMotion {
+        id: popupReveal
+        active: control._spatialRevealActive
+        motionProfile: control.motionProfile
+        speed: control.isMenu ? "fast" : "default"
+        closedScale: control.entranceScale
+        closedOffset: 0
+    }
+
+    scale: popupReveal.resolvedScale
+
     modal: !isMenu
     focus: true
     closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
@@ -176,6 +188,8 @@ Popup {
                                  : isMenu ? Item.TopLeft : Item.Center
 
     onAboutToShow: {
+        _spatialRevealActive = false
+        popupReveal.snapToActiveState()
         if (prewarmBeforeOpen) {
             const measuredWidth = measuredImplicitWidth
             const measuredHeight = measuredImplicitHeight
@@ -184,6 +198,10 @@ Popup {
         }
         positionForAnchor()
         clampToViewport()
+        Qt.callLater(function() {
+            if (control.visible || control.opened)
+                control._spatialRevealActive = true
+        })
     }
     onOpened: {
         _openRequested = false
@@ -194,9 +212,13 @@ Popup {
                 contentItem.forceActiveFocus(Qt.PopupFocusReason)
         })
     }
-    onAboutToHide: _retainingExitContent = true
+    onAboutToHide: {
+        _retainingExitContent = true
+        _spatialRevealActive = false
+    }
     onClosed: {
         _retainingExitContent = false
+        popupReveal.snapToActiveState()
         if (focusReturnItem && focusReturnItem.visible && focusReturnItem.enabled)
             focusReturnItem.forceActiveFocus(Qt.PopupFocusReason)
     }
@@ -265,21 +287,11 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
-                property: "scale"
-                from: MeoTheme.reduceMotion ? 1 : control.isMenu ? control.entranceScale : control.presentation === MeoMotionPopup.Dialog ? control.entranceScale : 1
-                to: 1
-                duration: MeoTheme.motionDurationPopupEffectsEnter
-                easing.type: control.entranceSpatialEasingType
-                easing.bezierCurve: control.expressiveSpatialEntrance
-                                    ? MeoTheme.motionEasingEmphasizedDecelerate
-                                    : MeoTheme.motionEasingStandardDecelerate
-            }
-            NumberAnimation {
                 property: "x"
                 from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
                 to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
-                easing.type: control.entranceSpatialEasingType
+                easing.type: Easing.BezierSpline
                 easing.bezierCurve: control.expressiveSpatialEntrance
                                     ? MeoTheme.motionEasingEmphasizedDecelerate
                                     : MeoTheme.motionEasingStandardDecelerate
@@ -290,7 +302,7 @@ Popup {
                       : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
-                easing.type: control.entranceSpatialEasingType
+                easing.type: Easing.BezierSpline
                 easing.bezierCurve: control.expressiveSpatialEntrance
                                     ? MeoTheme.motionEasingEmphasizedDecelerate
                                     : MeoTheme.motionEasingStandardDecelerate
@@ -304,13 +316,6 @@ Popup {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: MeoTheme.motionDurationPopupEffectsExit
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
-            }
-            NumberAnimation {
-                property: "scale"
-                from: 1
-                to: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.98 : control.presentation === MeoMotionPopup.Dialog ? 0.96 : 1
                 duration: MeoTheme.motionDurationPopupEffectsExit
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
