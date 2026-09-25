@@ -28,7 +28,7 @@ Popup {
     property real scrimOpacity: 0.32
     property string motionProfile: "pixel"
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
-    property real entranceScale: 0.98
+    property real entranceScale: MeoMotion.popupScale(motionProfile)
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
@@ -162,9 +162,28 @@ Popup {
     modal: !isMenu
     focus: true
     closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
-    transformOrigin: isSideSheet ? Item.Right
-                                 : isBottomSheet ? Item.Bottom
-                                                 : isMenu ? Item.TopRight : Item.Center
+    readonly property int anchoredTransformOrigin: {
+        if (isSideSheet)
+            return Item.Right
+        if (isBottomSheet)
+            return Item.Bottom
+        if (!isMenu || !placementAnchor || !parent)
+            return isMenu ? Item.TopRight : Item.Center
+
+        const globalCenter = placementAnchor.mapToGlobal(placementAnchor.width / 2,
+                                                         placementAnchor.height / 2)
+        const localCenter = parent.mapFromGlobal(globalCenter.x, globalCenter.y)
+        const anchorOnLeft = localCenter.x < parent.width / 2
+        if (placement === "above")
+            return anchorOnLeft ? Item.BottomLeft : Item.BottomRight
+        if (placement === "left")
+            return Item.Right
+        if (placement === "right")
+            return Item.Left
+        return anchorOnLeft ? Item.TopLeft : Item.TopRight
+    }
+
+    transformOrigin: anchoredTransformOrigin
 
     onAboutToShow: {
         if (prewarmBeforeOpen) {
