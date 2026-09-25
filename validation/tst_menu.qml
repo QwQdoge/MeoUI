@@ -135,10 +135,16 @@ Item {
             const preferredY = anchorInSubmenuParent.y
             const maximumY = Math.max(menu.submenuSurface.viewportMargin,
                                       menu.submenuSurface.parent.height - menu.submenuSurface.height - menu.submenuSurface.viewportMargin)
-            verify(Math.abs(menu.submenuSurface.x - Math.max(menu.submenuSurface.viewportMargin,
-                                                              Math.min(preferredX, maximumX))) <= 1)
-            verify(Math.abs(menu.submenuSurface.y - Math.max(menu.submenuSurface.viewportMargin,
-                                                              Math.min(preferredY, maximumY))) <= 1)
+            // Popup.x/y carry the generic reveal's temporary travel because
+            // Qt Quick Controls Popup is not an Item and has no transform list.
+            // Validate the stable resting geometry by removing the sampled
+            // visual offset, independent of where the spring is mid-flight.
+            const restingX = menu.submenuSurface.x - menu.submenuSurface.spatialRevealOffsetX
+            const restingY = menu.submenuSurface.y - menu.submenuSurface.spatialRevealOffsetY
+            verify(Math.abs(restingX - Math.max(menu.submenuSurface.viewportMargin,
+                                                Math.min(preferredX, maximumX))) <= 1)
+            verify(Math.abs(restingY - Math.max(menu.submenuSurface.viewportMargin,
+                                                Math.min(preferredY, maximumY))) <= 1)
             menu.closeSubmenu()
             menu.close()
         }
