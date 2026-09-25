@@ -8,7 +8,7 @@ Control {
     property string title: ""
     property string text: ""
     property string icon: "info"
-    property string tone: "tonal" // tonal, success, error
+    property string tone: "tonal" // tonal, warning, success, error
     property string confirmText: ""
     property string cancelText: ""
     signal confirmed()
@@ -19,9 +19,11 @@ Control {
     Accessible.description: title.length > 0 ? text : ""
 
     readonly property color containerColor: tone === "error" ? MeoTheme.errorContainer
+                                              : tone === "warning" ? MeoTheme.warningContainer
                                               : tone === "success" ? MeoTheme.successContainer
                                               : MeoTheme.secondaryContainer
     readonly property color contentColor: tone === "error" ? MeoTheme.contentOnErrorContainer
+                                            : tone === "warning" ? MeoTheme.contentOnWarningContainer
                                             : tone === "success" ? MeoTheme.contentOnSuccessContainer
                                             : MeoTheme.contentOnSecondaryContainer
     readonly property real themeGlobalScale: MeoTheme.globalScale
