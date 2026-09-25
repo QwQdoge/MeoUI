@@ -255,6 +255,23 @@ MeoMotionPopup {
         hiddenOffsetY: -6 * control.themeGlobalScale
     }
 
+    Connections {
+        target: menuReveal
+
+        function onScaleValueChanged() {
+            if (submenu.opened)
+                submenu.positionForAnchor()
+        }
+        function onOffsetXChanged() {
+            if (submenu.opened)
+                submenu.positionForAnchor()
+        }
+        function onOffsetYChanged() {
+            if (submenu.opened)
+                submenu.positionForAnchor()
+        }
+    }
+
     background: Rectangle {
         color: control.vibrant ? control.themeTertiaryContainer
                                : control.isContextMenu ? MeoTheme.surfaceContainer
