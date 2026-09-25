@@ -46,8 +46,7 @@ QtObject {
         offsetSpring.snapTo(targetOffsetY)
     }
 
-    MeoSpringValue {
-        id: scaleSpring
+    property MeoSpringValue scaleSpring: MeoSpringValue {
         value: control.restingScale
         targetValue: control.targetScale
         motionProfile: control.motionProfile
@@ -57,8 +56,7 @@ QtObject {
         velocityThreshold: 0.008
     }
 
-    MeoSpringValue {
-        id: offsetSpring
+    property MeoSpringValue offsetSpring: MeoSpringValue {
         value: control.restingOffsetY
         targetValue: control.targetOffsetY
         motionProfile: control.motionProfile
