@@ -54,8 +54,10 @@ Popup {
     readonly property bool isFullScreen: presentation === MeoMotionPopup.FullScreen
     readonly property bool expressiveSpatialEntrance: !MeoTheme.reduceMotion
                                                        && MeoMotion.usesSpatialOvershoot(motionProfile)
-    readonly property int entranceSpatialEasingType: expressiveSpatialEntrance
-                                                      ? Easing.OutBack : Easing.BezierSpline
+    // Keep every NumberAnimation on MeoUI's semantic Bezier system. Expressive
+    // character comes from the selected token plus the interruptible spring
+    // primitives used by surfaces/hosts, rather than a one-off easing enum.
+    readonly property int entranceSpatialEasingType: Easing.BezierSpline
     readonly property int enterDuration: isMenu ? MeoTheme.motionDurationMenuEnter
                                                  : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetEnter
                                                                                : MeoTheme.motionDurationDialogEnter
@@ -268,8 +270,9 @@ Popup {
                 to: 1
                 duration: MeoTheme.motionDurationPopupEffectsEnter
                 easing.type: control.entranceSpatialEasingType
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                easing.overshoot: control.expressiveSpatialEntrance ? 1.08 : 0
+                easing.bezierCurve: control.expressiveSpatialEntrance
+                                    ? MeoTheme.motionEasingEmphasizedDecelerate
+                                    : MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
                 property: "x"
@@ -277,8 +280,9 @@ Popup {
                 to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
                 easing.type: control.entranceSpatialEasingType
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                easing.overshoot: control.expressiveSpatialEntrance ? 1.08 : 0
+                easing.bezierCurve: control.expressiveSpatialEntrance
+                                    ? MeoTheme.motionEasingEmphasizedDecelerate
+                                    : MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
                 property: "y"
@@ -287,8 +291,9 @@ Popup {
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.type: control.entranceSpatialEasingType
-                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-                easing.overshoot: control.expressiveSpatialEntrance ? 1.08 : 0
+                easing.bezierCurve: control.expressiveSpatialEntrance
+                                    ? MeoTheme.motionEasingEmphasizedDecelerate
+                                    : MeoTheme.motionEasingStandardDecelerate
             }
         }
     }
