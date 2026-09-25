@@ -138,6 +138,17 @@ Item {
             menu.close()
         }
 
+        function test_contextMenuUsesCompactReusableSurfaceMetrics() {
+            menu.surfaceStyle = "context"
+            compare(menu.itemHeight, 44 * menu.themeGlobalScale)
+            compare(menu.supportingItemHeight, 60 * menu.themeGlobalScale)
+            compare(menu.menuPadding, 6 * menu.themeGlobalScale)
+            compare(menu.menuHorizontalInset, 6 * menu.themeGlobalScale)
+            compare(menu.itemSpacing, 2 * menu.themeGlobalScale)
+            compare(menu.surfaceCornerRadius, MeoTheme.shapeLargeIncreased)
+            menu.surfaceStyle = "menu"
+        }
+
         function test_vibrantColorRoles() {
             const selected = { "label": "Selected", "selected": true }
             const unselected = { "label": "Unselected" }
