@@ -82,6 +82,15 @@ QtObject {
              : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
     }
 
+    // Shared closed-state amplitude for anchored popups, popovers, sheets,
+    // and host-owned reveal surfaces.  It is intentionally separate from
+    // pressScale(): opening a transient surface should feel softer than a
+    // direct pointer press while still exposing the expressive spring.
+    function popupClosedScale(profile) {
+        return normalizedProfile(profile) === "calm" ? 0.985
+             : normalizedProfile(profile) === "playful" ? 0.94 : 0.96
+    }
+
     // Shared interaction amplitudes for compact controls, cards, toolbar
     // triggers, and other pressable surfaces.  Components own their state;
     // motion policy stays here so shells do not invent one-off scale values.
