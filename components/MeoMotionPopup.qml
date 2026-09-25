@@ -172,10 +172,23 @@ Popup {
         motionProfile: control.motionProfile
         speed: control.isMenu ? "fast" : "default"
         closedScale: control.entranceScale
-        closedOffset: 0
+        // Anchored transient surfaces grow from the trigger-facing edge.
+        // Geometry stays fixed; the generic reveal transform supplies the
+        // interruptible spatial travel and overshoot.
+        closedOffsetX: control.isMenu && control.placement === "left" ? control.entranceOffset
+                     : control.isMenu && control.placement === "right" ? -control.entranceOffset
+                     : 0
+        closedOffsetY: control.isMenu && control.placement === "above" ? control.entranceOffset
+                     : control.isMenu && control.placement === "below" ? -control.entranceOffset
+                     : (!control.isBottomSheet && !control.isSideSheet && !control.isFullScreen
+                        ? -control.entranceOffset : 0)
     }
 
     scale: popupReveal.resolvedScale
+    transform: Translate {
+        x: popupReveal.resolvedOffsetX
+        y: popupReveal.resolvedOffsetY
+    }
 
     modal: !isMenu
     focus: true
@@ -296,9 +309,13 @@ Popup {
             }
             NumberAnimation {
                 property: "y"
-                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height
-                      : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
-                to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
+                // Menus/dialogs keep stable popup geometry; their motion is
+                // supplied by MeoRevealMotion. Bottom sheets still travel by
+                // geometry because their final edge is viewport-relative.
+                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
+                      ? control.parent.height : control.y
+                to: control.isBottomSheet && control.parent
+                    ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
