@@ -206,6 +206,7 @@ qt_add_qml_module(meoui_module
         components/MeoMotionSurface.qml
         components/MeoSpringValue.qml
         components/MeoInteractionMotion.qml
+        components/MeoRevealMotion.qml
         components/MeoLaunchSurface.qml
         components/MeoPageHost.qml
         components/MeoFilterChip.qml
