@@ -3777,7 +3777,7 @@ Item {
     }
     Component {
         id: interactionMotionSample
-        Button {
+        MeoButton {
             id: sampleInteractionTarget
             width: 260 * MeoTheme.globalScale
             height: 64 * MeoTheme.globalScale
