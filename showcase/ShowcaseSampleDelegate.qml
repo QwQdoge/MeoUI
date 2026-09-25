@@ -3761,6 +3761,8 @@ Item {
             surfaceStyle: "tonal"
             showOutline: false
             motionProfile: "pixel"
+            entranceAxis: "y"
+            entranceDistance: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
             animateOnCompleted: true
             MeoText {
                 anchors.centerIn: parent
