@@ -21,6 +21,7 @@ Item {
         parent: root
         width: 180
         height: 120
+        presentation: MeoMotionPopup.Menu
         placement: "auto"
 
         contentItem: Item {
@@ -61,6 +62,14 @@ Item {
             popup.close()
             tryCompare(popup, "opened", false)
             tryCompare(popup, "contentActive", false)
+        }
+
+        function test_anchoredMenuResolvesOriginAndSpringScale() {
+            popup.openFrom(anchor)
+            tryCompare(popup, "opened", true)
+            compare(popup._resolvedPlacement, "below")
+            compare(popup.anchoredTransformOrigin, Item.TopLeft)
+            tryVerify(function() { return Math.abs(popup.scale - 1) < 0.02 })
         }
 
         function test_childTransientSuppressesParentOutsideDismissal() {
