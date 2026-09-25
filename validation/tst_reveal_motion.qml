@@ -15,6 +15,13 @@ Item {
         name: "MeoRevealMotion"
         when: windowShown
 
+        function test_defaultClosedScaleUsesSharedPopupPolicy() {
+            const original = reveal.closedScale
+            reveal.closedScale = MeoMotion.popupClosedScale("pixel")
+            compare(reveal.closedScale, MeoMotion.popupClosedScale("pixel"))
+            reveal.closedScale = original
+        }
+
         function test_closedAndOpenTargetsAreReusable() {
             reveal.active = false
             reveal.snapToActiveState()
