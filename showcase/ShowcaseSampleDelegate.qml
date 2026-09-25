@@ -143,6 +143,7 @@ Item {
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
         if (name === "MeoInteractionMotion") return interactionMotionSample
+        if (name === "MeoRevealMotion") return revealMotionSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoHoldToConfirm") return holdToConfirmSample
@@ -3798,7 +3799,7 @@ Item {
             width: 360 * MeoTheme.globalScale
             height: 120 * MeoTheme.globalScale
 
-            QQC2.AbstractButton {
+            AbstractButton {
                 id: interactionTarget
                 anchors.centerIn: parent
                 width: 220 * MeoTheme.globalScale
@@ -3837,6 +3838,42 @@ Item {
                     color: MeoTheme.contentOnSurface
                 }
             }
+        }
+    }
+    Component {
+        id: revealMotionSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 132 * MeoTheme.globalScale
+            property bool revealed: true
+
+            MeoRevealMotion {
+                id: sampleReveal
+                shown: parent.revealed
+            }
+
+            MeoCard {
+                anchors.centerIn: parent
+                width: 260 * MeoTheme.globalScale
+                height: 88 * MeoTheme.globalScale
+                type: "filled"
+                opacity: sampleReveal.opacity
+                scale: sampleReveal.scale
+                transform: Translate {
+                    x: sampleReveal.offsetX
+                    y: sampleReveal.offsetY
+                }
+
+                MeoText {
+                    anchors.centerIn: parent
+                    text: qsTr("Reusable reveal spring")
+                    typeRole: "label"
+                    typeSize: "large"
+                    color: MeoTheme.contentOnSurface
+                }
+            }
+
+            TapHandler { onTapped: parent.revealed = !parent.revealed }
         }
     }
     Component {
