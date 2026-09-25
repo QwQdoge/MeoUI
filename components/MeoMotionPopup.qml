@@ -292,9 +292,7 @@ Popup {
                 to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: control.expressiveSpatialEntrance
-                                    ? MeoTheme.motionEasingEmphasizedDecelerate
-                                    : MeoTheme.motionEasingStandardDecelerate
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
                 property: "y"
@@ -303,9 +301,7 @@ Popup {
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline
-                easing.bezierCurve: control.expressiveSpatialEntrance
-                                    ? MeoTheme.motionEasingEmphasizedDecelerate
-                                    : MeoTheme.motionEasingStandardDecelerate
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
