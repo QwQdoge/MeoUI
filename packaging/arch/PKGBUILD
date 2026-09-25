@@ -1,6 +1,6 @@
 pkgname=meoui-qml
-pkgver=1.0.4beta1
-pkgrel=2
+pkgver=1.0.4beta2
+pkgrel=1
 pkgdesc="MeoUI Qt Quick Material Design 3 component library"
 arch=('x86_64' 'aarch64')
 url="https://github.com/QwQdoge/MeoUI"

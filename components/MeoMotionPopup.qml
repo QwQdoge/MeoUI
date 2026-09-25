@@ -28,7 +28,7 @@ Popup {
     property real scrimOpacity: 0.32
     property string motionProfile: "pixel"
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
-    property real entranceScale: 0.98
+    property real entranceScale: MeoMotion.popupClosedScale(motionProfile)
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
@@ -47,11 +47,32 @@ Popup {
     property real placementGap: 8 * MeoTheme.globalScale
     property bool _openRequested: false
     property bool _retainingExitContent: false
+    property bool _spatialRevealActive: false
+    property string _resolvedPlacement: "below"
+    property real _spatialRestX: 0
+    property real _spatialRestY: 0
+    property bool _spatialPositioning: false
+    property bool _applyingSpatialPosition: false
 
     readonly property bool isMenu: presentation === MeoMotionPopup.Menu
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
     readonly property bool isSideSheet: presentation === MeoMotionPopup.SideSheet
     readonly property bool isFullScreen: presentation === MeoMotionPopup.FullScreen
+    readonly property string effectivePlacement: placement === "auto"
+                                                ? _resolvedPlacement : placement
+    // Effects and travel stay on semantic Bezier tokens; the scale reveal
+    // itself is an interruptible analytic spring shared with other MeoUI
+    // transient surfaces.
+    // Hidden/fully closed popups expose neutral public geometry. During a
+    // reveal or retained exit, the sampled spring values become the visual
+    // transform. This avoids leaking the seeded closed scale into callers
+    // that merely inspect a popup before it opens.
+    readonly property real spatialRevealScale: (_spatialPositioning || _retainingExitContent)
+                                                ? popupReveal.resolvedScale : 1.0
+    readonly property real spatialRevealOffsetX: (_spatialPositioning || _retainingExitContent)
+                                                  ? popupReveal.resolvedOffsetX : 0.0
+    readonly property real spatialRevealOffsetY: (_spatialPositioning || _retainingExitContent)
+                                                  ? popupReveal.resolvedOffsetY : 0.0
     readonly property int enterDuration: isMenu ? MeoTheme.motionDurationMenuEnter
                                                  : isBottomSheet || isSideSheet ? MeoTheme.motionDurationSheetEnter
                                                                                : MeoTheme.motionDurationDialogEnter
@@ -134,6 +155,8 @@ Popup {
                 direction = right >= left ? "right" : "left"
         }
 
+        _resolvedPlacement = direction
+
         if (direction === "above") {
             x = point.x
             y = point.y - popupHeight - placementGap
@@ -159,14 +182,77 @@ Popup {
         y = Math.max(viewportMargin, Math.min(y, maximumY))
     }
 
+    // Qt Quick Controls Popup exposes x/y/scale but is not an Item, so it has
+    // no transform list. Keep a stable resting geometry and project the shared
+    // reveal's X/Y spring values onto Popup coordinates instead. This preserves
+    // the public Popup contract while making the same reveal primitive usable
+    // by ordinary Items, shell surfaces, and native Controls popups.
+    function captureSpatialRestPosition() {
+        if (isBottomSheet || isSideSheet || isFullScreen) {
+            _spatialPositioning = false
+            return
+        }
+        _spatialRestX = x
+        _spatialRestY = y
+        _spatialPositioning = true
+    }
+
+    function applySpatialPosition() {
+        if (!_spatialPositioning)
+            return
+        _applyingSpatialPosition = true
+        x = _spatialRestX + popupReveal.resolvedOffsetX
+        y = _spatialRestY + popupReveal.resolvedOffsetY
+        _applyingSpatialPosition = false
+    }
+
+    onXChanged: {
+        if (_spatialPositioning && !_applyingSpatialPosition)
+            _spatialRestX = x - popupReveal.resolvedOffsetX
+    }
+    onYChanged: {
+        if (_spatialPositioning && !_applyingSpatialPosition)
+            _spatialRestY = y - popupReveal.resolvedOffsetY
+    }
+
+    MeoRevealMotion {
+        id: popupReveal
+        active: control._spatialRevealActive
+        motionProfile: control.motionProfile
+        speed: control.isMenu ? "fast" : "default"
+        closedScale: control.entranceScale
+        // Anchored transient surfaces grow from the trigger-facing edge.
+        // Geometry stays fixed; the generic reveal transform supplies the
+        // interruptible spatial travel and overshoot.
+        closedOffsetX: control.isMenu && control.effectivePlacement === "left" ? control.entranceOffset
+                     : control.isMenu && control.effectivePlacement === "right" ? -control.entranceOffset
+                     : 0
+        closedOffsetY: control.isMenu && control.effectivePlacement === "above" ? control.entranceOffset
+                     : control.isMenu && control.effectivePlacement === "below" ? -control.entranceOffset
+                     : (!control.isBottomSheet && !control.isSideSheet && !control.isFullScreen
+                        ? -control.entranceOffset : 0)
+    }
+
+    scale: spatialRevealScale
+
+    Connections {
+        target: popupReveal
+        function onResolvedOffsetXChanged() { control.applySpatialPosition() }
+        function onResolvedOffsetYChanged() { control.applySpatialPosition() }
+    }
+
     modal: !isMenu
     focus: true
     closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
     transformOrigin: isSideSheet ? Item.Right
                                  : isBottomSheet ? Item.Bottom
-                                                 : isMenu ? Item.TopRight : Item.Center
+                                 : isMenu && effectivePlacement === "above" ? Item.BottomLeft
+                                 : isMenu && effectivePlacement === "left" ? Item.Right
+                                 : isMenu && effectivePlacement === "right" ? Item.Left
+                                 : isMenu ? Item.TopLeft : Item.Center
 
     onAboutToShow: {
+        _spatialRevealActive = false
         if (prewarmBeforeOpen) {
             const measuredWidth = measuredImplicitWidth
             const measuredHeight = measuredImplicitHeight
@@ -175,6 +261,13 @@ Popup {
         }
         positionForAnchor()
         clampToViewport()
+        captureSpatialRestPosition()
+        popupReveal.snapToActiveState()
+        applySpatialPosition()
+        Qt.callLater(function() {
+            if (control.visible || control.opened)
+                control._spatialRevealActive = true
+        })
     }
     onOpened: {
         _openRequested = false
@@ -185,9 +278,20 @@ Popup {
                 contentItem.forceActiveFocus(Qt.PopupFocusReason)
         })
     }
-    onAboutToHide: _retainingExitContent = true
+    onAboutToHide: {
+        _retainingExitContent = true
+        _spatialRevealActive = false
+    }
     onClosed: {
         _retainingExitContent = false
+        if (_spatialPositioning) {
+            _applyingSpatialPosition = true
+            x = _spatialRestX
+            y = _spatialRestY
+            _applyingSpatialPosition = false
+            _spatialPositioning = false
+        }
+        popupReveal.snapToActiveState()
         if (focusReturnItem && focusReturnItem.visible && focusReturnItem.enabled)
             focusReturnItem.forceActiveFocus(Qt.PopupFocusReason)
     }
@@ -256,26 +360,29 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
-                property: "scale"
-                from: MeoTheme.reduceMotion ? 1 : control.isMenu ? control.entranceScale : control.presentation === MeoMotionPopup.Dialog ? control.entranceScale : 1
-                to: 1
-                duration: MeoTheme.motionDurationPopupEffectsEnter
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-            }
-            NumberAnimation {
+                target: control
                 property: "x"
-                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
-                to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
-                duration: control.enterDuration
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion
+                      ? control.parent.width : control.x
+                to: control.isSideSheet && control.parent
+                    ? control.parent.width - control.width : control.x
+                duration: control.isSideSheet ? control.enterDuration : 0
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
             NumberAnimation {
+                target: control
                 property: "y"
-                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height
-                      : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
-                to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
-                duration: control.enterDuration
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                // Menus/dialogs project the shared reveal spring onto x/y.
+                // Bottom sheets still travel by geometry because their final
+                // edge is viewport-relative.
+                from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
+                      ? control.parent.height : control.y
+                to: control.isBottomSheet && control.parent
+                    ? control.parent.height - control.height : control.y
+                duration: control.isBottomSheet ? control.enterDuration : 0
+                easing.type: Easing.BezierSpline
+                easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
             }
         }
     }
@@ -290,24 +397,21 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
-                property: "scale"
-                from: 1
-                to: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.98 : control.presentation === MeoMotionPopup.Dialog ? 0.96 : 1
-                duration: MeoTheme.motionDurationPopupEffectsExit
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
-            }
-            NumberAnimation {
+                target: control
                 property: "x"
                 from: control.x
-                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
-                duration: control.exitDuration
+                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion
+                    ? control.parent.width : control.x
+                duration: control.isSideSheet ? control.exitDuration : 0
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
+                target: control
                 property: "y"
                 from: control.y
-                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
-                duration: control.exitDuration
+                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion
+                    ? control.parent.height : control.y
+                duration: control.isBottomSheet ? control.exitDuration : 0
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
         }

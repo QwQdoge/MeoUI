@@ -49,6 +49,29 @@ Item {
             tryCompare(popup, "opened", false)
             tryCompare(popup, "contentActive", false)
             popup.unregisterTransientSurface(null)
+            popup.presentation = MeoMotionPopup.Dialog
+            popup.motionProfile = "pixel"
+            popup.placement = "auto"
+        }
+
+        function test_expressiveMenuUsesReusableSpatialPolicy() {
+            popup.presentation = MeoMotionPopup.Menu
+            popup.motionProfile = "pixel"
+            popup.placement = "below"
+
+            if (!MeoTheme.reduceMotion)
+                verify(MeoMotion.usesSpatialOvershoot(popup.motionProfile))
+            compare(popup.entranceScale, MeoMotion.popupClosedScale("pixel"))
+            compare(popup.spatialRevealScale, popup.scale)
+            compare(popup.transformOrigin, Item.TopLeft)
+            verify(popup.entranceOffset > 0)
+
+            popup.placement = "above"
+            compare(popup.transformOrigin, Item.BottomLeft)
+            popup.placement = "left"
+            compare(popup.transformOrigin, Item.Right)
+            popup.placement = "right"
+            compare(popup.transformOrigin, Item.Left)
         }
 
         function test_openFromPrewarmsAndPlacesBeforeOpening() {

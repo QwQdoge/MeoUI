@@ -51,6 +51,14 @@ MeoMotionPopup {
     readonly property real menuWidth: Math.max(minimumMenuWidth,
                                                Math.min(maximumMenuWidth, preferredMenuWidth))
     readonly property bool submenuOpened: submenu.opened
+
+    // Keep elevation, outline, and popup motion owned by MeoMotionPopup.
+    // Menus only select semantic colour/radius instead of replacing the
+    // reusable transient-surface background with a local rectangle.
+    surfaceColor: control.vibrant ? control.themeTertiaryContainer
+                                  : control.isContextMenu ? MeoTheme.surfaceContainer
+                                                          : control.themeSurfaceContainerLow
+    surfaceRadius: control.surfaceCornerRadius
     // Read-only inspection handle for integration tests and hosts that need
     // to observe nested transient state without reaching into QML ids.
     readonly property var submenuSurface: submenu
@@ -247,15 +255,6 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
-    background: Rectangle {
-        color: control.vibrant ? control.themeTertiaryContainer
-                               : control.isContextMenu ? MeoTheme.surfaceContainer
-                                                       : control.themeSurfaceContainerLow
-        radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
-    }
-
     contentItem: Column {
         id: contentColumn
         width: control.availableWidth
@@ -369,6 +368,25 @@ MeoMotionPopup {
                         Keys.onSpacePressed: control.activateItem(index, optionRow)
                         Keys.onRightPressed: if (hasSubmenu) control.openSubmenu(index, modelData, optionRow)
                         Keys.onLeftPressed: if (control.parentMenu) control.close()
+
+                        MeoInteractionMotion {
+                            id: rowInteractionMotion
+                            hovered: itemPointer.containsMouse
+                            pressed: itemPointer.pressed
+                            motionProfile: control.motionProfile
+                            speed: "fast"
+                            liftMultiplier: 0.35
+                        }
+
+                        transform: [
+                            Translate { y: rowInteractionMotion.resolvedOffsetY },
+                            Scale {
+                                origin.x: optionRow.width / 2
+                                origin.y: optionRow.height / 2
+                                xScale: rowInteractionMotion.resolvedScale
+                                yScale: rowInteractionMotion.resolvedScale
+                            }
+                        ]
 
                         Rectangle {
                             id: rowSurface
@@ -510,6 +528,9 @@ MeoMotionPopup {
         property bool placementMirrored: false
         property int currentIndex: -1
         z: control.z + 1
+        surfaceColor: submenu.vibrant ? control.themeTertiaryContainer
+                                      : control.themeSurfaceContainerLow
+        surfaceRadius: MeoTheme.shapeLarge
         width: control.menuWidth
         implicitWidth: control.menuWidth
         implicitHeight: control.menuContentHeight(model)
@@ -583,13 +604,6 @@ MeoMotionPopup {
             onTriggered: submenu.positionForAnchor()
         }
 
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-            radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
-        }
-
         contentItem: Column {
             id: submenuColumn
             width: submenu.availableWidth
@@ -645,6 +659,25 @@ MeoMotionPopup {
                     Keys.onEnterPressed: submenu.activateItem(index, submenuOptionRow)
                     Keys.onSpacePressed: submenu.activateItem(index, submenuOptionRow)
                     Keys.onLeftPressed: submenu.close()
+
+                    MeoInteractionMotion {
+                        id: submenuInteractionMotion
+                        hovered: submenuPointer.containsMouse
+                        pressed: submenuPointer.pressed
+                        motionProfile: control.motionProfile
+                        speed: "fast"
+                        liftMultiplier: 0.35
+                    }
+
+                    transform: [
+                        Translate { y: submenuInteractionMotion.resolvedOffsetY },
+                        Scale {
+                            origin.x: submenuOptionRow.width / 2
+                            origin.y: submenuOptionRow.height / 2
+                            xScale: submenuInteractionMotion.resolvedScale
+                            yScale: submenuInteractionMotion.resolvedScale
+                        }
+                    ]
 
                     MeoDivider {
                         anchors.left: parent.left

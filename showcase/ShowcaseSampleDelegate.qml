@@ -141,6 +141,8 @@ Item {
         if (name === "MeoAuthenticationSurface") return authenticationSurfaceSample
         if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
+        if (name === "MeoInteractionMotion") return interactionMotionSample
+        if (name === "MeoRevealMotion") return revealMotionSample
         if (name === "MeoSpringValue") return springValueSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
@@ -3761,6 +3763,8 @@ Item {
             surfaceStyle: "tonal"
             showOutline: false
             motionProfile: "pixel"
+            entranceAxis: "y"
+            entranceDistance: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
             animateOnCompleted: true
             MeoText {
                 anchors.centerIn: parent
@@ -3771,6 +3775,109 @@ Item {
             }
         }
     }
+    Component {
+        id: interactionMotionSample
+        MeoButton {
+            id: sampleInteractionTarget
+            width: 260 * MeoTheme.globalScale
+            height: 64 * MeoTheme.globalScale
+            hoverEnabled: true
+            text: qsTr("Hover and press")
+
+            MeoInteractionMotion {
+                id: sampleInteractionMotion
+                hovered: sampleInteractionTarget.hovered
+                pressed: sampleInteractionTarget.down
+                active: sampleInteractionTarget.checked
+                motionProfile: "pixel"
+                speed: "fast"
+            }
+
+            transform: [
+                Translate { y: sampleInteractionMotion.resolvedOffsetY },
+                Scale {
+                    origin.x: sampleInteractionTarget.width / 2
+                    origin.y: sampleInteractionTarget.height / 2
+                    xScale: sampleInteractionMotion.resolvedScale
+                    yScale: sampleInteractionMotion.resolvedScale
+                }
+            ]
+
+            background: MeoShape {
+                type: "round"
+                radius: MeoTheme.shapeMedium
+                color: sampleInteractionTarget.down
+                       ? MeoTheme.primaryContainer
+                       : sampleInteractionTarget.hovered
+                         ? MeoTheme.surfaceContainerHighest
+                         : MeoTheme.surfaceContainer
+            }
+
+            contentItem: MeoText {
+                text: sampleInteractionTarget.text
+                typeRole: "label"
+                typeSize: "large"
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: MeoTheme.contentOnSurface
+            }
+        }
+    }
+
+    Component {
+        id: revealMotionSample
+        Column {
+            id: revealSampleRoot
+            width: 360 * MeoTheme.globalScale
+            spacing: MeoTheme.space12
+            property bool revealed: false
+
+            MeoButton {
+                text: revealSampleRoot.revealed ? qsTr("Hide surface") : qsTr("Reveal surface")
+                type: "tonal"
+                onClicked: revealSampleRoot.revealed = !revealSampleRoot.revealed
+            }
+
+            MeoShape {
+                id: revealSampleSurface
+                width: 320 * MeoTheme.globalScale
+                height: 112 * MeoTheme.globalScale
+                type: "round"
+                radius: MeoTheme.shapeLarge
+                color: MeoTheme.tertiaryContainer
+
+                MeoRevealMotion {
+                    id: sampleRevealMotion
+                    active: revealSampleRoot.revealed
+                    motionProfile: "pixel"
+                    closedOffsetX: 10 * MeoTheme.globalScale
+                    closedOffsetY: -MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
+                }
+
+                transform: [
+                    Translate {
+                        x: sampleRevealMotion.resolvedOffsetX
+                        y: sampleRevealMotion.resolvedOffsetY
+                    },
+                    Scale {
+                        origin.x: revealSampleSurface.width
+                        origin.y: 0
+                        xScale: sampleRevealMotion.resolvedScale
+                        yScale: sampleRevealMotion.resolvedScale
+                    }
+                ]
+
+                MeoText {
+                    anchors.centerIn: parent
+                    text: qsTr("2D spring reveal")
+                    typeRole: "title"
+                    typeSize: "small"
+                    color: MeoTheme.contentOnTertiaryContainer
+                }
+            }
+        }
+    }
+
     Component {
         id: springValueSample
         Item {
