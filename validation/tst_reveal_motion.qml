@@ -9,6 +9,7 @@ Item {
         motionProfile: "pixel"
         closedScale: 0.97
         closedOffset: -12
+        closedOffsetX: 6
     }
 
     TestCase {
@@ -22,16 +23,27 @@ Item {
             reveal.closedScale = original
         }
 
-        function test_closedAndOpenTargetsAreReusable() {
+        function test_closedAndOpenTargetsAreReusableInTwoDimensions() {
             reveal.active = false
             reveal.snapToActiveState()
             compare(reveal.resolvedScale, 0.97)
-            compare(reveal.resolvedOffset, -12)
+            compare(reveal.resolvedOffsetX, 6)
+            compare(reveal.resolvedOffsetY, -12)
+            compare(reveal.resolvedOffset, reveal.resolvedOffsetY)
 
             reveal.active = true
             reveal.snapToActiveState()
             compare(reveal.resolvedScale, 1.0)
-            compare(reveal.resolvedOffset, 0)
+            compare(reveal.resolvedOffsetX, 0)
+            compare(reveal.resolvedOffsetY, 0)
+        }
+
+        function test_explicitYOverridesLegacyAlias() {
+            reveal.active = false
+            reveal.closedOffsetY = 9
+            reveal.snapToActiveState()
+            compare(reveal.resolvedOffsetY, 9)
+            reveal.closedOffsetY = Qt.binding(function() { return reveal.closedOffset })
         }
 
         function test_reducedMotionAlwaysResolvesToOpenState() {
@@ -39,7 +51,8 @@ Item {
             if (MeoTheme.reduceMotion) {
                 reveal.snapToActiveState()
                 compare(reveal.resolvedScale, 1.0)
-                compare(reveal.resolvedOffset, 0)
+                compare(reveal.resolvedOffsetX, 0)
+                compare(reveal.resolvedOffsetY, 0)
             }
         }
     }
