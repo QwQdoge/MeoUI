@@ -16,6 +16,10 @@ Item {
     property bool showText: true
     property real iconSize: 18 * MeoTheme.globalScale
     property real spacing: MeoTheme.space4
+    // The host owns the active container. Primary remains the compatibility
+    // default, while secondary/tertiary tonal hosts can provide their matching
+    // on-container role without forking this presentation primitive.
+    property color activeContentColor: MeoTheme.contentOnPrimaryContainer
     // Hosts pass their per-instance typography preference here.  Keep it at
     // the shared primitive so a panel adapter never needs a visual text copy.
     property real textScale: 1.0
@@ -51,7 +55,7 @@ Item {
                 spacing: MeoTheme.space2
 
                 readonly property color contentColor: control.active
-                                                     ? MeoTheme.onPrimaryContainer
+                                                     ? control.activeContentColor
                                                      : (modelData.attention
                                                         ? MeoTheme.error
                                                         : modelData.active
