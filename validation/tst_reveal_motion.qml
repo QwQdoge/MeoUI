@@ -46,13 +46,25 @@ Item {
             reveal.closedOffsetY = reveal.closedOffset
         }
 
+        function test_disabledSpatialMotionAlwaysResolvesToOpenState() {
+            reveal.active = false
+            reveal.motionEnabled = false
+            reveal.snapToActiveState()
+            compare(reveal.spatialMotionAllowed, false)
+            compare(reveal.resolvedScale, reveal.openScale)
+            compare(reveal.resolvedOffsetX, reveal.openOffsetX)
+            compare(reveal.resolvedOffsetY, reveal.openOffsetY)
+            reveal.motionEnabled = true
+        }
+
         function test_reducedMotionAlwaysResolvesToOpenState() {
             reveal.active = false
             if (MeoTheme.reduceMotion) {
                 reveal.snapToActiveState()
-                compare(reveal.resolvedScale, 1.0)
-                compare(reveal.resolvedOffsetX, 0)
-                compare(reveal.resolvedOffsetY, 0)
+                compare(reveal.spatialMotionAllowed, false)
+                compare(reveal.resolvedScale, reveal.openScale)
+                compare(reveal.resolvedOffsetX, reveal.openOffsetX)
+                compare(reveal.resolvedOffsetY, reveal.openOffsetY)
             }
         }
     }
