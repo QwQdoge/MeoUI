@@ -5,6 +5,12 @@ import MeoUI
 MeoMotionPopup {
     id: control
     presentation: MeoMotionPopup.Menu
+    // Reuse the shared transient-surface shadow, outline and reveal motion
+    // instead of drawing a flat menu-only background.
+    surfaceRadius: surfaceCornerRadius
+    surfaceColor: vibrant ? themeTertiaryContainer
+                          : isContextMenu ? MeoTheme.surfaceContainer
+                                          : themeSurfaceContainerLow
 
     // Entries support: label/text, icon, supportingText, shortcut/trailingText,
     // trailingIcon, checked, selected, enabled, action, subItems, vibrant,
@@ -245,15 +251,6 @@ MeoMotionPopup {
     onClosed: {
         submenuTimer.stop()
         closeSubmenu()
-    }
-
-    background: Rectangle {
-        color: control.vibrant ? control.themeTertiaryContainer
-                               : control.isContextMenu ? MeoTheme.surfaceContainer
-                                                       : control.themeSurfaceContainerLow
-        radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
     }
 
     contentItem: Column {
@@ -503,6 +500,9 @@ MeoMotionPopup {
         // owner so keyboard and submenu behavior remain functional there.
         parent: Overlay.overlay || control.parent
         presentation: MeoMotionPopup.Menu
+        surfaceRadius: MeoTheme.shapeLarge
+        surfaceColor: vibrant ? control.themeTertiaryContainer
+                              : control.themeSurfaceContainerLow
         property var model: []
         property bool vibrant: false
         property var parentMenu: control
@@ -581,13 +581,6 @@ MeoMotionPopup {
             interval: 16
             repeat: false
             onTriggered: submenu.positionForAnchor()
-        }
-
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-            radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
         }
 
         contentItem: Column {
