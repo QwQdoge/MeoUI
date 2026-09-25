@@ -90,9 +90,12 @@ Item {
     }
 
     Component.onCompleted: {
-        scaleSpring.snapTo(targetScale)
-        xSpring.snapTo(targetOffsetX)
-        ySpring.snapTo(targetOffsetY)
+        scaleSpring.value = targetScale
+        scaleSpring.velocity = 0
+        xSpring.value = targetOffsetX
+        xSpring.velocity = 0
+        ySpring.value = targetOffsetY
+        ySpring.velocity = 0
         _ready = true
     }
 }
