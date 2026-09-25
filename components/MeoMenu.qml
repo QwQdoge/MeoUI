@@ -16,11 +16,11 @@ MeoMotionPopup {
     // applications do not reimplement that behavior per right-click target.
     property string surfaceStyle: "menu" // "menu" | "context"
     property bool vibrant: false
-    property real itemSpacing: 0
-    property real menuPadding: 8 * themeGlobalScale
-    property real menuHorizontalInset: 4 * themeGlobalScale
-    property real itemHeight: 48 * themeGlobalScale
-    property real supportingItemHeight: 64 * themeGlobalScale
+    property real itemSpacing: isContextMenu ? 2 * themeGlobalScale : 0
+    property real menuPadding: (isContextMenu ? 6 : 8) * themeGlobalScale
+    property real menuHorizontalInset: (isContextMenu ? 6 : 4) * themeGlobalScale
+    property real itemHeight: (isContextMenu ? 44 : 48) * themeGlobalScale
+    property real supportingItemHeight: (isContextMenu ? 60 : 64) * themeGlobalScale
     property real minimumMenuWidth: 112 * themeGlobalScale
     property real maximumMenuWidth: 320 * themeGlobalScale
     property real preferredMenuWidth: 240 * themeGlobalScale
@@ -247,13 +247,16 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
-    background: Rectangle {
+    background: MeoMotionSurface {
+        interactive: false
+        bouncy: false
+        showOutline: true
+        surfaceStyle: "theme"
         color: control.vibrant ? control.themeTertiaryContainer
                                : control.isContextMenu ? MeoTheme.surfaceContainer
                                                        : control.themeSurfaceContainerLow
         radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
+        elevation: control.isContextMenu ? 3 : 2
     }
 
     contentItem: Column {
@@ -393,7 +396,8 @@ MeoMotionPopup {
                             }
                             anchors.leftMargin: control.menuHorizontalInset
                             anchors.rightMargin: control.menuHorizontalInset
-                            radius: optionRow.selected ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
+                            radius: optionRow.selected || control.isContextMenu
+                                    ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
                             color: control.rowContainerColor(modelData)
                             border.width: optionRow.activeFocus ? Math.max(2 * control.themeGlobalScale, 1) : 0
                             border.color: control.themeSecondary
@@ -607,11 +611,17 @@ MeoMotionPopup {
             onTriggered: submenu.positionForAnchor()
         }
 
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-            radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
+        background: MeoMotionSurface {
+            interactive: false
+            bouncy: false
+            showOutline: true
+            surfaceStyle: "theme"
+            color: submenu.vibrant ? control.themeTertiaryContainer
+                                   : control.isContextMenu ? MeoTheme.surfaceContainer
+                                                           : control.themeSurfaceContainerLow
+            radius: control.isContextMenu ? MeoTheme.shapeLargeIncreased
+                                          : MeoTheme.shapeLarge
+            elevation: control.isContextMenu ? 3 : 2
         }
 
         contentItem: Column {
