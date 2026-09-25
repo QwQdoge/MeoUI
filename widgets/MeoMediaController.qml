@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import MeoUI
 
 Control {
@@ -183,19 +184,75 @@ Control {
     Accessible.role: Accessible.Pane
     Accessible.name: qsTr("%1 by %2").arg(title).arg(artist)
 
-    background: Rectangle {
-        radius: control.cornerRadius
-        color: control.resolvedContainerColor
-        border.width: control.activeFocus ? 2 * control.themeGlobalScale : 0
-        border.color: control.mediaAccent
-        Behavior on radius {
-            enabled: !control.reducedMotion
-            NumberAnimation {
-                duration: control.motionMedium
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+    background: Item {
+        id: mediaBackground
+
+        MeoShape {
+            id: mediaBackgroundShape
+            anchors.fill: parent
+            type: "rect"
+            radius: control.cornerRadius
+            color: control.resolvedContainerColor
+            strokeWidth: control.activeFocus ? 2 * control.themeGlobalScale : 0
+            strokeColor: control.mediaAccent
+
+            Behavior on radius {
+                enabled: !control.reducedMotion
+                NumberAnimation {
+                    duration: control.motionMedium
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
+                }
+            }
+            Behavior on color {
+                enabled: !control.reducedMotion
+                ColorAnimation {
+                    duration: control.motionPage
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                }
             }
         }
-        Behavior on color { enabled: !control.reducedMotion; ColorAnimation { duration: control.motionPage; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+
+        // Caelestia's lock media card turns the current artwork into a soft
+        // full-card atmosphere. Keep this strictly opt-in to the lock-screen
+        // presentation so dashboard/control-center layouts are unchanged.
+        Image {
+            id: lockArtworkBackground
+            objectName: "meoLockArtworkBackground"
+            anchors.fill: parent
+            source: control.resolvedPresentation === "lockScreen"
+                    && control.showCaelestiaAtmosphere
+                    && control.showArtwork ? control.coverSource : ""
+            visible: source !== ""
+            asynchronous: true
+            cache: true
+            fillMode: Image.PreserveAspectCrop
+            opacity: status === Image.Ready ? 0.82 : 0
+
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                maskEnabled: true
+                maskSource: mediaBackgroundShape
+            }
+
+            Behavior on opacity {
+                enabled: !control.reducedMotion
+                NumberAnimation {
+                    duration: control.motionPage
+                    easing.type: Easing.BezierSpline
+                    easing.bezierCurve: MeoTheme.motionEasingStandard
+                }
+            }
+        }
+
+        Rectangle {
+            anchors.fill: parent
+            visible: lockArtworkBackground.opacity > 0.001
+            radius: control.cornerRadius
+            color: control.themeSurface
+            opacity: control.isDarkMode ? 0.66 : 0.72
+        }
     }
 
     contentItem: Loader {

@@ -27,6 +27,21 @@ Item {
             controller.presentation = "adaptive"
         }
 
+        function test_lockScreenArtworkAtmosphereIsScopedToLockPresentation() {
+            controller.presentation = "lockScreen"
+            controller.showArtwork = true
+            controller.showCaelestiaAtmosphere = true
+            controller.coverSource = "file:///tmp/meo-lock-artwork-test.png"
+            const artwork = findChild(controller, "meoLockArtworkBackground")
+            verify(artwork !== null)
+            verify(String(artwork.source).indexOf("meo-lock-artwork-test.png") >= 0)
+
+            controller.presentation = "controlCenter"
+            compare(String(artwork.source), "")
+            controller.coverSource = ""
+            controller.presentation = "adaptive"
+        }
+
         function test_externalPlaybackStateIsNormalized() {
             controller.duration = 1000
             controller.position = 1500
