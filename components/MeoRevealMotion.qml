@@ -13,6 +13,10 @@ Item {
 
     property bool active: true
     property bool motionEnabled: true
+    // Opt in when a host is lazily instantiated already open (for example a
+    // Plasma fullRepresentation). The primitive seeds its closed geometry on
+    // completion, then reveals toward the still-bound open target.
+    property bool animateOnCompleted: false
     property string motionProfile: "pixel"
     property string speed: "default"
     property real openScale: 1.0
@@ -70,5 +74,31 @@ Item {
         scaleSpring.snapValue(isOpen ? openScale : closedScale)
         xSpring.snapValue(isOpen ? openOffsetX : closedOffsetX)
         ySpring.snapValue(isOpen ? openOffsetY : closedOffsetY)
+    }
+
+    function revealFromClosed() {
+        if (!spatialMotionAllowed || !active) {
+            snapToActiveState()
+            return
+        }
+
+        scaleSpring.snapValue(closedScale)
+        xSpring.snapValue(closedOffsetX)
+        ySpring.snapValue(closedOffsetY)
+        Qt.callLater(function() {
+            if (!control.active || !control.spatialMotionAllowed)
+                return
+            // targetValue bindings already point at the open state. Retarget
+            // without rebinding them so later open/close interruptions remain
+            // fully declarative.
+            scaleSpring.retarget()
+            xSpring.retarget()
+            ySpring.retarget()
+        })
+    }
+
+    Component.onCompleted: {
+        if (animateOnCompleted)
+            revealFromClosed()
     }
 }
