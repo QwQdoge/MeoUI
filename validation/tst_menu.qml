@@ -31,6 +31,13 @@ Item {
         }
     }
 
+    Components.MeoMenu {
+        id: contextDefaults
+        parent: root
+        surfaceStyle: "context"
+        model: [{ "label": "Settings" }]
+    }
+
     SignalSpy {
         id: submenuSpy
         target: menu
@@ -139,13 +146,16 @@ Item {
         }
 
         function test_contextMenuUsesCompactReusableSurfaceMetrics() {
+            compare(contextDefaults.itemHeight, 44 * contextDefaults.themeGlobalScale)
+            compare(contextDefaults.supportingItemHeight, 60 * contextDefaults.themeGlobalScale)
+            compare(contextDefaults.menuPadding, 6 * contextDefaults.themeGlobalScale)
+            compare(contextDefaults.menuHorizontalInset, 6 * contextDefaults.themeGlobalScale)
+            compare(contextDefaults.itemSpacing, 2 * contextDefaults.themeGlobalScale)
+            compare(contextDefaults.surfaceCornerRadius, MeoTheme.shapeLargeIncreased)
+
+            // Explicit host overrides remain authoritative in context mode.
             menu.surfaceStyle = "context"
-            compare(menu.itemHeight, 44 * menu.themeGlobalScale)
-            compare(menu.supportingItemHeight, 60 * menu.themeGlobalScale)
-            compare(menu.menuPadding, 6 * menu.themeGlobalScale)
-            compare(menu.menuHorizontalInset, 6 * menu.themeGlobalScale)
-            compare(menu.itemSpacing, 2 * menu.themeGlobalScale)
-            compare(menu.surfaceCornerRadius, MeoTheme.shapeLargeIncreased)
+            compare(menu.itemSpacing, 4)
             menu.surfaceStyle = "menu"
         }
 
