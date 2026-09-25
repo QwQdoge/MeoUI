@@ -369,6 +369,25 @@ MeoMotionPopup {
                         Keys.onRightPressed: if (hasSubmenu) control.openSubmenu(index, modelData, optionRow)
                         Keys.onLeftPressed: if (control.parentMenu) control.close()
 
+                        MeoInteractionMotion {
+                            id: rowInteractionMotion
+                            hovered: itemPointer.containsMouse
+                            pressed: itemPointer.pressed
+                            motionProfile: control.motionProfile
+                            speed: "fast"
+                            liftMultiplier: 0.35
+                        }
+
+                        transform: [
+                            Translate { y: rowInteractionMotion.resolvedOffsetY },
+                            Scale {
+                                origin.x: optionRow.width / 2
+                                origin.y: optionRow.height / 2
+                                xScale: rowInteractionMotion.resolvedScale
+                                yScale: rowInteractionMotion.resolvedScale
+                            }
+                        ]
+
                         Rectangle {
                             id: rowSurface
                             anchors.fill: parent
@@ -640,6 +659,25 @@ MeoMotionPopup {
                     Keys.onEnterPressed: submenu.activateItem(index, submenuOptionRow)
                     Keys.onSpacePressed: submenu.activateItem(index, submenuOptionRow)
                     Keys.onLeftPressed: submenu.close()
+
+                    MeoInteractionMotion {
+                        id: submenuInteractionMotion
+                        hovered: submenuPointer.containsMouse
+                        pressed: submenuPointer.pressed
+                        motionProfile: control.motionProfile
+                        speed: "fast"
+                        liftMultiplier: 0.35
+                    }
+
+                    transform: [
+                        Translate { y: submenuInteractionMotion.resolvedOffsetY },
+                        Scale {
+                            origin.x: submenuOptionRow.width / 2
+                            origin.y: submenuOptionRow.height / 2
+                            xScale: submenuInteractionMotion.resolvedScale
+                            yScale: submenuInteractionMotion.resolvedScale
+                        }
+                    ]
 
                     MeoDivider {
                         anchors.left: parent.left
