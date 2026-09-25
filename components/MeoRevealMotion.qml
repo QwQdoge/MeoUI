@@ -14,7 +14,7 @@ Item {
     property string motionProfile: "pixel"
     property string speed: "default"
     property real openScale: 1.0
-    property real closedScale: 0.975
+    property real closedScale: MeoMotion.popupClosedScale(motionProfile)
     property real openOffset: 0
     property real closedOffset: -MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
 
