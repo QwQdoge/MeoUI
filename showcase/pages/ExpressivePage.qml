@@ -325,6 +325,45 @@ ShowcaseCategoryPage {
             width: parent.width
             spacing: MeoTheme.space16
 
+            Item {
+                Layout.fillWidth: true
+                height: 120 * MeoTheme.globalScale
+
+                MeoInteractionMotion {
+                    id: interactionDemoMotion
+                    hovered: interactionHover.hovered
+                    pressed: interactionTap.pressed
+                    active: interactionToggle.checked
+                }
+
+                MeoCard {
+                    anchors.centerIn: parent
+                    width: Math.min(parent.width, 260 * MeoTheme.globalScale)
+                    height: 88 * MeoTheme.globalScale
+                    type: "filled"
+                    scale: interactionDemoMotion.scale
+                    transform: Translate { y: interactionDemoMotion.offsetY }
+
+                    Column {
+                        anchors.centerIn: parent
+                        spacing: MeoTheme.space4
+                        MeoText { text: qsTr("Reusable interaction motion"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                        MeoText { text: qsTr("Hover, press, or toggle active"); typeRole: "body"; typeSize: "small" }
+                    }
+
+                    HoverHandler { id: interactionHover }
+                    TapHandler {
+                        id: interactionTap
+                        onTapped: interactionToggle.checked = !interactionToggle.checked
+                    }
+                }
+
+                QtObject {
+                    id: interactionToggle
+                    property bool checked: false
+                }
+            }
+
             MeoMotionSurface {
                 Layout.fillWidth: true
                 height: 120 * MeoTheme.globalScale
