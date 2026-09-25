@@ -204,6 +204,7 @@ qt_add_qml_module(meoui_module
         components/MeoStatusStrip.qml
         components/MeoMotionPopup.qml
         components/MeoMotionSurface.qml
+        components/MeoInteractionMotion.qml
         components/MeoSpringValue.qml
         components/MeoLaunchSurface.qml
         components/MeoPageHost.qml
