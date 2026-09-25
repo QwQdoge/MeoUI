@@ -25,15 +25,19 @@ Item {
             motion.hovered = true
             motion.snapToCurrentState()
             compare(motion.resolvedScale,
-                    MeoTheme.reduceMotion ? 1 : MeoMotion.interactionScale("pixel", true, false, false))
+                    motion.spatialMotionAllowed
+                    ? MeoMotion.interactionScale("pixel", true, false, false) : 1)
             compare(motion.resolvedOffsetY,
-                    MeoTheme.reduceMotion ? 0 : MeoMotion.interactionLift("pixel", true, false, false) * MeoTheme.globalScale)
+                    motion.spatialMotionAllowed
+                    ? MeoMotion.interactionLift("pixel", true, false, false) * MeoTheme.globalScale
+                    : 0)
 
             motion.hovered = false
             motion.pressed = true
             motion.snapToCurrentState()
             compare(motion.resolvedScale,
-                    MeoTheme.reduceMotion ? 1 : MeoMotion.interactionScale("pixel", false, true, false))
+                    motion.spatialMotionAllowed
+                    ? MeoMotion.interactionScale("pixel", false, true, false) : 1)
         }
 
         function test_generic_x_offset_is_supported() {
