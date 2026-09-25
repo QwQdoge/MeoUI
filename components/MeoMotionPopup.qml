@@ -28,7 +28,8 @@ Popup {
     property real scrimOpacity: 0.32
     property string motionProfile: "pixel"
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
-    property real entranceScale: 0.98
+    property real entranceScale: isMenu ? 0.94 : 0.97
+    property real exitScale: isMenu ? 0.975 : 0.985
     property real viewportMargin: 24 * MeoTheme.globalScale
     property Item initialFocusItem: null
     property Item focusReturnItem: null
@@ -47,6 +48,8 @@ Popup {
     property real placementGap: 8 * MeoTheme.globalScale
     property bool _openRequested: false
     property bool _retainingExitContent: false
+    property bool _closingMotion: false
+    property string _resolvedPlacement: "below"
 
     readonly property bool isMenu: presentation === MeoMotionPopup.Menu
     readonly property bool isBottomSheet: presentation === MeoMotionPopup.BottomSheet
@@ -67,6 +70,23 @@ Popup {
                                                            : Popup.CloseOnEscape | Popup.CloseOnPressOutside
     readonly property real measuredImplicitWidth: Math.max(implicitWidth, contentItem ? contentItem.implicitWidth : 0)
     readonly property real measuredImplicitHeight: Math.max(implicitHeight, contentItem ? contentItem.implicitHeight : 0)
+
+    readonly property int anchoredTransformOrigin: {
+        if (!isMenu || !placementAnchor || !parent)
+            return Item.TopLeft
+        const globalCenter = placementAnchor.mapToGlobal(placementAnchor.width / 2,
+                                                         placementAnchor.height / 2)
+        const center = parent.mapFromGlobal(globalCenter.x, globalCenter.y)
+        const anchorOnLeft = center.x <= x + width / 2
+        const anchorOnTop = center.y <= y + height / 2
+        if (_resolvedPlacement === "above")
+            return anchorOnLeft ? Item.BottomLeft : Item.BottomRight
+        if (_resolvedPlacement === "right")
+            return anchorOnTop ? Item.TopLeft : Item.BottomLeft
+        if (_resolvedPlacement === "left")
+            return anchorOnTop ? Item.TopRight : Item.BottomRight
+        return anchorOnLeft ? Item.TopLeft : Item.TopRight
+    }
 
     function openFrom(item) {
         focusReturnItem = item || null
@@ -99,6 +119,31 @@ Popup {
         })
     }
 
+    function inferPlacementFromAnchor() {
+        const anchor = placementAnchor
+        if (!anchor || !parent)
+            return "below"
+        const globalPoint = anchor.mapToGlobal(0, 0)
+        const point = parent.mapFromGlobal(globalPoint.x, globalPoint.y)
+        const epsilon = 1 * MeoTheme.globalScale
+        if (y >= point.y + anchor.height - epsilon)
+            return "below"
+        if (y + height <= point.y + epsilon)
+            return "above"
+        if (x >= point.x + anchor.width - epsilon)
+            return "right"
+        if (x + width <= point.x + epsilon)
+            return "left"
+        return "below"
+    }
+
+    function updateResolvedPlacement(direction) {
+        if (direction && direction !== "manual" && direction !== "auto")
+            _resolvedPlacement = direction
+        else
+            _resolvedPlacement = inferPlacementFromAnchor()
+    }
+
     function registerTransientSurface(surface) {
         transientSurface = surface || null
     }
@@ -111,8 +156,10 @@ Popup {
     function positionForAnchor() {
         const anchor = placementAnchor
         if (placement === "manual" || !anchor || !parent || isFullScreen
-                || isBottomSheet || isSideSheet)
+                || isBottomSheet || isSideSheet) {
+            updateResolvedPlacement(placement)
             return false
+        }
 
         const globalPoint = anchor.mapToGlobal(0, 0)
         const point = parent.mapFromGlobal(globalPoint.x, globalPoint.y)
@@ -134,6 +181,7 @@ Popup {
                 direction = right >= left ? "right" : "left"
         }
 
+        updateResolvedPlacement(direction)
         if (direction === "above") {
             x = point.x
             y = point.y - popupHeight - placementGap
@@ -159,14 +207,27 @@ Popup {
         y = Math.max(viewportMargin, Math.min(y, maximumY))
     }
 
+    MeoSpringValue {
+        id: popupScaleSpring
+        value: 1
+        targetValue: 1
+        motionProfile: control.motionProfile
+        speed: control._closingMotion ? "fast" : "default"
+        enabled: !MeoTheme.reduceMotion
+        valueThreshold: 0.001
+        velocityThreshold: 0.01
+    }
+
     modal: !isMenu
     focus: true
+    scale: popupScaleSpring.value
     closePolicy: hasOpenTransientSurface ? Popup.CloseOnEscape : defaultClosePolicy
     transformOrigin: isSideSheet ? Item.Right
                                  : isBottomSheet ? Item.Bottom
-                                                 : isMenu ? Item.TopRight : Item.Center
+                                                 : isMenu ? anchoredTransformOrigin : Item.Center
 
     onAboutToShow: {
+        _closingMotion = false
         if (prewarmBeforeOpen) {
             const measuredWidth = measuredImplicitWidth
             const measuredHeight = measuredImplicitHeight
@@ -175,6 +236,9 @@ Popup {
         }
         positionForAnchor()
         clampToViewport()
+        updateResolvedPlacement(placement)
+        popupScaleSpring.snapTo(MeoTheme.reduceMotion ? 1 : entranceScale)
+        popupScaleSpring.targetValue = 1
     }
     onOpened: {
         _openRequested = false
@@ -185,9 +249,15 @@ Popup {
                 contentItem.forceActiveFocus(Qt.PopupFocusReason)
         })
     }
-    onAboutToHide: _retainingExitContent = true
+    onAboutToHide: {
+        _retainingExitContent = true
+        _closingMotion = true
+        popupScaleSpring.targetValue = MeoTheme.reduceMotion ? 1 : exitScale
+    }
     onClosed: {
         _retainingExitContent = false
+        _closingMotion = false
+        popupScaleSpring.snapTo(1)
         if (focusReturnItem && focusReturnItem.visible && focusReturnItem.enabled)
             focusReturnItem.forceActiveFocus(Qt.PopupFocusReason)
     }
@@ -256,15 +326,11 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
-                property: "scale"
-                from: MeoTheme.reduceMotion ? 1 : control.isMenu ? control.entranceScale : control.presentation === MeoMotionPopup.Dialog ? control.entranceScale : 1
-                to: 1
-                duration: MeoTheme.motionDurationPopupEffectsEnter
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
-            }
-            NumberAnimation {
                 property: "x"
-                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
+                from: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width
+                      : (!MeoTheme.reduceMotion && control._resolvedPlacement === "right" ? control.x - control.entranceOffset
+                         : !MeoTheme.reduceMotion && control._resolvedPlacement === "left" ? control.x + control.entranceOffset
+                                                                                         : control.x)
                 to: control.isSideSheet && control.parent ? control.parent.width - control.width : control.x
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
@@ -272,7 +338,9 @@ Popup {
             NumberAnimation {
                 property: "y"
                 from: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height
-                      : (!MeoTheme.reduceMotion && !control.isSideSheet ? control.y - control.entranceOffset : control.y)
+                      : (!MeoTheme.reduceMotion && control._resolvedPlacement === "below" ? control.y - control.entranceOffset
+                         : !MeoTheme.reduceMotion && control._resolvedPlacement === "above" ? control.y + control.entranceOffset
+                                                                                           : control.y)
                 to: control.isBottomSheet && control.parent ? control.parent.height - control.height : control.y
                 duration: control.enterDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate
@@ -290,23 +358,22 @@ Popup {
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
-                property: "scale"
-                from: 1
-                to: MeoTheme.reduceMotion ? 1 : control.isMenu ? 0.98 : control.presentation === MeoMotionPopup.Dialog ? 0.96 : 1
-                duration: MeoTheme.motionDurationPopupEffectsExit
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
-            }
-            NumberAnimation {
                 property: "x"
                 from: control.x
-                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width : control.x
+                to: control.isSideSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.width
+                    : (!MeoTheme.reduceMotion && control._resolvedPlacement === "right" ? control.x - control.entranceOffset * 0.5
+                       : !MeoTheme.reduceMotion && control._resolvedPlacement === "left" ? control.x + control.entranceOffset * 0.5
+                                                                                        : control.x)
                 duration: control.exitDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
                 property: "y"
                 from: control.y
-                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height : control.y
+                to: control.isBottomSheet && control.parent && !MeoTheme.reduceMotion ? control.parent.height
+                    : (!MeoTheme.reduceMotion && control._resolvedPlacement === "below" ? control.y - control.entranceOffset * 0.5
+                       : !MeoTheme.reduceMotion && control._resolvedPlacement === "above" ? control.y + control.entranceOffset * 0.5
+                                                                                         : control.y)
                 duration: control.exitDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
