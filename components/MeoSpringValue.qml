@@ -38,6 +38,16 @@ QtObject {
         settled(value)
     }
 
+    // Jump only the sampled value while preserving any declarative binding on
+    // targetValue. Higher-level motion primitives use this when they need to
+    // seed an entrance state before the bound target changes on the next turn.
+    function snapValue(nextValue) {
+        driver.stop()
+        value = nextValue
+        velocity = 0
+        settled(value)
+    }
+
     function retarget() {
         if (!enabled || MeoTheme.reduceMotion || MeoTheme.effectiveMotionScale <= 0) {
             driver.stop()
