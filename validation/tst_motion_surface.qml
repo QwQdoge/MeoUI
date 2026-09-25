@@ -21,18 +21,19 @@ Item {
         name: "MeoMotionSurface"
         when: windowShown
 
-        function test_verticalEntranceAxisProjectsOffsetToY() {
-        const surface = createTemporaryObject(surfaceComponent, testCase, {
-            "entranceAxis": "y",
-            "animateOnCompleted": false
-        })
-        verify(surface)
-        surface.motionOffset = 12
-        compare(surface.transform[0].x, 0)
-        compare(surface.transform[0].y, 12)
-    }
+        function cleanup() {
+            defaultSurface.entranceAxis = "x"
+            defaultSurface.motionOffset = 0
+        }
 
-    function test_outlinePolicyPreservesCompatibilityAndAllowsTonalOptOut() {
+        function test_verticalEntranceAxisProjectsOffsetToY() {
+            defaultSurface.entranceAxis = "y"
+            defaultSurface.motionOffset = 12
+            compare(defaultSurface.transform[0].x, 0)
+            compare(defaultSurface.transform[0].y, 12)
+        }
+
+        function test_outlinePolicyPreservesCompatibilityAndAllowsTonalOptOut() {
             compare(defaultSurface.showOutline, true)
             compare(borderlessTonalSurface.showOutline, false)
 
