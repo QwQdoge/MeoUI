@@ -323,12 +323,18 @@ QtObject {
     readonly property var fallbackLightSemanticColorScheme: ({
         "success": "#256D3A",
         "successContainer": "#D8F3DC",
-        "onSuccessContainer": "#123C20"
+        "onSuccessContainer": "#123C20",
+        "warning": "#8A4F00",
+        "warningContainer": "#FFDDB3",
+        "onWarningContainer": "#2C1600"
     })
     readonly property var fallbackDarkSemanticColorScheme: ({
         "success": "#8ED6A0",
         "successContainer": "#164A27",
-        "onSuccessContainer": "#C1F1CB"
+        "onSuccessContainer": "#C1F1CB",
+        "warning": "#FFB95C",
+        "warningContainer": "#663C00",
+        "onWarningContainer": "#FFDDB3"
     })
 
     function semanticColorForRole(role) {
@@ -602,6 +608,9 @@ QtObject {
     readonly property color success: semanticColorForRole("success")
     readonly property color successContainer: semanticColorForRole("successContainer")
     readonly property color contentOnSuccessContainer: semanticColorForRole("onSuccessContainer")
+    readonly property color warning: semanticColorForRole("warning")
+    readonly property color warningContainer: semanticColorForRole("warningContainer")
+    readonly property color contentOnWarningContainer: semanticColorForRole("onWarningContainer")
 
     property color outlineVariant: dynamicOrFallback("outlineVariant")
 
