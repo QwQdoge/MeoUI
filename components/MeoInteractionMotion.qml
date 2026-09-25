@@ -19,18 +19,26 @@ Item {
     property real offsetXTarget: 0
     property real liftMultiplier: 1.0
 
-    readonly property real targetScale: MeoMotion.interactionScale(
+    readonly property bool spatialMotionAllowed: motionEnabled
+                                                  && !MeoTheme.reduceMotion
+                                                  && MeoTheme.effectiveMotionScale > 0
+    readonly property real targetScale: spatialMotionAllowed
+                                        ? MeoMotion.interactionScale(
+                                              motionProfile,
+                                              hovered,
+                                              pressed,
+                                              active)
+                                        : 1
+    readonly property real targetOffsetY: spatialMotionAllowed
+                                          ? MeoMotion.interactionLift(
                                                 motionProfile,
                                                 hovered,
                                                 pressed,
                                                 active)
-    readonly property real targetOffsetY: MeoMotion.interactionLift(
-                                                  motionProfile,
-                                                  hovered,
-                                                  pressed,
-                                                  active)
-                                                * MeoTheme.globalScale
-                                                * liftMultiplier
+                                            * MeoTheme.globalScale
+                                            * liftMultiplier
+                                          : 0
+    readonly property real targetOffsetX: spatialMotionAllowed ? offsetXTarget : 0
     readonly property real resolvedScale: scaleSpring.value
     readonly property real resolvedOffsetX: xSpring.value
     readonly property real resolvedOffsetY: ySpring.value
@@ -42,7 +50,7 @@ Item {
         id: scaleSpring
         value: 1
         targetValue: control.targetScale
-        enabled: control.motionEnabled && !MeoTheme.reduceMotion
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
@@ -50,8 +58,8 @@ Item {
     MeoSpringValue {
         id: xSpring
         value: 0
-        targetValue: control.offsetXTarget
-        enabled: control.motionEnabled && !MeoTheme.reduceMotion
+        targetValue: control.targetOffsetX
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
@@ -60,14 +68,14 @@ Item {
         id: ySpring
         value: 0
         targetValue: control.targetOffsetY
-        enabled: control.motionEnabled && !MeoTheme.reduceMotion
+        enabled: control.spatialMotionAllowed
         motionProfile: control.motionProfile
         speed: control.speed
     }
 
     function snapToCurrentState() {
-        scaleSpring.snapTo(MeoTheme.reduceMotion ? 1 : targetScale)
-        xSpring.snapTo(MeoTheme.reduceMotion ? 0 : offsetXTarget)
-        ySpring.snapTo(MeoTheme.reduceMotion ? 0 : targetOffsetY)
+        scaleSpring.snapTo(targetScale)
+        xSpring.snapTo(targetOffsetX)
+        ySpring.snapTo(targetOffsetY)
     }
 }
