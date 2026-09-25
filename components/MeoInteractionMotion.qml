@@ -74,8 +74,8 @@ Item {
     }
 
     function snapToCurrentState() {
-        scaleSpring.snapTo(targetScale)
-        xSpring.snapTo(targetOffsetX)
-        ySpring.snapTo(targetOffsetY)
+        scaleSpring.snapValue(targetScale)
+        xSpring.snapValue(targetOffsetX)
+        ySpring.snapValue(targetOffsetY)
     }
 }
