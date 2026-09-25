@@ -219,6 +219,7 @@ Control {
         // presentation so dashboard/control-center layouts are unchanged.
         Image {
             id: lockArtworkBackground
+            objectName: "meoLockArtworkBackground"
             anchors.fill: parent
             source: control.resolvedPresentation === "lockScreen"
                     && control.showCaelestiaAtmosphere
