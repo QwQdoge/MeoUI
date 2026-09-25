@@ -138,6 +138,14 @@ Item {
             menu.close()
         }
 
+        function test_surfaceReusesMotionPopupContainer() {
+            compare(menu.surfaceRadius, menu.surfaceCornerRadius)
+            compare(menu.surfaceColor, MeoTheme.surfaceContainerLow)
+            menu.vibrant = true
+            compare(menu.surfaceColor, MeoTheme.tertiaryContainer)
+            menu.vibrant = false
+        }
+
         function test_vibrantColorRoles() {
             const selected = { "label": "Selected", "selected": true }
             const unselected = { "label": "Unselected" }
