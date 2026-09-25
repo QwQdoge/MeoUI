@@ -51,7 +51,23 @@ Item {
             popup.unregisterTransientSurface(null)
         }
 
-        function test_openFromPrewarmsAndPlacesBeforeOpening() {
+        function test_expressiveMenuUsesReusableSpatialOvershootPolicy() {
+        const popup = createTemporaryObject(popupComponent, testCase, {
+            "presentation": MeoMotionPopup.Menu,
+            "motionProfile": "pixel",
+            "placement": "below"
+        })
+        verify(popup)
+        if (!MeoTheme.reduceMotion) {
+            verify(popup.expressiveSpatialEntrance)
+            compare(popup.entranceSpatialEasingType, Easing.OutBack)
+        }
+        compare(popup.transformOrigin, Item.TopLeft)
+        popup.placement = "above"
+        compare(popup.transformOrigin, Item.BottomLeft)
+    }
+
+    function test_openFromPrewarmsAndPlacesBeforeOpening() {
             compare(popup.contentActive, false)
             popup.openFrom(anchor)
             tryCompare(popup, "opened", true)
