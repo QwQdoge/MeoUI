@@ -43,7 +43,7 @@ Item {
             reveal.closedOffsetY = 9
             reveal.snapToActiveState()
             compare(reveal.resolvedOffsetY, 9)
-            reveal.closedOffsetY = Qt.binding(function() { return reveal.closedOffset })
+            reveal.closedOffsetY = reveal.closedOffset
         }
 
         function test_reducedMotionAlwaysResolvesToOpenState() {
