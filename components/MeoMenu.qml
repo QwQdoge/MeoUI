@@ -247,31 +247,6 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
-    MeoRevealMotion {
-        id: menuReveal
-        revealed: control.opened
-        motionProfile: control.motionProfile
-        hiddenScale: 0.975
-        hiddenOffsetY: -6 * control.themeGlobalScale
-    }
-
-    Connections {
-        target: menuReveal
-
-        function onScaleValueChanged() {
-            if (submenu.opened)
-                submenu.positionForAnchor()
-        }
-        function onOffsetXChanged() {
-            if (submenu.opened)
-                submenu.positionForAnchor()
-        }
-        function onOffsetYChanged() {
-            if (submenu.opened)
-                submenu.positionForAnchor()
-        }
-    }
-
     background: Rectangle {
         color: control.vibrant ? control.themeTertiaryContainer
                                : control.isContextMenu ? MeoTheme.surfaceContainer
@@ -284,13 +259,6 @@ MeoMotionPopup {
     contentItem: Column {
         id: contentColumn
         width: control.availableWidth
-        opacity: menuReveal.opacityValue
-        scale: menuReveal.scaleValue
-        transformOrigin: Item.Top
-        transform: Translate {
-            x: menuReveal.offsetX
-            y: menuReveal.offsetY
-        }
         spacing: control.itemSpacing
         topPadding: control.menuPadding
         bottomPadding: control.menuPadding
@@ -622,15 +590,6 @@ MeoMotionPopup {
             return true
         }
 
-        MeoRevealMotion {
-            id: submenuReveal
-            revealed: submenu.opened
-            motionProfile: control.motionProfile
-            hiddenScale: 0.975
-            hiddenOffsetX: (submenu.placementMirrored ? 1 : -1) * 6 * control.themeGlobalScale
-            hiddenOffsetY: 0
-        }
-
         onAboutToShow: positionForAnchor()
         onOpened: Qt.callLater(function() {
             // A delegate column can report its final implicit height on the
@@ -658,13 +617,6 @@ MeoMotionPopup {
         contentItem: Column {
             id: submenuColumn
             width: submenu.availableWidth
-            opacity: submenuReveal.opacityValue
-            scale: submenuReveal.scaleValue
-            transformOrigin: submenu.placementMirrored ? Item.Right : Item.Left
-            transform: Translate {
-                x: submenuReveal.offsetX
-                y: submenuReveal.offsetY
-            }
             topPadding: control.menuPadding
             bottomPadding: control.menuPadding
             spacing: control.itemSpacing
