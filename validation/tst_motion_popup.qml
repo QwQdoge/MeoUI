@@ -61,7 +61,8 @@ Item {
 
             if (!MeoTheme.reduceMotion)
                 verify(popup.expressiveSpatialEntrance)
-            compare(popup.entranceSpatialEasingType, Easing.BezierSpline)
+            compare(popup.entranceScale, MeoMotion.popupClosedScale("pixel"))
+            compare(popup.spatialRevealScale, popup.scale)
             compare(popup.transformOrigin, Item.TopLeft)
 
             popup.placement = "above"
