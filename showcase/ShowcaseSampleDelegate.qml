@@ -3723,6 +3723,8 @@ Item {
     Component {
         id: statusStripSample
         MeoStatusStrip {
+            active: true
+            activeContentColor: MeoTheme.contentOnSecondaryContainer
             statusModel: [
                 { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: qsTr("Connected to MeoNet") },
                 { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: qsTr("Volume 64 percent") },
