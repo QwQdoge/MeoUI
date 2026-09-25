@@ -142,6 +142,7 @@ Item {
         if (name === "MeoCachedImage") return cachedImageSample
         if (name === "MeoMotionSurface") return motionSurfaceSample
         if (name === "MeoSpringValue") return springValueSample
+        if (name === "MeoInteractionSpring") return interactionSpringSample
         if (name === "MeoLaunchSurface") return launchSurfaceSample
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoHoldToConfirm") return holdToConfirmSample
@@ -3791,6 +3792,64 @@ Item {
             }
         }
     }
+    Component {
+        id: interactionSpringSample
+        Item {
+            width: 360 * MeoTheme.globalScale
+            height: 120 * MeoTheme.globalScale
+            property bool activeState: false
+
+            MeoInteractionSpring {
+                id: interactionMotion
+                hovered: interactionPointer.containsMouse
+                pressed: interactionPointer.pressed
+                active: parent.activeState
+            }
+
+            MeoShape {
+                id: interactionSurface
+                anchors.centerIn: parent
+                width: 220 * MeoTheme.globalScale
+                height: 56 * MeoTheme.globalScale
+                type: "round"
+                radius: height / 2
+                color: parent.activeState
+                       ? MeoTheme.primaryContainer
+                       : MeoTheme.surfaceContainerHigh
+                transform: [
+                    Scale {
+                        origin.x: interactionSurface.width / 2
+                        origin.y: interactionSurface.height / 2
+                        xScale: interactionMotion.scale
+                        yScale: interactionMotion.scale
+                    },
+                    Translate {
+                        x: interactionMotion.offsetX
+                        y: interactionMotion.offsetY
+                    }
+                ]
+
+                MeoText {
+                    anchors.centerIn: parent
+                    text: interactionSurface.parent.activeState
+                          ? qsTr("Active spring") : qsTr("Hover and press")
+                    typeRole: "label"
+                    typeSize: "large"
+                    color: interactionSurface.parent.activeState
+                           ? MeoTheme.contentOnPrimaryContainer
+                           : MeoTheme.contentOnSurface
+                }
+
+                MouseArea {
+                    id: interactionPointer
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: interactionSurface.parent.activeState = !interactionSurface.parent.activeState
+                }
+            }
+        }
+    }
+
     Component {
         id: launchSurfaceSample
         MeoLaunchSurface {
