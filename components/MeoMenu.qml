@@ -21,6 +21,15 @@ MeoMotionPopup {
     property real menuHorizontalInset: 4 * themeGlobalScale
     property real itemHeight: 48 * themeGlobalScale
     property real supportingItemHeight: 64 * themeGlobalScale
+    // Context menus use separated Pixel-style action cards rather than one
+    // undifferentiated list. Keep these metrics generic so every right-click
+    // surface shares the same geometry instead of reimplementing it per host.
+    property real separatorHeight: isContextMenu ? 4 * themeGlobalScale
+                                                 : Math.max(9 * themeGlobalScale, 1)
+    property real itemCornerRadius: isContextMenu ? MeoTheme.shapeLarge
+                                                  : MeoTheme.shapeExtraSmall
+    property real selectedItemCornerRadius: isContextMenu ? MeoTheme.shapeLarge
+                                                          : MeoTheme.shapeMedium
     property real minimumMenuWidth: 112 * themeGlobalScale
     property real maximumMenuWidth: 320 * themeGlobalScale
     property real preferredMenuWidth: 240 * themeGlobalScale
@@ -34,6 +43,8 @@ MeoMotionPopup {
     // 9df4d001962d58aabca222967b8ceb1789acb960).
     // This is a token mapping; no upstream implementation code is copied.
     readonly property color themeSurfaceContainerLow: MeoTheme.surfaceContainerLow
+    readonly property color themeSurfaceContainer: MeoTheme.surfaceContainer
+    readonly property color themeSurfaceContainerHigh: MeoTheme.surfaceContainerHigh
     readonly property color themeTertiaryContainer: MeoTheme.tertiaryContainer
     readonly property color themeOnTertiaryContainer: MeoTheme.contentOnTertiaryContainer
     readonly property color themeTertiary: MeoTheme.tertiary
@@ -102,7 +113,7 @@ MeoMotionPopup {
 
     function itemVisualHeight(item) {
         if (itemType(item) === "separator")
-            return Math.max(9 * themeGlobalScale, 1)
+            return separatorHeight
         if (itemType(item) === "label")
             return 32 * themeGlobalScale
         return itemSupportingText(item) === "" ? itemHeight : supportingItemHeight
@@ -129,8 +140,13 @@ MeoMotionPopup {
     }
 
     function rowContainerColor(item, inheritedVibrant) {
-        if (!itemIsSelected(item))
+        if (!itemIsSelected(item)) {
+            if (isContextMenu)
+                return itemUsesVibrantSelection(item, inheritedVibrant)
+                    ? themeTertiaryContainer
+                    : themeSurfaceContainerHigh
             return "transparent"
+        }
         return itemUsesVibrantSelection(item, inheritedVibrant) ? themeTertiary : themeTertiaryContainer
     }
 
@@ -247,14 +263,12 @@ MeoMotionPopup {
         closeSubmenu()
     }
 
-    background: Rectangle {
-        color: control.vibrant ? control.themeTertiaryContainer
-                               : control.isContextMenu ? MeoTheme.surfaceContainer
-                                                       : control.themeSurfaceContainerLow
-        radius: control.surfaceCornerRadius
-        border.width: 1 * control.themeGlobalScale
-        border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
-    }
+    // Let MeoMotionPopup keep the shared two-stage menu elevation/shadow.
+    // MeoMenu only supplies semantic surface roles and shape.
+    surfaceColor: control.vibrant ? control.themeTertiaryContainer
+                                  : control.isContextMenu ? control.themeSurfaceContainer
+                                                          : control.themeSurfaceContainerLow
+    surfaceRadius: control.surfaceCornerRadius
 
     contentItem: Column {
         id: contentColumn
@@ -307,7 +321,7 @@ MeoMotionPopup {
                     id: separatorComponent
                     Item {
                         width: contentColumn.width
-                        height: Math.max(9 * control.themeGlobalScale, 1 * control.themeGlobalScale)
+                        height: control.separatorHeight
                         MeoDivider {
                             anchors.left: parent.left
                             anchors.right: parent.right
@@ -315,6 +329,7 @@ MeoMotionPopup {
                             anchors.leftMargin: control.menuHorizontalInset + 8 * control.themeGlobalScale
                             anchors.rightMargin: control.menuHorizontalInset + 8 * control.themeGlobalScale
                             color: control.themeOutlineVariant
+                            visible: !control.isContextMenu
                         }
                     }
                 }
@@ -375,7 +390,8 @@ MeoMotionPopup {
                             anchors.fill: parent
                             anchors.leftMargin: control.menuHorizontalInset
                             anchors.rightMargin: control.menuHorizontalInset
-                            radius: optionRow.selected ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
+                            radius: optionRow.selected ? control.selectedItemCornerRadius
+                                                       : control.itemCornerRadius
                             color: control.rowContainerColor(modelData)
                             border.width: optionRow.activeFocus ? Math.max(2 * control.themeGlobalScale, 1) : 0
                             border.color: control.themeSecondary
@@ -583,12 +599,10 @@ MeoMotionPopup {
             onTriggered: submenu.positionForAnchor()
         }
 
-        background: Rectangle {
-            color: submenu.vibrant ? control.themeTertiaryContainer : control.themeSurfaceContainerLow
-            radius: MeoTheme.shapeLarge
-            border.width: control.themeGlobalScale
-            border.color: Qt.rgba(control.themeOutline.r, control.themeOutline.g, control.themeOutline.b, 0.20)
-        }
+        surfaceColor: submenu.vibrant ? control.themeTertiaryContainer
+                                      : control.isContextMenu ? control.themeSurfaceContainer
+                                                              : control.themeSurfaceContainerLow
+        surfaceRadius: control.surfaceCornerRadius
 
         contentItem: Column {
             id: submenuColumn
@@ -627,7 +641,7 @@ MeoMotionPopup {
                     readonly property color contentColor: control.rowContentColor(modelData, submenu.vibrant)
                     readonly property color iconColor: control.rowIconColor(modelData, submenu.vibrant)
                     width: submenuColumn.width
-                    height: control.itemType(modelData) === "separator" ? Math.max(9 * control.themeGlobalScale, 1)
+                    height: control.itemType(modelData) === "separator" ? control.separatorHeight
                            : control.itemType(modelData) === "label" ? 32 * control.themeGlobalScale
                            : control.itemSupportingText(modelData) === "" ? control.itemHeight : control.supportingItemHeight
                     activeFocusOnTab: selectable
@@ -653,7 +667,7 @@ MeoMotionPopup {
                         anchors.leftMargin: control.menuHorizontalInset + 8 * control.themeGlobalScale
                         anchors.rightMargin: control.menuHorizontalInset + 8 * control.themeGlobalScale
                         color: control.themeOutlineVariant
-                        visible: control.itemType(modelData) === "separator"
+                        visible: control.itemType(modelData) === "separator" && !control.isContextMenu
                     }
 
                     MeoText {
@@ -675,7 +689,8 @@ MeoMotionPopup {
                         anchors.fill: parent
                         anchors.leftMargin: control.menuHorizontalInset
                         anchors.rightMargin: control.menuHorizontalInset
-                        radius: control.itemIsSelected(modelData) ? MeoTheme.shapeMedium : MeoTheme.shapeExtraSmall
+                        radius: control.itemIsSelected(modelData) ? control.selectedItemCornerRadius
+                                                                  : control.itemCornerRadius
                         color: control.rowContainerColor(modelData, submenu.vibrant)
                         border.width: submenuOptionRow.activeFocus ? Math.max(2 * control.themeGlobalScale, 1) : 0
                         border.color: control.themeSecondary
