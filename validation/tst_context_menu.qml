@@ -43,8 +43,16 @@ Item {
             compare(contextMenu.surfaceStyle, "context")
             verify(contextMenu.isContextMenu)
             compare(contextMenu.surfaceCornerRadius, MeoTheme.shapeLargeIncreased)
-            compare(contextMenu.itemSpacing, 0)
+            compare(contextMenu.surfaceColor, MeoTheme.surfaceContainer)
+            compare(contextMenu.itemSpacing, MeoTheme.space4)
+            compare(contextMenu.menuPadding, MeoTheme.space4)
+            compare(contextMenu.itemHeight, 52 * MeoTheme.globalScale)
+            compare(contextMenu.supportingItemHeight, 68 * MeoTheme.globalScale)
+            compare(contextMenu.separatorHeight, 4 * MeoTheme.globalScale)
             compare(contextMenu.preferredMenuWidth, 256 * MeoTheme.globalScale)
+            compare(contextMenu.rowContainerColor({ "label": "Open" }),
+                    MeoTheme.surfaceContainerHigh)
+            compare(contextMenu.itemCornerRadius, MeoTheme.shapeLarge)
             verify(contextMenu.itemIsSelectable(contextMenu.model[0]))
         }
 

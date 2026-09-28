@@ -23,6 +23,12 @@ jobs:
       - name: Check out MeoUI
         uses: actions/checkout@v6
 
+      - name: Audit shared Material design-system usage
+        run: >-
+          python3 tools/verify-design-system-usage.py
+          --mode library
+          MeoTheme.qml MeoMotion.qml components widgets patterns
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:

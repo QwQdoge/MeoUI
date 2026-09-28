@@ -12,9 +12,13 @@ Components.MeoMenu {
     surfaceStyle: "context"
     placement: "manual"
     preferredMenuWidth: 256 * MeoTheme.globalScale
-    menuPadding: MeoTheme.space8
+    // Pixel/MD3 segmented action treatment: a quiet outer surface with
+    // individually rounded action cards and a small breathing gap.
+    menuPadding: MeoTheme.space4
     menuHorizontalInset: MeoTheme.space4
-    itemSpacing: 0
+    itemSpacing: MeoTheme.space4
+    itemHeight: 52 * MeoTheme.globalScale
+    supportingItemHeight: 68 * MeoTheme.globalScale
     property Item pointAnchor: null
     property real pointLocalX: 0
     property real pointLocalY: 0

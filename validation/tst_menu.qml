@@ -126,15 +126,23 @@ Item {
             const anchor = menu.menuItemAt(2)
             verify(anchor !== null)
             verify(menu.openSubmenu(2, menu.model[2], anchor))
-            wait(220)
+            tryCompare(menu, "submenuOpened", true, menu.submenuSurface.enterDuration + 250)
+            // onOpened schedules one final placement pass after delegates have
+            // reported their implicit height. Wait for that pass instead of
+            // assuming a fixed animation duration.
+            wait(32)
             const globalPoint = anchor.mapToGlobal(0, 0)
             const anchorInSubmenuParent = menu.submenuSurface.parent.mapFromGlobal(globalPoint.x, globalPoint.y)
             const preferredX = anchorInSubmenuParent.x + anchor.width + 4 * menu.themeGlobalScale
+            const popupWidth = Math.max(menu.submenuSurface.width, menu.submenuSurface.implicitWidth)
+            const popupHeight = Math.max(menu.submenuSurface.height,
+                                         menu.submenuSurface.implicitHeight,
+                                         menu.menuContentHeight(menu.submenuSurface.model))
             const maximumX = Math.max(menu.submenuSurface.viewportMargin,
-                                      menu.submenuSurface.parent.width - menu.submenuSurface.width - menu.submenuSurface.viewportMargin)
+                                      menu.submenuSurface.parent.width - popupWidth - menu.submenuSurface.viewportMargin)
             const preferredY = anchorInSubmenuParent.y
             const maximumY = Math.max(menu.submenuSurface.viewportMargin,
-                                      menu.submenuSurface.parent.height - menu.submenuSurface.height - menu.submenuSurface.viewportMargin)
+                                      menu.submenuSurface.parent.height - popupHeight - menu.submenuSurface.viewportMargin)
             // Popup.x/y carry the generic reveal's temporary travel because
             // Qt Quick Controls Popup is not an Item and has no transform list.
             // Validate the stable resting geometry by removing the sampled
