@@ -18,6 +18,9 @@ Item {
     property real radius: MeoTheme.shapeExtraLarge
     property int elevation: 2
     property real entranceDistance: 40 * MeoTheme.globalScale
+    // Reusable reveal direction for popouts, cards, panes, and transient
+    // surfaces. Existing users keep the historical horizontal default.
+    property string entranceAxis: "x" // x | y
     property bool animateOnCompleted: false
     property int entranceDirection: 1
     property real motionOffset: 0
@@ -79,7 +82,10 @@ Item {
         }
     }
 
-    transform: Translate { x: control.motionOffset }
+    transform: Translate {
+        x: control.entranceAxis === "y" ? 0 : control.motionOffset
+        y: control.entranceAxis === "y" ? control.motionOffset : 0
+    }
     Rectangle {
         x: 0; y: control.elevation * 4
         width: parent.width; height: parent.height
