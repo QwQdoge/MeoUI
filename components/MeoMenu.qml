@@ -546,8 +546,9 @@ MeoMotionPopup {
         property int currentIndex: -1
         z: control.z + 1
         surfaceColor: submenu.vibrant ? control.themeTertiaryContainer
-                                      : control.themeSurfaceContainerLow
-        surfaceRadius: MeoTheme.shapeLarge
+                                      : control.isContextMenu ? control.themeSurfaceContainer
+                                                              : control.themeSurfaceContainerLow
+        surfaceRadius: control.surfaceCornerRadius
         width: control.menuWidth
         implicitWidth: control.menuWidth
         implicitHeight: control.menuContentHeight(model)
