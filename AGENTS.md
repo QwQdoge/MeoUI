@@ -2,30 +2,24 @@
 
 ## Ownership
 
-- MeoUI owns platform-neutral MD3 tokens, reusable QML controls, patterns, layouts, accessibility/adaptive behavior, and the Showcase.
-- Keep Plasma, DBus, ISO, package-manager, and other OS-specific integration in `meo-kde` or the owning application. Do not create private copies of shared MeoUI controls elsewhere.
-- Inspect the relevant component, tokens, comparable implementation, Git status, and public contract before editing. Preserve unrelated dirty work.
+MeoUI owns platform-neutral MD3 tokens, reusable QML controls/patterns/layouts, accessibility/adaptive behavior, motion primitives, and the Showcase. Plasma/DBus/ISO/package-manager integration belongs in `meo-kde` or the owning application. Do not create private copies of shared controls elsewhere.
 
-## Portable workspace roots
+Before editing, inspect the affected component, semantic tokens/motion primitives, its public contract, a comparable implementation, and `git status`. Use `MeoTheme`, `MeoMotion`, `MeoTheme.globalScale`, `MeoWindowMetrics`, and the established icon system instead of hard-coded visual tokens or one-off animation APIs.
 
-- Never assume a developer username, home directory, checkout location, or Obsidian vault path.
-- Resolve external project records from `$MEO_DOCS_ROOT` and generated artifacts from `$MEO_OUTPUT_ROOT`. If either variable is unset, do not invent a machine-specific absolute path.
-- MeoUI tools may fall back to the platform XDG state directory for generated artifacts when `$MEO_OUTPUT_ROOT` is unset.
+## Validation ladder
 
-## Repository hygiene
+Run the narrowest relevant checks first.
 
-- New root-level content is limited to entry documentation, source directories, and necessary build/release configuration. Never add loose plans, architecture drafts, audits, journals, screenshots, or generated logs to the repository root.
-- `docs/` is only for maintained public contracts tied to code. Put plans, audits, decisions, agent journals, and historical reports in `$MEO_DOCS_ROOT/Projects/meo-ui/`, using the numbered `00-inbox/`, `01-overview/`, `02-decisions/`, `03-work/`, `04-validation/`, and `99-archive/` folders described by that project's reader-facing `README.md`.
-- Put generated material only in `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/`: compiler results, staged installs, evidence, releasable packages, and disposable work respectively. Every validation run is `validation/<UTC-run-id>/` and includes a `README.md` plus evidence. Do not write new results to repository `out/` or `artifacts/`; leave existing legacy content untouched unless a separately approved migration says otherwise.
+- Design-system audit: `python3 tools/verify-design-system-usage.py --mode library MeoTheme.qml MeoMotion.qml components widgets patterns`.
+- Normal Qt change: configure/build/CTest using the commands in `.github/workflows/qt-validation.yml`.
+- Public QML export change: also run `tools/verify-showcase-coverage.py`; its mechanical 100% gate covers public `qmldir` QML exports only.
+- Public visual/runtime behavior, tokens, reusable controls, or user-visible assets: refresh the relevant Showcase sample, build and run `MeoShowcaseDemo`, and retain inspectable evidence. Non-QML public behavior needs checklist/manual evidence because the QML coverage script cannot prove it.
+- Docs/CI-only changes do not require a Showcase refresh unless they alter delivered UI/runtime behavior.
 
-## Implementation and Showcase gate
+Never describe compilation, offscreen checks, screenshots, or unrun commands as stronger acceptance than they actually provide.
 
-- Use `MeoTheme` semantic tokens, `MeoTheme.globalScale`, `MeoWindowMetrics`, existing motion primitives, and the established icon system. Do not hard-code visual tokens or duplicate existing controls.
-- Keep a control's layout ownership, hit target, visual container, state, and intrinsic sizing contract explicit.
-- Any MeoUI delivery change—tokens, QML, C++, assets, public contracts, build, or packaging—requires a Showcase refresh. `tools/verify-showcase-coverage.py` provides a 100% mechanical gate only for public QML exports in `qmldir`: every export must be catalogued and have a direct, non-fallback sample. It does not mechanically prove token use, C++ runtime APIs, assets, or behavioral quality.
-- For every refresh, keep a reader-facing delivery checklist in the validation run that identifies how each changed non-QML delivery item is represented in the Showcase or separately evidenced, including explicit reasons for any non-visual item. Build **and run** `MeoShowcaseDemo`; save that checklist, QML coverage result, build/run logs, and inspectable visual evidence under `$MEO_OUTPUT_ROOT/meo-ui/validation/<UTC-run-id>/`. A successful build or offscreen check is not a substitute for the evidence it does not produce.
+## Files and safety
 
-## Validation and claims
+Use `$MEO_DOCS_ROOT/Projects/meo-ui/` for plans/audits/decisions and `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/` for generated output. A validation run should contain a short README plus the evidence actually produced. Do not add new output to repository `out/` or `artifacts/`, and do not invent machine-specific paths when the environment roots are unset.
 
-- Run the narrowest relevant checks first, then the required broader checks. Record commands and outcomes only after they actually ran.
-- State the boundary between static, offscreen, runtime, and manual acceptance. Never describe unsupported commands or unperformed checks as verified.
+Preserve unrelated dirty work; avoid destructive cleanup.
