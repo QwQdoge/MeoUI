@@ -1,25 +1,41 @@
-# MeoUI Agent Rules
+# MeoUI agent rules
+
+## Start here
+
+MeoUI is the shared, platform-neutral UI library. Before editing, inspect `git status`, the affected component/token, its nearest tests, and one comparable implementation when useful. Read only the docs/contracts needed for the change; do not perform a repository-wide audit by default.
 
 ## Ownership
 
-MeoUI owns platform-neutral MD3 tokens, reusable QML controls/patterns/layouts, accessibility/adaptive behavior, motion primitives, and the Showcase. Plasma/DBus/ISO/package-manager integration belongs in `meo-kde` or the owning application. Do not create private copies of shared controls elsewhere.
+MeoUI owns reusable MD3 tokens, QML controls, patterns/layouts, motion primitives, accessibility/adaptive behavior, runtime tokens, and the Showcase.
 
-Before editing, inspect the affected component, semantic tokens/motion primitives, its public contract, a comparable implementation, and `git status`. Use `MeoTheme`, `MeoMotion`, `MeoTheme.globalScale`, `MeoWindowMetrics`, and the established icon system instead of hard-coded visual tokens or one-off animation APIs.
+Keep Plasma/KWin/DBus/system/package-manager behavior in meo-kde or the owning app. Consumers must import `MeoUI 1.0`; do not create private copies of shared controls.
 
-## Validation ladder
+Use `MeoTheme` semantic tokens, `MeoTheme.globalScale`, `MeoWindowMetrics`, existing motion primitives, and the established icon system. Do not hard-code a visual value when a suitable semantic token or shared primitive already exists.
 
-Run the narrowest relevant checks first.
+## Validation matrix
 
-- Design-system audit: `python3 tools/verify-design-system-usage.py --mode library MeoTheme.qml MeoMotion.qml components widgets patterns`.
-- Normal Qt change: configure/build/CTest using the commands in `.github/workflows/qt-validation.yml`.
-- Public QML export change: also run `tools/verify-showcase-coverage.py`; its mechanical 100% gate covers public `qmldir` QML exports only.
-- Public visual/runtime behavior, tokens, reusable controls, or user-visible assets: refresh the relevant Showcase sample, build and run `MeoShowcaseDemo`, and retain inspectable evidence. Non-QML public behavior needs checklist/manual evidence because the QML coverage script cannot prove it.
-- Docs/CI-only changes do not require a Showcase refresh unless they alter delivered UI/runtime behavior.
+Run the narrowest relevant checks, then expand only when the public surface changed.
 
-Never describe compilation, offscreen checks, screenshots, or unrun commands as stronger acceptance than they actually provide.
+- Design-system/static usage:
+  `python3 tools/verify-design-system-usage.py --mode library MeoTheme.qml MeoMotion.qml components widgets patterns`
+- Normal Qt/QML change:
+  `cmake --fresh -S . -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTING=ON -DMEOUI_BUILD_SHOWCASE=OFF`
+  `cmake --build build --parallel 2`
+  `QT_QPA_PLATFORM=offscreen ctest --test-dir build --output-on-failure --timeout 60`
+- Public QML export/catalog change: also run `python3 tools/verify-showcase-coverage.py`.
+- Visible component/token/motion/layout behavior change: update the relevant Showcase sample and build/run the Showcase for visual inspection.
+- Pure docs, test-only, packaging-only, or non-visible internal refactors do **not** require a full Showcase run unless they change a public/visible contract.
 
-## Files and safety
+The Showcase coverage script proves catalog/sample coverage for public QML exports; it does not prove visual quality, C++ runtime behavior, assets, or real interaction.
 
-Use `$MEO_DOCS_ROOT/Projects/meo-ui/` for plans/audits/decisions and `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/` for generated output. A validation run should contain a short README plus the evidence actually produced. Do not add new output to repository `out/` or `artifacts/`, and do not invent machine-specific paths when the environment roots are unset.
+## Cross-repository rule
 
-Preserve unrelated dirty work; avoid destructive cleanup.
+If a requested change is generic and reusable, implement it here first. If it depends on Plasma, KWin, DBus, hardware, package management, or OS policy, keep that integration outside MeoUI and expose only the minimal generic UI/API needed here.
+
+## Evidence and files
+
+Distinguish static, offscreen, runtime, and manual visual acceptance. Never claim a level that was not run.
+
+Keep maintained code contracts in `docs/`; project records belong under `$MEO_DOCS_ROOT/Projects/meo-ui/`, and generated output under `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/`. Do not invent machine-specific paths if those roots are unset.
+
+Preserve unrelated dirty work and avoid destructive cleanup.
