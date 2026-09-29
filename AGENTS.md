@@ -36,6 +36,6 @@ If a requested change is generic and reusable, implement it here first. If it de
 
 Distinguish static, offscreen, runtime, and manual visual acceptance. Never claim a level that was not run.
 
-Keep maintained code contracts in `docs/`; project records belong under `$MEO_DOCS_ROOT/Projects/meo-ui/`, and generated output under `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/`. Do not invent machine-specific paths if those roots are unset.
+Keep maintained code contracts in `docs/`; project records belong under `$MEO_DOCS_ROOT/Projects/meo-ui/`. CI or direct CMake commands may use an ephemeral local build tree; retained build/install/validation/package output belongs under `$MEO_OUTPUT_ROOT/meo-ui/{build,install,validation,packages,tmp}/`. MeoUI's maintained tools may use their documented XDG-state fallback when `$MEO_OUTPUT_ROOT` is unset; otherwise do not invent machine-specific paths.
 
 Preserve unrelated dirty work and avoid destructive cleanup.
