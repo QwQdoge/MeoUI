@@ -46,12 +46,13 @@ Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
 
 ## Showcase 是交付门槛 / Showcase gate
 
-任何影响 MeoUI 交付物的改动（token、QML、C++、资源、公开契约、构建或打包）都必须刷新 Showcase；不得只改组件而保留过时示例。刷新后必须：
+影响公开 UI/运行时交付的改动（token、公开 QML、C++ runtime/API、可见资源或行为）必须刷新相关 Showcase 内容；纯文档、CI 或不改变交付行为的构建配置改动不需要为了形式额外刷新 Showcase。
 
-1. 运行 `tools/verify-showcase-coverage.py`：它对 `qmldir` 中公开 **QML export** 到 Catalog 和直接示例的映射实施 100% 门禁；这个百分比不自动涵盖 token、C++ runtime API、资源或行为质量。
-2. 对全部交付范围刷新 Showcase，并在本次 validation 记录中保留可读的交付清单：说明每个改动的 token、QML、runtime/API、资源和可见行为如何在 Showcase 或相应证据中被呈现；没有可视化演示的项目必须明确说明理由，不能留下未说明缺口。
-3. 构建并实际运行 `MeoShowcaseDemo`，而不是仅通过静态检查或编译。
-4. 将构建/运行日志、QML 覆盖结果、交付清单和可复查的视觉证据保存到 `$MEO_OUTPUT_ROOT/meo-ui/validation/<UTC-run-id>/`。
+需要 Showcase 的改动应：
+
+1. 对公开 QML export 运行 `tools/verify-showcase-coverage.py`。它只对 `qmldir` 中公开 QML 到 Catalog/直接示例的映射实施 100% 机械门禁，不自动证明 token、C++ API、资源或行为质量。
+2. 更新与本次改动直接相关的 Showcase 示例；非 QML 的公开行为用简短 checklist 或其他可复查证据补充。
+3. 构建并实际运行 `MeoShowcaseDemo`，保存本次真正产生的覆盖结果、运行信息和必要视觉证据到 `$MEO_OUTPUT_ROOT/meo-ui/validation/<UTC-run-id>/`。
 
 编译、离屏检查和截图分别只能证明其实际覆盖的范围；不要把它们表述成未执行的真实交互验收。
 
