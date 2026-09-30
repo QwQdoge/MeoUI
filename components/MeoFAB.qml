@@ -29,7 +29,7 @@ Button {
     readonly property real elevationLevel: !enabled ? 0 : hovered ? 4 : 3
 
     implicitWidth: showsLabel && !collapsed
-                   ? Math.max(112 * themeGlobalScale, fabContent.implicitWidth + 32 * themeGlobalScale)
+                   ? Math.max(80 * themeGlobalScale, fabContent.implicitWidth + (control.icon.name || control.icon.source.toString() ? 36 : 40) * themeGlobalScale)
                    : baseSize
     implicitHeight: baseSize
     leftPadding: 0

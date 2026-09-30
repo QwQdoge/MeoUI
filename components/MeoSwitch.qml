@@ -75,7 +75,7 @@ Control {
                                             ? Math.min(trackHeight - 4 * themeGlobalScale, thumbRestSize + 4 * themeGlobalScale)
                                             : thumbRestSize
     readonly property real thumbCenterX: checked ? trackWidth - trackHeight / 2 : trackHeight / 2
-    readonly property real trackBorderWidth: checked ? 0 : Math.max(1 * themeGlobalScale, (thickness === "thick" ? 2 : 1) * themeGlobalScale)
+    readonly property real trackBorderWidth: checked ? 0 : (thickness === "thick" ? 3 * themeGlobalScale : (thickness === "thin" ? 1 * themeGlobalScale : 2 * themeGlobalScale))
 
     readonly property var fontLabel: {
         if (typeof MeoTheme === "undefined") return ({ "size": 14, "weight": Font.Medium })
