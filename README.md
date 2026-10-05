@@ -2,6 +2,8 @@
 
 MeoUI 是 MeoArch 共用的 Qt Quick / QML Material Design 3 设计系统。它拥有可复用的主题 token、组件、控件、模式和布局；Plasma/KDE 集成属于 `meo-kde`，具体应用流程属于各应用仓库。
 
+在 Meo 的品牌语境中，**MEO = Modern · Expressive · Open**。它概括了 MeoUI 与 MeoArch 共同追求的方向：交互与呈现保持现代，视觉与动效具有表达力，同时保留开放的 Linux 基础、组件边界与用户控制权。
+
 ## License
 
 MeoUI 原创代码采用 MIT License，见 [LICENSE](LICENSE)。字体、Material
