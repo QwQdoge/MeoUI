@@ -18,6 +18,12 @@ Item {
     property var searchResults: null
     property string searchText: ""
 
+    // App-level actions belong to the shared top app bar rather than being
+    // overlaid by individual applications. Expanded layouts keep the previous
+    // behavior by default unless an app explicitly opts in.
+    property list<Component> topAppBarActions
+    property bool showTopAppBarOnExpanded: false
+
     // 🌟 Safe Area Insets (Edge-to-Edge support)
     property real safeAreaTop: 0
     property real safeAreaBottom: 0
@@ -169,13 +175,15 @@ Item {
 
             Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
 
-            // Top App Bar (Compact only, with Hamburger)
+            // Shared Top App Bar. Applications can opt into keeping it on
+            // expanded layouts and can provide app-specific actions.
             MeoTopAppBar {
                 id: topAppBar
                 width: parent.width
                 title: control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : qsTr("App")
                 type: "small"
-                visible: control.isCompact || control.isMedium
+                visible: control.showTopAppBarOnExpanded || control.isCompact || control.isMedium
+                actions: control.topAppBarActions
 
                 // Add top padding for notch
                 Item { height: control.safeAreaTop; width: parent.width }
@@ -184,6 +192,8 @@ Item {
                 navigationIcon: Component {
                     MeoIconButton {
                         icon.name: "menu"
+                        visible: !control.usesExpandedSidebar
+                        enabled: visible
                         onClicked: modalSidebar.openForNavigation()
                     }
                 }
