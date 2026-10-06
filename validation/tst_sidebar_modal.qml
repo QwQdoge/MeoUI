@@ -36,6 +36,13 @@ Item {
             sidebarModal.close()
         }
 
+        function test_escapeDismissesWhileSearchHasFocus() {
+            sidebarModal.openForNavigation()
+            wait(100)
+            keyClick(Qt.Key_Escape)
+            tryCompare(sidebarModal, "visible", false)
+        }
+
         function test_destinationActivationForwardsRouteAndCloses() {
             sidebarModal.open()
             const sidebar = findChild(sidebarModal, "meoSidebar")

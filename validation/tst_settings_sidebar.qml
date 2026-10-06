@@ -97,6 +97,16 @@ Item {
             verify(search.focusVisible)
         }
 
+        function test_keyboardActivatesFocusedDestination() {
+            const group = findChild(sidebar, "meoSidebarGroup_0")
+            verify(group !== null)
+            const row = group.itemAt(0).item
+            row.forceActiveFocus(Qt.TabFocusReason)
+            keyClick(Qt.Key_Return)
+            compare(activationSpy.count, 1)
+            compare(activationSpy.signalArguments[0][0], "category:network")
+        }
+
         function test_activationForwardsOnlyUsableRoutes() {
             sidebar.activateRow(sidebar.groups[0].rows[0])
             compare(activationSpy.count, 1)
