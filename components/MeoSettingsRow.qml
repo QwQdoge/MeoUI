@@ -264,6 +264,7 @@ Control {
                              : ((isToggle || isCheckbox) ? Accessible.CheckBox : Accessible.Button)
     Accessible.name: title
     Accessible.description: subtitle
+    Accessible.selected: selected
     Accessible.checked: (isToggle || isCheckbox || isRadio) ? checked : false
     Accessible.checkable: isToggle || isCheckbox || isRadio
     Accessible.focusable: isInteractive

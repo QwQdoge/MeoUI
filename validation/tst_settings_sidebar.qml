@@ -97,6 +97,16 @@ Item {
             verify(search.focusVisible)
         }
 
+        function test_assistiveTechnologyReceivesRouteSelection() {
+            const group = findChild(sidebar, "meoSidebarGroup_0")
+            verify(group !== null)
+            compare(group.itemAt(0).item.Accessible.selected, false)
+            compare(group.itemAt(1).item.Accessible.selected, true)
+            sidebar.selectedRoute = "category:network"
+            compare(group.itemAt(0).item.Accessible.selected, true)
+            compare(group.itemAt(1).item.Accessible.selected, false)
+        }
+
         function test_keyboardActivatesFocusedDestination() {
             const group = findChild(sidebar, "meoSidebarGroup_0")
             verify(group !== null)
