@@ -46,10 +46,8 @@ Item {
     MeoNavigationSuite {
         id: navigation
         visible: false
-        availableWidth: 1024
+        availableWidth: 1200
         height: 700
-        preferPersistentDrawer: true
-        navigationVisualStyle: "settings"
         model: [{ "label": "Home", "icon": "home" }]
     }
 

@@ -25,9 +25,9 @@ private Q_SLOTS:
                  QStringLiteral("请输入有效日期"));
         QCOMPARE(QCoreApplication::translate("MeoMediaController", "Next"),
                  QStringLiteral("下一首"));
-        QCOMPARE(QCoreApplication::translate("MeoSettingsSidebar", "Search settings"),
+        QCOMPARE(QCoreApplication::translate("MeoSidebar", "Search settings"),
                  QStringLiteral("搜索设置"));
-        QCOMPARE(QCoreApplication::translate("MeoSettingsSidebar", "No matching settings"),
+        QCOMPARE(QCoreApplication::translate("MeoSidebar", "No matching settings"),
                  QStringLiteral("未找到匹配的设置"));
         QCOMPARE(QCoreApplication::translate("MeoSearchBar", "Clear search"),
                  QStringLiteral("清除搜索"));
@@ -64,7 +64,7 @@ private Q_SLOTS:
         QCOMPARE(QCoreApplication::translate("ShowcaseApiTable", "API"),
                  QStringLiteral("接口"));
         QCoreApplication::removeTranslator(&translator);
-        QCOMPARE(QCoreApplication::translate("MeoSettingsSidebar", "Search settings"),
+        QCOMPARE(QCoreApplication::translate("MeoSidebar", "Search settings"),
                  QStringLiteral("Search settings"));
     }
 };

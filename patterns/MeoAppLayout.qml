@@ -12,9 +12,11 @@ Item {
     property int currentIndex: 0
     property int compactNavigationLimit: 5
     property bool windowResizeActive: false
-    // Kept only for applications that explicitly preserve a legacy drawer.
-    // New layouts use the expanded navigation rail at every wide breakpoint.
-    property bool useLegacyDrawer: false
+    property string currentRoute: ""
+    property var sidebarGroups: []
+    property string sidebarTitle: qsTr("Navigation")
+    property var searchResults: null
+    property string searchText: ""
 
     // 🌟 Safe Area Insets (Edge-to-Edge support)
     property real safeAreaTop: 0
@@ -22,8 +24,8 @@ Item {
     property real safeAreaLeft: 0
     property real safeAreaRight: 0
 
-    // 🌟 Branding & Actions
-    property Component accountHeader: null
+    // 🌟 Sidebar & Actions
+    property Component sidebarFooter: null
     property Component fab: null
 
     readonly property real themeGlobalScale: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.globalScale !== 'undefined') ? MeoTheme.globalScale : 1.0
@@ -32,8 +34,62 @@ Item {
     readonly property bool isExpanded: windowMetrics.isExpandedWidth
     readonly property bool isLarge: windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
     readonly property string windowSizeClass: windowMetrics.widthSizeClass
-    readonly property real expandedRailWidth: 280 * themeGlobalScale
-    readonly property bool usesExpandedRail: !useLegacyDrawer && (isExpanded || isLarge)
+    readonly property bool usesExpandedSidebar: isExpanded || isLarge
+    readonly property string selectedRoute: currentRoute || (navigationModel[currentIndex] && navigationModel[currentIndex].id !== undefined
+                                                          ? String(navigationModel[currentIndex].id) : "")
+    readonly property var effectiveSidebarGroups: {
+        if (sidebarGroups && sidebarGroups.length)
+            return sidebarGroups
+        const rows = []
+        for (let index = 0; index < navigationModel.length; ++index) {
+            const item = navigationModel[index]
+            const route = String(item.route || item.id || "")
+            if (!route)
+                continue
+            rows.push({
+                "route": route,
+                "title": item.label || item.title || "",
+                "subtitle": item.subtitle || "",
+                "leadingIcon": item.icon || "",
+                "enabled": item.enabled !== false
+            })
+        }
+        return [{ "title": "", "rows": rows }]
+    }
+    readonly property var effectiveSearchResults: {
+        if (searchResults !== null)
+            return searchResults
+        const query = searchText.trim().toLocaleLowerCase()
+        if (!query)
+            return []
+        const rows = []
+        for (let index = 0; index < navigationModel.length; ++index) {
+            const item = navigationModel[index]
+            const route = String(item.route || item.id || "")
+            if (!route)
+                continue
+            const title = String(item.label || item.title || "")
+            const subtitle = String(item.subtitle || "")
+            if (title.toLocaleLowerCase().includes(query) || subtitle.toLocaleLowerCase().includes(query))
+                rows.push({ "route": route,
+                            "title": title, "subtitle": subtitle,
+                            "leadingIcon": item.icon || "", "enabled": item.enabled !== false })
+        }
+        return rows
+    }
+
+    function indexForRoute(route) {
+        if (!route)
+            return -1
+        for (let index = 0; index < navigationModel.length; ++index) {
+            const item = navigationModel[index]
+            if (String(item.route || item.id || "") === String(route))
+                return index
+        }
+        return -1
+    }
+
+    function openSidebar() { modalSidebar.openForNavigation() }
     readonly property var compactNavigationModel: navigationModel.slice(0, Math.min(compactNavigationLimit, navigationModel.length))
 
     onWidthChanged: {
@@ -63,52 +119,52 @@ Item {
     Row {
         anchors.fill: parent
 
-        // 1. Collapsed rail on medium; expanded rail on all wider layouts.
+        // Compact navigation stays focused; wider windows share MeoSidebar.
         MeoNavigationRail {
             id: navRail
             width: control.isMedium ? 96 * control.themeGlobalScale
-                                    : control.usesExpandedRail ? control.expandedRailWidth : 0
+                                    : 0
             height: parent.height
             model: control.navigationModel
             currentIndex: control.currentIndex
             visible: width > 0
-            enabled: control.isMedium || control.usesExpandedRail
-            opacity: control.isMedium || control.usesExpandedRail ? 1 : 0
-            isExpanded: control.usesExpandedRail
-            expandedWidth: control.expandedRailWidth
+            enabled: control.isMedium
+            opacity: control.isMedium ? 1 : 0
             resizeInstantly: control.windowResizeActive
-            header: control.accountHeader ? accountHeaderWrapper : null
             onClicked: (index) => { control.currentIndex = index }
 
             Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on opacity { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
 
-            Component {
-                id: accountHeaderWrapper
-                Loader { sourceComponent: control.accountHeader }
-            }
         }
 
-        // 2. Legacy drawer compatibility; it is never selected by default.
-        MeoNavigationDrawer {
-            id: navDrawer
-            width: control.useLegacyDrawer && control.isLarge ? 280 * control.themeGlobalScale : 0
+        MeoSidebar {
+            id: navSidebar
+            width: control.usesExpandedSidebar ? MeoTheme.settingsSidebarWidth : 0
             height: parent.height
-            model: control.navigationModel
-            currentIndex: control.currentIndex
+            groups: control.effectiveSidebarGroups
+            title: control.sidebarTitle
+            selectedRoute: control.selectedRoute
+            searchResults: control.effectiveSearchResults
+            searchText: control.searchText
+            footer: control.sidebarFooter
             visible: width > 0
-            enabled: control.useLegacyDrawer && control.isLarge
-            opacity: control.useLegacyDrawer && control.isLarge ? 1 : 0
-            header: control.accountHeader
-            onClicked: (index) => { control.currentIndex = index }
+            opacity: control.usesExpandedSidebar ? 1 : 0
+            onSearchTextChanged: control.searchText = searchText
+            onRouteActivated: (route, row) => {
+                control.currentRoute = route
+                const index = control.indexForRoute(route)
+                if (index >= 0)
+                    control.currentIndex = index
+            }
 
             Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-            Behavior on opacity { NumberAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
+            Behavior on opacity { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }
 
         // 3. Main Content Area
         Column {
-            width: parent.width - (navRail.visible ? navRail.width : 0) - (navDrawer.visible ? navDrawer.width : 0)
+            width: parent.width - (navRail.visible ? navRail.width : 0) - (navSidebar.visible ? navSidebar.width : 0)
             height: parent.height
 
             Behavior on width { NumberAnimation { duration: control.windowResizeActive || MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
@@ -119,7 +175,7 @@ Item {
                 width: parent.width
                 title: control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : qsTr("App")
                 type: "small"
-                visible: control.isCompact
+                visible: control.isCompact || control.isMedium
 
                 // Add top padding for notch
                 Item { height: control.safeAreaTop; width: parent.width }
@@ -128,7 +184,7 @@ Item {
                 navigationIcon: Component {
                     MeoIconButton {
                         icon.name: "menu"
-                        onClicked: modalDrawer.open()
+                        onClicked: modalSidebar.openForNavigation()
                     }
                 }
             }
@@ -179,25 +235,50 @@ Item {
         }
     }
 
-    // Modal Navigation Drawer (Compact only, triggered by hamburger)
-    MeoNavigationDrawerModal {
-        id: modalDrawer
-        model: control.navigationModel
-        currentIndex: control.currentIndex
-        header: control.accountHeader
-        onClicked: (index) => {
-            control.currentIndex = index
-            modalDrawer.close()
+    MeoSidebarModal {
+        id: modalSidebar
+        groups: control.effectiveSidebarGroups
+        title: control.sidebarTitle
+        searchResults: control.effectiveSearchResults
+        searchText: control.searchText
+        footer: control.sidebarFooter
+        selectedRoute: control.selectedRoute
+        onSearchTextChanged: control.searchText = searchText
+        onRouteActivated: (route, row) => {
+            control.currentRoute = route
+            const index = control.indexForRoute(route)
+            if (index >= 0)
+                control.currentIndex = index
         }
     }
 
     property int lastIndex: 0
 
     onCurrentIndexChanged: {
+        const current = navigationModel[currentIndex]
+        if (current)
+            currentRoute = String(current.route || current.id || "")
         let isForward = currentIndex >= lastIndex;
         lastIndex = currentIndex;
         pageLoader.slideDistance = isForward ? (40 * control.themeGlobalScale) : (-40 * control.themeGlobalScale);
         pageEntrance.restart();
+    }
+
+    Component.onCompleted: {
+        if (!currentRoute && navigationModel[currentIndex])
+            currentRoute = String(navigationModel[currentIndex].route || navigationModel[currentIndex].id || "")
+    }
+
+    onNavigationModelChanged: {
+        const index = indexForRoute(currentRoute)
+        if (index >= 0)
+            currentIndex = index
+    }
+
+    onCurrentRouteChanged: {
+        const nextIndex = indexForRoute(currentRoute)
+        if (nextIndex >= 0 && nextIndex !== currentIndex)
+            currentIndex = nextIndex
     }
 
     ParallelAnimation {
@@ -207,7 +288,7 @@ Item {
             property: "opacity"
             from: 0.0
             to: 1.0
-            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialDefault !== 'undefined') ? MeoTheme.motionDurationSpatialDefault : 240
+            duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSpatialDefault
             easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingStandard !== 'undefined') ? MeoTheme.motionEasingStandard : [0.2, 0, 0, 1]
         }
         NumberAnimation {
@@ -215,7 +296,7 @@ Item {
             property: "scale"
             from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 1.0 : 0.96
             to: 1.0
-            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
+            duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSpatialSlow
             easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSpringBouncy !== 'undefined') ? MeoTheme.motionEasingSpringBouncy : [0.34, 1.35, 0.64, 1.0]
         }
         NumberAnimation {
@@ -223,7 +304,7 @@ Item {
             property: "x"
             from: (typeof MeoTheme !== 'undefined' && MeoTheme.reduceMotion) ? 0 : pageLoader.slideDistance
             to: 0
-            duration: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionDurationSpatialSlow !== 'undefined') ? MeoTheme.motionDurationSpatialSlow : 320
+            duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSpatialSlow
             easing.type: Easing.BezierSpline; easing.bezierCurve: (typeof MeoTheme !== 'undefined' && typeof MeoTheme.motionEasingSoul !== 'undefined') ? MeoTheme.motionEasingSoul : [0.05, 0.7, 0.1, 1]
         }
     }

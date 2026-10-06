@@ -3,22 +3,43 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import MeoUI
 
-// A reusable desktop Settings index: search stays visible, related routes are
+// A reusable application sidebar: search stays visible, related routes are
 // grouped as connected rows, and the selected route remains obvious while the
 // detail page changes independently beside it.
 Rectangle {
     id: control
+    objectName: "meoSidebar"
 
-    property string title: qsTr("Settings")
+    property string title: qsTr("Navigation")
     property string searchPlaceholder: qsTr("Search settings")
     property alias searchText: searchField.text
     property var groups: []
-    property var searchResults: []
+    // null uses local route filtering; an explicit [] is an authoritative empty result.
+    property var searchResults: null
+    readonly property var effectiveSearchResults: {
+        if (searchResults !== null)
+            return searchResults
+        const query = searchText.trim().toLocaleLowerCase()
+        const matches = []
+        if (!query)
+            return matches
+        for (const group of groups) {
+            for (const row of (group.rows || [])) {
+                const text = [row.title || row.label || "", row.subtitle || "", row.route || ""].join(" ").toLocaleLowerCase()
+                if (text.includes(query))
+                    matches.push(row)
+            }
+        }
+        return matches
+    }
     property string selectedRoute: ""
     property Component footer: null
     property bool showTitle: true
 
     signal routeActivated(string route, var row)
+
+    Accessible.name: title
+    Accessible.description: qsTr("Search and choose a destination")
 
     readonly property bool searching: searchText.trim().length > 0
     readonly property real contentInset: MeoTheme.space16
@@ -38,6 +59,8 @@ Rectangle {
             return
         routeActivated(String(row.route), row)
     }
+
+    function focusSearch() { searchField.forceSearchFocus() }
 
     function ensureSelectedRouteVisible() {
         if (searching || !routeScroll.contentItem)
@@ -74,6 +97,11 @@ Rectangle {
     onSelectedRouteChanged: Qt.callLater(ensureSelectedRouteVisible)
     onGroupsChanged: Qt.callLater(ensureSelectedRouteVisible)
     onHeightChanged: Qt.callLater(ensureSelectedRouteVisible)
+    onSearchingChanged: Qt.callLater(ensureSelectedRouteVisible)
+    Connections {
+        target: MeoTheme
+        function onGlobalScaleChanged() { Qt.callLater(control.ensureSelectedRouteVisible) }
+    }
 
     implicitWidth: MeoTheme.settingsSidebarWidth
     implicitHeight: 720 * MeoTheme.globalScale
@@ -101,7 +129,7 @@ Rectangle {
 
         MeoSearchBar {
             id: searchField
-            objectName: "meoSettingsSidebarSearch"
+            objectName: "meoSidebarSearch"
             Layout.fillWidth: true
             placeholder: control.searchPlaceholder
             trailingIcon: ""
@@ -111,7 +139,7 @@ Rectangle {
 
         ScrollView {
             id: routeScroll
-            objectName: "meoSettingsSidebarScroll"
+            objectName: "meoSidebarScroll"
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
@@ -122,18 +150,18 @@ Rectangle {
                 spacing: MeoTheme.space16
 
                 MeoSettingsGroup {
-                    objectName: "meoSettingsSidebarSearchResults"
+                    objectName: "meoSidebarSearchResults"
                     width: parent.width
-                    visible: control.searching && control.searchResults.length > 0
+                    visible: control.searching && control.effectiveSearchResults.length > 0
                     title: qsTr("Results")
-                    model: control.searchResults
+                    model: control.effectiveSearchResults
                     selectedIndex: control.selectedIndexFor(model)
                     onRowActivated: (index, row) => control.activateRow(row)
                 }
 
                 MeoText {
                     width: parent.width
-                    visible: control.searching && control.searchResults.length === 0
+                    visible: control.searching && control.effectiveSearchResults.length === 0
                     text: qsTr("No matching settings")
                     typeRole: "body"
                     typeSize: "medium"
@@ -150,7 +178,7 @@ Rectangle {
                     delegate: MeoSettingsGroup {
                         required property int index
                         required property var modelData
-                        objectName: "meoSettingsSidebarGroup_" + index
+                        objectName: "meoSidebarGroup_" + index
                         width: parent.width
                         title: modelData.title || ""
                         subtitle: modelData.subtitle || ""

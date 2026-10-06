@@ -9,17 +9,8 @@ Rectangle {
     property var model: []
     property int currentIndex: 0
     property string currentId: ""
-    property bool isExpanded: false
-    // M3 Expressive also permits an expanded rail to disappear instead of
-    // becoming the 96dp collapsed rail. Keep the default false for source
-    // compatibility with the always-present collapsed variant.
-    property bool hideWhenCollapsed: false
-    // M3 Expressive rails replace the old permanent drawer. Expanded rails
-    // intentionally remain within the published 220–360dp range.
-    property real expandedWidth: 280 * themeGlobalScale
     property Component header: null
     property Component footer: null
-    property string labelType: "always" // "always" | "selected" | "none"
     // Retained for source compatibility. Expressive navigation rails always
     // use the specified pill-shaped active indicator.
     property string shape: "pill"
@@ -49,13 +40,9 @@ Rectangle {
     }
 
     readonly property real collapsedWidth: 96 * themeGlobalScale
-    readonly property real resolvedExpandedWidth: Math.max(220 * themeGlobalScale,
-                                                           Math.min(360 * themeGlobalScale,
-                                                                    expandedWidth))
-
-    width: isExpanded ? resolvedExpandedWidth : (hideWhenCollapsed ? 0 : collapsedWidth)
+    width: collapsedWidth
     height: parent ? parent.height : 600 * themeGlobalScale
-    visible: isExpanded || !hideWhenCollapsed
+    visible: true
     color: themeSurfaceContainer
     clip: true
 
@@ -110,8 +97,7 @@ Rectangle {
         }
     }
 
-    // The expanded state is a docked navigation pane, rather than a widened
-    // 80 dp rail. The divider keeps the page and navigation surfaces legible.
+    // Separate compact icon shortcuts from their detail content.
     Rectangle {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
@@ -124,7 +110,7 @@ Rectangle {
     Loader {
         id: headerLoader
         anchors.top: parent.top
-        anchors.topMargin: (control.isExpanded ? 16 : 24) * control.themeGlobalScale
+        anchors.topMargin: 24 * control.themeGlobalScale
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         sourceComponent: control.header
@@ -136,9 +122,9 @@ Rectangle {
     Flickable {
         id: destinationFlickable
         anchors.top: headerLoader.bottom
-        anchors.topMargin: (headerLoader.visible ? 8 : (control.isExpanded ? 16 : 24)) * control.themeGlobalScale
+        anchors.topMargin: (headerLoader.visible ? 8 : 24) * control.themeGlobalScale
         anchors.bottom: footerLoader.visible ? footerLoader.top : parent.bottom
-        anchors.bottomMargin: (footerLoader.visible ? 8 : (control.isExpanded ? 16 : 24)) * control.themeGlobalScale
+        anchors.bottomMargin: (footerLoader.visible ? 8 : 24) * control.themeGlobalScale
         anchors.left: parent.left
         anchors.right: parent.right
         contentWidth: width
@@ -173,19 +159,9 @@ Rectangle {
 
                         Item {
                             implicitWidth: rowLoader.width
-                            implicitHeight: (control.isExpanded ? 36 : 12) * control.themeGlobalScale
+                            implicitHeight: 12 * control.themeGlobalScale
 
-                            MeoListHeader {
-                                anchors.left: parent.left
-                                anchors.right: parent.right
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.leftMargin: 28 * control.themeGlobalScale
-                                anchors.rightMargin: 16 * control.themeGlobalScale
-                                text: rowLoader.navigationItem.label || ""
-                                topPadding: 0
-                                bottomPadding: 0
-                                visible: control.isExpanded
-                            }
+
                         }
                     }
 
@@ -206,7 +182,7 @@ Rectangle {
                             implicitWidth: rowLoader.width
                             // The target area always spans the full rail width.
                             // The selected container itself is a 56dp pill in
-                            // the expanded configuration.
+                            // compact icon configuration.
                             implicitHeight: 56 * control.themeGlobalScale
                             activeFocusOnTab: isDestinationEnabled
                             opacity: isDestinationEnabled ? 1.0 : 0.38
@@ -225,54 +201,12 @@ Rectangle {
                             Item {
                                 id: wrapper
                                 anchors.fill: parent
-                                anchors.leftMargin: (control.isExpanded ? 12 : 0) * control.themeGlobalScale
-                                anchors.rightMargin: (control.isExpanded ? 12 : 0) * control.themeGlobalScale
-
-                                // The destination target stays rail-width, while the
-                                // M3 Expressive selected container hugs its icon and
-                                // label. The 36dp leading edge is from the published
-                                // expanded-rail measurement; it is deliberately not
-                                // a full-width drawer-row selection surface.
-                                Rectangle {
-                                    id: expandedIndicator
-                                    objectName: "meoNavigationRailExpandedIndicator_" + destination.navigationIndex
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 24 * control.themeGlobalScale
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    width: expandedContent.implicitWidth + 32 * control.themeGlobalScale
-                                    height: 56 * control.themeGlobalScale
-                                    radius: height / 2
-                                    color: destination.isSelected ? control.themeSecondaryContainer : "transparent"
-                                    visible: control.isExpanded
-
-                                    MeoStateLayer {
-                                        id: expandedStateLayer
-                                        objectName: "meoNavigationRailExpandedStateLayer_" + destination.navigationIndex
-                                        anchors.fill: parent
-                                        radius: parent.radius
-                                        hovered: mouseArea.containsMouse
-                                        pressed: mouseArea.pressed
-                                        focused: destination.activeFocus
-                                        pressX: expandedIndicator.mapFromItem(mouseArea, mouseArea.mouseX, mouseArea.mouseY).x
-                                        pressY: expandedIndicator.mapFromItem(mouseArea, mouseArea.mouseX, mouseArea.mouseY).y
-                                        // NavigationRailColorTokens maps all
-                                        // interaction layers to this role.
-                                        color: control.themeOnSecondaryContainer
-                                        enabled: destination.isDestinationEnabled
-                                    }
-
-                                    Behavior on color {
-                                        ColorAnimation {
-                                            duration: MeoTheme.motionDurationState
-                                            easing.type: Easing.BezierSpline; easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
-                                        }
-                                    }
-                                }
+                                anchors.leftMargin: 0 * control.themeGlobalScale
+                                anchors.rightMargin: 0 * control.themeGlobalScale
 
                                 Column {
                                     anchors.centerIn: parent
                                     spacing: 4 * control.themeGlobalScale
-                                    visible: !control.isExpanded
 
                                     Item {
                                         width: 56 * control.themeGlobalScale
@@ -290,13 +224,13 @@ Rectangle {
 
                                             Behavior on width {
                                                 NumberAnimation {
-                                                    duration: MeoTheme.motionDurationSelection
+                                                    duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection
                                                     easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEnter
                                                 }
                                             }
                                             Behavior on color {
                                                 ColorAnimation {
-                                                    duration: MeoTheme.motionDurationState
+                                                    duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationState
                                                     easing.type: Easing.BezierSpline; easing.bezierCurve: destination.isSelected ? MeoTheme.motionEasingEnter : MeoTheme.motionEasingExit
                                                 }
                                             }
@@ -340,70 +274,16 @@ Rectangle {
                                         }
                                     }
 
-                                    Text {
-                                        objectName: "meoNavigationRailCollapsedLabel_" + destination.navigationIndex
-                                        text: destination.navigationItem.label || ""
-                                        width: parent.width
-                                        font.family: MeoTheme.typefacePlain
-                                        font.pixelSize: 12 * control.themeGlobalScale
-                                        font.weight: Font.Medium
-                                        color: destination.isSelected ? control.themeSecondary : control.themeOnSurfaceVariant
-                                        anchors.horizontalCenter: parent.horizontalCenter
-                                        horizontalAlignment: Text.AlignHCenter
-                                        elide: Text.ElideRight
-                                        visible: control.labelType === "always" || (control.labelType === "selected" && destination.isSelected)
-                                    }
+
                                 }
 
-                                Row {
-                                    id: expandedContent
-                                    anchors.left: parent.left
-                                    anchors.leftMargin: 40 * control.themeGlobalScale
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    spacing: 8 * control.themeGlobalScale
-                                    visible: control.isExpanded
 
-                                    Item {
-                                        width: 24 * control.themeGlobalScale
-                                        height: 24 * control.themeGlobalScale
-                                        anchors.verticalCenter: parent.verticalCenter
+                            }
 
-                                        MeoIcon {
-                                            anchors.centerIn: parent
-                                            icon: destination.navigationItem.icon || ""
-                                            fill: destination.isSelected
-                                            size: 24
-                                            color: destination.isSelected ? control.themeOnSecondaryContainer : control.themeOnSurfaceVariant
-                                        }
-
-                                        MeoBadge {
-                                            text: destination.badgeText
-                                            isDot: destination.navigationItem.badgeDot || false
-                                            visible: text !== "" || isDot
-                                            anchors.horizontalCenter: parent.right
-                                            anchors.verticalCenter: parent.top
-                                            anchors.horizontalCenterOffset: -2 * control.themeGlobalScale
-                                            anchors.verticalCenterOffset: 2 * control.themeGlobalScale
-                                        }
-                                    }
-
-                                    Text {
-                                        objectName: "meoNavigationRailExpandedLabel_" + destination.navigationIndex
-                                        text: destination.navigationItem.label || ""
-                                        // Preserve the content-hugging pill for normal
-                                        // labels without allowing one long destination to
-                                        // run beyond the rail's 16dp trailing pill inset.
-                                        width: Math.min(implicitWidth,
-                                                        Math.max(0, wrapper.width - 88 * control.themeGlobalScale))
-                                        font.family: MeoTheme.typefacePlain
-                                        font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
-                                        font.weight: destination.isSelected ? Font.DemiBold : control.fontLabelLarge.weight
-                                        color: destination.isSelected ? control.themeSecondary : control.themeOnSurfaceVariant
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                        elide: Text.ElideRight
-                                    }
-                                }
+                            MeoTooltip {
+                                text: destination.navigationItem.label || ""
+                                visible: mouseArea.containsMouse && !mouseArea.pressed
+                                delay: 500
                             }
 
                             MouseArea {
@@ -421,10 +301,7 @@ Rectangle {
                                 if (!event.isAutoRepeat
                                         && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                                             || event.key === Qt.Key_Space)) {
-                                    if (control.isExpanded)
-                                        expandedStateLayer.triggerFromKeyboard()
-                                    else
-                                        collapsedStateLayer.triggerFromKeyboard()
+                                    collapsedStateLayer.triggerFromKeyboard()
                                 }
                             }
                             Keys.onReturnPressed: activate()
@@ -440,7 +317,7 @@ Rectangle {
     Loader {
         id: footerLoader
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: (control.isExpanded ? 16 : 24) * control.themeGlobalScale
+        anchors.bottomMargin: 24 * control.themeGlobalScale
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         sourceComponent: control.footer

@@ -34,8 +34,7 @@ QtObject {
                                                                   : isExpandedWidth ? 1040
                                                                   : isLargeWidth ? 1200 : 1440) * scale
     readonly property string navigationMode: isCompactWidth ? "bottomBar"
-                                                              : isMediumWidth ? "rail"
-                                                              : isExpandedWidth ? "expandedRail" : "drawer"
+                                                              : isMediumWidth ? "rail" : "sidebar"
     readonly property bool usesOverlayPane: isCompactWidth || isMediumWidth
     readonly property bool supportsTwoPane: isExpandedWidth || isLargeWidth || isExtraLargeWidth
 

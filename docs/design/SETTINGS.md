@@ -14,9 +14,11 @@ text—without copying another product's branding, wording, or layout.
   must not duplicate container, separator, or row-position geometry.
 - `MeoSettingsGroup` maps semantic Settings roles onto that engine. Do not turn
   every row into a detached card.
-- `MeoSettingsSidebar` is the reusable desktop index. It owns the persistent
+- `MeoSidebar` is the only full application sidebar. It owns the persistent
   search field, connected category groups, selected-route visibility, and
   empty search state; the application supplies route data and navigation.
+  `MeoSidebarModal` presents the same component in a leading-edge modal on
+  narrow windows.
 - `MeoSettingsTaskSheet` is the only standard third-level Settings surface. It
   retracts on accept, reject, or navigation.
 - `MeoSearchBar` is search-first. Set `trailingIcon: ""` when an account action
@@ -53,14 +55,37 @@ text—without copying another product's branding, wording, or layout.
 - Give grouped rows a shared rounded surface and 12–16dp space between groups.
   An index should fit a broad category scan before asking a user to navigate.
 - Keep desktop Settings content around 720–760dp readable width. On compact
-  windows, use an index/drawer category menu rather than a generic five-item
-  bottom bar that hides categories behind “More”.
-- At expanded and larger widths, keep the 360dp search-first index stable while
-  the detail pane changes. Do not repeat the complete category catalogue in
-  the detail pane. Automatically reveal the selected route when it is below
-  the visible portion of a long index.
+  windows, open `MeoSidebarModal` from the app's navigation action. Medium
+  windows may keep a compact icon rail and expose the same modal.
+- At expanded and larger widths, keep the search-first index stable while the
+  detail pane changes. Do not repeat the complete category catalogue in the
+  detail pane. Automatically reveal the selected route when it is below the
+  visible portion of a long index.
 - A status row is not a disguised button. A KDE-owned action names KDE in its
   trailing label or supporting text.
+
+## Sidebar contract
+
+`MeoSidebar` and `MeoSidebarModal` use route identity, never a row position, as
+the selection contract. Each row needs a stable `route` string and a title;
+optional values include `subtitle`, `leadingIcon`, semantic icon tone, and
+`enabled`. A disabled row remains visible and is not activated. Group data has
+the shape `{ title, subtitle, rows }`.
+
+The host owns route changes and search indexing. Bind `selectedRoute` to the
+current route, `groups` to grouped destinations, and `searchResults` to matching
+destination rows. Search results use the same `route` keys, so filtering,
+reordering, and activation cannot select a different page by index. When a
+host does not provide `searchResults`, adaptive layout patterns match their
+navigation model's title and supporting text. Hosts with richer searchable
+metadata should provide their own results.
+
+`routeActivated(route, row)` is emitted only for enabled rows with a route. The
+modal opens with focus in the search field and dismisses with Escape or an
+outside press. The search field and rows expose accessible names and keyboard
+focus. Widths, row geometry, and motion use `MeoTheme` scale and Reduce Motion
+tokens. Persistent sidebars scroll the selected route into view after route,
+group, or viewport changes.
 
 ## Safety boundary
 
@@ -76,3 +101,23 @@ handoff and say which system tool owns the action.
 - When the destination geometry is known, provide `placeholder`; the detailed `MeoSkeleton` layout appears immediately and preserves the final content positions.
 - Feedback that becomes visible remains for at least 300ms to avoid a one-frame flash. `MeoLoadingIndicator`, `MeoSkeleton`, and the feedback fade all follow shared Reduce Motion policy.
 - Toggle-like controls may preview the requested state immediately, but the owning backend remains authoritative and must confirm or cause a rollback.
+
+## Sidebar route and search contract
+
+`MeoSidebar` is the public full navigation surface. `groups` contains connected
+route rows (`route`, `title`, `subtitle`, `leadingIcon`, `enabled`); `selectedRoute`
+uses stable route identity. `routeActivated(route, row)` forwards an enabled
+route without owning application page state. `footer` remains an application slot.
+
+`searchResults: null` filters the supplied groups locally by destination text;
+an explicit list, including `[]`, is authoritative application search data.
+The same contract applies to `MeoSidebarModal`, `MeoNavigationSuite`,
+`MeoAppLayout`, and `MeoScaffold`. The modal closes after activation and supports
+Escape and outside dismissal. Keyboard focus enters the search field; rows use
+the shared accessible button and keyboard activation behavior.
+
+Wide layouts keep the sidebar visible; medium icon rails and compact bottom
+navigation may provide shortcuts, while `openSidebar()` opens the same complete
+route surface. Route identities must remain unique and stable after filtering or
+reordering. Applications must retain the corresponding page mapping when they
+reorder destinations. Reduced motion disables navigation transitions.

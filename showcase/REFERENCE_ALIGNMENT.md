@@ -10,8 +10,8 @@ This file records design/API coverage ideas observed from the reference project.
 - Menu items cover more anatomy: leading icon, trailing shortcut text, trailing icon, separator rows, disabled rows, and submenu affordance.
 - Slider demos separate continuous, discrete ticks, labeled behavior, range behavior, and disabled state.
 - Button demos show a type-by-state grid: text-only, icon, disabled, and loading/interactive equivalents.
-- Navigation examples are kept as distinct bottom bar, rail, drawer, and app shell demonstrations.
-- Navigation rail examples include a header area with menu/FAB affordances and an expanded rail mode, not only a static list.
+- Navigation examples show compact bottom navigation, the icon-only rail, MeoSidebar, and adaptive app shells.
+- Navigation rail examples stay compact and icon-only; full route navigation is shown through MeoSidebar.
 - The reference demonstrates contextual top bars for selected content, plus bottom app bars with navigation icons and a FAB slot.
 - Selection controls are shown with selected, unselected, indeterminate, and disabled states.
 - Reference checkbox and radio controls use `text` for labels and disable their hit area when the component is disabled.
@@ -39,7 +39,7 @@ This file records design/API coverage ideas observed from the reference project.
 - Selection showcase now separates slider rows for continuous, discrete ticks, expressive thick, wavy, and disabled states.
 - Navigation/Menu showcase now shows separator, disabled, trailing shortcut, trailing icon, and submenu-ready examples.
 - Navigation showcase now separates primary icon tabs, primary text-only tabs, and secondary tabs.
-- Navigation showcase now includes collapsed and expanded navigation rail examples with header actions and a footer/settings affordance.
+- Navigation showcase covers icon-only compact rail behavior and persistent/modal MeoSidebar presentations.
 - App bar showcase now includes standard top app bar actions, contextual selection mode, and a bottom app bar with navigation icons plus FAB.
 - Selection showcase now covers checkbox, radio, and switch disabled states alongside selected/unselected states.
 - Feedback showcase now separates determinate, indeterminate, wavy, circular, and loading-in-button examples.

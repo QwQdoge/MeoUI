@@ -32,9 +32,9 @@ Item {
     }
 
     readonly property var navItems: [
-        { "label": qsTr("Home"), "icon": "home" },
-        { "label": qsTr("Explore"), "icon": "explore", "badgeText": "3" },
-        { "label": qsTr("Profile"), "icon": "person" }
+        { "id": "home", "label": qsTr("Home"), "icon": "home" },
+        { "id": "explore", "label": qsTr("Explore"), "icon": "explore", "badgeText": "3" },
+        { "id": "profile", "label": qsTr("Profile"), "icon": "person" }
     ]
     readonly property var chipItems: [
         { "label": qsTr("All"), "icon": "apps" },
@@ -107,10 +107,6 @@ Item {
         if (name === "MeoStepper") return stepperSample
         if (name === "MeoNavigationBar") return navigationBarSample
         if (name === "MeoNavigationRail") return navigationRailSample
-        if (name === "MeoNavigationRailModal") return navigationRailModalSample
-        if (name === "MeoNavigationDrawer") return navigationDrawerSample
-        if (name === "MeoNavigationDrawerModal") return modalDrawerSample
-        if (name === "MeoNavigationDrawerItem") return drawerItemSample
         if (name === "MeoAppGridItem") return appGridItemSample
         if (name === "MeoNavigationSuite") return navigationSuiteSample
         if (name === "MeoBreadcrumbs") return breadcrumbsSample
@@ -198,7 +194,8 @@ Item {
         if (name === "MeoPageHost") return pageHostSample
         if (name === "MeoSettingsLayout") return settingsSample
         if (name === "MeoSettingsGroup") return settingsGroupSample
-        if (name === "MeoSettingsSidebar") return settingsSidebarSample
+        if (name === "MeoSidebar") return settingsSidebarSample
+        if (name === "MeoSidebarModal") return sidebarModalSample
         if (name === "MeoSettingsTaskSheet") return settingsTaskSheetSample
         if (name === "MeoQuickSettingsEditor") return quickSettingsEditorSample
         if (name === "MeoSupportingPaneLayout") return supportingPaneSample
@@ -1208,7 +1205,6 @@ Item {
                     height: 380 * MeoTheme.globalScale
                     model: railExamples.compactRailItems
                     currentIndex: 0
-                    labelType: "always"
                     header: Component {
                         Column {
                             spacing: MeoTheme.space12
@@ -1229,122 +1225,10 @@ Item {
                     height: 380 * MeoTheme.globalScale
                     model: railExamples.compactRailItems
                     currentIndex: 1
-                    labelType: "selected"
                 }
             }
 
-            Column {
-                spacing: MeoTheme.space8
-                SampleLabel { label: qsTr("Expanded · 220dp") }
-                MeoNavigationRail {
-                    height: 380 * MeoTheme.globalScale
-                    model: railExamples.compactRailItems
-                    currentIndex: 0
-                    isExpanded: true
-                    expandedWidth: 220 * MeoTheme.globalScale
-                }
-            }
 
-            Column {
-                spacing: MeoTheme.space8
-                SampleLabel { label: qsTr("Expanded · menu and FAB") }
-                MeoNavigationRail {
-                    height: 500 * MeoTheme.globalScale
-                    model: railExamples.railItems
-                    currentIndex: 0
-                    isExpanded: true
-                    expandedWidth: 280 * MeoTheme.globalScale
-                    header: Component {
-                        Row {
-                            spacing: MeoTheme.space8
-                            MeoIconButton { icon.name: "menu"; type: "standard" }
-                            MeoButton { text: qsTr("Compose"); type: "filled"; icon.name: "edit" }
-                        }
-                    }
-                }
-            }
-
-            Column {
-                spacing: MeoTheme.space8
-                SampleLabel { label: qsTr("Expanded · 360dp groups") }
-                MeoNavigationRail {
-                    height: 500 * MeoTheme.globalScale
-                    model: railExamples.railItems
-                    currentIndex: 5
-                    isExpanded: true
-                    expandedWidth: 360 * MeoTheme.globalScale
-                }
-            }
-        }
-    }
-    Component {
-        id: navigationDrawerSample
-        Column {
-            spacing: MeoTheme.space8
-            SampleLabel { label: qsTr("Legacy compatibility · 360dp baseline; prefer expanded MeoNavigationRail") }
-            MeoNavigationDrawer { width: 360 * MeoTheme.globalScale; height: 300 * MeoTheme.globalScale; model: control.navItems; currentIndex: 0; title: qsTr("MeoUI") }
-        }
-    }
-    Component {
-        id: navigationRailModalSample
-        Column {
-            spacing: MeoTheme.space8
-
-            Timer {
-                interval: 0
-                running: Qt.application.arguments.indexOf("--open-navigation-rail-modal") !== -1
-                onTriggered: modalRail.open()
-            }
-
-            MeoButton {
-                text: qsTr("Open modal navigation rail")
-                icon.name: "menu"
-                onClicked: modalRail.open()
-            }
-
-            MeoNavigationRailModal {
-                id: modalRail
-                model: control.navItems
-                currentIndex: 0
-                expandedWidth: 280 * MeoTheme.globalScale
-                closeOnDestination: true
-                header: Component {
-                    Row {
-                        spacing: MeoTheme.space8
-                        MeoIconButton { icon.name: "menu"; type: "standard" }
-                        MeoButton { text: qsTr("Compose"); icon.name: "edit" }
-                    }
-                }
-            }
-        }
-    }
-    Component {
-        id: modalDrawerSample
-        Column {
-            spacing: MeoTheme.space8
-
-            Timer {
-                interval: 0
-                running: Qt.application.arguments.indexOf("--open-navigation-drawer-modal") !== -1
-                onTriggered: drawer.open()
-            }
-
-            MeoButton { text: qsTr("Open modal navigation rail"); icon.name: "menu"; onClicked: drawer.open() }
-            MeoNavigationDrawerModal { id: drawer; model: control.navItems }
-        }
-    }
-    Component {
-        id: drawerItemSample
-
-        Column {
-            width: 360 * MeoTheme.globalScale
-            spacing: MeoTheme.space4
-
-            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Inbox"); icon: "inbox"; selected: true; badgeText: "8" }
-            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Archive"); icon: "archive" }
-            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Updates"); icon: "update"; mode: "group"; selected: true; supportingText: qsTr("Grouped row"); showDivider: true; roundedBottom: false }
-            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Advanced"); icon: "tune"; mode: "group"; supportingText: qsTr("Supporting text"); roundedTop: false }
-            MeoNavigationDrawerItem { width: parent.width; label: qsTr("Settings"); icon: "settings"; selected: true; visualStyle: "settings" }
         }
     }
     Component {
@@ -2662,8 +2546,7 @@ Item {
                 text: qsTr("meo")
                 placeholder: qsTr("Search components")
                 resultsTitle: qsTr("Results")
-                isExpanded: true
-                suggestions: [{ "label": qsTr("MeoTheme tokens"), "icon": "palette" }, { "label": qsTr("MeoButton usage"), "icon": "smart_button" }]
+                    suggestions: [{ "label": qsTr("MeoTheme tokens"), "icon": "palette" }, { "label": qsTr("MeoButton usage"), "icon": "smart_button" }]
             }
             SampleLabel { label: qsTr("Divided (legacy compatibility)") }
             MeoDockedSearchBar {
@@ -2672,8 +2555,7 @@ Item {
                 placeholder: qsTr("Search components")
                 resultsTitle: qsTr("Results")
                 style: "divided"
-                isExpanded: true
-                suggestions: [{ "label": qsTr("MeoSlider usage"), "icon": "tune" }, { "label": qsTr("MeoToolbar actions"), "icon": "toolbar" }]
+                    suggestions: [{ "label": qsTr("MeoSlider usage"), "icon": "tune" }, { "label": qsTr("MeoToolbar actions"), "icon": "toolbar" }]
             }
         }
     }
@@ -3186,7 +3068,7 @@ Item {
     }
     Component { id: pageLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 170 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Column { anchors.fill: parent; anchors.margins: MeoTheme.space16; spacing: MeoTheme.space8; MeoText { text: qsTr("Page title"); typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface } MeoText { text: qsTr("Max width, padding and section spacing."); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; wrapMode: Text.WordWrap; width: parent.width } } } }
     Component { id: scaffoldSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainer; MeoText { anchors.centerIn: parent; text: qsTr("Top bar + content + bottom bar + FAB slots"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
-    Component { id: appLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Row { anchors.fill: parent; Rectangle { width: 90 * MeoTheme.globalScale; height: parent.height; color: MeoTheme.secondaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.verticalCenter: parent.verticalCenter; text: qsTr("Drawer / rail / bottom navigation shell"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; width: 260 * MeoTheme.globalScale; wrapMode: Text.WordWrap } } } }
+    Component { id: appLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Row { anchors.fill: parent; Rectangle { width: 90 * MeoTheme.globalScale; height: parent.height; color: MeoTheme.secondaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.verticalCenter: parent.verticalCenter; text: qsTr("Sidebar / compact navigation shell"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; width: 260 * MeoTheme.globalScale; wrapMode: Text.WordWrap } } } }
     Component { id: dashboardSample; MeoDashboardLayout { width: 520 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; columns: 3; model: [{ "title": qsTr("Tokens") }, { "title": qsTr("Controls") }, { "title": qsTr("Patterns") }]; delegate: Component { Rectangle { property var modelData: ({ "title": "" }); radius: MeoTheme.shapeMedium; color: MeoTheme.surfaceContainerLow; MeoText { anchors.centerIn: parent; text: modelData.title; typeRole: "label"; typeSize: "big"; color: MeoTheme.contentOnSurface } } } } }
     Component { id: feedSample; MeoFeedLayout { width: 420 * MeoTheme.globalScale; height: 190 * MeoTheme.globalScale; model: [{ "title": qsTr("Release note") }, { "title": qsTr("Component update") }]; delegate: Component { MeoListItem { property var modelData: ({ "title": "" }); width: parent.width; headline: modelData.title; leadingIcon: "article" } } } }
     Component {
@@ -3574,7 +3456,7 @@ Item {
 
     Component {
         id: settingsSidebarSample
-        MeoSettingsSidebar {
+        MeoSidebar {
             width: MeoTheme.settingsSidebarWidth
             height: 640 * MeoTheme.globalScale
             selectedRoute: "category:devices"
@@ -3597,6 +3479,40 @@ Item {
             searchResults: [
                 { "title": qsTr("Wi-Fi"), "subtitle": qsTr("Network & Internet"), "leadingIcon": "wifi", "route": "wifi" }
             ]
+        }
+    }
+
+    Component {
+        id: sidebarModalSample
+        Column {
+            spacing: MeoTheme.space8
+            Timer {
+                interval: 0
+                running: Qt.application.arguments.indexOf("--open-sidebar-modal") !== -1
+                onTriggered: sidebarModal.openForNavigation()
+            }
+            MeoButton {
+                text: qsTr("Open destination sidebar")
+                icon.name: "menu"
+                onClicked: sidebarModal.openForNavigation()
+            }
+            MeoSidebarModal {
+                id: sidebarModal
+                groups: [{ "title": qsTr("General"), "rows": [
+                    { "title": qsTr("Home"), "route": "home", "leadingIcon": "home" },
+                    { "title": qsTr("Explore"), "route": "explore", "leadingIcon": "explore" },
+                    { "title": qsTr("Profile"), "route": "profile", "leadingIcon": "person" }
+                ] }]
+                searchResults: {
+                    const query = searchText.trim().toLocaleLowerCase()
+                    if (!query)
+                        return []
+                    return groups[0].rows.filter(function(row) {
+                        return row.title.toLocaleLowerCase().includes(query)
+                    })
+                }
+                selectedRoute: "home"
+            }
         }
     }
 

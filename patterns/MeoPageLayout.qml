@@ -33,7 +33,7 @@ Flickable {
     readonly property string windowSizeClass: activeMetrics.widthSizeClass
     readonly property int preferredColumns: activeMetrics.preferredColumns
     // Use this for grids: a large root can still have a narrower content host
-    // after a permanent navigation drawer is reserved.
+    // after a persistent sidebar is reserved.
     readonly property int contentPreferredColumns: localWindowMetrics.preferredColumns
     readonly property real maxContentWidth: Math.min(activeMetrics.maximumContentWidth, isCompact ? compactWidth : (isMedium ? mediumWidth : expandedWidth))
     readonly property var fontPageTitle: (typeof MeoTheme !== "undefined" && typeof MeoTheme.titleBig !== "undefined") ? MeoTheme.titleBig : { "size": 28, "weight": Font.DemiBold, "lineHeight": 36, "letterSpacing": 0 }

@@ -59,7 +59,6 @@ MeoRevealMotion 1.0 components/MeoRevealMotion.qml
 MeoSpringValue 1.0 components/MeoSpringValue.qml
 MeoLaunchSurface 1.0 components/MeoLaunchSurface.qml
 MeoMonthCalendar 1.0 components/MeoMonthCalendar.qml
-MeoNavigationDrawerItem 1.0 components/MeoNavigationDrawerItem.qml
 MeoPageHost 1.0 components/MeoPageHost.qml
 MeoPageIndicator 1.0 components/MeoPageIndicator.qml
 MeoProgressBar 1.0 components/MeoProgressBar.qml
@@ -101,10 +100,8 @@ MeoDateRangePicker 1.0 widgets/MeoDateRangePicker.qml
 MeoDockedSearchBar 1.0 widgets/MeoDockedSearchBar.qml
 MeoMediaController 1.0 widgets/MeoMediaController.qml
 MeoNavigationBar 1.0 widgets/MeoNavigationBar.qml
-MeoNavigationDrawer 1.0 widgets/MeoNavigationDrawer.qml
-MeoNavigationDrawerModal 1.0 widgets/MeoNavigationDrawerModal.qml
+MeoSidebarModal 1.0 widgets/MeoSidebarModal.qml
 MeoNavigationRail 1.0 widgets/MeoNavigationRail.qml
-MeoNavigationRailModal 1.0 widgets/MeoNavigationRailModal.qml
 MeoSearchBar 1.0 widgets/MeoSearchBar.qml
 MeoSearchAppBar 1.0 widgets/MeoSearchAppBar.qml
 MeoSearchSuggestions 1.0 widgets/MeoSearchSuggestions.qml
@@ -132,7 +129,7 @@ MeoSearchHeader 1.0 patterns/MeoSearchHeader.qml
 MeoSegmentedList 1.0 patterns/MeoSegmentedList.qml
 MeoSettingsLayout 1.0 patterns/MeoSettingsLayout.qml
 MeoSettingsGroup 1.0 patterns/MeoSettingsGroup.qml
-MeoSettingsSidebar 1.0 patterns/MeoSettingsSidebar.qml
+MeoSidebar 1.0 patterns/MeoSidebar.qml
 MeoSettingsTaskSheet 1.0 patterns/MeoSettingsTaskSheet.qml
 MeoRatingBar 1.0 components/MeoRatingBar.qml
 MeoSupportingPaneLayout 1.0 patterns/MeoSupportingPaneLayout.qml

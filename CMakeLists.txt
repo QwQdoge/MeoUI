@@ -115,7 +115,7 @@ qt_add_qml_module(meoui_module
         runtime/meotokens.h
     QML_FILES
                 widgets/MeoNavigationBar.qml
-        widgets/MeoNavigationDrawerModal.qml
+        widgets/MeoSidebarModal.qml
         patterns/MeoAppLayout.qml
         patterns/MeoFeedLayout.qml
         patterns/MeoDashboardLayout.qml
@@ -220,7 +220,6 @@ qt_add_qml_module(meoui_module
         components/MeoFilterGroup.qml
         components/MeoListHeader.qml
         components/MeoSelectionGroup.qml
-        components/MeoNavigationDrawerItem.qml
         components/MeoDateInput.qml
         components/MeoTimeInput.qml
         components/MeoMonthCalendar.qml
@@ -236,8 +235,6 @@ qt_add_qml_module(meoui_module
         widgets/MeoDateRangePicker.qml
         widgets/MeoTimePicker.qml
         widgets/MeoNavigationRail.qml
-        widgets/MeoNavigationRailModal.qml
-        widgets/MeoNavigationDrawer.qml
         widgets/MeoBottomSheet.qml
         widgets/MeoActionSheet.qml
         widgets/MeoToolbar.qml
@@ -264,7 +261,7 @@ qt_add_qml_module(meoui_module
         patterns/MeoListDetailLayout.qml
         patterns/MeoSettingsLayout.qml
         patterns/MeoSettingsGroup.qml
-        patterns/MeoSettingsSidebar.qml
+        patterns/MeoSidebar.qml
         patterns/MeoSettingsTaskSheet.qml
         patterns/MeoQuickSettingsEditor.qml
         patterns/MeoSearchFilterBar.qml

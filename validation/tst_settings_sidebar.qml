@@ -7,7 +7,7 @@ Item {
     width: 720
     height: 720
 
-    Patterns.MeoSettingsSidebar {
+    Patterns.MeoSidebar {
         id: sidebar
         height: 320
         selectedRoute: "category:devices"
@@ -32,7 +32,7 @@ Item {
     }
 
     TestCase {
-        name: "MeoSettingsSidebar"
+        name: "MeoSidebar"
         when: windowShown
 
         function init() {
@@ -43,6 +43,7 @@ Item {
                     { "title": "Devices", "route": "category:devices", "leadingIcon": "devices" }
                 ]
             }]
+            sidebar.searchResults = [{ "title": "Wi-Fi", "route": "wifi", "leadingIcon": "wifi" }]
             sidebar.searchText = ""
             sidebar.selectedRoute = "category:devices"
             activationSpy.clear()
@@ -67,8 +68,17 @@ Item {
             }]
             sidebar.selectedRoute = "five"
             wait(0)
-            const scroll = findChild(sidebar, "meoSettingsSidebarScroll")
+            const scroll = findChild(sidebar, "meoSidebarScroll")
             verify(scroll.contentItem.contentY > 0)
+        }
+
+        function test_localSearchFiltersRealRoutes() {
+            sidebar.searchResults = null
+            sidebar.searchText = "devices"
+            compare(sidebar.effectiveSearchResults.length, 1)
+            compare(sidebar.effectiveSearchResults[0].route, "category:devices")
+            sidebar.searchText = "missing destination"
+            compare(sidebar.effectiveSearchResults.length, 0)
         }
 
         function test_searchSwitchesTheVisibleIndex() {
@@ -76,6 +86,15 @@ Item {
             sidebar.searchText = "wifi"
             verify(sidebar.searching)
             compare(sidebar.searchResults.length, 1)
+        }
+
+        function test_searchHasAccessibleNameAndKeyboardFocusEntry() {
+            compare(sidebar.Accessible.name, sidebar.title)
+            sidebar.focusSearch()
+            wait(0)
+            const search = findChild(sidebar, "meoSidebarSearch")
+            verify(search !== null)
+            verify(search.focusVisible)
         }
 
         function test_activationForwardsOnlyUsableRoutes() {

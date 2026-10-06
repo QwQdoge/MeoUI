@@ -22,10 +22,10 @@ Item {
             compare(metrics.navigationMode, "rail")
             metrics.availableWidth = 840
             compare(metrics.widthSizeClass, "expanded")
-            compare(metrics.navigationMode, "expandedRail")
+            compare(metrics.navigationMode, "sidebar")
             metrics.availableWidth = 1200
             compare(metrics.widthSizeClass, "large")
-            compare(metrics.navigationMode, "drawer")
+            compare(metrics.navigationMode, "sidebar")
             metrics.availableWidth = 1600
             compare(metrics.widthSizeClass, "extraLarge")
             verify(metrics.supportsTwoPane)

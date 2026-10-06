@@ -11,7 +11,12 @@ Item {
     property Component bottomBar: null
     property Component navigationBar: null
     property Component navigationRail: null
-    property Component navigationDrawer: null
+    property var sidebarGroups: []
+    property string sidebarTitle: qsTr("Navigation")
+    property string selectedRoute: ""
+    property var searchResults: null
+    property string searchText: ""
+    property Component sidebarFooter: null
     property Component sideSheet: null
     property bool sideSheetOpen: false
     property Component fab: null
@@ -23,6 +28,10 @@ Item {
     readonly property bool isMedium: windowMetrics.isMediumWidth
     readonly property bool isExpanded: windowMetrics.isExpandedWidth || windowMetrics.isLargeWidth || windowMetrics.isExtraLargeWidth
 
+    signal routeActivated(string route, var row)
+
+    function openSidebar() { sidebarModal.openForNavigation() }
+
     MeoWindowMetrics {
         id: windowMetrics
         availableWidth: control.width
@@ -33,25 +42,39 @@ Item {
     Row {
         anchors.fill: parent
 
-        // 1. Navigation Rail (Visible in Medium and Expanded by default)
+        // The icon rail is a compact navigation mode. Full sidebars use
+        // MeoSidebar at wide sizes and MeoSidebarModal when opened on demand.
         Loader {
             id: railLoader
             height: parent.height
             sourceComponent: control.navigationRail
-            visible: (control.isMedium || control.isExpanded) && control.navigationRail !== null
+            visible: (control.isCompact || control.isMedium) && control.navigationRail !== null
+            onLoaded: {
+                if (item && "isExpanded" in item)
+                    item.isExpanded = false
+                if (item && "labelType" in item)
+                    item.labelType = "none"
+            }
         }
 
-        // 2. Navigation Drawer (Visible in Expanded by default if provided)
-        Loader {
-            id: drawerLoader
+        MeoSidebar {
+            id: sidebar
+            width: control.isExpanded ? MeoTheme.settingsSidebarWidth : 0
             height: parent.height
-            sourceComponent: control.navigationDrawer
-            visible: control.isExpanded && control.navigationDrawer !== null
+            visible: width > 0
+            groups: control.sidebarGroups
+            title: control.sidebarTitle
+            selectedRoute: control.selectedRoute
+            searchResults: control.searchResults
+            searchText: control.searchText
+            footer: control.sidebarFooter
+            onSearchTextChanged: control.searchText = searchText
+            onRouteActivated: (route, row) => control.routeActivated(route, row)
         }
 
         // 3. Main Body Column
         Column {
-            width: parent.width - (railLoader.visible ? railLoader.width : 0) - (drawerLoader.visible ? drawerLoader.width : 0)
+            width: parent.width - (railLoader.visible ? railLoader.width : 0) - (sidebar.visible ? sidebar.width : 0)
             height: parent.height
 
             // Top Bar Slot
@@ -114,6 +137,18 @@ Item {
         }
     }
 
+    MeoSidebarModal {
+        id: sidebarModal
+        groups: control.sidebarGroups
+        title: control.sidebarTitle
+        selectedRoute: control.selectedRoute
+        searchResults: control.searchResults
+        searchText: control.searchText
+        footer: control.sidebarFooter
+        onSearchTextChanged: control.searchText = searchText
+        onRouteActivated: (route, row) => control.routeActivated(route, row)
+    }
+
     // 4. Snackbar Layer (MD3: Floating above everything, usually bottom-center)
     Loader {
         id: snackbarLoader
@@ -124,5 +159,5 @@ Item {
         visible: control.snackbar !== null
     }
 
-    // 5. Modal Navigation Drawer (Handled by the component itself if it's a Popup, but we can provide a trigger helper)
+    // The caller can invoke openSidebar() from its compact navigation action.
 }
