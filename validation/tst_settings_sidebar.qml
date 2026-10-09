@@ -36,6 +36,7 @@ Item {
         when: windowShown
 
         function init() {
+            sidebar.showSearch = true
             sidebar.groups = [{
                 "title": "Connections",
                 "rows": [
@@ -47,6 +48,13 @@ Item {
             sidebar.searchText = ""
             sidebar.selectedRoute = "category:devices"
             activationSpy.clear()
+        }
+
+        function test_hiddenSearchKeepsNavigationVisible() {
+            sidebar.searchText = "wifi"
+            sidebar.showSearch = false
+            verify(!sidebar.searching)
+            verify(!findChild(sidebar, "meoSidebarSearch").visible)
         }
 
         function test_usesSharedSettingsGeometry() {

@@ -11,6 +11,7 @@ Rectangle {
     objectName: "meoSidebar"
 
     property string title: qsTr("Navigation")
+    property bool showSearch: true
     property string searchPlaceholder: qsTr("Search settings")
     property alias searchText: searchField.text
     property var groups: []
@@ -41,7 +42,7 @@ Rectangle {
     Accessible.name: title
     Accessible.description: qsTr("Search and choose a destination")
 
-    readonly property bool searching: searchText.trim().length > 0
+    readonly property bool searching: showSearch && searchText.trim().length > 0
     readonly property real contentInset: MeoTheme.space16
 
     function selectedIndexFor(rows) {
@@ -60,7 +61,7 @@ Rectangle {
         routeActivated(String(row.route), row)
     }
 
-    function focusSearch() { searchField.forceSearchFocus() }
+    function focusSearch() { if (showSearch) searchField.forceSearchFocus() }
 
     function ensureSelectedRouteVisible() {
         if (searching || !routeScroll.contentItem)
@@ -130,6 +131,7 @@ Rectangle {
         MeoSearchBar {
             id: searchField
             objectName: "meoSidebarSearch"
+            visible: control.showSearch
             Layout.fillWidth: true
             placeholder: control.searchPlaceholder
             trailingIcon: ""

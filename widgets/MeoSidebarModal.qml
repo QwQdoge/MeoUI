@@ -15,6 +15,7 @@ MeoMotionPopup {
     property var searchResults: null
     property Component footer: null
     property string title: qsTr("Navigation")
+    property bool showSearch: true
     property string searchPlaceholder: qsTr("Search navigation")
     property bool showTitle: true
     property real sidebarWidth: MeoTheme.settingsSidebarWidth
@@ -69,6 +70,7 @@ MeoMotionPopup {
                 MeoSidebar {
                     anchors.fill: parent
                     title: control.title
+                    showSearch: control.showSearch
                     searchPlaceholder: control.searchPlaceholder
                     showTitle: control.showTitle
                     groups: control.groups

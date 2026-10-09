@@ -3466,6 +3466,14 @@ Item {
     Component {
         id: settingsSidebarSample
         MeoSidebar {
+            id: sampleSidebar
+            footer: Component {
+                MeoSwitch {
+                    text: qsTr("Show navigation search")
+                    checked: sampleSidebar.showSearch
+                    onToggled: sampleSidebar.showSearch = checked
+                }
+            }
             width: MeoTheme.settingsSidebarWidth
             height: 640 * MeoTheme.globalScale
             selectedRoute: "category:devices"
