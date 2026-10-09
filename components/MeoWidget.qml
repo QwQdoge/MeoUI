@@ -6,7 +6,7 @@ import MeoUI
 //
 // A Meo widget may be presented by a Plasma applet adapter, a lock-screen
 // adapter, or a future overview host, but its visual and privacy contracts
-// belong to MeoUI.  Hosts must honour `supportedSurfaces` and never infer that
+// belong to MeoUI. Hosts must honour `supportedSurfaces` and never infer that
 // a desktop widget is safe to load in a lock screen.
 Control {
     id: control
@@ -40,7 +40,7 @@ Control {
         Adaptive
     }
 
-    // Registry identifiers are stable public API.  A host maps them to a
+    // Registry identifiers are stable public API. A host maps them to a
     // concrete package/adapter; the Meo widget never loads packages itself.
     property string widgetId: ""
     property int preferredSize: MeoWidget.SizeMedium
@@ -52,7 +52,7 @@ Control {
     property var supportedSurfaces: [MeoWidget.Desktop]
 
     // `Adaptive` permits a host to avoid drawing a second surface around
-    // content that declares its own background.  This is also the policy used
+    // content that declares its own background. This is also the policy used
     // by compatibility hosts for native Plasma content; it never rewrites the
     // applet's internal QML or theme bindings.
     property int frameMode: MeoWidget.MeoFramed
@@ -60,6 +60,9 @@ Control {
     property real gridCellSize: 96 * MeoTheme.globalScale
     property real gridGap: MeoTheme.space8
     property real widgetPadding: MeoTheme.space16
+    property color frameColor: MeoTheme.surfaceContainerLow
+    property real frameRadius: MeoTheme.cardRadius
+    property bool showFrameOutline: false
     property string accessibleName: ""
     property string accessibleDescription: ""
 
@@ -68,7 +71,12 @@ Control {
                                             && !wantsOwnBackground)
     readonly property int preferredColumns: columnsForSize(preferredSize)
     readonly property int preferredRows: rowsForSize(preferredSize)
-    readonly property real dynamicCornerRadius: MeoTheme.cardRadius
+    readonly property int currentColumns: spanForExtent(width)
+    readonly property int currentRows: spanForExtent(height)
+    readonly property bool compactLayout: currentColumns <= 1 || currentRows <= 1
+    readonly property bool wideLayout: currentColumns > currentRows
+    readonly property bool expandedLayout: currentColumns >= 4 || currentRows >= 4
+    readonly property real dynamicCornerRadius: frameRadius
     readonly property real effectivePadding: drawsFrame ? widgetPadding : 0
 
     default property alias content: contentHost.data
@@ -104,6 +112,14 @@ Control {
         return 1
     }
 
+    // Googlebook/Android home widgets reflow as users drag resize handles.
+    // Expose the effective grid span so content can react to real host
+    // geometry rather than only the preferred size declared in metadata.
+    function spanForExtent(extent) {
+        const unit = Math.max(1, gridCellSize + gridGap)
+        return Math.max(1, Math.min(4, Math.round((Math.max(1, extent) + gridGap) / unit)))
+    }
+
     function supportsSurface(surface) {
         return supportedSurfaces.indexOf(surface) !== -1
     }
@@ -120,8 +136,10 @@ Control {
             anchors.fill: parent
             type: "rect"
             radius: control.dynamicCornerRadius
-            color: MeoTheme.surfaceContainerLow
-            strokeWidth: MeoTheme.strokeWidthThin
+            color: control.frameColor
+            // Pixel/Googlebook-style home widgets primarily separate from the
+            // wallpaper through a tonal surface, not a permanent keyline.
+            strokeWidth: control.showFrameOutline ? MeoTheme.strokeWidthThin : 0
             strokeColor: MeoTheme.outlineVariant
 
             Behavior on color {
