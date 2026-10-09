@@ -536,7 +536,7 @@ MeoMotionPopup {
         // `Overlay.overlay` is unavailable in a few offscreen/nested hosts
         // until the parent popup has opened. Fall back to the parent menu's
         // owner so keyboard and submenu behavior remain functional there.
-        parent: Overlay.overlay || control.parent
+        parent: control.Overlay.overlay || control.parent
         presentation: MeoMotionPopup.Menu
         property var model: []
         property bool vibrant: false
