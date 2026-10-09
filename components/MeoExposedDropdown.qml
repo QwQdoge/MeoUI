@@ -352,7 +352,7 @@ Control {
                 required property var modelData
 
                 width: ListView.view.width
-                headline: String(modelData)
+                headline: control.optionText(index)
                 isDense: true
                 isSegmented: true
                 roundingStrategy: "all"

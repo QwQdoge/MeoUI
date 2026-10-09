@@ -30,6 +30,7 @@ Popup {
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
     property real entranceScale: MeoMotion.popupClosedScale(motionProfile)
     property real viewportMargin: 24 * MeoTheme.globalScale
+    property bool centerInViewport: false
     property Item initialFocusItem: null
     property Item focusReturnItem: null
     // `contentActive` is the common gate for nested Loaders, discovery work,
@@ -260,6 +261,10 @@ Popup {
             void measuredHeight
         }
         positionForAnchor()
+        if (centerInViewport && parent) {
+            x = (parent.width - width) / 2
+            y = (parent.height - height) / 2
+        }
         clampToViewport()
         captureSpatialRestPosition()
         popupReveal.snapToActiveState()

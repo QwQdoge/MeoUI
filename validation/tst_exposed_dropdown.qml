@@ -75,6 +75,13 @@ Item {
             dropdown.selectIndex(0)
             compare(dropdown.currentValue, "dev")
             compare(dropdown.text, "Development")
+            dropdown.openMenu()
+            tryCompare(dropdown, "opened", true)
+            const list = findChild(dropdown, "exposedDropdownOptions")
+            verify(list !== null)
+            tryVerify(() => list.itemAtIndex(0) !== null)
+            compare(list.itemAtIndex(0).headline, "Development")
+            compare(list.itemAtIndex(1).headline, "Production")
         }
 
         function test_menuStateAndDisabledContract() {

@@ -70,6 +70,22 @@ Item {
             dismissedSpy.clear()
         }
 
+        function test_reopeningAfterResizeRecentersTheDialog() {
+            basic.open()
+            tryCompare(basic, "opened", true)
+            basic.close()
+            tryCompare(basic, "visible", false)
+            const originalWidth = root.width
+            root.width = 1100
+            basic.open()
+            tryCompare(basic, "opened", true)
+            wait(MeoTheme.motionDurationPopupEffectsEnter + 100)
+            fuzzyCompare(basic.x, (root.width - basic.width) / 2, 2)
+            basic.close()
+            tryCompare(basic, "visible", false)
+            root.width = originalWidth
+        }
+
         function test_basicM3MeasurementsAndActions() {
             const basicSurface = findChild(basic, "meoDialogSurface")
             verify(basicSurface !== null)
