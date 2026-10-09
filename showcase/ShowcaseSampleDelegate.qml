@@ -3640,14 +3640,21 @@ Item {
 
     Component {
         id: statusStripSample
-        MeoStatusStrip {
-            statusModel: [
-                { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: qsTr("Connected to MeoNet") },
-                { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: qsTr("Volume 64 percent") },
-                { id: "battery", iconName: "battery_full", text: "82%", available: true, active: false, accessibleName: qsTr("Battery 82 percent") },
-                { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: qsTr("Attention required") },
-                { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: qsTr("Bluetooth status is unavailable") }
-            ]
+        Row {
+            spacing: MeoTheme.space24
+            MeoStatusStrip {
+                foregroundColor: MeoTheme.onSurface
+                statusModel: [{id: "contrast", iconName: "wifi", text: qsTr("Host foreground"), active: true}]
+            }
+            MeoStatusStrip {
+                statusModel: [
+                    { id: "network", iconName: "wifi", text: "MeoNet", available: true, active: true, accessibleName: qsTr("Connected to MeoNet") },
+                    { id: "audio", iconName: "volume_up", text: "64%", available: true, active: false, accessibleName: qsTr("Volume 64 percent") },
+                    { id: "battery", iconName: "battery_full", text: "82%", available: true, active: false, accessibleName: qsTr("Battery 82 percent") },
+                    { id: "warning", iconName: "priority_high", text: "", available: true, attention: true, accessibleName: qsTr("Attention required") },
+                    { id: "bluetooth", iconName: "bluetooth", available: false, active: true, accessibleName: qsTr("Bluetooth status is unavailable") }
+                ]
+            }
         }
     }
 

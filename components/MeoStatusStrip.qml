@@ -12,6 +12,9 @@ Item {
     // attention, and accessibleName.  `available: false` removes the entry;
     // callers decide which optional text is elided when space is constrained.
     property var statusModel: []
+    // Transparent means retain semantic active/attention colors. Hosts on
+    // imagery or a contrasting surface may supply one readable foreground.
+    property color foregroundColor: "transparent"
     property bool active: false
     property bool showText: true
     property real iconSize: 18 * MeoTheme.globalScale
@@ -52,7 +55,8 @@ Item {
 
                 readonly property color contentColor: control.active
                                                      ? MeoTheme.onPrimaryContainer
-                                                     : (modelData.attention
+                                                     : (control.foregroundColor.a > 0 ? control.foregroundColor
+                                                        : modelData.attention
                                                         ? MeoTheme.error
                                                         : modelData.active
                                                           ? MeoTheme.primary
