@@ -653,6 +653,15 @@ Item {
                 }
             }
             MeoExposedDropdown { width: 260 * MeoTheme.globalScale; label: qsTr("Disabled"); model: [qsTr("Unavailable")]; currentIndex: 0; enabled: false }
+            MeoExposedDropdown {
+                width: 260 * MeoTheme.globalScale
+                label: qsTr("Repository type")
+                textRole: "label"
+                valueRole: "value"
+                currentValue: "flatpak"
+                model: [{label: "Flatpak", value: "flatpak"},
+                        {label: "Pacman", value: "pacman"}]
+            }
         }
     }
     Component {

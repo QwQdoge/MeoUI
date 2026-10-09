@@ -70,6 +70,7 @@ ApplicationWindow {
     readonly property var categories: catalog.navigationGroups
 
     MeoAppLayout {
+        searchPlaceholder: qsTr("Search components")
         id: appLayout
         anchors.fill: parent
         currentIndex: window.initialPageIndex

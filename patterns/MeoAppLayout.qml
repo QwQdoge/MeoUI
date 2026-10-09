@@ -15,6 +15,7 @@ Item {
     property string currentRoute: ""
     property var sidebarGroups: []
     property string sidebarTitle: qsTr("Navigation")
+    property string searchPlaceholder: qsTr("Search navigation")
     property var searchResults: null
     property string searchText: ""
 
@@ -150,6 +151,7 @@ Item {
             height: parent.height
             groups: control.effectiveSidebarGroups
             title: control.sidebarTitle
+            searchPlaceholder: control.searchPlaceholder
             selectedRoute: control.selectedRoute
             searchResults: control.effectiveSearchResults
             searchText: control.searchText
@@ -249,6 +251,7 @@ Item {
         id: modalSidebar
         groups: control.effectiveSidebarGroups
         title: control.sidebarTitle
+        searchPlaceholder: control.searchPlaceholder
         searchResults: control.effectiveSearchResults
         searchText: control.searchText
         footer: control.sidebarFooter

@@ -25,6 +25,7 @@ Control {
     readonly property bool opened: menu.opened
     readonly property int highlightedIndex: optionList.currentIndex
     property bool _synchronizingSelection: false
+    property bool _selectionReady: false
 
     implicitWidth: 280 * themeGlobalScale
     implicitHeight: textField.implicitHeight
@@ -43,13 +44,23 @@ Control {
     Accessible.onIncreaseAction: moveSelection(1)
     Accessible.onDecreaseAction: moveSelection(-1)
 
-    onTextChanged: syncIndexFromText()
-    onModelChanged: syncIndexFromText()
-    onCurrentIndexChanged: syncSelectionFromIndex()
-    onCurrentValueChanged: syncIndexFromValue()
+    onTextChanged: if (_selectionReady) syncIndexFromText()
+    onModelChanged: {
+        if (_selectionReady) {
+            if (currentValue !== undefined)
+                syncIndexFromValue()
+            else
+                syncIndexFromText()
+        }
+    }
+    onCurrentIndexChanged: if (_selectionReady) syncSelectionFromIndex()
+    onCurrentValueChanged: if (_selectionReady) syncIndexFromValue()
     Component.onCompleted: {
+        _selectionReady = true
         if (currentValue !== undefined)
             syncIndexFromValue()
+        else if (currentIndex >= 0)
+            syncSelectionFromIndex()
         else
             syncIndexFromText()
     }

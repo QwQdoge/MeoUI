@@ -18,6 +18,18 @@ Item {
         name: "MeoExposedDropdown"
         when: windowShown
 
+        function test_initialValueSurvivesConstructionAndModelRefresh() {
+            const control = Qt.createQmlObject('import QtQuick; import MeoUI; MeoExposedDropdown { currentValue: "flatpak"; textRole: "label"; valueRole: "value"; model: [{label: "Flatpak remote", value: "flatpak"}, {label: "Pacman repository", value: "pacman"}] }', parent)
+            compare(control.currentIndex, 0)
+            compare(control.text, "Flatpak remote")
+            control.model = [{label: "Pacman repository", value: "pacman"},
+                             {label: "Flatpak remote", value: "flatpak"}]
+            compare(control.currentValue, "flatpak")
+            compare(control.currentIndex, 1)
+            compare(control.text, "Flatpak remote")
+            control.destroy()
+        }
+
         function init() {
             if (dropdown.opened)
                 dropdown.toggleMenu()
