@@ -6,6 +6,7 @@ import MeoUI
 MeoMotionPopup {
     id: control
     presentation: MeoMotionPopup.Dialog
+    popupType: Popup.Item
     centerInViewport: true
 
     property string title: ""

@@ -46,6 +46,13 @@ Item {
         signalName: "confirmed"
     }
 
+    Components.MeoDialog {
+        id: overlayDialog
+        parent: Overlay.overlay
+        title: "Window overlay dialog"
+        message: "The overlay receives its geometry when the dialog opens."
+    }
+
     SignalSpy {
         id: cancelledSpy
         target: basic
@@ -65,9 +72,19 @@ Item {
         function init() {
             basic.close()
             full.close()
+            overlayDialog.close()
             confirmedSpy.clear()
             cancelledSpy.clear()
             dismissedSpy.clear()
+        }
+
+        function test_overlayIsCenteredAfterItsFirstLayout() {
+            overlayDialog.open()
+            tryCompare(overlayDialog, "opened", true)
+            tryVerify(() => overlayDialog.parent.width > 0)
+            tryVerify(() => Math.abs(overlayDialog.x - (overlayDialog.parent.width - overlayDialog.width) / 2) < 2)
+            overlayDialog.close()
+            tryCompare(overlayDialog, "visible", false)
         }
 
         function test_reopeningAfterResizeRecentersTheDialog() {

@@ -198,6 +198,17 @@ Popup {
         _spatialPositioning = true
     }
 
+    function centerOnViewport() {
+        if (!centerInViewport || !parent || parent.width <= 0 || parent.height <= 0)
+            return
+        _spatialPositioning = false
+        x = (parent.width - width) / 2
+        y = (parent.height - height) / 2
+        clampToViewport()
+        captureSpatialRestPosition()
+        applySpatialPosition()
+    }
+
     function applySpatialPosition() {
         if (!_spatialPositioning)
             return
@@ -261,7 +272,7 @@ Popup {
             void measuredHeight
         }
         positionForAnchor()
-        if (centerInViewport && parent) {
+        if (centerInViewport && parent && parent.width > 0 && parent.height > 0) {
             x = (parent.width - width) / 2
             y = (parent.height - height) / 2
         }
@@ -270,13 +281,16 @@ Popup {
         popupReveal.snapToActiveState()
         applySpatialPosition()
         Qt.callLater(function() {
-            if (control.visible || control.opened)
+            if (control.visible || control.opened) {
+                centerOnViewport()
                 control._spatialRevealActive = true
+            }
         })
     }
     onOpened: {
         _openRequested = false
         Qt.callLater(function() {
+            centerOnViewport()
             if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
                 initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
             else if (contentItem)
