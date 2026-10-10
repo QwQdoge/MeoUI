@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Window
 import MeoUI
 
 Column {
@@ -29,6 +30,19 @@ Column {
     property color subtitleColor: MeoTheme.contentOnSurfaceVariant
     property string loaderObjectNamePrefix: "meoSegmentedListItem_"
     property string itemObjectNamePrefix: ""
+
+    // Large Settings models used to instantiate every MeoSettingsRow at once.
+    // That is cheap for ordinary 4-10 row groups but can freeze the UI for
+    // seconds when an application/package list contains hundreds or thousands
+    // of entries. Keep the small-list contract unchanged and virtualize only
+    // genuinely large models.
+    property int virtualizationThreshold: 24
+    property real preloadMargin: 900 * MeoTheme.globalScale
+    property real unloadMargin: 1800 * MeoTheme.globalScale
+    property real estimatedItemHeight: 76 * MeoTheme.globalScale
+    property bool virtualizationEnabled: model && model.length > virtualizationThreshold
+    property int viewportEpoch: 0
+
     readonly property bool isMirrored: LayoutMirroring.enabled
 
     signal clicked(int index)
@@ -84,11 +98,23 @@ Column {
     }
 
     function itemAt(index) {
-        return itemRepeater.itemAt(index)
+        const loader = itemRepeater.itemAt(index)
+        return loader ? loader.item : null
     }
 
     width: parent ? parent.width : 420 * MeoTheme.globalScale
     spacing: 8 * MeoTheme.globalScale
+
+    // One inexpensive heartbeat per large group is enough to observe scene
+    // movement caused by an ancestor Flickable. mapToItem() itself is not a
+    // QML binding dependency, so without this epoch a far-away Loader would not
+    // necessarily notice that scrolling brought it near the viewport.
+    Timer {
+        interval: 120
+        repeat: true
+        running: control.visible && control.virtualizationEnabled
+        onTriggered: control.viewportEpoch += 1
+    }
 
     Column {
         width: parent.width
@@ -142,9 +168,41 @@ Column {
                     id: itemLoader
                     required property int index
                     required property var modelData
+                    property real cachedHeight: control.estimatedItemHeight
+                    property bool wasLoaded: false
+                    property bool nearViewport: true
+
                     objectName: control.loaderObjectNamePrefix + index
                     width: itemsColumn.width
+                    height: item ? Math.max(item.implicitHeight, 1) : Math.max(cachedHeight, 1)
+                    asynchronous: control.virtualizationEnabled
+                    active: !control.virtualizationEnabled || nearViewport
                     sourceComponent: control.delegate || defaultItemComponent
+
+                    function updateViewportState() {
+                        // Read the epoch explicitly so this function is invoked
+                        // when an ancestor Flickable scrolls even though the
+                        // delegate's local y does not change.
+                        const epoch = control.viewportEpoch
+                        if (!control.virtualizationEnabled) {
+                            nearViewport = true
+                            return
+                        }
+
+                        const windowObject = itemLoader.Window.window
+                        if (!windowObject || !windowObject.visible) {
+                            // During tests/offscreen construction retain the
+                            // historic eager behavior so contracts stay stable.
+                            nearViewport = true
+                            return
+                        }
+
+                        const scenePoint = itemLoader.mapToItem(null, 0, 0)
+                        const top = scenePoint.y
+                        const bottom = top + Math.max(itemLoader.height, control.estimatedItemHeight)
+                        const margin = itemLoader.wasLoaded ? control.unloadMargin : control.preloadMargin
+                        nearViewport = bottom >= -margin && top <= windowObject.height + margin
+                    }
 
                     function applyListContract() {
                         if (!item)
@@ -182,15 +240,32 @@ Column {
                             item.objectName = control.itemObjectNamePrefix + itemLoader.index
                     }
 
-                    onLoaded: applyListContract()
+                    Component.onCompleted: updateViewportState()
+                    onLoaded: {
+                        applyListContract()
+                        wasLoaded = true
+                        if (item && item.implicitHeight > 0)
+                            cachedHeight = item.implicitHeight
+                    }
                     onWidthChanged: applyListContract()
                     onModelDataChanged: applyListContract()
+
+                    Connections {
+                        target: control
+                        function onViewportEpochChanged() {
+                            itemLoader.updateViewportState()
+                        }
+                    }
 
                     Connections {
                         target: itemLoader.item
                         ignoreUnknownSignals: true
                         function onClicked() {
                             control.activate(itemLoader.index)
+                        }
+                        function onImplicitHeightChanged() {
+                            if (itemLoader.item && itemLoader.item.implicitHeight > 0)
+                                itemLoader.cachedHeight = itemLoader.item.implicitHeight
                         }
                     }
 
