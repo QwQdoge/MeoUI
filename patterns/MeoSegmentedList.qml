@@ -98,8 +98,11 @@ Column {
     }
 
     function itemAt(index) {
-        const loader = itemRepeater.itemAt(index)
-        return loader ? loader.item : null
+        // Preserve the long-standing public contract: callers receive the
+        // delegate Loader and can inspect `.item`, focus it, or query its
+        // accessibility state. Virtualization changes Loader activity, not the
+        // shape of the API.
+        return itemRepeater.itemAt(index)
     }
 
     width: parent ? parent.width : 420 * MeoTheme.globalScale
