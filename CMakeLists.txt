@@ -340,7 +340,7 @@ install(TARGETS meoui_module
 install(TARGETS meoui_tokens
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
-install(FILES runtime/meotokens.h
+install(FILES runtime/meotokens.h runtime/meodesigntokens.h
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/MeoUI"
 )
 install(FILES ${MEOUI_TRANSLATION_QM_FILES}

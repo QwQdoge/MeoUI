@@ -4,6 +4,8 @@
 
 MeoUI is the shared, platform-neutral UI library. Before editing, inspect `git status`, the affected component/token, its nearest tests, and one comparable implementation when useful. Read only the docs/contracts needed for the change; do not perform a repository-wide audit by default.
 
+Read `docs/api-lifecycle.md` before adding a replacement for an existing public control, reviving a legacy pattern, marking something experimental, or deleting/renaming public QML.
+
 ## Ownership
 
 MeoUI owns reusable MD3 tokens, QML controls, patterns/layouts, motion primitives, accessibility/adaptive behavior, runtime tokens, and the Showcase.
@@ -11,6 +13,8 @@ MeoUI owns reusable MD3 tokens, QML controls, patterns/layouts, motion primitive
 Keep Plasma/KWin/DBus/system/package-manager behavior in meo-kde or the owning app. Consumers must import `MeoUI 1.0`; do not create private copies of shared controls.
 
 Use `MeoTheme` semantic tokens, `MeoTheme.globalScale`, `MeoWindowMetrics`, existing motion primitives, and the established icon system. Do not hard-code a visual value when a suitable semantic token or shared primitive already exists.
+
+Public components have a lifecycle classification. Deprecated compatibility APIs remain available for maintained consumers but are not preferred targets for new product work. In particular, `MeoBottomAppBar` is compatibility/legacy for docked action surfaces; use `MeoDockedToolbar` for new docked action-toolbar work unless the semantics differ. Follow `docs/api-lifecycle.md` rather than deleting compatibility types opportunistically.
 
 ## Validation matrix
 

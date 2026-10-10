@@ -58,6 +58,15 @@ Apache-2.0、OFL-1.1 或 MIT 条款；完整归属和对应许可证路径见
 
 编译、离屏检查和截图分别只能证明其实际覆盖的范围；不要把它们表述成未执行的真实交互验收。
 
+## Native metric contract
+
+`runtime/meodesigntokens.h` is the shared, header-only `Meo::DesignTokens`
+metric contract for native renderers. It requires QtCore only and is installed
+under `include/MeoUI`. The existing `MeoTokens` QML singleton wraps those same
+values through `meotokens.h`; QWidget consumers do not need its QML registration
+library. Renderer-specific color, typography and application behavior retain
+their existing owners.
+
 ## Read first
 
 先阅读 [AGENTS.md](AGENTS.md)，再按需要阅读 `docs/` 中与目标代码直接相关的契约。使用者应通过 `MeoUI 1.0` 导入公共模块，而不是复制私有组件到应用中。
