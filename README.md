@@ -70,3 +70,5 @@ their existing owners.
 ## Read first
 
 先阅读 [AGENTS.md](AGENTS.md)，再按需要阅读 `docs/` 中与目标代码直接相关的契约。使用者应通过 `MeoUI 1.0` 导入公共模块，而不是复制私有组件到应用中。
+
+共享原生 `DesignTokens` 同时提供默认效果弹簧、Expressive fast spatial 弹簧和其最大时长；`MeoMotion` 与原生 MeoStyle 读取相同参数。QML 参数数值保持原有 Material 合约。

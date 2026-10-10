@@ -59,4 +59,10 @@ MEO_TOKEN_ACCESSOR(stateOpacityFocus)
 MEO_TOKEN_ACCESSOR(stateOpacityPressed)
 MEO_TOKEN_ACCESSOR(stateOpacityDragged)
 
+MEO_TOKEN_ACCESSOR(motionEffectsDamping)
+MEO_TOKEN_ACCESSOR(motionEffectsStiffness)
+MEO_TOKEN_ACCESSOR(motionFastSpatialDamping)
+MEO_TOKEN_ACCESSOR(motionFastSpatialStiffness)
+MEO_TOKEN_ACCESSOR(motionFastMaximumDuration)
+
 #undef MEO_TOKEN_ACCESSOR

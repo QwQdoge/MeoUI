@@ -24,14 +24,14 @@ QtObject {
     readonly property var standardDefaultSpatial: springSpec(0.9, 700)
     readonly property var standardFastSpatial: springSpec(0.9, 1400)
     readonly property var standardSlowSpatial: springSpec(0.9, 300)
-    readonly property var standardDefaultEffects: springSpec(1.0, 1600)
+    readonly property var standardDefaultEffects: springSpec(MeoTokens.motionEffectsDamping, MeoTokens.motionEffectsStiffness)
     readonly property var standardFastEffects: springSpec(1.0, 3800)
     readonly property var standardSlowEffects: springSpec(1.0, 800)
 
     readonly property var expressiveDefaultSpatial: springSpec(0.8, 380)
-    readonly property var expressiveFastSpatial: springSpec(0.6, 800)
+    readonly property var expressiveFastSpatial: springSpec(MeoTokens.motionFastSpatialDamping, MeoTokens.motionFastSpatialStiffness)
     readonly property var expressiveSlowSpatial: springSpec(0.8, 200)
-    readonly property var expressiveDefaultEffects: springSpec(1.0, 1600)
+    readonly property var expressiveDefaultEffects: springSpec(MeoTokens.motionEffectsDamping, MeoTokens.motionEffectsStiffness)
     readonly property var expressiveFastEffects: springSpec(1.0, 3800)
     readonly property var expressiveSlowEffects: springSpec(1.0, 800)
 
@@ -73,7 +73,7 @@ QtObject {
         const expressive = normalizedProfile(profile) !== "calm"
         const suffix = normalizedSpeed(speed)
         if (expressive)
-            return suffix === "fast" ? 500 : suffix === "slow" ? 700 : 550
+            return suffix === "fast" ? MeoTokens.motionFastMaximumDuration : suffix === "slow" ? 700 : 550
         return suffix === "fast" ? 300 : suffix === "slow" ? 550 : 400
     }
 

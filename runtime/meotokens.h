@@ -55,6 +55,11 @@ class MeoTokens final : public QObject
     Q_PROPERTY(qreal stateOpacityFocus READ stateOpacityFocus CONSTANT)
     Q_PROPERTY(qreal stateOpacityPressed READ stateOpacityPressed CONSTANT)
     Q_PROPERTY(qreal stateOpacityDragged READ stateOpacityDragged CONSTANT)
+    Q_PROPERTY(qreal motionEffectsDamping READ motionEffectsDamping CONSTANT)
+    Q_PROPERTY(qreal motionEffectsStiffness READ motionEffectsStiffness CONSTANT)
+    Q_PROPERTY(qreal motionFastSpatialDamping READ motionFastSpatialDamping CONSTANT)
+    Q_PROPERTY(qreal motionFastSpatialStiffness READ motionFastSpatialStiffness CONSTANT)
+    Q_PROPERTY(qreal motionFastMaximumDuration READ motionFastMaximumDuration CONSTANT)
 
 public:
     explicit MeoTokens(QObject *parent = nullptr);
@@ -103,4 +108,9 @@ public:
     qreal stateOpacityFocus() const;
     qreal stateOpacityPressed() const;
     qreal stateOpacityDragged() const;
+    qreal motionEffectsDamping() const;
+    qreal motionEffectsStiffness() const;
+    qreal motionFastSpatialDamping() const;
+    qreal motionFastSpatialStiffness() const;
+    qreal motionFastMaximumDuration() const;
 };

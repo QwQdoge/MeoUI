@@ -67,6 +67,14 @@ public:
     static constexpr qreal iconButtonSizeXL() { return 136.0; }
 
     // AndroidX Material 3 StateTokens (v0_210, Apache-2.0):
+    // Cross-renderer Material motion contract, matching MeoMotion's existing
+    // default effects and expressive fast spatial springs (unit mass).
+    static constexpr qreal motionEffectsDamping() { return 1.0; }
+    static constexpr qreal motionEffectsStiffness() { return 1600.0; }
+    static constexpr qreal motionFastSpatialDamping() { return 0.6; }
+    static constexpr qreal motionFastSpatialStiffness() { return 800.0; }
+    static constexpr qreal motionFastMaximumDuration() { return 500.0; }
+
     // https://android.googlesource.com/platform/frameworks/support/+/64212d2a7941fd734599a75b73fc3750e8bb1cb3/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens/StateTokens.kt
     // Keep the native singleton and QML fallback on the same state-layer
     // values. Only token values were transcribed; no upstream code was copied.
