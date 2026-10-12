@@ -27,6 +27,8 @@ Item {
             verify(tooltip.implicitHeight >= 24 * MeoTheme.globalScale)
             verify(findChild(tooltip, "meoTooltipText") !== null)
             verify(findChild(tooltip, "meoTooltipBackground") !== null)
+            compare(tooltip.contentItem.Accessible.role, Accessible.ToolTip)
+            compare(tooltip.contentItem.Accessible.name, "Copy link")
         }
 
         function test_textIsConstrainedToMaterialMaximumWidth() {

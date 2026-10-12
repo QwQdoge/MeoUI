@@ -24,11 +24,11 @@ ToolTip {
     implicitHeight: Math.max(24 * themeGlobalScale,
                              contentItem.implicitHeight + topPadding + bottomPadding)
 
-    Accessible.role: Accessible.ToolTip
-    Accessible.name: text
-
     contentItem: Text {
         objectName: "meoTooltipText"
+        // ToolTip is a Popup; accessibility belongs on its Item content.
+        Accessible.role: Accessible.ToolTip
+        Accessible.name: control.text
         text: control.text
         font.family: control.themeFontFamily
         font.pixelSize: control.fontBodySmall.size * control.themeFontScale * control.themeGlobalScale

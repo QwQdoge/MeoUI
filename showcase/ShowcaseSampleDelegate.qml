@@ -2346,7 +2346,7 @@ Item {
 
             MeoTooltip {
                 id: tip
-                text: qsTr("Tooltip on hover")
+                text: qsTr("Accessible tooltip on hover")
                 x: hoverButton.x + hoverButton.width / 2 - width / 2
                 y: hoverButton.y - height - MeoTheme.space8
                 Component.onCompleted: open()
