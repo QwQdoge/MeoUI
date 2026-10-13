@@ -14,6 +14,12 @@ Item {
         model: ["Development", "Staging", "Production"]
     }
 
+    SignalSpy {
+        id: selectedSpy
+        target: dropdown
+        signalName: "selected"
+    }
+
     TestCase {
         name: "MeoExposedDropdown"
         when: windowShown
@@ -34,6 +40,7 @@ Item {
             if (dropdown.opened)
                 dropdown.toggleMenu()
             wait(MeoTheme.motionDurationPopupEffectsExit + 50)
+            selectedSpy.clear()
             dropdown.enabled = true
             dropdown.model = ["Development", "Staging", "Production"]
             dropdown.textRole = ""
@@ -51,6 +58,9 @@ Item {
             dropdown.selectIndex(1)
             compare(dropdown.currentIndex, 1)
             compare(dropdown.text, "Staging")
+            compare(selectedSpy.count, 1)
+            compare(selectedSpy.signalArguments[0][0], 1)
+            compare(selectedSpy.signalArguments[0][1], "Staging")
 
             dropdown.moveSelection(1)
             compare(dropdown.currentIndex, 2)
@@ -75,6 +85,9 @@ Item {
             dropdown.selectIndex(0)
             compare(dropdown.currentValue, "dev")
             compare(dropdown.text, "Development")
+            compare(selectedSpy.count, 1)
+            compare(selectedSpy.signalArguments[0][0], 0)
+            compare(selectedSpy.signalArguments[0][1], "dev")
             dropdown.openMenu()
             tryCompare(dropdown, "opened", true)
             const list = findChild(dropdown, "exposedDropdownOptions")
