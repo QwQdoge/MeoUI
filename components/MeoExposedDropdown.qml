@@ -130,13 +130,15 @@ Control {
     function selectIndex(index) {
         if (index < 0 || index >= optionCount)
             return
-        const value = optionText(index)
+        const displayText = optionText(index)
+        const rawValue = valueRole !== "" ? optionValue(index) : displayText
+        const selectedValue = rawValue === undefined || rawValue === null ? "" : String(rawValue)
         _synchronizingSelection = true
         currentIndex = index
-        text = value
+        text = displayText
         currentValue = optionValue(index)
         _synchronizingSelection = false
-        selected(index, value)
+        selected(index, selectedValue)
     }
 
     function moveSelection(offset) {
