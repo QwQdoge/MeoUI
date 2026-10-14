@@ -66,7 +66,7 @@ MeoCard {
                 spacing: 12 * control.themeGlobalScale
                 Text {
                     text: control.hasStartDate
-                          ? Qt.formatDate(control.startDate, control.uiLocale, Locale.ShortFormat)
+                          ? control.uiLocale.toString(control.startDate, Locale.ShortFormat)
                           : qsTr("Start date")
                     font.pixelSize: 18 * control.themeGlobalScale
                     font.weight: Font.Medium
@@ -79,7 +79,7 @@ MeoCard {
                 }
                 Text {
                     text: control.hasEndDate
-                          ? Qt.formatDate(control.endDate, control.uiLocale, Locale.ShortFormat)
+                          ? control.uiLocale.toString(control.endDate, Locale.ShortFormat)
                           : qsTr("End date")
                     font.pixelSize: 18 * control.themeGlobalScale
                     font.weight: Font.Medium
@@ -133,7 +133,7 @@ MeoCard {
 
                 MeoButton {
                     id: monthButton
-                    text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM")
+                    text: control.uiLocale.toString(control.displayDate, "MMMM")
                     type: "text"
                     size: "s"
                     icon.name: "arrow_drop_down"
@@ -209,7 +209,7 @@ MeoCard {
                     height: width
                     activeFocusOnTab: control.interactive
                     Accessible.role: Accessible.Button
-                    Accessible.name: Qt.formatDate(dateInfo.date, control.uiLocale, Locale.LongFormat)
+                    Accessible.name: control.uiLocale.toString(dateInfo.date, Locale.LongFormat)
                     Accessible.checkable: isStart || isEnd
                     Accessible.checked: isStart || isEnd
                     Accessible.focusable: control.interactive
@@ -324,7 +324,7 @@ MeoCard {
         // 2023-01-01 is a Sunday. Convert QLocale's Monday=1…Sunday=7
         // convention to JavaScript's Sunday=0 convention before formatting.
         const dayOffset = (control.uiLocale.firstDayOfWeek % 7 + index) % 7
-        return Qt.formatDate(new Date(2023, 0, 1 + dayOffset), control.uiLocale, "ddd")
+        return control.uiLocale.toString(new Date(2023, 0, 1 + dayOffset), "ddd")
     }
 
     function getDateForIndex(index) {
@@ -409,7 +409,7 @@ MeoCard {
         const months = []
         for (let month = 0; month < 12; ++month) {
             months.push({
-                label: Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), uiLocale, "MMMM"),
+                label: uiLocale.toString(new Date(displayDate.getFullYear(), month, 1), "MMMM"),
                 selected: month === displayDate.getMonth(),
                 action: (function(value) { return function() { control.chooseMonth(value) } })(month)
             })

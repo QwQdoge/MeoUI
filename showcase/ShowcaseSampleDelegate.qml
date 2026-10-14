@@ -3251,12 +3251,12 @@ Item {
             columns: 3
             spacing: MeoTheme.space12
 
-            MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 7, 26); displayDate: new Date(2026, 7, 1) }
+            MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 7, 26); displayDate: new Date(2026, 7, 1); uiLocale: Qt.locale("en_US") }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 1, 29); displayDate: new Date(2026, 1, 1) }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 0, 1); displayDate: new Date(2026, 0, 1); firstDayOfWeek: Qt.Monday }
             MeoMonthCalendar { width: 248 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 0, 1); displayDate: new Date(2026, 0, 1); firstDayOfWeek: Qt.Monday; showWeekNumbers: true }
             MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 7, 31); displayDate: new Date(2026, 8, 1) }
-            MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 10, 15); displayDate: new Date(2026, 10, 1); interactive: false }
+            MeoMonthCalendar { width: 220 * MeoTheme.globalScale; height: 324 * MeoTheme.globalScale; selectedDate: new Date(2026, 10, 15); displayDate: new Date(2026, 10, 1); uiLocale: Qt.locale("zh_CN"); interactive: false }
         }
     }
 

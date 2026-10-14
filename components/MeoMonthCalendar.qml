@@ -150,7 +150,10 @@ Item {
 
             MeoText {
                 Layout.fillWidth: true
-                text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM yyyy")
+                Layout.minimumWidth: 0
+                elide: Text.ElideRight
+                objectName: "meoMonthCalendarTitle"
+                text: control.uiLocale.toString(control.displayDate, "MMMM yyyy")
                 typeRole: "title"
                 typeSize: "medium"
                 emphasized: true
@@ -199,7 +202,8 @@ Item {
                     required property int index
                     width: weekdayGrid.width / (control.showWeekNumbers ? 8 : 7)
                     height: weekdayGrid.height
-                    text: Qt.formatDate(control.dateAt(index), control.uiLocale, "ddd")
+                    objectName: "meoMonthCalendarWeekday-" + index
+                    text: control.uiLocale.toString(control.dateAt(index), "ddd")
                     typeRole: "label"
                     typeSize: "small"
                     emphasized: true
@@ -268,7 +272,7 @@ Item {
                     enabled: control.interactive
                     activeFocusOnTab: enabled && (activeFocus || index === control.focusedIndex)
                     Accessible.role: Accessible.Button
-                    Accessible.name: Qt.formatDate(day, control.uiLocale, Locale.LongFormat)
+                    Accessible.name: control.uiLocale.toString(day, Locale.LongFormat)
                     Accessible.checkable: true
                     Accessible.checked: isSelected
                     Accessible.focusable: enabled

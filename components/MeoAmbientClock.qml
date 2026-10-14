@@ -42,7 +42,7 @@ Item {
                                                                   shortTimeFormatWithoutSeconds()))
     readonly property string effectiveDateText: dateText !== ""
                                                ? dateText
-                                               : Qt.formatDate(dateTime, displayLocale, Locale.LongFormat)
+                                               : displayLocale.toString(dateTime, Locale.LongFormat)
     readonly property real timePixelSize: (showSeconds ? 72 : 96) * MeoTheme.globalScale
 
     implicitWidth: content.implicitWidth

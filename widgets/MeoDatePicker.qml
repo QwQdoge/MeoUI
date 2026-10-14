@@ -61,7 +61,7 @@ MeoCard {
     function monthEntries() {
         const months = []
         for (let month = 0; month < 12; ++month) {
-            const label = Qt.formatDate(new Date(displayDate.getFullYear(), month, 1), uiLocale, "MMMM")
+            const label = uiLocale.toString(new Date(displayDate.getFullYear(), month, 1), "MMMM")
             months.push({
                 label: label,
                 selected: month === displayDate.getMonth(),
@@ -119,7 +119,7 @@ MeoCard {
 
             MeoButton {
                 id: monthButton
-                text: Qt.formatDate(control.displayDate, control.uiLocale, "MMMM")
+                text: control.uiLocale.toString(control.displayDate, "MMMM")
                 type: "text"
                 size: "s"
                 icon.name: "arrow_drop_down"

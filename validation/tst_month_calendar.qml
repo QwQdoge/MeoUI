@@ -16,6 +16,23 @@ Item {
         name: "MeoMonthCalendar"
         when: windowShown
 
+        function test_visibleLocalizedLabels() {
+            calendar.interactive = true
+            calendar.displayDate = new Date(2026, 9, 1)
+            calendar.uiLocale = Qt.locale("en_US")
+            const title = findChild(calendar, "meoMonthCalendarTitle")
+            verify(title !== null)
+            compare(title.text, "October 2026")
+            const weekday = findChild(calendar, "meoMonthCalendarWeekday-0")
+            verify(weekday !== null)
+            compare(weekday.text, "Sun")
+            calendar.uiLocale = Qt.locale("zh_CN")
+            compare(title.text, "十月 2026")
+            verify(weekday.text.length <= 3,
+                   "Weekday labels must stay compact rather than repeat a full date")
+            calendar.uiLocale = Qt.locale()
+        }
+
         function test_dateIndexAndMonthNavigation() {
             compare(calendar.indexForDate(new Date(2026, 7, 26)) >= 0, true)
             calendar.moveMonth(1)
