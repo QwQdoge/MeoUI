@@ -42,8 +42,31 @@ Item {
                                                                   shortTimeFormatWithoutSeconds()))
     readonly property string effectiveDateText: dateText !== ""
                                                ? dateText
-                                               : displayLocale.toString(dateTime, Locale.LongFormat)
+                                               // dateFormat() is date-only; a bare LongFormat on a
+                                               // date-time would append the time and the time zone.
+                                               : displayLocale.toString(dateTime,
+                                                                        displayLocale.dateFormat(Locale.LongFormat))
     readonly property real timePixelSize: (showSeconds ? 72 : 96) * MeoTheme.globalScale
+
+    // The clock shrinks to fit the box a widget gives it instead of being cut
+    // off: by width always, and by height when the host sized it.
+    TextMetrics {
+        id: timeMetrics
+        font.family: MeoTheme.typefaceBrand
+        font.pixelSize: control.timePixelSize
+        font.letterSpacing: -0.8 * MeoTheme.globalScale
+        text: control.effectiveTimeText
+    }
+    readonly property real fitScale: {
+        let scale = 1
+        if (control.width > 0 && timeMetrics.advanceWidth > control.width)
+            scale = Math.min(scale, control.width / timeMetrics.advanceWidth)
+        if (control.height > 0 && timeMetrics.height > 0) {
+            const share = control.showDate && control.effectiveDateText !== "" ? 0.62 : 0.92
+            scale = Math.min(scale, control.height * share / timeMetrics.height)
+        }
+        return Math.max(0.12, scale)
+    }
 
     implicitWidth: content.implicitWidth
     implicitHeight: content.implicitHeight
@@ -64,7 +87,7 @@ Item {
             text: control.effectiveTimeText
             color: control.timeColor
             font.family: MeoTheme.typefaceBrand
-            font.pixelSize: control.timePixelSize
+            font.pixelSize: control.timePixelSize * control.fitScale
             font.weight: Font.Normal
             font.letterSpacing: -0.8 * MeoTheme.globalScale
             horizontalAlignment: Text.AlignHCenter
@@ -80,6 +103,8 @@ Item {
             typeSize: "medium"
             color: control.dateColor
             horizontalAlignment: Text.AlignHCenter
+            width: control.width > 0 ? Math.min(implicitWidth, control.width) : implicitWidth
+            elide: Text.ElideRight
         }
     }
 }

@@ -35,6 +35,20 @@ Item {
             verify(clock.Accessible.name.indexOf("2:30 PM") !== -1)
         }
 
+        function test_fallbackDateIsDateOnly() {
+            const text = clock.effectiveDateText
+            verify(text.indexOf("14:30") === -1 && text.indexOf("2:30") === -1)
+            verify(text.indexOf("Standard Time") === -1)
+        }
+
+        function test_shrinksToFitAnExplicitWidth() {
+            const natural = findChild(clock, "meoAmbientClockTime").font.pixelSize
+            clock.width = 120
+            tryVerify(function() { return findChild(clock, "meoAmbientClockTime").paintedWidth <= 121 })
+            verify(findChild(clock, "meoAmbientClockTime").font.pixelSize < natural)
+            clock.width = 0
+        }
+
         function test_secondsAnd_date_visibility_are_explicit() {
             clock.showSeconds = true
             compare(clock.effectiveTimeText, "14:30:45")
