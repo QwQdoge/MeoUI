@@ -47,7 +47,7 @@ Item {
             const surface = findChild(tile, "meoQuickSettingsSurface")
             verify(surface !== null)
             verify(tile.pixelStyle)
-            compare(Math.round(tile.visualHeight), Math.round(80 * MeoTheme.globalScale))
+            compare(Math.round(tile.visualHeight), Math.round(64 * MeoTheme.globalScale))
             compare(tile.activeContainerColor, MeoTheme.primaryContainer)
             compare(tile.activeContentColor, MeoTheme.contentOnPrimaryContainer)
             compare(tile.focusStrokeWidth, MeoTheme.strokeWidthThick)

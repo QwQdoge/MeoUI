@@ -9,6 +9,7 @@ Control {
     property real from: 0.0
     property real to: 100.0
     property real value: 0.0
+    property bool controlled: false
     property bool discrete: false
     property real stepSize: 1.0
     // M3 Expressive configurations. `discrete` remains the compatible name;
@@ -72,8 +73,8 @@ Control {
     function setValue(rawValue) {
         var nextValue = normalizedValue(rawValue)
         if (value !== nextValue) {
-            value = nextValue
-            moved(value)
+            if (!controlled) value = nextValue
+            moved(nextValue)
         }
     }
 
@@ -168,7 +169,7 @@ Control {
     readonly property real insetIconSize: MeoTheme.sliderInsetIconSizeForSize(size)
     readonly property real trackLength: horizontal ? internalSlider.availableWidth : internalSlider.availableHeight
     // Vertical sliders grow from the bottom edge, matching Android's control.
-    readonly property real visualProgress: horizontal ? internalSlider.visualPosition : 1 - internalSlider.visualPosition
+    readonly property real visualProgress: Math.max(0, Math.min(1, horizontal ? positionMotion.value : 1 - positionMotion.value))
     readonly property real trackPosition: Math.max(0, Math.min(trackLength, visualProgress * trackLength))
     readonly property real centerProgress: {
         const span = to - from
@@ -212,13 +213,33 @@ Control {
     // single accessibility focus target.
     Accessible.ignored: true
 
+    // Critically damped so an external value change never wobbles; the drag
+    // itself is not animated at all.
+    MeoSpringValue {
+        id: positionMotion
+        objectName: "sliderPositionMotion"
+        motionProfile: "pixel"
+        speed: "default"
+        spring: MeoMotion.standardSlowEffects
+        value: internalSlider.visualPosition
+        targetValue: internalSlider.visualPosition
+        enabled: control.animateExternalChanges && !internalSlider.pressed && !control.reduceMotion
+    }
+
     Slider {
         id: internalSlider
         objectName: "meoSliderNative"
         anchors.fill: parent
         from: control.from
         to: control.to
-        value: control.value
+        // While the platform slider owns the gesture its value must stay
+        // free, so the binding is suspended instead of being re-applied on top
+        // of the drag.
+        Binding on value {
+            value: control.value
+            when: !internalSlider.pressed
+            restoreMode: Binding.RestoreNone
+        }
         stepSize: (control.discrete || control.stops || control.snapMode || control.tickMarksEnabled) ? control.stepSize : 0.0
         orientation: control.orientation
         live: true
@@ -275,14 +296,6 @@ Control {
                 height: control.horizontal ? standardTrack.height : Math.max(0, control.activeTrackEnd - control.activeTrackStart)
                 radius: Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
-
-                Behavior on width {
-                    enabled: control.animateExternalChanges && !internalSlider.pressed
-                    NumberAnimation {
-                        duration: control.motionTrackDuration
-                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-                    }
-                }
                 Behavior on height {
                     NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
                 }
@@ -309,14 +322,6 @@ Control {
                 bottomRightRadius: control.horizontal ? Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
                                                       : Math.min(control.trackCornerRadius, width / 2, height / 2)
                 color: control.resolvedActiveTrackColor
-
-                Behavior on width {
-                    enabled: control.animateExternalChanges && !internalSlider.pressed
-                    NumberAnimation {
-                        duration: control.motionTrackDuration
-                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-                    }
-                }
                 Behavior on height {
                     NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
                 }
@@ -341,21 +346,6 @@ Control {
                 bottomRightRadius: control.horizontal ? Math.min(control.trackCornerRadius, width / 2, height / 2)
                                                       : Math.min(control.trackInsideCornerRadius, width / 2, height / 2)
                 color: control.resolvedInactiveTrackColor
-
-                Behavior on x {
-                    enabled: control.animateExternalChanges && !internalSlider.pressed
-                    NumberAnimation {
-                        duration: control.motionTrackDuration
-                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-                    }
-                }
-                Behavior on width {
-                    enabled: control.animateExternalChanges && !internalSlider.pressed
-                    NumberAnimation {
-                        duration: control.motionTrackDuration
-                        easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-                    }
-                }
                 Behavior on height {
                     NumberAnimation { duration: control.motionTrackDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
                 }
@@ -514,11 +504,11 @@ Control {
             id: sliderHandle
             objectName: "meoSliderHandle"
             x: control.horizontal
-               ? internalSlider.leftPadding + internalSlider.visualPosition * Math.max(0, internalSlider.availableWidth - width)
+               ? internalSlider.leftPadding + positionMotion.value * Math.max(0, internalSlider.availableWidth - width)
                : internalSlider.leftPadding + (internalSlider.availableWidth - width) / 2
             y: control.horizontal
                ? internalSlider.topPadding + (internalSlider.availableHeight - height) / 2
-               : internalSlider.topPadding + (1 - internalSlider.visualPosition) * Math.max(0, internalSlider.availableHeight - height)
+               : internalSlider.topPadding + (1 - positionMotion.value) * Math.max(0, internalSlider.availableHeight - height)
             width: control.horizontal ? control.thumbWidth : control.thumbHeight
             height: control.horizontal ? control.thumbHeight : control.thumbWidth
 

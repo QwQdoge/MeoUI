@@ -31,11 +31,16 @@ Item {
             verify(wideSlot !== null)
             verify(secondWideSlot !== null)
             verify(compactSlot !== null)
-            compare(Math.round(wideSlot.implicitWidth), Math.round(224 * editor.uiScale))
-            compare(Math.round(compactSlot.implicitWidth), Math.round(108 * editor.uiScale))
+            compare(Math.round(wideSlot.implicitWidth), Math.round(196 * editor.uiScale))
+            compare(Math.round(compactSlot.implicitWidth), Math.round(94 * editor.uiScale))
             compare(Math.round(wideSlot.width), Math.round(secondWideSlot.width))
-            compare(Math.round(secondWideSlot.x), Math.round(wideSlot.width + MeoTheme.space8))
-            compare(Math.round(compactSlot.y), Math.round(wideSlot.height + MeoTheme.space8))
+            // Slots glide to their cells on the shared spring, so wait for rest.
+            tryVerify(function() {
+                return Math.round(secondWideSlot.x) === Math.round(wideSlot.width + MeoTheme.space8)
+            })
+            tryVerify(function() {
+                return Math.round(compactSlot.y) === Math.round(wideSlot.height + MeoTheme.space8)
+            })
         }
 
         function test_gridAndSelectionSurfaceExist() {

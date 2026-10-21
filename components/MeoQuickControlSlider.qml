@@ -24,6 +24,24 @@ Control {
     property bool animateExternalChanges: true
     property bool externalValueChange: false
     property bool tracking: false
+    property bool controlled: false
+    // Trailing glyph inside the track, and the independent action to its right.
+    property string trailingIcon: ""
+    property string extraActionIcon: ""
+    property bool extraActionActive: false
+    property bool extraActionEnabled: true
+    property string extraActionAccessibleName: ""
+    property real _gestureValue: value
+    property bool _settling: false
+    signal trailingTriggered()
+    signal extraActionTriggered()
+    onValueChanged: {
+        if (!tracking && _settling && Math.abs(value - _gestureValue) < 0.6) {
+            _settling = false
+            settleTimer.stop()
+        }
+    }
+    Timer { id: settleTimer; interval: 600; onTriggered: control._settling = false }
 
     signal moved(real value)
     signal trackingStarted()
@@ -56,7 +74,7 @@ Control {
     background: Item {}
 
     contentItem: RowLayout {
-        spacing: detailsButton.visible ? MeoTheme.space4 : 0
+        spacing: rightAction.visible ? MeoTheme.space4 : 0
 
         Item {
             id: sliderHost
@@ -69,22 +87,59 @@ Control {
                 anchors.fill: parent
                 from: control.from
                 to: control.to
-                value: control.value
+                controlled: true
+                value: control.tracking || control._settling ? control._gestureValue : control.value
                 enabled: control.enabled
                 expressive: true
                 // Inset icons start at M in the M3 Expressive matrix:
                 // 40dp track, 52dp handle, and a 24dp icon.
                 size: "m"
                 trackStyle: "split"
-                endStopEnabled: true
-                insetIcon: control.iconName
+                endStopEnabled: control.trailingIcon === ""
+                insetIcon: control.trailingIcon === "" ? control.iconName : ""
                 animateExternalChanges: control.animateExternalChanges
                 accessibleName: control.accessibleName
                 accessibleDescription: qsTr("%1 percent").arg(Math.round(control.valueFraction * 100))
 
                 onMoved: function(nextValue) {
-                    control.value = nextValue
+                    control._gestureValue = nextValue
+                    if (!control.controlled) control.value = nextValue
                     control.moved(nextValue)
+                }
+            }
+
+            // The trailing glyph sits at the end of the track with no
+            // container, matching the reference; only the state layer reacts.
+            AbstractButton {
+                id: trailingAction
+                objectName: "quickControlTrailingAction"
+                anchors.right: parent.right
+                anchors.rightMargin: MeoTheme.space8
+                anchors.verticalCenter: parent.verticalCenter
+                width: 40 * MeoTheme.globalScale
+                height: width
+                visible: control.trailingIcon !== ""
+                enabled: visible && control.enabled
+                padding: 0
+                activeFocusOnTab: enabled
+                Accessible.name: control.accessibleName + " settings"
+                onClicked: control.trailingTriggered()
+
+                background: MeoStateLayer {
+                    objectName: "quickControlTrailingLayer"
+                    shape: "circle"
+                    hovered: trailingAction.hovered
+                    pressed: trailingAction.pressed
+                    focused: trailingAction.visualFocus
+                    color: MeoTheme.primary
+                }
+                contentItem: MeoIcon {
+                    icon: control.trailingIcon
+                    size: 20
+                    color: control.valueFraction > 0.9 ? MeoTheme.contentOnPrimary : MeoTheme.contentOnSecondaryContainer
+                    Behavior on color {
+                        ColorAnimation { duration: MeoTheme.motionDurationState; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                    }
                 }
             }
 
@@ -98,7 +153,7 @@ Control {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 48 * MeoTheme.globalScale
                 height: 48 * MeoTheme.globalScale
-                visible: control.iconName !== "" && control.iconActionEnabled
+                visible: control.trailingIcon === "" && control.iconName !== "" && control.iconActionEnabled
                 enabled: visible && control.enabled
                 padding: 0
                 activeFocusOnTab: enabled
@@ -136,20 +191,45 @@ Control {
             }
         }
 
-        MeoIconButton {
-            id: detailsButton
-            visible: control.detailsAvailable
+        // The right independent action is a bare glyph on the panel surface.
+        // A tonal/standard swap used to make a container blink on every click.
+        AbstractButton {
+            id: rightAction
+            objectName: "quickControlRightAction"
+            visible: control.extraActionIcon !== "" || control.detailsAvailable
+            enabled: control.extraActionIcon === "" || control.extraActionEnabled
             Layout.preferredWidth: 44 * MeoTheme.globalScale
             Layout.preferredHeight: 44 * MeoTheme.globalScale
-            type: "standard"
-            size: "m"
-            icon.name: control.expanded ? "expand_less" : "expand_more"
-            Accessible.name: control.expanded
-                             ? qsTr("Hide advanced controls")
-                             : qsTr("Show advanced controls")
+            padding: 0
+            activeFocusOnTab: enabled
+            Accessible.name: control.extraActionIcon !== ""
+                             ? control.extraActionAccessibleName
+                             : (control.expanded ? qsTr("Hide advanced controls")
+                                                 : qsTr("Show advanced controls"))
             onClicked: {
-                control.expanded = !control.expanded
-                control.detailsToggled(control.expanded)
+                if (control.extraActionIcon !== "") {
+                    control.extraActionTriggered()
+                } else {
+                    control.expanded = !control.expanded
+                    control.detailsToggled(control.expanded)
+                }
+            }
+
+            background: MeoStateLayer {
+                objectName: "quickControlRightActionLayer"
+                shape: "circle"
+                hovered: rightAction.hovered
+                pressed: rightAction.pressed
+                focused: rightAction.visualFocus
+                color: control.extraActionActive ? MeoTheme.primary : MeoTheme.contentOnSurface
+            }
+            contentItem: MeoIcon {
+                icon: control.extraActionIcon !== ""
+                      ? control.extraActionIcon
+                      : (control.expanded ? "expand_less" : "expand_more")
+                size: 20
+                color: control.extraActionActive ? MeoTheme.primary
+                                                 : MeoTheme.contentOnSurfaceVariant
             }
         }
     }
@@ -161,6 +241,17 @@ Control {
             const nextTracking = valueSlider.pressed
             if (control.tracking === nextTracking)
                 return
+            if (nextTracking) {
+                control._gestureValue = control.clampedValue
+                control._settling = false
+                settleTimer.stop()
+            } else {
+                // Decide the hold before releasing the tracking flag so no frame
+                // can expose the stale platform value.
+                control._settling = Math.abs(control.value - control._gestureValue) >= 0.6
+                if (control._settling)
+                    settleTimer.restart()
+            }
             control.tracking = nextTracking
             if (nextTracking)
                 control.trackingStarted()

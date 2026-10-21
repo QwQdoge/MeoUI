@@ -232,7 +232,7 @@ Item {
         }
 
         function test_pixelReferencePrimitivesKeepTheirContracts() {
-            compare(tile.visualHeight, 80 * MeoTheme.globalScale)
+            compare(tile.visualHeight, 64 * MeoTheme.globalScale)
             compare(tile.pixelStyle, true)
             // The Android 16 editor works on four logical columns: a wide
             // tile spans two, while a compact tile spans one.

@@ -52,7 +52,7 @@ Control {
     // AOSP Android 16 QPR2 defines 80dp quick-settings tiles with 28dp corners.
     // The Pixel-like variant keeps those logical values without claiming that
     // its host-specific arrangement is a generic Material component.
-    readonly property real visualHeight: (pixelStyle ? 80 : (wide ? 72 : 56))
+    readonly property real visualHeight: (pixelStyle ? 64 : (wide ? 72 : 56))
                                        * MeoTheme.globalScale
     readonly property real focusStrokeWidth: pixelStyle
                                              ? MeoTheme.strokeWidthThick
@@ -66,9 +66,38 @@ Control {
     signal removeRequested()
     signal editSelectionRequested()
 
-    implicitWidth: (pixelStyle ? (wide ? 224 : 108) : (wide ? 176 : 84))
+    // Reference shape rule: a compact tile at rest is a near pill and resolves
+    // to the rounded-rect corner once it is on; wide tiles keep the
+    // rounded-rect corner in both states.  Physics come from the shared MeoUI
+    // spring, so the change is never a straight interpolation.
+    readonly property real restingCornerRadius: control.wide
+                                               ? MeoTheme.shapeLarge
+                                               : (control.visualActive ? MeoTheme.shapeLarge
+                                                                       : MeoTheme.shapeExtraLarge)
+
+    MeoSpringValue {
+        id: cornerMotion
+        objectName: "quickSettingsCornerMotion"
+        motionProfile: control.motionProfile
+        speed: "default"
+        // Effects spring: critically damped, so a corner never overshoots the
+        // shape the tile is about to rest in.
+        spring: MeoMotion.standardDefaultEffects
+        value: control.wide ? MeoTheme.shapeLarge : MeoTheme.shapeExtraLarge
+        targetValue: control.restingCornerRadius
+        enabled: control.pixelStyle && !MeoTheme.reduceMotion
+        Component.onCompleted: snapValue(control.restingCornerRadius)
+    }
+
+    // The editor owns reorder gestures: it needs the pointer position, not a
+    // drag payload.
+    signal editDragStarted()
+    signal editDragMoved(real sceneX, real sceneY)
+    signal editDragFinished(real sceneX, real sceneY)
+
+    implicitWidth: (pixelStyle ? (wide ? 196 : 94) : (wide ? 176 : 84))
                    * MeoTheme.globalScale
-    implicitHeight: (pixelStyle ? 80 : (wide ? 72 : 96)) * MeoTheme.globalScale
+    implicitHeight: (pixelStyle ? 64 : (wide ? 72 : 96)) * MeoTheme.globalScale
     // Keep the tab-focus capability stable while entering edit mode. The
     // focused control is redirected before its visual action changes.
     activeFocusOnTab: enabled && !unavailable
@@ -88,12 +117,13 @@ Control {
     Keys.onReturnPressed: activateMain()
     Keys.onEnterPressed: activateMain()
     Keys.onSpacePressed: activateMain()
-    Drag.active: dragHandler.active
-    Drag.source: control
-    Drag.hotSpot.x: width / 2
-    Drag.hotSpot.y: height / 2
     transform: [
-        Translate { x: dragHandler.activeTranslation.x; y: dragHandler.activeTranslation.y },
+        // Qt keeps the last activeTranslation after the gesture ends, so the
+        // resting position must not read it while the handler is inactive.
+        Translate {
+            x: dragHandler.active ? dragHandler.activeTranslation.x : 0
+            y: dragHandler.active ? dragHandler.activeTranslation.y : 0
+        },
         Scale { origin.x: control.width / 2; origin.y: control.visualHeight / 2; xScale: pressSpring.value; yScale: pressSpring.value }
     ]
 
@@ -181,7 +211,7 @@ Control {
             width: parent.width
             height: control.visualHeight
             type: "round"
-            radius: control.pixelStyle ? MeoTheme.shapeExtraLarge : MeoTheme.shapeFull
+            radius: control.pixelStyle ? cornerMotion.value : MeoTheme.shapeFull
             color: control.visualActive ? control.activeContainerColor : MeoTheme.surfaceContainerHighest
             strokeWidth: control.activeFocus || (control.editMode && control.editSelected)
                          ? control.focusStrokeWidth : 0
@@ -267,17 +297,12 @@ Control {
                 radius: width / 2 // fallback hit geometry; the visual is the morph below
                 color: "transparent"
 
-                MeoShapeMorph {
+                MeoShape {
                     anchors.fill: parent
-                    fromShape: control.inactiveIconShape
-                    toShape: control.activeIconShape
-                    morphProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
-                                                                  : (control.visualActive ? 1 : 0)
-                    rawSpringProgress: control.iconShapeMorphEnabled ? iconShapeMorph.value
-                                                                       : morphProgress
+                    type: "round"
+                    radius: MeoTheme.shapeMedium
                     color: control.visualActive
-                           ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g,
-                                     control.activeContentColor.b, 0.16)
+                           ? Qt.rgba(control.activeContentColor.r, control.activeContentColor.g, control.activeContentColor.b, 0.16)
                            : MeoTheme.surfaceContainerHigh
                 }
 
@@ -368,7 +393,7 @@ Control {
 
             MeoText {
                 Layout.fillWidth: true
-                visible: control.title !== ""
+                visible: control.showCompactLabel && control.title !== ""
                 text: control.title
                 typeRole: "label"
                 typeSize: "medium"
@@ -436,18 +461,39 @@ Control {
             onClicked: control.requestRemove()
         }
 
-        MeoIconButton {
+        // Reference resize affordance: a bar on the tile's right edge that can
+        // also be dragged sideways, instead of a corner button.
+        AbstractButton {
+            id: resizeHandle
             objectName: "quickSettingsResizeButton"
             visible: control.editMode && control.editSelected && control.resizeEnabled
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.rightMargin: control.pixelStyle ? MeoTheme.space4 : 0
-            anchors.bottomMargin: control.pixelStyle ? MeoTheme.space4 : 0
-            type: "tonal"
-            size: "xs"
-            icon.name: control.wide ? "width_normal" : "width_wide"
+            anchors.rightMargin: -MeoTheme.space8
+            anchors.verticalCenter: parent.verticalCenter
+            width: MeoTheme.space16
+            height: 44 * MeoTheme.globalScale
+            z: 6
             Accessible.name: control.wide ? qsTr("Make tile small") : qsTr("Make tile wide")
             onClicked: control.resizeRequested()
+            background: MeoShape {
+                anchors.centerIn: parent
+                width: MeoTheme.space8
+                height: MeoTheme.space24
+                radius: MeoTheme.space4
+                type: "round"
+                color: MeoTheme.primary
+            }
+            contentItem: Item { }
+            HoverHandler { cursorShape: Qt.SizeHorCursor }
+            DragHandler {
+                target: null
+                yAxis.enabled: false
+                onActiveChanged: {
+                    if (!active && Math.abs(activeTranslation.x) > 24 * MeoTheme.globalScale
+                            && (control.wide ? activeTranslation.x < 0 : activeTranslation.x > 0))
+                        control.resizeRequested()
+                }
+            }
         }
     }
 
@@ -526,5 +572,21 @@ Control {
                 control.activateMain()
         }
     }
-    DragHandler { id: dragHandler; enabled: control.enabled && control.editMode; target: null }
+    DragHandler {
+        id: dragHandler
+        enabled: control.enabled && control.editMode && control.editSelectable
+        target: null
+        property point lastScenePosition: Qt.point(0, 0)
+        onCentroidChanged: {
+            lastScenePosition = centroid.scenePosition
+            if (active)
+                control.editDragMoved(lastScenePosition.x, lastScenePosition.y)
+        }
+        onActiveChanged: {
+            if (active)
+                control.editDragStarted()
+            else
+                control.editDragFinished(lastScenePosition.x, lastScenePosition.y)
+        }
+    }
 }
