@@ -237,7 +237,7 @@ Control {
 
         // 🔤 Content Area
         Column {
-            width: parent.width - (leadingRowItemWidth() > 0 ? leadingRowItemWidth() + control.spacing : 0) - trailingRowItemWidth()
+            width: parent.width - (control.leadingRowItemWidth() > 0 ? control.leadingRowItemWidth() + control.spacing : 0) - control.trailingRowItemWidth()
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
 
