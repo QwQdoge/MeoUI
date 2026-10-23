@@ -237,7 +237,13 @@ Control {
 
         // 🔤 Content Area
         Column {
-            width: parent.width - (control.leadingRowItemWidth() > 0 ? control.leadingRowItemWidth() + control.spacing : 0) - control.trailingRowItemWidth()
+            // Child bindings can be reevaluated while the owning Control is
+            // being destroyed. Its id then resolves to null, so guard helper
+            // calls instead of invoking methods on a dead QObject.
+            width: parent.width
+                    - (control && control.leadingRowItemWidth() > 0
+                       ? control.leadingRowItemWidth() + control.spacing : 0)
+                    - (control ? control.trailingRowItemWidth() : 0)
             anchors.verticalCenter: parent.verticalCenter
             spacing: 0
 

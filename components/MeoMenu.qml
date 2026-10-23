@@ -533,10 +533,11 @@ MeoMotionPopup {
         // Keep child menus in the window overlay, not in an arbitrary layout
         // that happens to own the parent menu. This also gives viewport
         // clamping the real window dimensions.
-        // `Overlay.overlay` is unavailable in a few offscreen/nested hosts
-        // until the parent popup has opened. Fall back to the parent menu's
-        // owner so keyboard and submenu behavior remain functional there.
-        parent: Overlay.overlay || control.parent
+        // Qt Quick Controls assigns the window overlay as the visual parent
+        // when this popup opens. Binding the popup parent to control.parent
+        // as a fallback creates a parent-property loop when Qt reparents the
+        // owner popup during open/close (and can recurse during QML teardown).
+        // Keep the default popup parenting so the overlay remains authoritative.
         presentation: MeoMotionPopup.Menu
         property var model: []
         property bool vibrant: false
