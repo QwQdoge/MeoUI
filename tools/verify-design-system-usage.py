@@ -14,8 +14,10 @@ ANIMATION = re.compile(
     r"Vector3dAnimation|XAnimator|YAnimator|OpacityAnimator|ScaleAnimator|"
     r"RotationAnimator)\s*(?:on\s+[\w.]+\s*)?\{"
 )
+# A type qualified by any other module (PlasmaCore.Dialog, Kirigami.…) is that
+# module's own API, not a raw QtQuick.Controls control.
 RAW_CONTROL = re.compile(
-    r"\b(?:QQC2\.|Controls\.)?"
+    r"(?<![\w.])(?:(?:QQC2|Controls)\.)?"
     r"(Button|ToolButton|Popup|Dialog|Slider|RangeSlider|Switch|CheckBox|"
     r"RadioButton|ComboBox|TextField|TextArea|SpinBox|ProgressBar|TabBar|"
     r"TabButton|Menu|MenuItem|MenuSeparator|ToolTip)\s*\{"
