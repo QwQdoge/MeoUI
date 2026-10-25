@@ -23,6 +23,17 @@ jobs:
       - name: Check out MeoUI
         uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Resolve docs package lock (temporary)
+        working-directory: docs
+        run: |
+          npm update jest jest-environment-jsdom jsdom --package-lock-only --ignore-scripts
+          npm ci
+          npm test
+          git diff -- package-lock.json
+
       - name: Audit shared Material design-system usage
         run: >-
           python3 tools/verify-design-system-usage.py
