@@ -43,8 +43,8 @@ Item {
 
         function test_shrinksToFitAnExplicitWidth() {
             const natural = findChild(clock, "meoAmbientClockTime").font.pixelSize
-            clock.width = 120
-            tryVerify(function() { return findChild(clock, "meoAmbientClockTime").paintedWidth <= 121 })
+            clock.width = 60
+            tryVerify(function() { return findChild(clock, "meoAmbientClockTime").paintedWidth <= 61 })
             verify(findChild(clock, "meoAmbientClockTime").font.pixelSize < natural)
             clock.width = 0
         }
