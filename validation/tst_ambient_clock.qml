@@ -42,10 +42,15 @@ Item {
         }
 
         function test_shrinksToFitAnExplicitWidth() {
-            const natural = findChild(clock, "meoAmbientClockTime").font.pixelSize
-            clock.width = 120
-            tryVerify(function() { return findChild(clock, "meoAmbientClockTime").paintedWidth <= 121 })
-            verify(findChild(clock, "meoAmbientClockTime").font.pixelSize < natural)
+            const time = findChild(clock, "meoAmbientClockTime")
+            const natural = time.font.pixelSize
+            const naturalWidth = time.implicitWidth
+            verify(naturalWidth > 1)
+            clock.width = naturalWidth / 2
+            tryVerify(function() { return clock.fitScale > 0 && clock.fitScale < 1 })
+            console.log("ambient fit values", "width", clock.width, "naturalWidth", naturalWidth, "fitScale", clock.fitScale, "fontPixelSize", time.font.pixelSize, "paintedWidth", time.paintedWidth, "implicitWidth", time.implicitWidth)
+            tryVerify(function() { return time.paintedWidth <= clock.width + 1 })
+            verify(time.font.pixelSize < natural)
             clock.width = 0
         }
 
