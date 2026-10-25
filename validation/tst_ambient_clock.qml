@@ -48,6 +48,10 @@ Item {
             verify(naturalWidth > 1)
             clock.width = naturalWidth / 2
             tryVerify(function() { return time.paintedWidth <= clock.width + 1 })
+            const metrics = findChild(clock, "meoAmbientClockMetrics")
+            console.log("ambient fit debug", "width", clock.width, "naturalWidth", naturalWidth,
+                        "metricsWidth", metrics.advanceWidth, "fitScale", clock.fitScale,
+                        "paintedWidth", time.paintedWidth, "font", time.font.pixelSize, "naturalFont", natural)
             verify(time.font.pixelSize < natural)
             clock.width = 0
         }
