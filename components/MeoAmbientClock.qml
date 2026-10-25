@@ -52,6 +52,7 @@ Item {
     // off: by width always, and by height when the host sized it.
     TextMetrics {
         id: timeMetrics
+        objectName: "meoAmbientClockMetrics"
         font.family: MeoTheme.typefaceBrand
         font.pixelSize: control.timePixelSize
         font.letterSpacing: -0.8 * MeoTheme.globalScale
