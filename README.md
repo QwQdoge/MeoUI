@@ -4,6 +4,16 @@ MeoUI 是 MeoArch 共用的 Qt Quick / QML Material Design 3 设计系统。它�
 
 在 Meo 的品牌语境中，**MEO = Modern · Expressive · Open**。它概括了 MeoUI 与 MeoArch 共同追求的方向：交互与呈现保持现代，视觉与动效具有表达力，同时保留开放的 Linux 基础、组件边界与用户控制权。
 
+## 安装 / Install
+
+单独安装本组件（AUR）/ Install just this component from the AUR:
+
+```bash
+yay -Syu meoui-qml
+```
+
+要一次装好全部 MeoArch 软件，请使用已签名的 Meo 软件源和 pacman，见[工作区说明](https://github.com/QwQdoge/MeoArch-os-workspace#install-meo-desktop-on-an-existing-arch-system)。To install the whole MeoArch software set, use the signed Meo repository with pacman; see the [workspace README](https://github.com/QwQdoge/MeoArch-os-workspace#install-meo-desktop-on-an-existing-arch-system).
+
 ## License
 
 MeoUI 原创代码采用 MIT License，见 [LICENSE](LICENSE)。字体、Material
