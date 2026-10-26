@@ -14,6 +14,10 @@ Item {
         when: windowShown
 
         function init() {
+            // This test covers width-only fitting. Keep height unconstrained so
+            // the component's minimum scale cannot mask the width calculation.
+            clock.width = 0
+            clock.height = 0
             clock.timeText = ""
             clock.dateText = ""
             clock.showDate = true
