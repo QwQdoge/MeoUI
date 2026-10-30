@@ -782,6 +782,7 @@ QtObject {
     // 🌟 M3 间距网格系统 (Spacing Tokens)
     readonly property real space2: metricToken("space2", 2) * globalScale
     readonly property real space4: metricToken("space4", 4) * globalScale
+    readonly property real space6: metricToken("space6", 6) * globalScale
     readonly property real space8: metricToken("space8", 8) * globalScale
     readonly property real space12: metricToken("space12", 12) * globalScale
     readonly property real space16: metricToken("space16", 16) * globalScale
