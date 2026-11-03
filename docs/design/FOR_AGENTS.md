@@ -57,6 +57,7 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Leading control | One of: sidebar toggle, `menu`, `arrow_back` (only with a real parent route) |
 | Trailing actions | ≤3 `MeoIconButton`, each with tooltip and `Accessible.name`; extra go to overflow |
 | Overflow icon | `more_vert`, last item in the toolbar |
+| Overflow menu | `MeoMenu { parent: window.contentItem; placement: "auto" }` + `openFrom(button)`; default `placement: "manual"` ignores the anchor |
 | Overflow tail order | app actions, divider, Settings (`Ctrl+,`), Keyboard shortcuts (`Ctrl+?`), Help (`F1`), About _App_ |
 | Menu bar | None |
 | Content under title bar | Only via `Qt.ExpandedClientAreaHint` where honoured, padded by `SafeArea.margins`, with fallback |

@@ -69,6 +69,12 @@ Order, top to bottom; omit entries the app does not have:
 5. **Help** — shortcut `F1` (only if there is real help content).
 6. **About _App name_**.
 
+Declare the overflow `MeoMenu` with `parent: <window>.contentItem` and
+`placement: "auto"`, and open it with `openFrom(button)`. `placement`
+defaults to `"manual"`, which ignores the anchor and opens the menu at the
+parent's top-left corner; a menu parented to the button itself is not clamped
+to the window.
+
 Keyboard: `Ctrl+,` opens Settings, `Ctrl+Q` quits, `Ctrl+W` closes the window,
 `Ctrl+F` focuses search when the toolbar has one, `Esc` closes the topmost
 transient surface. Do not rebind these to anything else.
