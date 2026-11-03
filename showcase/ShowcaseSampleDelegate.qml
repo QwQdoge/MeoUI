@@ -187,6 +187,7 @@ Item {
         if (name === "MeoSuggestionChip") return suggestionChipSample
         if (name === "MeoPageLayout") return pageLayoutSample
         if (name === "MeoScaffold") return scaffoldSample
+        if (name === "MeoAboutPage") return aboutPageSample
         if (name === "MeoAppLayout") return appLayoutSample
         if (name === "MeoDashboardLayout") return dashboardSample
         if (name === "MeoFeedLayout") return feedSample
@@ -3530,6 +3531,27 @@ Item {
                 }
                 selectedRoute: "home"
             }
+        }
+    }
+
+    Component {
+        id: aboutPageSample
+        MeoAboutPage {
+            width: 560 * MeoTheme.globalScale
+            height: 640 * MeoTheme.globalScale
+            appName: qsTr("Sample App")
+            appIcon: "apps"
+            version: "1.0.0"
+            channel: qsTr("Beta")
+            description: qsTr("A short sentence that says what the app is for.")
+            links: [
+                { "title": qsTr("Website"), "url": "https://meoarch.org/", "icon": "language" },
+                { "title": qsTr("Source code"), "url": "https://github.com/QwQdoge/MeoUI", "icon": "code" }
+            ]
+            licenseName: "MIT"
+            licenseText: qsTr("Preview license text.")
+            noticesText: "## MeoUI\n\nMIT. Preview notices."
+            copyright: qsTr("© MeoArch contributors")
         }
     }
 

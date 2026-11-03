@@ -89,7 +89,7 @@ transient surface. Do not rebind these to anything else.
   when the user needs a system control; it names Meo Settings in the label
   ("Open notification settings in Meo Settings").
 - Settings are part of the app window, not a second window. Open them as the
-  route `settings` inside the existing `MeoPageHost`, so history, back and
+  route `settings` inside the existing page host, so history, back and
   Reduce Motion behave like any other page. Apps without a page host may use
   `MeoFullScreenDialog` on compact windows.
 
@@ -99,14 +99,22 @@ transient surface. Do not rebind these to anything else.
   sidebar `footer` slot (icon `settings`), plus the overflow item.
 - All other apps: the overflow item.
 - Both entries and `Ctrl+,` open the same route.
+- Settings is never a primary navigation destination (a sidebar row or a
+  bottom-navigation tab next to the product's own pages).
+
+With `MeoAppLayout`, append the `settings` and `about` pages to `pages` after
+the entries of `navigationModel`, set `sidebarFooter` to the Settings row and
+`pageTitle` to the page's name. Pages after the navigation model select no
+navigation row.
 
 ### Presentation
 
-- Up to two groups of preferences: one scrolling `settings-category` page
-  built from `MeoSettingsGroup` rows.
-- Three or more categories: `MeoSettingsLayout` with a category sidebar,
-  following the two-level rule in `PAGE_TYPES.md`. Level three is always a
-  `MeoSettingsTaskSheet`.
+- An app whose settings fit one screenful or a few (up to about five
+  categories): one scrolling page. Each category is a `MeoListHeader`
+  followed by its `MeoSettingsGroup`s, in the order below.
+- Larger settings: `MeoSettingsLayout` with a category sidebar, following the
+  two-level rule in `PAGE_TYPES.md`.
+- Level three is always a `MeoSettingsTaskSheet`.
 - Changes apply immediately. No Save/Apply/OK buttons for ordinary
   preferences. Privileged, destructive or restart-requiring changes confirm
   first and say what will happen.
@@ -159,12 +167,28 @@ The App About page is an `info-page` with this content, in order:
 2. One-sentence description.
 3. Group **Links**: Website, Source code, Report a problem, Privacy policy
    (only when one exists). Each opens externally and says so.
-4. Group **Legal**: License (opens the full license text in a
-   `MeoSettingsTaskSheet`), **Open-source licenses** (level-2 info page, see
-   section 4), Acknowledgements (optional).
+4. Group **Legal**: License and **Open-source licenses** (section 4). Both
+   open their full text as a read-only drill-in `MeoSettingsTaskSheet`
+   (`PAGE_TYPES.md` level 3). Acknowledgements are optional.
 5. Footer: copyright line in `bodySmall`, `contentOnSurfaceVariant`.
 
 Do not put update checks, settings toggles or system facts on the About page.
+
+Use the `MeoAboutPage` pattern instead of building this page by hand. The host
+passes `version: Qt.application.version` (set from the build) and reads the
+installed license files in C++, because QML cannot read local files:
+
+```qml
+MeoAboutPage {
+    appName: qsTr("OmniStore")
+    appIcon: "storefront"
+    version: Qt.application.version
+    links: [{ "title": qsTr("Source code"), "url": "https://github.com/QwQdoge/OmniStore", "icon": "code" }]
+    licenseName: "GPL-3.0-only"
+    licenseText: appLicenseText        // share/licenses/<package>/LICENSE
+    noticesText: appNoticesText        // share/licenses/<package>/THIRD_PARTY_NOTICES.md
+}
+```
 
 ## 4. Open-source components and tools
 
@@ -186,14 +210,66 @@ What must be listed, and where it is shown:
 | Runtime platform libraries (dynamically linked) | Qt 6, KDE Frameworks, MeoUI | Optional | Yes, under "Platform" | — |
 | Build and development tools (not shipped) | CMake, Node tools, agent skills | No | No | Yes |
 
-The in-app **Open-source licenses** page reads the installed
+The in-app **Open-source licenses** sheet reads the installed
 `THIRD_PARTY_NOTICES.md` (for example with `Text.MarkdownText`) and the
 license files at runtime. It never hard-codes a credit list in QML. If the
 installed file is missing, say "License information is not available in this
 build" and link to the source repository. MeoUI is listed by every consumer
 (MIT) together with the assets it ships.
 
-## 5. Where these rules live
+## 5. Scope exceptions
+
+- **Installer** is a full-screen, single-task wizard: no overflow menu, no
+  Settings or About route. Its language and accessibility choices are wizard
+  steps.
+- **Quick Repair** is a recovery tool that may run in a minimal or live
+  session. It keeps its sidebar of problem categories; Settings/About apply
+  only when it runs as a normal desktop app, and never block recovery.
+- **Meo AI** renders the view produced by its shared core
+  (`meo/core-rs`). App Shell structure (overflow, Settings, About) is added in
+  the core view, not in one renderer.
+- **Shell surfaces** in meo-kde (panels, dock, lock screen, OSDs) are not
+  application windows.
+
+## 6. KDE and other Qt applications
+
+MeoArch also ships upstream KDE and Qt applications. They cannot all be
+rebuilt on MeoUI, so the hierarchy is matched in layers, following meo-kde
+`docs/meo-application-chrome-roadmap.md`:
+
+| Layer | Owner | Gives KDE/Qt apps |
+| --- | --- | --- |
+| Colors | meo-kde dynamic colors (`MeoLight`/`MeoDark` color schemes, including `[Colors:Header]`) | Same roles as `MeoTheme`; title bar and toolbar share the header surface |
+| Title bar | meo-kde KWin decoration (`org.meo.decoration`) | Meo caption buttons, title bar flush with the toolbar |
+| Controls | meo-kde `MeoStyle` (Qt Widgets `QStyle`, reads `Meo::DesignTokens`) | MeoUI shapes, sizes and state layers for buttons, menus, fields, lists |
+| Chrome | Small per-app patches (Dolphin pilot) | Top bar composition, sidebar width, overflow placement |
+
+What maps directly, without patches:
+
+- **No menu bar, overflow menu last.** KXmlGui applications (Dolphin, Kate,
+  Okular, Ark, Konsole) hide the menu bar and show their hamburger menu when
+  `[MainWindow] MenuBar=Disabled` is set in their configuration. A
+  distribution default under `/etc/xdg/<app>rc` makes that the starting state,
+  and users can still turn the menu bar back on. Kirigami applications
+  (System Settings, Discover, Elisa) already have no menu bar.
+- **About and open-source licenses.** KDE's `KAboutData` About dialog already
+  lists the version, license, authors and the libraries used; this matches
+  section 3 and needs no change.
+- **Unified toolbar look.** The `Header` color group gives the title bar and
+  the toolbar one surface, which is the KDE equivalent of section 1.
+
+What does not map, and is accepted:
+
+- KDE applications open settings as a separate `KConfigDialog` window
+  ("Configure _App_…") instead of an in-window route.
+- Kirigami's column-based page stack and global drawer are not rebuilt.
+- Toolbar contents differ per application. Only the Tier 2 applications in the
+  roadmap get chrome patches; others stay upstream with MeoStyle only.
+
+Do not change KDE application layout through runtime widget-tree rewriting
+or full forks; that is rejected in the roadmap.
+
+## 7. Where these rules live
 
 | Content | Location | Notes |
 | --- | --- | --- |
@@ -211,7 +287,7 @@ the site. Every Meo repository's `AGENTS.md` points to the site.
 - [ ] System window decoration kept; no frameless application window.
 - [ ] Toolbar: one leading control, ≤3 trailing actions, overflow last.
 - [ ] Overflow ends with Settings, (Shortcuts), (Help), About _App_.
-- [ ] `Ctrl+,` opens the `settings` route; settings are in-window.
+- [ ] `Ctrl+,` opens the `settings` route; settings are in-window and not a primary navigation item.
 - [ ] No system control duplicated; overrides default to *Follow system*.
 - [ ] Categories follow the fixed order; About is last.
 - [ ] Preferences apply immediately; keys are stable, not translated.

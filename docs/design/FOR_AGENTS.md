@@ -66,10 +66,11 @@ Index for agents: `https://meoarch.org/llms.txt`.
 
 | Question | Answer |
 | --- | --- |
-| Separate window? | No. Route `settings` in the existing `MeoPageHost` (compact apps without a host: `MeoFullScreenDialog`) |
-| Entry points | Overflow "Settings", `Ctrl+,`, and in sidebar apps a footer row `settings` |
-| ≤2 groups | One `settings-category` page with `MeoSettingsGroup` |
-| ≥3 categories | `MeoSettingsLayout` with category sidebar; level 3 = `MeoSettingsTaskSheet` |
+| Separate window? | No. Route `settings` in the existing page host (compact apps without a host: `MeoFullScreenDialog`) |
+| Entry points | Overflow "Settings", `Ctrl+,`, and in sidebar apps a footer row `settings`; never a primary nav item |
+| With `MeoAppLayout` | Append `settings`/`about` pages after `navigationModel` entries; set `sidebarFooter` and `pageTitle` |
+| Up to ~5 categories | One scrolling page: `MeoListHeader` per category + `MeoSettingsGroup`s |
+| Larger | `MeoSettingsLayout` with category sidebar; level 3 = `MeoSettingsTaskSheet` |
 | Category order | General, Appearance, feature domains, Notifications, Privacy & data, Accounts & sync, Advanced, About |
 | Apply/Save buttons | None for ordinary preferences; confirm only privileged/destructive/restart changes |
 | Theme, accent, language | Default "Follow system"; override only, never edit the system value |
@@ -84,9 +85,22 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | App About route | `about`, from overflow "About _App_" and the last settings category |
 | Version source | Compile-time version of the binary (e.g. CMake `PROJECT_VERSION`) |
 | About content order | Header (icon, name, version, channel) → description → Links → Legal → copyright |
+| Component | `MeoAboutPage`; host passes `Qt.application.version` and license texts read in C++ |
+| License / notices view | Read-only `MeoSettingsTaskSheet` drill-in (built into `MeoAboutPage`) |
 | Third-party record | `THIRD_PARTY_NOTICES.md` at repo root + `assets/licenses/` (or `LICENSES/`), installed to `/usr/share/licenses/<pkg>/` |
 | In-app list includes | Vendored/adapted code, bundled assets, runtime platform libraries (Qt, KDE Frameworks, MeoUI) |
 | Build/dev tools | README "Built with" only, not in the app |
+
+## Decision table: KDE and Qt applications
+
+| Question | Answer |
+| --- | --- |
+| Restyle controls | meo-kde `MeoStyle`; never per-app redraws |
+| Title bar / toolbar surface | meo-kde color scheme `[Colors:Header]` + `org.meo.decoration` |
+| Hide menu bar | Distribution default `[MainWindow] MenuBar=Disabled` in `/etc/xdg/<app>rc` (KXmlGui apps) |
+| Change layout | Only small chrome patches for roadmap Tier 2 apps (Dolphin first) |
+| Rejected | Runtime widget-tree rewriting, full forks, literal tablet dimensions |
+| Exempt from App Shell | Installer (wizard), Quick Repair in recovery, shell surfaces; Meo AI changes go in its core view |
 
 ## Validation (MeoUI repository)
 

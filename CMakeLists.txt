@@ -263,6 +263,7 @@ qt_add_qml_module(meoui_module
         patterns/MeoSettingsGroup.qml
         patterns/MeoSidebar.qml
         patterns/MeoSettingsTaskSheet.qml
+        patterns/MeoAboutPage.qml
         patterns/MeoQuickSettingsEditor.qml
         patterns/MeoSearchFilterBar.qml
         patterns/MeoPageLayout.qml

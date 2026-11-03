@@ -7716,4 +7716,39 @@
         <translation>切换页面时，过渡保持顺畅，视图也容易跟随。</translation>
     </message>
 </context>
+<context>
+    <name>MeoAboutPage</name>
+    <message>
+        <source>About %1</source>
+        <translation>关于 %1</translation>
+    </message>
+    <message>
+        <source>Version %1</source>
+        <translation>版本 %1</translation>
+    </message>
+    <message>
+        <source>Links</source>
+        <translation>链接</translation>
+    </message>
+    <message>
+        <source>Legal</source>
+        <translation>法律信息</translation>
+    </message>
+    <message>
+        <source>License</source>
+        <translation>许可证</translation>
+    </message>
+    <message>
+        <source>Open-source licenses</source>
+        <translation>开源许可</translation>
+    </message>
+    <message>
+        <source>Components and assets this app uses</source>
+        <translation>此应用使用的组件和素材</translation>
+    </message>
+    <message>
+        <source>License information is not available in this build</source>
+        <translation>此版本未包含许可信息</translation>
+    </message>
+</context>
 </TS>

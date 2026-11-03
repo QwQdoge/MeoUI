@@ -25,6 +25,8 @@ Item {
     // behavior by default unless an app explicitly opts in.
     property list<Component> topAppBarActions
     property bool showTopAppBarOnExpanded: false
+    // Overrides the top app bar title, e.g. for pages after navigationModel.
+    property string pageTitle: ""
 
     // 🌟 Safe Area Insets (Edge-to-Edge support)
     property real safeAreaTop: 0
@@ -184,7 +186,8 @@ Item {
             MeoTopAppBar {
                 id: topAppBar
                 width: parent.width
-                title: control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : qsTr("App")
+                title: control.pageTitle !== "" ? control.pageTitle
+                       : (control.navigationModel[control.currentIndex] ? control.navigationModel[control.currentIndex].label : qsTr("App"))
                 type: "small"
                 visible: control.showTopAppBarOnExpanded || control.isCompact || control.isMedium
                 actions: control.topAppBarActions
@@ -271,9 +274,11 @@ Item {
     property int lastIndex: 0
 
     onCurrentIndexChanged: {
+        // Pages after the navigation model (for example the App Shell
+        // `settings` and `about` routes reached from sidebarFooter or an
+        // overflow menu) select no navigation row.
         const current = navigationModel[currentIndex]
-        if (current)
-            currentRoute = String(current.route || current.id || "")
+        currentRoute = current ? String(current.route || current.id || "") : ""
         let isForward = currentIndex >= lastIndex;
         lastIndex = currentIndex;
         pageLoader.slideDistance = isForward ? (40 * control.themeGlobalScale) : (-40 * control.themeGlobalScale);

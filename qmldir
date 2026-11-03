@@ -113,6 +113,7 @@ MeoStatusCenter 1.0 widgets/MeoStatusCenter.qml
 MeoTimePicker 1.0 widgets/MeoTimePicker.qml
 MeoToolbar 1.0 widgets/MeoToolbar.qml
 MeoTopAppBar 1.0 widgets/MeoTopAppBar.qml
+MeoAboutPage 1.0 patterns/MeoAboutPage.qml
 MeoAppLayout 1.0 patterns/MeoAppLayout.qml
 MeoDashboardLayout 1.0 patterns/MeoDashboardLayout.qml
 MeoEmptyState 1.0 patterns/MeoEmptyState.qml
