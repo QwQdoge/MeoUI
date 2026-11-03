@@ -97,7 +97,7 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | --- | --- |
 | Restyle controls | meo-kde `MeoStyle`; never per-app redraws |
 | Title bar / toolbar surface | meo-kde color scheme `[Colors:Header]` + `org.meo.decoration` |
-| Hide menu bar | Distribution default `[MainWindow] MenuBar=Disabled` in `/etc/xdg/<app>rc` (KXmlGui apps) |
+| Hide menu bar | meo-kde `defaults/applications/<app>rc` (`[MainWindow] MenuBar=Disabled`; Konsole `[KonsoleWindow] ShowMenuBarByDefault=false`), seeded by `startmeo-wayland` into the Meo session profile; never `/etc/xdg` |
 | Change layout | Only small chrome patches for roadmap Tier 2 apps (Dolphin first) |
 | Rejected | Runtime widget-tree rewriting, full forks, literal tablet dimensions |
 | Exempt from App Shell | Installer (wizard), Quick Repair in recovery, shell surfaces; Meo AI changes go in its core view |

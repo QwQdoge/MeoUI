@@ -247,11 +247,14 @@ rebuilt on MeoUI, so the hierarchy is matched in layers, following meo-kde
 What maps directly, without patches:
 
 - **No menu bar, overflow menu last.** KXmlGui applications (Dolphin, Kate,
-  Okular, Ark, Konsole) hide the menu bar and show their hamburger menu when
-  `[MainWindow] MenuBar=Disabled` is set in their configuration. A
-  distribution default under `/etc/xdg/<app>rc` makes that the starting state,
-  and users can still turn the menu bar back on. Kirigami applications
-  (System Settings, Discover, Elisa) already have no menu bar.
+  Okular, Ark) hide the menu bar and show their hamburger menu when
+  `[MainWindow] MenuBar=Disabled` is set; Konsole uses
+  `[KonsoleWindow] ShowMenuBarByDefault=false`. meo-kde ships these in
+  `defaults/applications/` and the Meo session seeds them once into its
+  private profile (`~/.config/meo-desktop`), so the ordinary Plasma session and
+  `/etc/xdg` are untouched and users can turn the menu bar back on
+  (`Ctrl+M`, Konsole `Ctrl+Shift+M`). Kirigami applications (System Settings,
+  Discover, Elisa) already have no menu bar.
 - **About and open-source licenses.** KDE's `KAboutData` About dialog already
   lists the version, license, authors and the libraries used; this matches
   section 3 and needs no change.
