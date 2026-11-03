@@ -6,6 +6,12 @@
 - Do the whole task in one pass; do not stop to ask routine questions that have an obvious default.
 - Never put secrets, tokens or credentials in code, logs or commits.
 
+## MeoUI specification (read before UI work)
+
+- People: https://meoarch.org/docs/ . Agents: https://meoarch.org/llms.txt , then the Markdown pages it lists; start with https://meoarch.org/docs/meoui/for-agents.md (decision tables and checklists).
+- Window chrome and toolbar, where app settings live and their categories, About, and open-source credits: https://meoarch.org/docs/meoui/app-shell.md .
+- The canonical source is this repository's `docs/design/` (plus `docs/api-lifecycle.md`, `docs/localization.md`). The site is generated from it: after changing these files, run `python3 scripts/build_docs.py` in meoarch-site and publish the site.
+
 # MeoUI agent rules
 
 ## Start here
