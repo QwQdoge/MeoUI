@@ -59,7 +59,7 @@ jobs:
       - name: Check out MeoUI
         uses: actions/checkout@v6
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22.22.2'
           cache: npm
