@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Check out MeoUI
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Audit shared Material design-system usage
         run: >-
@@ -57,7 +57,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out MeoUI
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
