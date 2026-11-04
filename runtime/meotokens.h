@@ -6,7 +6,8 @@
 
 #include "meodesigntokens.h"
 
-class MeoTokens final : public QObject
+// Not `final`: QML registration derives QQmlElement<MeoTokens> from this class, which MSVC rejects (C3246) for a final type.
+class MeoTokens : public QObject
 {
     Q_OBJECT
     QML_NAMED_ELEMENT(MeoTokens)
