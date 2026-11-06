@@ -126,6 +126,7 @@ desktop it adopts the input conventions shared by WinUI 3 and macOS.
 | Reduce transparency | `MeoTheme.transparencyEnabled`; translucent surfaces take their alpha from `MeoTheme.surfaceAlpha(a)` (opaque when off). Shell blur-behind follows the same flag |
 | Increase contrast | `MeoTheme.highContrast`: secondary text uses on-surface, outlines/dividers strengthen, state layers +4%, focus ring +1dp |
 | Density | `MeoTheme.density` 0/-1/-2/-3 (M3 density scale, 4dp per step, per-component floors); resolves to 0 on touch input. Heights come from `MeoTheme.buttonHeightForSize()`, `densityAdjusted()` and `minimumTargetSize` |
+| Icons | `MeoIcon` (Material Symbols Rounded, one shared font loader via `MeoTheme.iconFontFamily`). Optical size follows the drawn size (20-48); grade follows `MeoTheme.iconGrade` (-25 dark, 200 high contrast). Override axes only for a deliberate emphasis |
 | Who sets them | The host (meo-kde, apps) binds them to the platform settings; components only read MeoTheme |
 
 ## Decision table: rendering and motion performance

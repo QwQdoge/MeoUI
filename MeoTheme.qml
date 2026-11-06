@@ -899,6 +899,17 @@ QtObject {
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
     readonly property string typefacePlain: fontFamily
+
+    // Icon font: one shared loader for every MeoIcon (previously each icon
+    // instance created its own FontLoader).
+    property FontLoader _iconFontLoader: FontLoader {
+        source: Qt.resolvedUrl("assets/fonts/MaterialSymbolsRounded.ttf")
+    }
+    readonly property string iconFontFamily: _iconFontLoader.status === FontLoader.Ready
+                                             ? _iconFontLoader.name : "Material Symbols Rounded"
+    // Material Symbols GRAD axis: -25 reduces glare on dark surfaces, 200
+    // gives high-contrast emphasis, 0 otherwise.
+    readonly property int iconGrade: highContrast ? 200 : (isDarkMode ? -25 : 0)
     readonly property string typefaceBrand: fontFamilyBrand
     readonly property string typefaceChineseFallback: "Noto Sans SC, Microsoft YaHei, Source Han Sans SC"
 

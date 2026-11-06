@@ -274,8 +274,8 @@ Item {
                         icon: modelData.icon
                         fill: Boolean(modelData.fill)
                         weight: modelData.weight === undefined ? 400 : modelData.weight
-                        grade: modelData.grade === undefined ? 0 : modelData.grade
-                        opticalSize: modelData.opticalSize === undefined ? 24 : modelData.opticalSize
+                        grade: modelData.grade === undefined ? MeoTheme.iconGrade : modelData.grade
+                        opticalSize: modelData.opticalSize === undefined ? 32 : modelData.opticalSize
                         color: MeoTheme.primary
                         size: 32
                     }
