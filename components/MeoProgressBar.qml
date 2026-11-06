@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Shapes
 import MeoUI
 
 Control {
@@ -292,27 +293,22 @@ Control {
     onValueChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
     }
     onActiveColorChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
     }
     onTrackColorChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
     }
     onIndeterminateChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
     }
     onShowTrackChanged: {
         if (wavy)
             wavyCanvas.requestPaint()
-        circularCanvas.requestPaint()
     }
 
     // Default M3 progress: one continuous active segment over a quiet track.
@@ -603,20 +599,32 @@ Control {
         height: width
         readonly property bool sourceDrawsTrack: control.showTrack && !control.indeterminate
 
-        Canvas {
+        // GPU-tessellated arcs (QtQuick.Shapes curve renderer) instead of a
+        // Canvas: the indeterminate spinner no longer rasterizes on the CPU
+        // and uploads a new texture every frame, and edges stay analytically
+        // antialiased at any scale.
+        Shape {
             id: circularCanvas
             objectName: "meoProgressCircularCanvas"
             anchors.fill: parent
             visible: parent.visible
+            preferredRendererType: Shape.CurveRenderer
             property real determinateValue: control.clampedValue
             property real indeterminateArcStart: -90
             property real indeterminateArcLength: 90
 
-            onDeterminateValueChanged: requestPaint()
-            onIndeterminateArcStartChanged: requestPaint()
-            onIndeterminateArcLengthChanged: requestPaint()
-            onWidthChanged: requestPaint()
-            onHeightChanged: requestPaint()
+            readonly property real arcRadius: Math.max(0, (Math.min(width, height) - control.strokeThickness) / 2)
+            readonly property real activeSweep: control.clampedValue * 360
+            readonly property real trackGapSweep: Math.min(activeSweep,
+                                                           control.circularTrackGapSweepDegrees(Math.min(width, height),
+                                                                                               control.strokeThickness))
+            readonly property real trackSweep: classicCircular.sourceDrawsTrack
+                                               ? control.circularDeterminateTrackSweepDegrees(Math.min(width, height),
+                                                                                             control.strokeThickness)
+                                               : 0
+            readonly property real indicatorStart: control.indeterminate ? indeterminateArcStart : -90
+            readonly property real indicatorSweep: control.indeterminate ? indeterminateArcLength
+                                                                         : determinateValue * 360
 
             SequentialAnimation {
                 running: control.indeterminate && !control.reduceMotion
@@ -663,50 +671,40 @@ Control {
                 ScriptAction { script: circularCanvas.indeterminateArcStart = -90 }
             }
 
-            onPaint: {
-                const ctx = getContext("2d")
-                ctx.reset()
-                const stroke = control.strokeThickness
-                const radius = (Math.min(width, height) - stroke) / 2
-                const cx = width / 2
-                const cy = height / 2
-                if (radius <= 0)
-                    return
-
-                // The default circular indeterminate source token is
-                // transparent. Determinate circular progress instead keeps a
-                // SecondaryContainer track, separated from both active arc
-                // ends by the source's cap-compensated 4dp gap.
-                if (classicCircular.sourceDrawsTrack) {
-                    const diameter = Math.min(width, height)
-                    const activeSweep = control.clampedValue * 360
-                    const gapSweep = control.circularTrackGapSweepDegrees(diameter, stroke)
-                    const adjustedGapSweep = Math.min(activeSweep, gapSweep)
-                    const trackSweep = control.circularDeterminateTrackSweepDegrees(diameter, stroke)
-                    ctx.strokeStyle = control.trackColor
-                    ctx.lineWidth = control.trackThickness
-                    ctx.lineCap = "round"
-                    ctx.beginPath()
-                    if (trackSweep > 0)
-                        ctx.arc(cx, cy, radius,
-                                -Math.PI / 2 + (activeSweep + adjustedGapSweep) * Math.PI / 180,
-                                -Math.PI / 2 + (activeSweep + adjustedGapSweep + trackSweep) * Math.PI / 180)
-                    ctx.stroke()
+            // The default circular indeterminate source token is transparent.
+            // Determinate circular progress instead keeps a SecondaryContainer
+            // track, separated from both active arc ends by the source's
+            // cap-compensated 4dp gap.
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: circularCanvas.trackSweep > 0 && circularCanvas.arcRadius > 0
+                             ? control.trackColor : "transparent"
+                strokeWidth: control.trackThickness
+                capStyle: ShapePath.RoundCap
+                PathAngleArc {
+                    centerX: circularCanvas.width / 2
+                    centerY: circularCanvas.height / 2
+                    radiusX: circularCanvas.arcRadius
+                    radiusY: circularCanvas.arcRadius
+                    startAngle: -90 + circularCanvas.activeSweep + circularCanvas.trackGapSweep
+                    sweepAngle: Math.max(0, circularCanvas.trackSweep)
                 }
+            }
 
-                ctx.strokeStyle = control.activeColor
-                ctx.lineWidth = stroke
-                ctx.lineCap = "round"
-                ctx.beginPath()
-                if (control.indeterminate) {
-                    const start = indeterminateArcStart * Math.PI / 180
-                    const end = (indeterminateArcStart + indeterminateArcLength) * Math.PI / 180
-                    ctx.arc(cx, cy, radius, start, end)
-                } else if (determinateValue > 0) {
-                    ctx.arc(cx, cy, radius, -Math.PI / 2,
-                            -Math.PI / 2 + determinateValue * 2 * Math.PI)
+            ShapePath {
+                fillColor: "transparent"
+                strokeColor: circularCanvas.indicatorSweep > 0 && circularCanvas.arcRadius > 0
+                             ? control.activeColor : "transparent"
+                strokeWidth: control.strokeThickness
+                capStyle: ShapePath.RoundCap
+                PathAngleArc {
+                    centerX: circularCanvas.width / 2
+                    centerY: circularCanvas.height / 2
+                    radiusX: circularCanvas.arcRadius
+                    radiusY: circularCanvas.arcRadius
+                    startAngle: circularCanvas.indicatorStart
+                    sweepAngle: Math.max(0, circularCanvas.indicatorSweep)
                 }
-                ctx.stroke()
             }
         }
     }

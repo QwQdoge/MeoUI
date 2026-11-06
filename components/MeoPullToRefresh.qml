@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import QtQuick.Shapes
 import MeoUI
 
 Control {
@@ -62,10 +63,15 @@ Control {
             color: control.themeSurfaceContainerHigh
 
             // Indeterminate Progress (using the logic from MeoProgressBar circular type)
-            Canvas {
+            // GPU-tessellated arc (QtQuick.Shapes curve renderer) instead of a
+            // Canvas, so the refresh spinner does not rasterize on the CPU and
+            // upload a texture every frame.
+            Shape {
                 id: indicatorCanvas
                 anchors.fill: parent
                 anchors.margins: 8 * control.themeGlobalScale
+                preferredRendererType: Shape.CurveRenderer
+                opacity: control.refreshing ? 1 : Math.max(0.3, control.visibleFraction)
 
                 property real startAngle: 0
                 property real endAngle: control.refreshing ? 0.2 : (control.pullDistance * 0.8)
@@ -76,63 +82,54 @@ Control {
                 property real animEndAngle: 0
                 property real animRotationAngle: 0
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
+                readonly property real strokeWidth: 2.5 * control.themeGlobalScale
+                readonly property real arcRadius: Math.max(0, (width - strokeWidth) / 2)
+                readonly property real resolvedStart: control.refreshing ? animStartAngle : startAngle
+                readonly property real resolvedEnd: control.refreshing ? animEndAngle : endAngle
+                readonly property real resolvedRotation: control.refreshing ? animRotationAngle : rotationAngle
+                // Turns -> degrees, 0 at 12 o'clock, clockwise.
+                readonly property real arcStartDegrees: (resolvedStart + resolvedRotation) * 360 - 90
+                readonly property real arcSweepDegrees: Math.max(0, Math.min(359.9, (resolvedEnd - resolvedStart) * 360))
+                readonly property real arcEndRadians: (arcStartDegrees + arcSweepDegrees) * Math.PI / 180
+                readonly property bool showArrow: !control.refreshing && control.distanceFraction > 0.4
+                readonly property real arrowSize: 4 * control.themeGlobalScale
+                readonly property real arrowTipX: width / 2 + arcRadius * Math.cos(arcEndRadians)
+                readonly property real arrowTipY: height / 2 + arcRadius * Math.sin(arcEndRadians)
+                // Arrow arms: local (-s, sign * s) rotated by the end angle around the tip.
+                function armX(sign) {
+                    return arrowTipX - arrowSize * Math.cos(arcEndRadians) - sign * arrowSize * Math.sin(arcEndRadians)
+                }
+                function armY(sign) {
+                    return arrowTipY - arrowSize * Math.sin(arcEndRadians) + sign * arrowSize * Math.cos(arcEndRadians)
+                }
 
-                    var centerX = width / 2;
-                    var centerY = height / 2;
-                    var strokeWidth = 2.5 * control.themeGlobalScale;
-                    var radius = (width - strokeWidth) / 2;
-
-                    ctx.beginPath();
-                    ctx.strokeStyle = control.themeIndicatorColor;
-                    ctx.lineWidth = strokeWidth;
-                    ctx.lineCap = "round";
-                    ctx.globalAlpha = control.refreshing ? 1 : Math.max(0.3, control.visibleFraction);
-
-                    var sA, eA, rA;
-                    if (control.refreshing) {
-                        sA = animStartAngle;
-                        eA = animEndAngle;
-                        rA = animRotationAngle;
-                    } else {
-                        sA = startAngle;
-                        eA = endAngle;
-                        rA = rotationAngle;
-                    }
-
-                    // Draw arc based on pull progress or rotation
-                    var start = (sA + rA) * 2 * Math.PI - 0.5 * Math.PI;
-                    var end = (eA + rA) * 2 * Math.PI - 0.5 * Math.PI;
-
-                    ctx.arc(centerX, centerY, radius, start, end);
-                    ctx.stroke();
-
-                    // Draw arrowhead when pulling
-                    if (!control.refreshing && control.distanceFraction > 0.4) {
-                        var arrowAngle = end;
-                        var arrowSize = 4 * control.themeGlobalScale;
-                        ctx.save();
-                        ctx.translate(centerX + radius * Math.cos(arrowAngle), centerY + radius * Math.sin(arrowAngle));
-                        ctx.rotate(arrowAngle);
-                        ctx.beginPath();
-                        ctx.moveTo(-arrowSize, -arrowSize);
-                        ctx.lineTo(0, 0);
-                        ctx.lineTo(-arrowSize, arrowSize);
-                        ctx.stroke();
-                        ctx.restore();
+                ShapePath {
+                    fillColor: "transparent"
+                    strokeColor: indicatorCanvas.arcSweepDegrees > 0 && indicatorCanvas.arcRadius > 0
+                                 ? control.themeIndicatorColor : "transparent"
+                    strokeWidth: indicatorCanvas.strokeWidth
+                    capStyle: ShapePath.RoundCap
+                    PathAngleArc {
+                        centerX: indicatorCanvas.width / 2
+                        centerY: indicatorCanvas.height / 2
+                        radiusX: indicatorCanvas.arcRadius
+                        radiusY: indicatorCanvas.arcRadius
+                        startAngle: indicatorCanvas.arcStartDegrees
+                        sweepAngle: indicatorCanvas.arcSweepDegrees
                     }
                 }
 
-                onStartAngleChanged: requestPaint()
-                onEndAngleChanged: requestPaint()
-                onRotationAngleChanged: requestPaint()
-                onAnimStartAngleChanged: requestPaint()
-                onAnimEndAngleChanged: requestPaint()
-                onAnimRotationAngleChanged: requestPaint()
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
+                // Arrowhead while pulling.
+                ShapePath {
+                    fillColor: "transparent"
+                    strokeColor: indicatorCanvas.showArrow ? control.themeIndicatorColor : "transparent"
+                    strokeWidth: indicatorCanvas.strokeWidth
+                    capStyle: ShapePath.RoundCap
+                    startX: indicatorCanvas.armX(-1)
+                    startY: indicatorCanvas.armY(-1)
+                    PathLine { x: indicatorCanvas.arrowTipX; y: indicatorCanvas.arrowTipY }
+                    PathLine { x: indicatorCanvas.armX(1); y: indicatorCanvas.armY(1) }
+                }
 
                 // Indeterminate animation
                 SequentialAnimation {

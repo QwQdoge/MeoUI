@@ -140,10 +140,9 @@ Item {
     Item { id: contentLayer; anchors.fill: parent }
 
     Component.onCompleted: if (animateOnCompleted) reveal(entranceDirection)
-    Timer {
+    // Sampled once per rendered frame (vsync-aligned) like MeoSpringValue.
+    FrameAnimation {
         id: entranceDriver
-        interval: 16
-        repeat: true
         onTriggered: control.advanceEntrance()
     }
 }
