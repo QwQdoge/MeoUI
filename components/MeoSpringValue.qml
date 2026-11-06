@@ -25,6 +25,7 @@ QtObject {
     property real _startVelocity: 0
     property double _startedAt: 0
     property double _lastTickAt: 0
+    property double _requestedAt: 0
     property bool _snapping: false
 
     signal settled(real value)
@@ -64,6 +65,7 @@ QtObject {
         // refresh or a shader compile, and that stall must not consume the
         // opening of the motion.
         _startedAt = 0
+        _requestedAt = Date.now()
         driver.stop()
         driver.start()
     }
@@ -103,7 +105,10 @@ QtObject {
                 control._startedAt += gap - 16
             control._lastTickAt = now
             const elapsed = now - control._startedAt
-            if (elapsed >= control.maximumRunDuration) {
+            // Stall compensation never extends the wall-clock contract: the
+            // motion always lands by maximumRunDuration after the request.
+            if (elapsed >= control.maximumRunDuration
+                    || now - control._requestedAt >= control.maximumRunDuration) {
                 stop()
                 control.value = control.targetValue
                 control.velocity = 0
