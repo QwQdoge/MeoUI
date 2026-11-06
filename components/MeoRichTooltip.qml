@@ -30,19 +30,25 @@ Popup {
     focus: actions.length > 0
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-    background: MeoShape {
-        id: shapeBg
-        type: control.shape
-        color: control.themeSurfaceContainer
-        radius: MeoTheme.shapeMedium
+    background: Item {
+        // Keep the former Rectangle-like background contract for hosts.
+        readonly property alias radius: shapeBg.radius
+        readonly property alias color: shapeBg.color
         // AndroidX RichTooltipTokens.ContainerElevation = Level2.
+        MeoElevationShadow {
+            target: shapeBg
+            elevation: control.visible ? MeoTheme.elevationLevel2 : 0
+            shape: shapeBg.type
+            radius: shapeBg.radius
+            color: shapeBg.color
+        }
 
-        layer.enabled: control.visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: 2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
+        MeoShape {
+            id: shapeBg
+            anchors.fill: parent
+            type: control.shape
+            color: control.themeSurfaceContainer
+            radius: MeoTheme.shapeMedium
         }
     }
 

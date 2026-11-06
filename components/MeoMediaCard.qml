@@ -75,24 +75,13 @@ MeoCard {
     }
 
     background: Item {
-        // MD3 elevation for the 'elevated' type. The shadow caster owns the
-        // blur layer so ripple/hover animations on the surface above it never
-        // force the blur to be recomputed.
-        MeoShape {
-            anchors.fill: shapeBg
-            visible: control.visible && control.elevation > 0
-            type: shapeBg.type
+        // MD3 elevation for the 'elevated' type (shared shadow model).
+        MeoElevationShadow {
+            target: shapeBg
+            elevation: control.visible ? control.elevation : 0
+            shape: shapeBg.type
             radius: shapeBg.radius
             color: shapeBg.color
-            scale: shapeBg.scale
-            layer.enabled: visible
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.elevation * 0.2
-                shadowVerticalOffset: control.elevation * 1.2
-                shadowOpacity: 0.2 + control.elevation * 0.02
-                shadowColor: MeoTheme.shadow
-            }
         }
 
         MeoShape {

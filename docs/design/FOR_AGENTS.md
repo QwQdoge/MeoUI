@@ -125,8 +125,8 @@ desktop it adopts the input conventions shared by WinUI 3 and macOS.
 | Draw a rect / pill / circle surface | `MeoShape` (scene-graph `Rectangle` for `rect`, `round`, `squircle`, `circle`); `Canvas` only for the expressive shape catalog |
 | Draw an animated arc, spinner or morphing path | `QtQuick.Shapes` (`Shape.CurveRenderer`); never an animated `Canvas`, which re-rasterizes on the CPU and re-uploads a texture every frame |
 | Rotate a drawn shape | An item `rotation` transform, not a repaint |
-| Elevation shadow | `layer.enabled` + `MultiEffect` on a silhouette-only caster behind the surface; never on an item that contains a state layer, ripple, spinner or other animated content |
-| Shadow offset/blur from an elevation token | `MeoTheme.elevationShadowOffset()` / `MeoTheme.elevationShadowBlur()`; elevation tokens are already scaled, so do not multiply by `globalScale` again |
+| Elevation shadow | `MeoElevationShadow { target: surface; elevation: MeoTheme.elevationLevelN }` as a sibling behind the surface; never hand-write `MultiEffect` shadow values, and never put `layer.enabled` on an item that contains a state layer, ripple, spinner or other animated content |
+| Which level | M3 component levels: buttons/cards 1 (hover 2), menus/rich tooltips/pull-to-refresh 2, dialogs/snackbars/floating toolbars/popovers 3, FAB by its token; values between levels interpolate. Elevation tokens are already scaled, so do not multiply by `globalScale` again |
 | Fade an overlay out | Gate `visible` on the animated `opacity` (`visible: opacity > 0`), not on the condition that drives it; otherwise the exit transition never renders. Items inside a Row/Layout may hide immediately instead |
 | Infinite or decorative animation | `running` includes `visible` (and `!MeoTheme.reduceMotion` when it moves) |
 | Shape-pair results (topology alignment, interpolation tables) | Compute once per pair and cache; never per frame |

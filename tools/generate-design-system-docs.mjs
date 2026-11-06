@@ -22,8 +22,12 @@ const referenceRoot = path.join(output, "05-component-reference");
 const apiRoot = path.join(referenceRoot, "api");
 const clean = process.argv.includes("--clean");
 const cmake = fs.readFileSync(path.join(root, "CMakeLists.txt"), "utf8");
+const qmldirText = fs.readFileSync(path.join(root, "qmldir"), "utf8");
+// `internal` qmldir types are implementation primitives, not product API.
+const internalPaths = new Set([...qmldirText.matchAll(/^internal\s+\w+\s+(\S+)\s*$/gm)].map((match) => match[1]));
 const sourcePaths = [...cmake.matchAll(/^\s*((?:components|widgets|patterns)\/Meo[\w]+\.qml)\s*$/gm)]
-    .map((match) => match[1]);
+    .map((match) => match[1])
+    .filter((file) => !internalPaths.has(file));
 
 if (!sourcePaths.length) {
     throw new Error("No exported Meo QML types found in CMakeLists.txt.");

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 // Contextual M3 Expressive toolbar. Unlike the docked variant it carries a
@@ -41,21 +40,12 @@ Item {
     Accessible.role: Accessible.ToolBar
     Accessible.name: qsTr("Floating toolbar")
 
-    // Shadow caster: owns the blur layer so hover/ripple animation on the
-    // toolbar's actions never forces the blur to be recomputed.
-    Rectangle {
-        anchors.fill: toolbarSurface
-        visible: toolbarSurface.visible
+    // M3 floating toolbar: elevation level 3.
+    MeoElevationShadow {
+        target: toolbarSurface
+        elevation: MeoTheme.elevationLevel3
         radius: toolbarSurface.radius
         color: toolbarSurface.color
-        layer.enabled: visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.18
-            shadowVerticalOffset: 2 * MeoTheme.globalScale
-            shadowOpacity: 0.18
-            shadowColor: MeoTheme.shadow
-        }
     }
 
     Rectangle {

@@ -600,18 +600,44 @@ QtObject {
     readonly property real elevationLevel4: 8 * globalScale
     readonly property real elevationLevel5: 12 * globalScale
 
-    // Elevation values above are already in scaled pixels. Shadow geometry
-    // must not multiply by globalScale again, or HiDPI/scaled shells get a
-    // shadow offset that grows with scale² instead of scale.
-    function elevationShadowOffset(elevation) {
-        return Math.max(0, Number(elevation) || 0)
+    // One shadow model for every elevated surface. Inputs are elevation
+    // values in scaled pixels (the elevationLevelN tokens above, or a value
+    // interpolated between them). The table maps the six M3 levels
+    // (0/1/3/6/8/12dp) to a key-shadow offset and blur; values between levels
+    // interpolate so hover/press elevation changes animate smoothly.
+    // Elevation tokens are already scaled: never multiply by globalScale
+    // again (that made HiDPI offsets grow with scale²).
+    readonly property var _elevationDp: [0, 1, 3, 6, 8, 12]
+    readonly property var _shadowOffsetDp: [0, 1, 2, 4, 6, 8]
+    readonly property var _shadowBlur: [0, 0.14, 0.24, 0.38, 0.46, 0.56]
+
+    function _elevationLookup(elevation, table) {
+        const dp = Math.max(0, (Number(elevation) || 0) / Math.max(0.0001, globalScale))
+        const levels = _elevationDp
+        if (dp >= levels[levels.length - 1])
+            return table[table.length - 1]
+        for (let i = 1; i < levels.length; ++i) {
+            if (dp <= levels[i]) {
+                const t = (dp - levels[i - 1]) / (levels[i] - levels[i - 1])
+                return table[i - 1] + (table[i] - table[i - 1]) * t
+            }
+        }
+        return 0
     }
 
-    // MultiEffect.shadowBlur is a 0..1 fraction of blurMax (in item pixels),
-    // so it scales with the elevation in pixels and saturates at 1.
-    function elevationShadowBlur(elevation) {
-        return Math.max(0, Math.min(1, (Number(elevation) || 0) * 0.12))
+    function elevationShadowOffset(elevation) {
+        return _elevationLookup(elevation, _shadowOffsetDp) * globalScale
     }
+
+    // MultiEffect.shadowBlur is a 0..1 fraction of blurMax (item pixels), so
+    // it is scaled with globalScale and saturates at 1.
+    function elevationShadowBlur(elevation) {
+        return Math.min(1, _elevationLookup(elevation, _shadowBlur) * globalScale)
+    }
+
+    // Shadows read weaker on dark surfaces; M3 compensates with tonal
+    // elevation, and the key shadow stays visible but subtle.
+    readonly property real elevationShadowOpacity: isDarkMode ? 0.32 : 0.16
 
     // MD3 state-layer opacity tokens.
     readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08)

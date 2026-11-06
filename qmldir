@@ -71,6 +71,7 @@ MeoRichTooltip 1.0 components/MeoRichTooltip.qml
 MeoSegmentedButtons 1.0 components/MeoSegmentedButtons.qml
 MeoSelectionGroup 1.0 components/MeoSelectionGroup.qml
 MeoShape 1.0 components/MeoShape.qml
+MeoElevationShadow 1.0 components/MeoElevationShadow.qml
 MeoShapeMorph 1.0 components/MeoShapeMorph.qml
 MeoSkeleton 1.0 components/MeoSkeleton.qml
 MeoSlider 1.0 components/MeoSlider.qml

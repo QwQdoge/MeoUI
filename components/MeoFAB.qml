@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Button {
@@ -121,28 +120,12 @@ Button {
         }
     }
 
-    // Keep the visual surface in the control's content tree. Some Qt Quick
-    // layouts leave a custom Button background without a resolved geometry;
-    // a direct child has the same hit rectangle as the control in both Layout
-    // and anchored placement.
-    // Shadow caster: a silhouette-only twin owns the offscreen layer and blur, so
-    // ripple/hover/focus animations on the visible surface above never force
-    // the blur to be recomputed. Only geometry, color, and elevation do.
-    Rectangle {
-        anchors.fill: fabBackground
+    MeoElevationShadow {
+        target: fabBackground
         z: 0.5
-        visible: control.visible && control.resolvedElevation > 0
+        elevation: control.visible ? control.resolvedElevation : 0
         radius: fabBackground.radius
         color: fabBackground.color
-        scale: fabBackground.scale
-        layer.enabled: visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: MeoTheme.elevationShadowBlur(control.resolvedElevation)
-            shadowVerticalOffset: MeoTheme.elevationShadowOffset(control.resolvedElevation)
-            shadowOpacity: 0.12
-            shadowColor: MeoTheme.shadow
-        }
     }
 
     Rectangle {

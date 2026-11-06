@@ -193,6 +193,7 @@ Item {
         if (name === "MeoQuickSettingsEditor") return quickSettingsEditorSample
         if (name === "MeoSupportingPaneLayout") return supportingPaneSample
         if (name === "MeoShape") return shapeSample
+        if (name === "MeoElevationShadow") return elevationShadowSample
         if (name === "MeoShapeMorph") return shapeMorphSample
         return fallbackSample
     }
@@ -3078,6 +3079,44 @@ Item {
         }
     }
     Component { id: settingsSample; MeoSettingsLayout { width: 420 * MeoTheme.globalScale; height: 220 * MeoTheme.globalScale; title: qsTr("Settings"); model: [{ "sectionTitle": qsTr("Appearance"), "items": [{ "title": qsTr("Dark theme"), "subtitle": qsTr("Use dark colors"), "icon": "dark_mode", "type": "switch", "checked": true }] }] } }
+    Component {
+        id: elevationShadowSample
+        Flow {
+            spacing: MeoTheme.space24
+            Repeater {
+                model: [
+                    { "label": qsTr("Level 0"), "elevation": MeoTheme.elevationLevel0 },
+                    { "label": qsTr("Level 1"), "elevation": MeoTheme.elevationLevel1 },
+                    { "label": qsTr("Level 2"), "elevation": MeoTheme.elevationLevel2 },
+                    { "label": qsTr("Level 3"), "elevation": MeoTheme.elevationLevel3 },
+                    { "label": qsTr("Level 4"), "elevation": MeoTheme.elevationLevel4 },
+                    { "label": qsTr("Level 5"), "elevation": MeoTheme.elevationLevel5 }
+                ]
+                delegate: Column {
+                    required property var modelData
+                    spacing: MeoTheme.space8
+                    Item {
+                        width: 88 * MeoTheme.globalScale
+                        height: 64 * MeoTheme.globalScale
+                        MeoElevationShadow {
+                            target: elevationSurface
+                            elevation: modelData.elevation
+                            radius: elevationSurface.radius
+                            color: elevationSurface.color
+                        }
+                        Rectangle {
+                            id: elevationSurface
+                            anchors.fill: parent
+                            radius: MeoTheme.shapeMedium
+                            color: MeoTheme.surfaceContainerLow
+                        }
+                    }
+                    SampleLabel { label: modelData.label }
+                }
+            }
+        }
+    }
+
     Component {
         id: shapeSample
         Grid {

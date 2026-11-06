@@ -268,6 +268,7 @@ qt_add_qml_module(meoui_module
         patterns/MeoSegmentedList.qml
         patterns/MeoSupportingPaneLayout.qml
         components/MeoShape.qml
+        components/MeoElevationShadow.qml
         components/MeoShapeMorph.qml
         components/MeoMaterialShapes.js
         showcase/MeoShowcase.qml

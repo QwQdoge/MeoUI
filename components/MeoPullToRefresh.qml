@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import QtQuick.Shapes
 import MeoUI
 
@@ -40,24 +39,16 @@ Control {
 
     // MD3 Pull-to-refresh container: circular elevated surface
     background: Item {
-        // Elevation Shadow (Standard MD3 Level 2 for pull-to-refresh). The
-        // caster owns the blur layer; the spinning indicator lives on the
-        // surface above it, so the blur is not recomputed every frame.
-        Rectangle {
-            anchors.fill: parent
-            radius: width / 2
-            color: control.themeSurfaceContainerHigh
-            visible: control.indicatorVisible && control.opacity > 0
-            layer.enabled: visible
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: 0.2
-                shadowVerticalOffset: 2 * control.themeGlobalScale
-                shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
-            }
+        // M3 pull-to-refresh container: elevation level 2 (shared model).
+        MeoElevationShadow {
+            target: refreshSurface
+            elevation: control.indicatorVisible && control.opacity > 0 ? MeoTheme.elevationLevel2 : 0
+            shape: "circle"
+            color: refreshSurface.color
         }
 
         Rectangle {
+            id: refreshSurface
             anchors.fill: parent
             radius: width / 2
             color: control.themeSurfaceContainerHigh

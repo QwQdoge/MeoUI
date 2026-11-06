@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Button {
@@ -274,23 +273,15 @@ Button {
     }
 
     background: Item {
-        // Shadow caster: a silhouette-only twin owns the offscreen layer and blur, so
-        // ripple/hover/focus animations on the visible surface above never force
-        // the blur to be recomputed. Only geometry, color, and elevation do.
-        MeoShape {
-            anchors.fill: buttonShape
-            visible: control.visible && control.effectiveType === "elevated" && control.enabled
-            type: buttonShape.type
+        MeoElevationShadow {
+            target: buttonShape
+            elevation: control.visible && control.effectiveType === "elevated" && control.enabled
+                       ? (control.hovered ? MeoTheme.elevationLevel2 : MeoTheme.elevationLevel1) : 0
+            shape: buttonShape.type
             radius: buttonShape.radius
             color: buttonShape.color
-            scale: buttonShape.scale
-            layer.enabled: visible
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.hovered ? 0.22 : 0.14
-                shadowVerticalOffset: (control.hovered ? 2 : 1) * control.themeGlobalScale
-                shadowOpacity: 0.12
-                shadowColor: MeoTheme.shadow
+            Behavior on elevation {
+                NumberAnimation { duration: MeoTheme.motionDurationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
             }
         }
 

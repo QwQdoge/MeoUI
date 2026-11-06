@@ -31,9 +31,24 @@ Popup {
     padding: 0
     closePolicy: dismissible ? Popup.CloseOnEscape | Popup.CloseOnPressOutside : Popup.NoAutoClose
 
-    background: Rectangle {
-        radius: MeoTheme.shapeExtraSmall
-        color: control.themeInverseSurface
+    background: Item {
+        // Keep the former Rectangle-like background contract for hosts.
+        readonly property alias radius: snackbarSurface.radius
+        readonly property alias color: snackbarSurface.color
+        // AndroidX SnackbarTokens.ContainerElevation = Level3.
+        MeoElevationShadow {
+            target: snackbarSurface
+            elevation: control.visible ? MeoTheme.elevationLevel3 : 0
+            radius: snackbarSurface.radius
+            color: snackbarSurface.color
+        }
+
+        Rectangle {
+            id: snackbarSurface
+            anchors.fill: parent
+            radius: MeoTheme.shapeExtraSmall
+            color: control.themeInverseSurface
+        }
     }
 
     contentItem: Item {

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 // A Material 3 Expressive split button: two separate, adjacent action
@@ -124,24 +123,14 @@ Control {
             readonly property real innerRadius: pressed || hovered || visualFocus
                                                 ? control.innerActiveCorner : control.innerCorner
             background: Item {
-                // Shadow caster: owns the blur layer so the state layer inside
-                // the visible surface can animate without re-running the blur.
-                Rectangle {
-                    anchors.fill: primaryBackground
-                    visible: control.effectiveType === "elevated" && control.enabled
+                MeoElevationShadow {
+                    target: primaryBackground
+                    elevation: control.effectiveType === "elevated" && control.enabled ? MeoTheme.elevationLevel1 : 0
                     color: primaryBackground.color
                     topLeftRadius: primaryBackground.topLeftRadius
                     topRightRadius: primaryBackground.topRightRadius
                     bottomLeftRadius: primaryBackground.bottomLeftRadius
                     bottomRightRadius: primaryBackground.bottomRightRadius
-                    layer.enabled: visible
-                    layer.effect: MultiEffect {
-                        shadowEnabled: true
-                        shadowBlur: MeoTheme.elevationShadowBlur(MeoTheme.elevationLevel1)
-                        shadowVerticalOffset: MeoTheme.elevationShadowOffset(MeoTheme.elevationLevel1)
-                        shadowOpacity: 0.12
-                        shadowColor: MeoTheme.shadow
-                    }
                 }
 
                 Rectangle {
@@ -238,24 +227,14 @@ Control {
                                                 : pressed || hovered || visualFocus
                                                   ? control.innerActiveCorner : control.innerCorner
             background: Item {
-                // Shadow caster: owns the blur layer so the state layer inside
-                // the visible surface can animate without re-running the blur.
-                Rectangle {
-                    anchors.fill: trailingBackground
-                    visible: control.effectiveType === "elevated" && control.enabled
+                MeoElevationShadow {
+                    target: trailingBackground
+                    elevation: control.effectiveType === "elevated" && control.enabled ? MeoTheme.elevationLevel1 : 0
                     color: trailingBackground.color
                     topLeftRadius: trailingBackground.topLeftRadius
                     topRightRadius: trailingBackground.topRightRadius
                     bottomLeftRadius: trailingBackground.bottomLeftRadius
                     bottomRightRadius: trailingBackground.bottomRightRadius
-                    layer.enabled: visible
-                    layer.effect: MultiEffect {
-                        shadowEnabled: true
-                        shadowBlur: MeoTheme.elevationShadowBlur(MeoTheme.elevationLevel1)
-                        shadowVerticalOffset: MeoTheme.elevationShadowOffset(MeoTheme.elevationLevel1)
-                        shadowOpacity: 0.12
-                        shadowColor: MeoTheme.shadow
-                    }
                 }
 
                 Rectangle {

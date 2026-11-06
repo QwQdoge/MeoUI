@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Control {
@@ -210,6 +209,14 @@ Control {
         implicitHeight: control.implicitHeight
         clip: true
 
+        MeoElevationShadow {
+            target: groupSurface
+            elevation: !control.isStandard && control.type === "elevated" && control.enabled
+                       ? MeoTheme.elevationLevel1 : 0
+            radius: groupSurface.radius
+            color: groupSurface.color
+        }
+
         Rectangle {
             id: groupSurface
             anchors.fill: parent
@@ -218,15 +225,6 @@ Control {
             color: control.idleBackground
             border.width: control.outlined ? Math.max(1, control.themeGlobalScale) : 0
             border.color: control.themeOutline
-
-            layer.enabled: !control.isStandard && control.type === "elevated" && control.enabled
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: 0.16
-                shadowVerticalOffset: control.themeGlobalScale
-                shadowOpacity: 0.12
-                shadowColor: MeoTheme.shadow
-            }
 
             Behavior on color { ColorAnimation { duration: MeoTheme.motionDurationEffectDefault; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
         }

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Item {
@@ -32,27 +31,17 @@ Item {
                                   ? Math.max(0, control.availableHeight - control.resolvedExpandedHeight)
                                   : Math.max(0, control.availableHeight - control.resolvedPeekHeight)
 
-    // MD3 elevation shadow. A silhouette-only caster owns the blur layer and
-    // tracks the sheet's position, so content animation inside the sheet
-    // never forces the blur to be recomputed.
-    Rectangle {
-        x: sheetBackground.x
-        y: sheetBackground.y
-        width: sheetBackground.width
-        height: sheetBackground.height
-        visible: control.visible
-        color: sheetBackground.color
+    // M3 standard bottom sheet: elevation level 1, cast upward.
+    MeoElevationShadow {
+        target: sheetBackground
+        visible: control.visible && width > 0 && height > 0
+        elevation: MeoTheme.elevationLevel1
+        direction: -1
         topLeftRadius: sheetBackground.radius
         topRightRadius: sheetBackground.radius
         bottomLeftRadius: 0
         bottomRightRadius: 0
-        layer.enabled: visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: -2 * MeoTheme.globalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.10)
-        }
+        color: sheetBackground.color
     }
 
     Rectangle {
