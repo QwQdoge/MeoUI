@@ -46,7 +46,7 @@ Item {
                 text: control.title
                 visible: text !== ""
                 width: parent.width
-                font.pixelSize: fontHeadlineSmall.size * control.themeGlobalScale
+                font.pixelSize: fontHeadlineSmall.size * MeoTheme.textScale
                 font.weight: fontHeadlineSmall.weight
                 color: control.themeOnSurface
                 horizontalAlignment: Text.AlignHCenter
@@ -57,7 +57,7 @@ Item {
                 text: control.description
                 visible: text !== ""
                 width: parent.width
-                font.pixelSize: fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: fontBodyMedium.size * MeoTheme.textScale
                 font.weight: fontBodyMedium.weight
                 color: control.themeOnSurfaceVariant
                 horizontalAlignment: Text.AlignHCenter

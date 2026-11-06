@@ -42,6 +42,38 @@ ShowcaseCategoryPage {
                 }
             }
 
+            // Accessibility and density
+            RowLayout {
+                spacing: MeoTheme.space24
+                Layout.fillWidth: true
+
+                MeoSwitch {
+                    label: qsTr("Reduce transparency")
+                    checked: !MeoTheme.transparencyEnabled
+                    onToggled: (val) => { MeoTheme.transparencyEnabled = !val }
+                }
+
+                MeoSwitch {
+                    label: qsTr("Increase contrast")
+                    checked: MeoTheme.highContrast
+                    onToggled: (val) => { MeoTheme.highContrast = val }
+                }
+            }
+
+            ColumnLayout {
+                spacing: MeoTheme.space8
+                Layout.fillWidth: true
+
+                MeoText { text: qsTr("Density (pointer input)"); typeRole: "title"; typeSize: "small"; emphasized: true }
+                MeoSegmentedButtons {
+                    accessibleName: qsTr("Density")
+                    size: "s"
+                    model: [qsTr("Comfortable"), qsTr("Compact"), qsTr("Dense")]
+                    currentIndex: -MeoTheme.density
+                    onSelected: (index) => { MeoTheme.density = -index }
+                }
+            }
+
             // Sliders Row 1: Corner Radius Scale & Global Scale
             RowLayout {
                 spacing: MeoTheme.space24
@@ -150,6 +182,9 @@ ShowcaseCategoryPage {
                     MeoTheme.motionScale = 1.0
                     MeoTheme.isDarkMode = false
                     MeoTheme.reduceMotion = false
+                    MeoTheme.transparencyEnabled = true
+                    MeoTheme.highContrast = false
+                    MeoTheme.density = 0
                 }
             }
         }

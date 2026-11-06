@@ -240,7 +240,7 @@ Button {
                 text: control.text
                 visible: text !== ""
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontToken.size * control.themeGlobalScale
+                font.pixelSize: control.fontToken.size * MeoTheme.textScale
                 font.weight: control.fontToken.weight
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter

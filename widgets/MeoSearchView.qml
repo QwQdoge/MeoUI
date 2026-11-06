@@ -120,7 +120,7 @@ Popup {
                     text: control.resultsTitle
                     visible: text.length > 0
                     color: MeoTheme.contentOnSurfaceVariant
-                    font.pixelSize: MeoTheme.titleMedium.size * control.themeGlobalScale
+                    font.pixelSize: MeoTheme.titleMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.titleMedium.weight
                     elide: Text.ElideRight
                 }

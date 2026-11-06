@@ -374,7 +374,7 @@ Control {
                 anchors.centerIn: parent
                 text: control.discrete ? Math.round(rangeThumb.displayValue).toString() : rangeThumb.displayValue.toFixed(1)
                 color: control.themeOnInverseSurface
-                font.pixelSize: MeoTheme.labelLarge.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.textScale
                 font.weight: MeoTheme.labelLarge.weight
             }
         }

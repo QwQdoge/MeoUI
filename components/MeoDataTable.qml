@@ -375,7 +375,7 @@ Control {
                                     color: rowDelegate.selected ? MeoTheme.contentOnSecondaryContainer
                                                                        : MeoTheme.contentOnSurfaceVariant
                                     font.family: MeoTheme.typefacePlain
-                                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.globalScale
+                                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                                     font.weight: MeoTheme.bodyMedium.weight
                                     verticalAlignment: Text.AlignVCenter
                                     horizontalAlignment: control.isMirrored ? Text.AlignRight : Text.AlignLeft
@@ -457,7 +457,7 @@ Control {
                 text: headerCell.columnData.label || ""
                 color: MeoTheme.contentOnSurface
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.globalScale
+                font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.textScale
                 font.weight: MeoTheme.labelLarge.weight
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: control.isMirrored ? Text.AlignRight : Text.AlignLeft

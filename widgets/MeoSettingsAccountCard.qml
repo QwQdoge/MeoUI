@@ -128,7 +128,7 @@ Control {
                 width: parent.width
                 text: control.title
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.titleMedium.size * control.scale
+                font.pixelSize: MeoTheme.titleMedium.size * MeoTheme.textScale
                 font.weight: MeoTheme.titleMedium.weight
                 color: MeoTheme.contentOnSurface
                 elide: Text.ElideRight
@@ -140,7 +140,7 @@ Control {
                 text: control.subtitle
                 visible: text !== ""
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.bodyMedium.size * control.scale
+                font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                 font.weight: MeoTheme.bodyMedium.weight
                 color: MeoTheme.contentOnSurfaceVariant
                 elide: Text.ElideRight

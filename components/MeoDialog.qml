@@ -120,7 +120,7 @@ MeoMotionPopup {
                 width: parent.width
                 visible: text !== ""
                 text: control.title
-                font.pixelSize: MeoTheme.headlineSmall.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.headlineSmall.size * MeoTheme.textScale
                 font.weight: MeoTheme.headlineSmall.weight
                 color: MeoTheme.contentOnSurface
                 wrapMode: Text.WordWrap
@@ -136,7 +136,7 @@ MeoMotionPopup {
                 width: parent.width
                 visible: control.message !== ""
                 text: control.message
-                font.pixelSize: MeoTheme.bodyMedium.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                 font.weight: MeoTheme.bodyMedium.weight
                 color: MeoTheme.contentOnSurfaceVariant
                 wrapMode: Text.WordWrap

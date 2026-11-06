@@ -128,7 +128,7 @@ MeoCard {
                 text: control.headline
                 color: MeoTheme.contentOnSurface
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.titleLarge.size * control.themeScale
+                font.pixelSize: MeoTheme.titleLarge.size * MeoTheme.textScale
                 font.weight: MeoTheme.titleLarge.weight
                 elide: Text.ElideRight
             }
@@ -161,7 +161,7 @@ MeoCard {
                 text: ":"
                 color: MeoTheme.contentOnSurface
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: 40 * control.themeScale
+                font.pixelSize: 40 * MeoTheme.textScale
             }
 
             TimeSelector {
@@ -239,7 +239,7 @@ MeoCard {
                                    ? (index === Math.round(control.minutes / 5) % 12 ? control.selectedClockLabelColor : control.clockLabelColor)
                                    : (control.isSelectedClockValue(index) ? control.selectedClockLabelColor : control.clockLabelColor)
                             font.family: MeoTheme.typefacePlain
-                            font.pixelSize: MeoTheme.bodyLarge.size * control.themeScale
+                            font.pixelSize: MeoTheme.bodyLarge.size * MeoTheme.textScale
                             font.weight: MeoTheme.bodyLarge.weight
                         }
                     }
@@ -326,7 +326,7 @@ MeoCard {
             text: valueText
             color: selected ? control.timeFieldTextColor : control.inactiveSelectorTextColor
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: 40 * control.themeScale
+            font.pixelSize: 40 * MeoTheme.textScale
             horizontalAlignment: TextInput.AlignHCenter
             verticalAlignment: TextInput.AlignVCenter
             selectByMouse: true
@@ -351,7 +351,7 @@ MeoCard {
             text: valueText
             color: selected ? control.timeFieldTextColor : control.inactiveSelectorTextColor
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: 40 * control.themeScale
+            font.pixelSize: 40 * MeoTheme.textScale
         }
 
         MouseArea {
@@ -421,7 +421,7 @@ MeoCard {
                         text: modelData ? qsTr("PM") : qsTr("AM")
                         color: parent.selected ? MeoTheme.contentOnTertiaryContainer : control.periodTextColor
                         font.family: MeoTheme.typefacePlain
-                        font.pixelSize: MeoTheme.labelLarge.size * control.themeScale
+                        font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.textScale
                         font.weight: MeoTheme.labelLarge.weight
                     }
                     MouseArea {

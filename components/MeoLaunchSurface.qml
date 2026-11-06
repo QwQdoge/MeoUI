@@ -45,7 +45,7 @@ Item {
             asynchronous: true
             cache: true
             fillMode: Image.PreserveAspectCrop
-            opacity: MeoTheme.transparencyEnabled ? 0.34 : 0.18
+            opacity: MeoTheme.transparencyEnabled ? 0.34 : 0.18 // decorative glow, never a surface
         }
 
         Rectangle {

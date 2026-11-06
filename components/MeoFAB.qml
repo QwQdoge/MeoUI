@@ -199,7 +199,7 @@ Button {
                 visible: reveal > 0
                 text: control.text
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabelLarge.size * MeoTheme.textScale
                 font.weight: control.fontLabelLarge.weight
                 color: control.enabled ? control.resolvedContentColor : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                 lineHeightMode: Text.FixedHeight

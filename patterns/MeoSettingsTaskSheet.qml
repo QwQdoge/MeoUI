@@ -135,7 +135,7 @@ Item {
                     text: control.subtitle
                     visible: text !== ""
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.globalScale
+                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.bodyMedium.weight
                     color: MeoTheme.contentOnSurfaceVariant
                     wrapMode: Text.WordWrap
@@ -226,7 +226,7 @@ Item {
                             visible: text !== ""
                             anchors.verticalCenter: parent.verticalCenter
                             font.family: MeoTheme.typefacePlain
-                            font.pixelSize: MeoTheme.titleLarge.size * MeoTheme.globalScale
+                            font.pixelSize: MeoTheme.titleLarge.size * MeoTheme.textScale
                             font.weight: MeoTheme.titleLarge.weight
                             color: MeoTheme.contentOnSurface
                             elide: Text.ElideRight
@@ -244,7 +244,7 @@ Item {
                     text: control.subtitle
                     visible: text !== ""
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.globalScale
+                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.bodyMedium.weight
                     color: MeoTheme.contentOnSurfaceVariant
                     wrapMode: Text.WordWrap

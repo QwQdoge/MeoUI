@@ -122,7 +122,7 @@ Button {
                 text: control.holding ? control.holdingText : control.confirmationText
                 color: control.foregroundColor
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.globalScale
+                font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.textScale
                 font.weight: Font.DemiBold
                 anchors.verticalCenter: parent.verticalCenter
             }

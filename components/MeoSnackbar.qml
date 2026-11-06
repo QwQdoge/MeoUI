@@ -78,7 +78,7 @@ Popup {
                                 - (control.dismissible ? dismissButton.width + 8 * control.themeGlobalScale : 0))
                 text: control.message
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: control.fontBodyMedium.size * MeoTheme.textScale
                 font.weight: control.fontBodyMedium.weight
                 color: control.themeInverseOnSurface
                 verticalAlignment: Text.AlignVCenter
@@ -108,7 +108,7 @@ Popup {
                     text: actionButton.text
                     color: control.themeInversePrimary
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                    font.pixelSize: control.fontLabelLarge.size * MeoTheme.textScale
                     font.weight: control.fontLabelLarge.weight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

@@ -57,7 +57,7 @@ MeoCard {
 
             Text {
                 text: control.headline
-                font.pixelSize: 12 * control.themeGlobalScale
+                font.pixelSize: 12 * MeoTheme.textScale
                 font.weight: Font.Medium
                 color: control.themeOnSurfaceVariant
             }
@@ -68,20 +68,20 @@ MeoCard {
                     text: control.hasStartDate
                           ? control.uiLocale.toString(control.startDate, Locale.ShortFormat)
                           : qsTr("Start date")
-                    font.pixelSize: 18 * control.themeGlobalScale
+                    font.pixelSize: 18 * MeoTheme.textScale
                     font.weight: Font.Medium
                     color: control.hasStartDate ? control.themeOnSurface : control.themeOnSurfaceVariant
                 }
                 Text {
                     text: "–"
-                    font.pixelSize: 18 * control.themeGlobalScale
+                    font.pixelSize: 18 * MeoTheme.textScale
                     color: control.themeOnSurfaceVariant
                 }
                 Text {
                     text: control.hasEndDate
                           ? control.uiLocale.toString(control.endDate, Locale.ShortFormat)
                           : qsTr("End date")
-                    font.pixelSize: 18 * control.themeGlobalScale
+                    font.pixelSize: 18 * MeoTheme.textScale
                     font.weight: Font.Medium
                     color: control.hasEndDate ? control.themeOnSurface : control.themeOnSurfaceVariant
                 }
@@ -189,7 +189,7 @@ MeoCard {
                     width: (parent.width) / 7
                     text: control.weekdayLabel(index)
                     horizontalAlignment: Text.AlignHCenter
-                    font.pixelSize: 12 * control.themeGlobalScale
+                    font.pixelSize: 12 * MeoTheme.textScale
                     color: control.themeOnSurfaceVariant
                 }
             }
@@ -262,7 +262,7 @@ MeoCard {
                         Text {
                             anchors.centerIn: parent
                             text: dateInfo.day
-                            font.pixelSize: 12 * control.themeGlobalScale
+                            font.pixelSize: 12 * MeoTheme.textScale
                             font.weight: (isStart || isEnd || isInRange) ? Font.Medium : Font.Normal
                             color: (isStart || isEnd) ? control.themeOnPrimary : (isInRange ? control.themeOnPrimaryContainer : (isCurrentMonth ? control.themeOnSurface : control.themeOnSurfaceVariant))
                             opacity: isCurrentMonth ? 1.0 : 0.4

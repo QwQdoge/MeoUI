@@ -16,7 +16,18 @@ QtObject {
     property bool isExpressive: false
     property bool isBouncy: true
     property bool reduceMotion: false
+    // Accessibility: Reduce Transparency. When false, translucent surfaces
+    // (MeoTheme.surfaceAlpha) render opaque. Hosts bind it to the platform
+    // setting; blur-behind effects owned by the shell should follow it too.
     property bool transparencyEnabled: true
+    // Accessibility: Increase Contrast. Raises secondary text to the primary
+    // on-surface role, strengthens outlines/dividers and state layers, and
+    // widens focus rings. Hosts that install full M3 contrast-level color
+    // tables can keep this false and use applyDynamicColorSchemes().
+    property bool highContrast: false
+    function surfaceAlpha(translucentAlpha) {
+        return transparencyEnabled ? translucentAlpha : 1.0
+    }
 
     // Desktop input contract (CSS :focus-visible / WinUI focus visuals).
     // Focus indicators render only after keyboard navigation, so a mouse or
@@ -414,8 +425,9 @@ QtObject {
     property color surfaceDim: dynamicOrFallback("surfaceDim")
     property color surfaceBright: dynamicOrFallback("surfaceBright")
     property color surfaceVariant: dynamicOrFallback("surfaceVariant")
-    property color contentOnSurfaceVariant: dynamicOrFallback("onSurfaceVariant")
-    property color outline: dynamicOrFallback("outline")
+    property color contentOnSurfaceVariant: highContrast ? dynamicOrFallback("onSurface")
+                                                         : dynamicOrFallback("onSurfaceVariant")
+    property color outline: highContrast ? dynamicOrFallback("onSurfaceVariant") : dynamicOrFallback("outline")
 
     // M3 Content color aliases
     property color onPrimary: contentOnPrimary
@@ -597,6 +609,9 @@ QtObject {
 
     // 🌟 字体全局缩放 (Font Scale Token)
     property real fontScale: 1.0
+    // Text sizing for components: layout scale times the accessibility text
+    // size (clamped 0.5-3). Icons and containers use globalScale only.
+    readonly property real textScale: globalScale * Math.max(0.5, Math.min(3, fontScale))
 
     // 🌟 动画时间与曲线全局倍率 (Motion Duration & Speed Scale)
     property real motionScale: 1.0
@@ -656,8 +671,8 @@ QtObject {
     readonly property real elevationShadowOpacity: isDarkMode ? 0.32 : 0.16
 
     // MD3 state-layer opacity tokens.
-    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08)
-    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10)
+    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08) + (highContrast ? 0.04 : 0)
+    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10) + (highContrast ? 0.04 : 0)
     readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.10)
     readonly property real stateOpacityDragged: metricToken("stateOpacityDragged", 0.16)
     readonly property real rippleStartRadiusFactor: 0.30
@@ -679,7 +694,7 @@ QtObject {
     readonly property color warningContainer: semanticColorForRole("warningContainer")
     readonly property color contentOnWarningContainer: semanticColorForRole("onWarningContainer")
 
-    property color outlineVariant: dynamicOrFallback("outlineVariant")
+    property color outlineVariant: highContrast ? dynamicOrFallback("outline") : dynamicOrFallback("outlineVariant")
 
     // MD3 Fixed Colors remain stable across light/dark, but follow the active
     // HCT source when a dynamic scheme is installed.
@@ -730,7 +745,7 @@ QtObject {
     readonly property real cardRadius: metricToken("cardRadius", 20) * globalScale * cornerScale
     readonly property real dialogRadius: metricToken("dialogRadius", 28) * globalScale * cornerScale
     readonly property real windowRadius: metricToken("windowRadius", 16) * globalScale * cornerScale
-    readonly property real focusRingWidth: metricToken("focusRingWidth", 2) * globalScale
+    readonly property real focusRingWidth: (metricToken("focusRingWidth", 2) + (highContrast ? 1 : 0)) * globalScale
 
     readonly property real iconButtonSizeXS: metricToken("iconButtonSizeXS", 32) * globalScale
     readonly property real iconButtonSizeS: metricToken("iconButtonSizeS", 40) * globalScale

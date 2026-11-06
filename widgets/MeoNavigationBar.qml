@@ -208,7 +208,7 @@ Rectangle {
                         text: destination.itemLabel
                         anchors.horizontalCenter: parent.horizontalCenter
                         font.family: MeoTheme.typefacePlain
-                        font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                        font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                         font.weight: destination.isSelected ? Font.DemiBold : control.fontLabel.weight
                         color: destination.isSelected ? control.themeSecondary : control.themeOnSurfaceVariant
                         visible: control.labelType === "always" || (control.labelType === "selected" && destination.isSelected)

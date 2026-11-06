@@ -100,7 +100,7 @@ TextField {
     selectByMouse: true
 
     font.family: MeoTheme.typefacePlain
-    font.pixelSize: fontBody.size * themeGlobalScale
+    font.pixelSize: fontBody.size * MeoTheme.textScale
     font.weight: fontBody.weight
     // Error is communicated by indicator, label, and supporting text; entered
     // content stays on-surface so it remains readable and selectable.
@@ -182,7 +182,7 @@ TextField {
                ? fieldContainer.width - width - control.sidePadding - (control.leadingIcon !== "" ? control.iconSizePx + 10 * control.themeGlobalScale : 0)
                : control.sidePadding + (control.leadingIcon !== "" ? control.iconSizePx + 10 * control.themeGlobalScale : 0)
             font.family: control.font.family
-            font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+            font.pixelSize: control.fontLabel.size * MeoTheme.textScale
             font.weight: control.fontLabel.weight
             color: control.isError ? control.themeError : (control.activeFocus ? control.themePrimary : control.themeOnSurfaceVariant)
             Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -284,7 +284,7 @@ TextField {
                 text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
                 visible: text !== ""
                 font.family: control.font.family
-                font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                 color: control.isError ? control.themeError : control.themeOnSurfaceVariant
                 elide: Text.ElideRight
             }
@@ -294,7 +294,7 @@ TextField {
                 text: control.showCounter ? control.text.length + (control.maxLength > 0 ? " / " + control.maxLength : "") : ""
                 visible: control.showCounter
                 font.family: control.font.family
-                font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
             }
         }

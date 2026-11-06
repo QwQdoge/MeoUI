@@ -45,7 +45,7 @@ SpinBox {
         z: 2
         text: control.textFromValue(control.value, control.locale)
         font.family: MeoTheme.typefacePlain
-        font.pixelSize: control.fontBodyLarge.size * control.themeGlobalScale
+        font.pixelSize: control.fontBodyLarge.size * MeoTheme.textScale
         font.weight: control.fontBodyLarge.weight
         color: control.enabled ? control.themeOnSurface
                                : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g,

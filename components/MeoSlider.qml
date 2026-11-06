@@ -563,7 +563,7 @@ Control {
                     text: control.discrete ? control.value.toFixed(0) : control.value.toFixed(1)
                     color: control.themeOnInverseSurface
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.labelLarge.size * control.themeGlobalScale
+                    font.pixelSize: MeoTheme.labelLarge.size * MeoTheme.textScale
                     font.weight: MeoTheme.labelLarge.weight
                 }
 

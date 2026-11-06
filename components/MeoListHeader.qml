@@ -36,7 +36,7 @@ Item {
         text: control.text
         textFormat: Text.PlainText
         font.family: MeoTheme.typefacePlain
-        font.pixelSize: fontLabelLarge.size * control.themeGlobalScale
+        font.pixelSize: fontLabelLarge.size * MeoTheme.textScale
         font.weight: fontLabelLarge.weight
         color: control.type === "emphasized" ? control.themePrimary : control.themeOnSurfaceVariant
         verticalAlignment: Text.AlignVCenter

@@ -308,7 +308,7 @@ Control {
                 id: labelText
                 text: control.label
                 anchors.fill: parent
-                font.pixelSize: control.currentFont.size * control.themeGlobalScale
+                font.pixelSize: control.currentFont.size * MeoTheme.textScale
                 font.weight: labelContainer.labelFont.weight
                 font.family: MeoTheme.typefacePlain
                 color: {
@@ -340,7 +340,7 @@ Control {
             anchors.right: counterLabel.left
             anchors.rightMargin: 16 * control.themeGlobalScale
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
-            font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
+            font.pixelSize: control.fontBodySmall.size * MeoTheme.textScale
             font.family: MeoTheme.typefacePlain
             color: {
                 if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity);
@@ -355,7 +355,7 @@ Control {
             anchors.right: parent.right
             visible: control.showCounter
             text: qsTr("%1 selected").arg(control.selectedCount)
-            font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
+            font.pixelSize: control.fontBodySmall.size * MeoTheme.textScale
             font.family: MeoTheme.typefacePlain
             color: control.themeOnSurfaceVariant
         }

@@ -299,7 +299,7 @@ Item {
         property real rippleOpacity: control.rippleActive ? rippleLayer.opacity : 0
         property real focusOpacity: 0
         property real focusWidth: focusOpacity > 0
-                                  ? Math.max(2, 2 * control.themeGlobalScale) : 0
+                                  ? Math.max(2, control.theme.focusRingWidth) : 0
     }
 
     NumberAnimation {

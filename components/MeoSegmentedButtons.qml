@@ -229,7 +229,7 @@ Control {
                         Text {
                             text: segmentButton.itemLabel
                             font.family: MeoTheme.typefacePlain
-                            font.pixelSize: control.fontToken.size * control.themeGlobalScale
+                            font.pixelSize: control.fontToken.size * MeoTheme.textScale
                             font.weight: segmentButton.selected ? Font.Medium : control.fontToken.weight
                             color: segmentButton.foreground
                             lineHeightMode: Text.FixedHeight

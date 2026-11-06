@@ -117,6 +117,17 @@ desktop it adopts the input conventions shared by WinUI 3 and macOS.
 | Scrollbar | `MeoScrollBar`: thin overlay pill while scrolling, full 8dp thumb plus faint track on hover/drag |
 | Touch-specific behavior | Branch on `MeoTheme.touchInput` / `MeoTheme.pointerType`, never on `Qt.platform.os` |
 
+## Decision table: accessibility and density
+
+| Setting | Contract |
+| --- | --- |
+| Text size | `MeoTheme.fontScale` (0.5-3). Component text uses `MeoTheme.textScale` (`globalScale * fontScale`), never `globalScale` alone; icons and containers use `globalScale` |
+| Reduce motion / motion speed | `MeoTheme.reduceMotion`, `MeoTheme.motionScale`; all durations come from motion tokens, springs check `reduceMotion` |
+| Reduce transparency | `MeoTheme.transparencyEnabled`; translucent surfaces take their alpha from `MeoTheme.surfaceAlpha(a)` (opaque when off). Shell blur-behind follows the same flag |
+| Increase contrast | `MeoTheme.highContrast`: secondary text uses on-surface, outlines/dividers strengthen, state layers +4%, focus ring +1dp |
+| Density | `MeoTheme.density` 0/-1/-2/-3 (M3 density scale, 4dp per step, per-component floors); resolves to 0 on touch input. Heights come from `MeoTheme.buttonHeightForSize()`, `densityAdjusted()` and `minimumTargetSize` |
+| Who sets them | The host (meo-kde, apps) binds them to the platform settings; components only read MeoTheme |
+
 ## Decision table: rendering and motion performance
 
 | Question | Answer |

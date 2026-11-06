@@ -109,9 +109,9 @@ Popup {
                 visible: text !== ""
                 width: parent.width - 32 * control.themeGlobalScale
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontTitleSmall.size * control.themeGlobalScale
+                font.pixelSize: control.fontTitleSmall.size * MeoTheme.textScale
                 font.weight: control.fontTitleSmall.weight
-                font.letterSpacing: control.fontTitleSmall.letterSpacing * control.themeGlobalScale
+                font.letterSpacing: control.fontTitleSmall.letterSpacing * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
                 wrapMode: Text.WordWrap
             }
@@ -121,9 +121,9 @@ Popup {
                 text: control.text
                 width: parent.width - 32 * control.themeGlobalScale
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: control.fontBodyMedium.size * MeoTheme.textScale
                 font.weight: control.fontBodyMedium.weight
-                font.letterSpacing: control.fontBodyMedium.letterSpacing * control.themeGlobalScale
+                font.letterSpacing: control.fontBodyMedium.letterSpacing * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
                 wrapMode: Text.WordWrap
             }

@@ -250,7 +250,7 @@ Control {
                 text: control.overline
                 width: parent.width
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: MeoTheme.labelSmall.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.labelSmall.size * MeoTheme.textScale
                 font.weight: Font.Normal
                 color: control.themeOnSurfaceVariant
                 visible: text !== ""
@@ -262,9 +262,9 @@ Control {
                 text: control.headline
                 width: parent.width
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: fontBodyLarge.size * control.themeGlobalScale
+                font.pixelSize: fontBodyLarge.size * MeoTheme.textScale
                 font.weight: (control.selected && !isSegmented) ? Font.Bold : fontBodyLarge.weight
-                font.letterSpacing: (fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
+                font.letterSpacing: (fontBodyLarge.letterSpacing || 0) * MeoTheme.textScale
                 lineHeight: (fontBodyLarge.lineHeight ? (fontBodyLarge.lineHeight / fontBodyLarge.size) : 1.2)
                 color: {
                     if (control.selected && isSegmented)
@@ -285,9 +285,9 @@ Control {
                 text: control.supportingText
                 width: parent.width
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: fontBodyMedium.size * MeoTheme.textScale
                 font.weight: fontBodyMedium.weight
-                font.letterSpacing: (fontBodyMedium.letterSpacing || 0) * control.themeGlobalScale
+                font.letterSpacing: (fontBodyMedium.letterSpacing || 0) * MeoTheme.textScale
                 lineHeight: (fontBodyMedium.lineHeight ? (fontBodyMedium.lineHeight / fontBodyMedium.size) : 1.2)
                 color: control.selected && control.isSegmented
                        ? control.selectedContentColor : control.themeOnSurfaceVariant

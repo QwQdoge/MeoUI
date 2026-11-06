@@ -137,7 +137,7 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
                 font.family: MeoTheme.typefaceBrand
-                font.pixelSize: control.fontHeadline.size * control.themeGlobalScale
+                font.pixelSize: control.fontHeadline.size * MeoTheme.textScale
                 font.weight: control.fontHeadline.weight
                 color: MeoTheme.contentOnSurface
             }
@@ -152,7 +152,7 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     text: qsTr("Version %1").arg(control.version)
                     visible: control.version.length > 0
-                    font.pixelSize: control.fontBody.size * control.themeGlobalScale
+                    font.pixelSize: control.fontBody.size * MeoTheme.textScale
                     color: MeoTheme.contentOnSurfaceVariant
                 }
                 Rectangle {
@@ -167,7 +167,7 @@ Item {
                         id: channelText
                         anchors.centerIn: parent
                         text: control.channel
-                        font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                        font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                         font.weight: control.fontLabel.weight
                         color: MeoTheme.contentOnSecondaryContainer
                     }
@@ -180,7 +180,7 @@ Item {
                 visible: text.length > 0
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                font.pixelSize: control.fontBody.size * control.themeGlobalScale
+                font.pixelSize: control.fontBody.size * MeoTheme.textScale
                 color: MeoTheme.contentOnSurfaceVariant
             }
 
@@ -205,7 +205,7 @@ Item {
                 visible: text.length > 0
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                font.pixelSize: control.fontBodySmall.size * control.themeGlobalScale
+                font.pixelSize: control.fontBodySmall.size * MeoTheme.textScale
                 color: MeoTheme.contentOnSurfaceVariant
             }
         }
@@ -231,7 +231,7 @@ Item {
                     textFormat: control.sheetFormat
                     text: control.sheetText
                     font.family: control.sheetFormat === Text.PlainText ? MeoTheme.fontFamilyMonospace : MeoTheme.fontFamily
-                    font.pixelSize: control.fontBodySmall.size * MeoTheme.globalScale
+                    font.pixelSize: control.fontBodySmall.size * MeoTheme.textScale
                     color: MeoTheme.contentOnSurface
                     onLinkActivated: (link) => Qt.openUrlExternally(link)
                 }

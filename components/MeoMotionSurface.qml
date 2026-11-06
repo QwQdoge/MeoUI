@@ -36,7 +36,7 @@ Item {
                        : surfaceStyle === "tonal" ? MeoTheme.surfaceContainer
                        : color
         const opacity = surfaceStyle === "translucent"
-                        ? Math.max(0.7, Math.min(1, surfaceOpacity)) : 1
+                        ? MeoTheme.surfaceAlpha(Math.max(0.7, Math.min(1, surfaceOpacity))) : 1
         return Qt.rgba(semantic.r, semantic.g, semantic.b, opacity)
     }
 

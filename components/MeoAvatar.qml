@@ -44,7 +44,7 @@ Item {
             visible: !control.hasLoadedImage && control.initials !== ""
             textFormat: Text.PlainText
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (control.size * 0.4) * themeGlobalScale
+            font.pixelSize: (control.size * 0.4) * MeoTheme.textScale
             font.weight: Font.Medium
             color: control.textColor
         }

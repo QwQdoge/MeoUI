@@ -199,7 +199,7 @@ Control {
                 id: labelText
                 text: control.label
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                 font.weight: control.fontLabel.weight
                 color: {
                     if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
@@ -216,7 +216,7 @@ Control {
             visible: (control.isError && control.errorText !== "") || control.helperText !== ""
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (control.fontLabel.size - 2) * control.themeGlobalScale
+            font.pixelSize: (control.fontLabel.size - 2) * MeoTheme.textScale
             color: control.isError ? control.themeError : control.themeOnSurfaceVariant
             leftPadding: control.radioOuterSize + control.spacing
         }

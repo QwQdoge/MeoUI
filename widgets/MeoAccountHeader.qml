@@ -86,7 +86,7 @@ Item {
 
             Text {
                 text: control.name
-                font.pixelSize: fontTitleMedium.size * control.themeGlobalScale
+                font.pixelSize: fontTitleMedium.size * MeoTheme.textScale
                 font.weight: fontTitleMedium.weight
                 color: control.themeOnSurface
                 width: parent.width
@@ -95,7 +95,7 @@ Item {
 
             Text {
                 text: control.email
-                font.pixelSize: fontBodySmall.size * control.themeGlobalScale
+                font.pixelSize: fontBodySmall.size * MeoTheme.textScale
                 font.weight: fontBodySmall.weight
                 color: control.themeOnSurfaceVariant
                 width: parent.width

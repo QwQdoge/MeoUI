@@ -270,7 +270,7 @@ Control {
                 visible: text !== ""
                 anchors.verticalCenter: parent.verticalCenter
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                 font.weight: control.fontLabel.weight
                 color: {
                     if (!control.enabled)
@@ -285,7 +285,7 @@ Control {
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
             leftPadding: control.trackWidth + control.spacing
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: Math.max(10, control.fontLabel.size - 2) * control.themeGlobalScale
+            font.pixelSize: Math.max(10, control.fontLabel.size - 2) * MeoTheme.textScale
             color: control.isError ? control.themeError : control.themeOnSurfaceVariant
         }
     }
