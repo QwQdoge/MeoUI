@@ -15,6 +15,7 @@ ToolTip {
     readonly property int motionEffectFast: MeoTheme.motionDurationEffectFast
     readonly property var fontBodySmall: MeoTheme.bodySmall
 
+    delay: MeoTheme.tooltipShowDelay
     padding: 4 * themeGlobalScale
     leftPadding: 8 * themeGlobalScale
     rightPadding: 8 * themeGlobalScale

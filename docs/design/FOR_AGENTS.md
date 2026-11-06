@@ -103,6 +103,20 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Rejected | Runtime widget-tree rewriting, full forks, literal tablet dimensions |
 | Exempt from App Shell | Installer (wizard), Quick Repair in recovery, shell surfaces; Meo AI changes go in its core view |
 
+## Decision table: desktop input (pointer and keyboard)
+
+MeoUI keeps the Pixel / Material 3 Expressive look on every device; on
+desktop it adopts the input conventions shared by WinUI 3 and macOS.
+
+| Question | Answer |
+| --- | --- |
+| When does a focus ring show | Only in keyboard modality (`MeoTheme.focusVisible`, driven by `MeoInputModality`): Tab/arrow navigation shows it, a mouse/touch press that moves focus does not. Pass `focused: <item>.activeFocus` to `MeoStateLayer`; it applies the gate. Do not add a second focus ring |
+| Hover feedback | Color only, through the state layer. No hover scale or lift (only the opt-in `"playful"` motion profile keeps one); press scale and active lift remain |
+| Icon-only button label | Set `MeoIconButton.toolTipText`; it becomes the accessible name and a hover tooltip after `MeoTheme.tooltipShowDelay` (500 ms), never on touch |
+| Tooltip timing | `MeoTooltip` defaults to `MeoTheme.tooltipShowDelay`; do not hard-code a delay |
+| Scrollbar | `MeoScrollBar`: thin overlay pill while scrolling, full 8dp thumb plus faint track on hover/drag |
+| Touch-specific behavior | Branch on `MeoTheme.touchInput` / `MeoTheme.pointerType`, never on `Qt.platform.os` |
+
 ## Decision table: rendering and motion performance
 
 | Question | Answer |

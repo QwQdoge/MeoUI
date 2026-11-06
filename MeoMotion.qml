@@ -94,9 +94,13 @@ QtObject {
     // Shared interaction amplitudes for compact controls, cards, toolbar
     // triggers, and other pressable surfaces.  Components own their state;
     // motion policy stays here so shells do not invent one-off scale values.
+    // Hover is a pointer-only state. Material (Pixel/ChromeOS), WinUI and
+    // macOS all express it with color (the state layer) and never with
+    // geometry: growing or lifting controls under a moving cursor makes
+    // dense desktop toolbars and lists shimmer. Only the opt-in "playful"
+    // profile keeps a hover flourish.
     function hoverScale(profile) {
-        return normalizedProfile(profile) === "calm" ? 1.0
-             : normalizedProfile(profile) === "playful" ? 1.025 : 1.012
+        return normalizedProfile(profile) === "playful" ? 1.025 : 1.0
     }
 
     function activeScale(profile) {
@@ -116,7 +120,9 @@ QtObject {
         const normalized = normalizedProfile(profile)
         if (!hovered && !active) return 0
         if (normalized === "calm") return 0
-        return normalized === "playful" ? -2.5 : -1.25
+        if (normalized === "playful") return -2.5
+        // Pixel: an active (selected/open) surface may lift; hover alone does not.
+        return active ? -1.25 : 0
     }
 
     function usesSpatialOvershoot(profile) {

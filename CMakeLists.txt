@@ -113,6 +113,8 @@ qt_add_qml_module(meoui_module
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/MeoUI"
     SOURCES
         runtime/meotokens.h
+        runtime/meoinputmodality.h
+        runtime/meoinputmodality.cpp
     QML_FILES
                 widgets/MeoNavigationBar.qml
         widgets/MeoSidebarModal.qml

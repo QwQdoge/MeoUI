@@ -4108,6 +4108,8 @@ Item {
             selected: parent.selected
             badgeDot: parent.badgeDot
             enabled: parent.enabledState
+            // Hover (pointer) shows this label after MeoTheme.tooltipShowDelay.
+            toolTipText: parent.label
         }
 
         SampleLabel {

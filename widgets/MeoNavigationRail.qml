@@ -283,7 +283,6 @@ Rectangle {
                             MeoTooltip {
                                 text: destination.navigationItem.label || ""
                                 visible: mouseArea.containsMouse && !mouseArea.pressed
-                                delay: 500
                             }
 
                             MouseArea {

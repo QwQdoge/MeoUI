@@ -18,6 +18,18 @@ QtObject {
     property bool reduceMotion: false
     property bool transparencyEnabled: true
 
+    // Desktop input contract (CSS :focus-visible / WinUI focus visuals).
+    // Focus indicators render only after keyboard navigation, so a mouse or
+    // touch press that moves focus does not leave a ring behind. Hosts may
+    // force it on (kiosk, TV) by assigning true.
+    property bool focusVisible: MeoInputModality.keyboard
+    // "mouse", "touch", "pen" or "" before the first pointer press.
+    readonly property string pointerType: MeoInputModality.pointerType
+    readonly property bool touchInput: MeoInputModality.touch
+    // Hover dwell before a tooltip appears (WinUI/macOS-style), so sweeping
+    // the pointer across a toolbar does not flash every label.
+    property int tooltipShowDelay: 500
+
     // Material 3 adaptive window classes, expressed in effective pixels.
     readonly property real windowBreakpointMedium: 600
     readonly property real windowBreakpointExpanded: 840
