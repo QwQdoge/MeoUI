@@ -95,7 +95,7 @@ Control {
                             text: modelData.label
                             textFormat: Text.PlainText
                             font.family: MeoTheme.typefacePlain
-                            font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                            font.pixelSize: control.fontLabelLarge.size * MeoTheme.textScale
                             font.weight: crumbDelegate.isCurrent ? Font.Bold : control.fontLabelLarge.weight
                             color: crumbDelegate.isCurrent ? control.themeOnSurface
                                                             : crumbDelegate.isEnabled ? control.themePrimary

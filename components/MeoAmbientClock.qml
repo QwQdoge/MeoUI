@@ -54,7 +54,7 @@ Item {
         id: timeMetrics
         font.family: MeoTheme.typefaceBrand
         font.pixelSize: control.timePixelSize
-        font.letterSpacing: -0.8 * MeoTheme.globalScale
+        font.letterSpacing: -0.8 * MeoTheme.textScale
         text: control.effectiveTimeText
     }
     readonly property real fitScale: {
@@ -89,7 +89,7 @@ Item {
             font.family: MeoTheme.typefaceBrand
             font.pixelSize: control.timePixelSize * control.fitScale
             font.weight: Font.Normal
-            font.letterSpacing: -0.8 * MeoTheme.globalScale
+            font.letterSpacing: -0.8 * MeoTheme.textScale
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }

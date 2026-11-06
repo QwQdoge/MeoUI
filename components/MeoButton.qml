@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Button {
@@ -241,7 +240,7 @@ Button {
                 text: control.text
                 visible: text !== ""
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontToken.size * control.themeGlobalScale
+                font.pixelSize: control.fontToken.size * MeoTheme.textScale
                 font.weight: control.fontToken.weight
                 color: control.textColor
                 anchors.verticalCenter: parent.verticalCenter
@@ -252,7 +251,9 @@ Button {
 
         MeoLoadingIndicator {
             anchors.centerIn: parent
-            visible: control.loading
+            // Stay visible until the fade-out completes; gating on `loading`
+            // directly cut the exit transition off.
+            visible: opacity > 0
             opacity: control.loading ? 1 : 0
             scale: MeoTheme.reduceMotion ? 1 : (control.loading ? 1 : 0.86)
             width: (control.iconSize + 8) * control.themeGlobalScale
@@ -272,6 +273,18 @@ Button {
     }
 
     background: Item {
+        MeoElevationShadow {
+            target: buttonShape
+            elevation: control.visible && control.effectiveType === "elevated" && control.enabled
+                       ? (control.hovered ? MeoTheme.elevationLevel2 : MeoTheme.elevationLevel1) : 0
+            shape: buttonShape.type
+            radius: buttonShape.radius
+            color: buttonShape.color
+            Behavior on elevation {
+                NumberAnimation { duration: MeoTheme.motionDurationFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+            }
+        }
+
         MeoShape {
             id: buttonShape
             anchors.fill: parent
@@ -287,15 +300,6 @@ Button {
                                                 : control.size === "xl" ? 3 * control.themeGlobalScale
                                                                         : MeoTheme.strokeWidthThin)
                          : 0
-            layer.enabled: control.visible && control.effectiveType === "elevated" && control.enabled
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.hovered ? 0.22 : 0.14
-                shadowVerticalOffset: (control.hovered ? 2 : 1) * control.themeGlobalScale
-                shadowOpacity: 0.12
-                shadowColor: MeoTheme.shadow
-            }
-
             MeoStateLayer {
                 id: stateLayer
                 objectName: "meoButtonStateLayer"

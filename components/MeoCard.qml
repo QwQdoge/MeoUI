@@ -123,6 +123,14 @@ Frame {
     }
 
     background: Item {
+        MeoElevationShadow {
+            target: shapeBg
+            elevation: control.elevation
+            shape: shapeBg.type
+            radius: shapeBg.radius
+            color: shapeBg.color
+        }
+
         MeoShape {
             id: shapeBg
             objectName: "meoCardShape"
@@ -145,15 +153,6 @@ Frame {
                                           : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
             scale: control.interactive && control.bouncy ? cardScaleSpring.value : 1
-
-            layer.enabled: control.visible && control.elevation > 0
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.elevation * 0.12
-                shadowVerticalOffset: control.elevation * control.themeGlobalScale
-                shadowOpacity: control.isDarkMode ? 0.18 : 0.12
-                shadowColor: control.themeShadow
-            }
 
             MeoStateLayer {
                 id: cardStateLayer

@@ -47,7 +47,7 @@ TextArea {
     selectionColor: Qt.rgba(themePrimary.r, themePrimary.g, themePrimary.b, 0.28)
     selectedTextColor: themeOnSurface
     font.family: MeoTheme.typefacePlain
-    font.pixelSize: fontBody.size * themeGlobalScale
+    font.pixelSize: fontBody.size * MeoTheme.textScale
     font.weight: fontBody.weight
     selectByMouse: true
     wrapMode: TextArea.Wrap
@@ -129,7 +129,7 @@ TextArea {
                ? areaContainer.width - width - 16 * control.themeGlobalScale
                : 16 * control.themeGlobalScale
             font.family: control.font.family
-            font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+            font.pixelSize: control.fontLabel.size * MeoTheme.textScale
             font.weight: control.fontLabel.weight
             color: control.isError ? control.themeError : (control.activeFocus ? control.themePrimary : control.themeOnSurfaceVariant)
             Behavior on color { ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard } }
@@ -152,7 +152,7 @@ TextArea {
                 text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
                 visible: text !== ""
                 font.family: control.font.family
-                font.pixelSize: control.fontSupporting.size * control.themeGlobalScale
+                font.pixelSize: control.fontSupporting.size * MeoTheme.textScale
                 font.weight: control.fontSupporting.weight
                 color: control.isError ? control.themeError : control.themeOnSurfaceVariant
                 elide: Text.ElideRight
@@ -163,7 +163,7 @@ TextArea {
                 visible: control.showCounter
                 text: control.maxLength > 0 ? (control.text.length + " / " + control.maxLength) : control.text.length
                 font.family: control.font.family
-                font.pixelSize: control.fontSupporting.size * control.themeGlobalScale
+                font.pixelSize: control.fontSupporting.size * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
             }
         }

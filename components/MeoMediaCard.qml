@@ -75,6 +75,15 @@ MeoCard {
     }
 
     background: Item {
+        // MD3 elevation for the 'elevated' type (shared shadow model).
+        MeoElevationShadow {
+            target: shapeBg
+            elevation: control.visible ? control.elevation : 0
+            shape: shapeBg.type
+            radius: shapeBg.radius
+            color: shapeBg.color
+        }
+
         MeoShape {
             id: shapeBg
             anchors.fill: parent
@@ -107,41 +116,22 @@ MeoCard {
                 }
             }
 
-            // Surface Tint for Elevation
-            Rectangle {
+            // Surface Tint for Elevation. A MeoShape with the same silhouette
+            // produces exactly what the old mask produced, without an offscreen
+            // layer and MultiEffect mask pass, and it follows the animated
+            // radius instead of the resting one.
+            MeoShape {
                 anchors.fill: parent
+                type: shapeBg.type
+                radius: shapeBg.radius
                 color: MeoTheme.surfaceTint(control.level)
                 visible: control.type === "elevated" && control.level > 0
                 Behavior on color {
                     enabled: !control.reducedMotion
                     ColorAnimation { duration: control.motionFast; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
                 }
-
-                layer.enabled: visible && control.visible
-                layer.effect: MultiEffect {
-                    maskEnabled: true
-                    maskSource: Item {
-                        width: shapeBg.width
-                        height: shapeBg.height
-                        MeoShape {
-                            anchors.fill: parent
-                            type: control.shape
-                            radius: control.radius
-                            color: MeoTheme.contentOnSurface
-                        }
-                    }
-                }
             }
 
-            // MD3 Elevation for 'elevated' type
-            layer.enabled: control.visible && control.elevation > 0
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.elevation * 0.2
-                shadowVerticalOffset: control.elevation * 1.2 * control.themeGlobalScale
-                shadowOpacity: 0.2 + control.elevation * 0.02
-                shadowColor: MeoTheme.shadow
-            }
 
             MeoStateLayer {
                 id: stateLayer

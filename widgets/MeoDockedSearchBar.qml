@@ -109,7 +109,7 @@ Rectangle {
                     width: parent.width
                     text: control.resultsTitle
                     color: MeoTheme.contentOnSurfaceVariant
-                    font.pixelSize: MeoTheme.titleMedium.size * control.themeGlobalScale
+                    font.pixelSize: MeoTheme.titleMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.titleMedium.weight
                 }
 

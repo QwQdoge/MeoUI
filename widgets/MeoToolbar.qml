@@ -46,7 +46,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: actionsRow.left
         anchors.rightMargin: 16 * control.themeGlobalScale
-        font.pixelSize: fontTitleMedium.size * control.themeGlobalScale
+        font.pixelSize: fontTitleMedium.size * MeoTheme.textScale
         font.weight: fontTitleMedium.weight
         color: control.themeOnSurface
         elide: Text.ElideRight

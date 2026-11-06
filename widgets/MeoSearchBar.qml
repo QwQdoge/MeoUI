@@ -98,9 +98,9 @@ Rectangle {
             background: null
             placeholderText: control.placeholder
             text: control.text
-            font.pixelSize: control.fontBodyLarge.size * control.themeGlobalScale
+            font.pixelSize: control.fontBodyLarge.size * MeoTheme.textScale
             font.weight: control.fontBodyLarge.weight
-            font.letterSpacing: (control.fontBodyLarge.letterSpacing || 0) * control.themeGlobalScale
+            font.letterSpacing: (control.fontBodyLarge.letterSpacing || 0) * MeoTheme.textScale
             color: control.themeOnSurface
             placeholderTextColor: control.themeOnSurfaceVariant
             anchors.verticalCenter: parent.verticalCenter

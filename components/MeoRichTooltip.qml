@@ -30,19 +30,25 @@ Popup {
     focus: actions.length > 0
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
-    background: MeoShape {
-        id: shapeBg
-        type: control.shape
-        color: control.themeSurfaceContainer
-        radius: MeoTheme.shapeMedium
+    background: Item {
+        // Keep the former Rectangle-like background contract for hosts.
+        readonly property alias radius: shapeBg.radius
+        readonly property alias color: shapeBg.color
         // AndroidX RichTooltipTokens.ContainerElevation = Level2.
+        MeoElevationShadow {
+            target: shapeBg
+            elevation: control.visible ? MeoTheme.elevationLevel2 : 0
+            shape: shapeBg.type
+            radius: shapeBg.radius
+            color: shapeBg.color
+        }
 
-        layer.enabled: control.visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: 2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
+        MeoShape {
+            id: shapeBg
+            anchors.fill: parent
+            type: control.shape
+            color: control.themeSurfaceContainer
+            radius: MeoTheme.shapeMedium
         }
     }
 
@@ -103,9 +109,9 @@ Popup {
                 visible: text !== ""
                 width: parent.width - 32 * control.themeGlobalScale
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontTitleSmall.size * control.themeGlobalScale
+                font.pixelSize: control.fontTitleSmall.size * MeoTheme.textScale
                 font.weight: control.fontTitleSmall.weight
-                font.letterSpacing: control.fontTitleSmall.letterSpacing * control.themeGlobalScale
+                font.letterSpacing: control.fontTitleSmall.letterSpacing * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
                 wrapMode: Text.WordWrap
             }
@@ -115,9 +121,9 @@ Popup {
                 text: control.text
                 width: parent.width - 32 * control.themeGlobalScale
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: control.fontBodyMedium.size * MeoTheme.textScale
                 font.weight: control.fontBodyMedium.weight
-                font.letterSpacing: control.fontBodyMedium.letterSpacing * control.themeGlobalScale
+                font.letterSpacing: control.fontBodyMedium.letterSpacing * MeoTheme.textScale
                 color: control.themeOnSurfaceVariant
                 wrapMode: Text.WordWrap
             }

@@ -31,9 +31,24 @@ Popup {
     padding: 0
     closePolicy: dismissible ? Popup.CloseOnEscape | Popup.CloseOnPressOutside : Popup.NoAutoClose
 
-    background: Rectangle {
-        radius: MeoTheme.shapeExtraSmall
-        color: control.themeInverseSurface
+    background: Item {
+        // Keep the former Rectangle-like background contract for hosts.
+        readonly property alias radius: snackbarSurface.radius
+        readonly property alias color: snackbarSurface.color
+        // AndroidX SnackbarTokens.ContainerElevation = Level3.
+        MeoElevationShadow {
+            target: snackbarSurface
+            elevation: control.visible ? MeoTheme.elevationLevel3 : 0
+            radius: snackbarSurface.radius
+            color: snackbarSurface.color
+        }
+
+        Rectangle {
+            id: snackbarSurface
+            anchors.fill: parent
+            radius: MeoTheme.shapeExtraSmall
+            color: control.themeInverseSurface
+        }
     }
 
     contentItem: Item {
@@ -63,7 +78,7 @@ Popup {
                                 - (control.dismissible ? dismissButton.width + 8 * control.themeGlobalScale : 0))
                 text: control.message
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontBodyMedium.size * control.themeGlobalScale
+                font.pixelSize: control.fontBodyMedium.size * MeoTheme.textScale
                 font.weight: control.fontBodyMedium.weight
                 color: control.themeInverseOnSurface
                 verticalAlignment: Text.AlignVCenter
@@ -93,7 +108,7 @@ Popup {
                     text: actionButton.text
                     color: control.themeInversePrimary
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                    font.pixelSize: control.fontLabelLarge.size * MeoTheme.textScale
                     font.weight: control.fontLabelLarge.weight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter

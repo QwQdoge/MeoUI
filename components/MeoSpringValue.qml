@@ -59,7 +59,8 @@ QtObject {
         _startValue = value
         _startVelocity = velocity
         _startedAt = Date.now()
-        driver.restart()
+        driver.stop()
+        driver.start()
     }
 
     onTargetValueChanged: {
@@ -78,9 +79,11 @@ QtObject {
             snapValue(targetValue)
     }
 
-    property Timer driver: Timer {
-        interval: 16
-        repeat: true
+    // FrameAnimation ticks once per rendered frame, in step with the scene
+    // graph's vsync-driven animation clock. A 16 ms Timer drifts against the
+    // display (dropped/doubled frames at 60 Hz) and caps 90/120/144 Hz panels
+    // at ~60 updates per second.
+    property FrameAnimation driver: FrameAnimation {
         onTriggered: {
             const elapsed = Date.now() - control._startedAt
             if (elapsed >= control.maximumRunDuration) {

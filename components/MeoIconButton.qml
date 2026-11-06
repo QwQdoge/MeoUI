@@ -39,6 +39,10 @@ Button {
     property bool selected: false
     property string selectedIcon: ""
     property string badgeText: ""
+    // Human-readable label for an icon-only action. Shown as a delayed hover
+    // tooltip on pointer devices (never on touch) and used as the accessible
+    // name. Empty keeps the previous icon-name fallback and shows no tooltip.
+    property string toolTipText: ""
     property bool badgeDot: false
     readonly property string effectiveType: type === "filledTonal" ? "tonal" : type
 
@@ -62,7 +66,7 @@ Button {
                                   : (size === "l" ? 32 : size === "xl" ? 40 : 24)
     readonly property real containerWidth: MeoTheme.iconButtonWidthForSize(size, widthOption)
     readonly property real containerHeight: MeoTheme.iconButtonSizeForSize(size)
-    readonly property real minimumTouchTarget: 48 * themeGlobalScale
+    readonly property real minimumTouchTarget: MeoTheme.minimumTargetSize
     property bool _radiusSpringReady: false
 
     MeoSpringValue {
@@ -91,8 +95,31 @@ Button {
     implicitHeight: Math.max(containerHeight, minimumTouchTarget)
 
     padding: 0
-    Accessible.name: isSelected && selectedIcon !== "" ? selectedIcon
+    Accessible.name: toolTipText !== "" ? toolTipText
+                     : isSelected && selectedIcon !== "" ? selectedIcon
                                                          : (icon.name || icon.source.toString())
+
+    // Dwell is measured here: ToolTip.delay is not applied to a popup that is
+    // created already visible, so the tooltip is only instantiated after the
+    // pointer has rested on the button for MeoTheme.tooltipShowDelay.
+    property bool _toolTipArmed: false
+    readonly property bool _toolTipWanted: toolTipText !== "" && hovered && !pressed
+                                           && !MeoTheme.touchInput
+    on_ToolTipWantedChanged: if (!_toolTipWanted) _toolTipArmed = false
+    Timer {
+        interval: Math.max(0, MeoTheme.tooltipShowDelay)
+        running: control._toolTipWanted && !control._toolTipArmed
+        onTriggered: control._toolTipArmed = true
+    }
+    Loader {
+        anchors.fill: parent
+        active: control._toolTipArmed
+        sourceComponent: MeoTooltip {
+            text: control.toolTipText
+            delay: 0
+            visible: true
+        }
+    }
     Accessible.role: isToggle ? Accessible.CheckBox : Accessible.Button
     Accessible.checked: isToggle ? isSelected : false
 

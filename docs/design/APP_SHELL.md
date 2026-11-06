@@ -39,8 +39,8 @@ Rules:
 ### Toolbar layout
 
 Use `MeoTopAppBar` (`type: "small"`, 64dp) for the window toolbar, or
-`MeoToolbar` (56dp, 48dp compact) for dense tool windows. `MeoBottomAppBar`
-is deprecated; docked action surfaces use `MeoDockedToolbar` (see
+`MeoToolbar` (56dp, 48dp compact) for dense tool windows. Docked action
+surfaces use `MeoDockedToolbar` (`MeoBottomAppBar` was removed; see
 `../api-lifecycle.md`). No traditional menu bar: Meo apps do not ship a
 File/Edit/View menu bar or a global menu.
 

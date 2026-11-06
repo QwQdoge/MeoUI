@@ -45,8 +45,8 @@ Index for agents: `https://meoarch.org/llms.txt`.
 - MUST NOT put a system-wide control inside an app; link to Meo Settings.
 - MUST NOT hard-code an open-source credit list in QML; read the installed
   `THIRD_PARTY_NOTICES.md`.
-- MUST NOT select a deprecated component (for example `MeoBottomAppBar`) for
-  new work.
+- MUST NOT select a deprecated component for new work; MUST NOT reintroduce a
+  type listed in the `docs/api-lifecycle.md` removal record.
 - MUST NOT claim a validation level you did not run.
 
 ## Decision table: app window
@@ -102,6 +102,46 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Change layout | Only small chrome patches for roadmap Tier 2 apps (Dolphin first) |
 | Rejected | Runtime widget-tree rewriting, full forks, literal tablet dimensions |
 | Exempt from App Shell | Installer (wizard), Quick Repair in recovery, shell surfaces; Meo AI changes go in its core view |
+
+## Decision table: desktop input (pointer and keyboard)
+
+MeoUI keeps the Pixel / Material 3 Expressive look on every device; on
+desktop it adopts the input conventions shared by WinUI 3 and macOS.
+
+| Question | Answer |
+| --- | --- |
+| When does a focus ring show | Only in keyboard modality (`MeoTheme.focusVisible`, driven by `MeoInputModality`): Tab/arrow navigation shows it, a mouse/touch press that moves focus does not. Pass `focused: <item>.activeFocus` to `MeoStateLayer`; it applies the gate. Do not add a second focus ring |
+| Hover feedback | Color only, through the state layer. No hover scale or lift (only the opt-in `"playful"` motion profile keeps one); press scale and active lift remain |
+| Icon-only button label | Set `MeoIconButton.toolTipText`; it becomes the accessible name and a hover tooltip after `MeoTheme.tooltipShowDelay` (500 ms), never on touch |
+| Tooltip timing | `MeoTooltip` defaults to `MeoTheme.tooltipShowDelay`; do not hard-code a delay |
+| Scrollbar | `MeoScrollBar`: thin overlay pill while scrolling, full 8dp thumb plus faint track on hover/drag |
+| Touch-specific behavior | Branch on `MeoTheme.touchInput` / `MeoTheme.pointerType`, never on `Qt.platform.os` |
+
+## Decision table: accessibility and density
+
+| Setting | Contract |
+| --- | --- |
+| Text size | `MeoTheme.fontScale` (0.5-3). Component text uses `MeoTheme.textScale` (`globalScale * fontScale`), never `globalScale` alone; icons and containers use `globalScale` |
+| Reduce motion / motion speed | `MeoTheme.reduceMotion`, `MeoTheme.motionScale`; all durations come from motion tokens, springs check `reduceMotion` |
+| Reduce transparency | `MeoTheme.transparencyEnabled`; translucent surfaces take their alpha from `MeoTheme.surfaceAlpha(a)` (opaque when off). Shell blur-behind follows the same flag |
+| Increase contrast | `MeoTheme.highContrast`: secondary text uses on-surface, outlines/dividers strengthen, state layers +4%, focus ring +1dp |
+| Density | `MeoTheme.density` 0/-1/-2/-3 (M3 density scale, 4dp per step, per-component floors); resolves to 0 on touch input. Heights come from `MeoTheme.buttonHeightForSize()`, `densityAdjusted()` and `minimumTargetSize` |
+| Icons | `MeoIcon` (Material Symbols Rounded, one shared font loader via `MeoTheme.iconFontFamily`). Optical size follows the drawn size (20-48); grade follows `MeoTheme.iconGrade` (-25 dark, 200 high contrast). Override axes only for a deliberate emphasis |
+| Who sets them | The host (meo-kde, apps) binds them to the platform settings; components only read MeoTheme |
+
+## Decision table: rendering and motion performance
+
+| Question | Answer |
+| --- | --- |
+| Drive a per-frame sampled motion (spring, morph) | `FrameAnimation` (vsync-aligned) via `MeoSpringValue`; never a 16 ms `Timer`, which drops/doubles frames at 60 Hz and caps high-refresh panels at ~60 Hz |
+| Draw a rect / pill / circle surface | `MeoShape` (scene-graph `Rectangle` for `rect`, `round`, `squircle`, `circle`); `Canvas` only for the expressive shape catalog |
+| Draw an animated arc, spinner or morphing path | `QtQuick.Shapes` (`Shape.CurveRenderer`); never an animated `Canvas`, which re-rasterizes on the CPU and re-uploads a texture every frame |
+| Rotate a drawn shape | An item `rotation` transform, not a repaint |
+| Elevation shadow | `MeoElevationShadow { target: surface; elevation: MeoTheme.elevationLevelN }` as a sibling behind the surface; never hand-write `MultiEffect` shadow values, and never put `layer.enabled` on an item that contains a state layer, ripple, spinner or other animated content |
+| Which level | M3 component levels: buttons/cards 1 (hover 2), menus/rich tooltips/pull-to-refresh 2, dialogs/snackbars/floating toolbars/popovers 3, FAB by its token; values between levels interpolate. Elevation tokens are already scaled, so do not multiply by `globalScale` again |
+| Fade an overlay out | Gate `visible` on the animated `opacity` (`visible: opacity > 0`), not on the condition that drives it; otherwise the exit transition never renders. Items inside a Row/Layout may hide immediately instead |
+| Infinite or decorative animation | `running` includes `visible` (and `!MeoTheme.reduceMotion` when it moves) |
+| Shape-pair results (topology alignment, interpolation tables) | Compute once per pair and cache; never per frame |
 
 ## Validation (MeoUI repository)
 

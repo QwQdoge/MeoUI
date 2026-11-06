@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Button {
@@ -121,10 +120,14 @@ Button {
         }
     }
 
-    // Keep the visual surface in the control's content tree. Some Qt Quick
-    // layouts leave a custom Button background without a resolved geometry;
-    // a direct child has the same hit rectangle as the control in both Layout
-    // and anchored placement.
+    MeoElevationShadow {
+        target: fabBackground
+        z: 0.5
+        elevation: control.visible ? control.resolvedElevation : 0
+        radius: fabBackground.radius
+        color: fabBackground.color
+    }
+
     Rectangle {
         id: fabBackground
         objectName: "meoFabBackground"
@@ -135,15 +138,6 @@ Button {
                ? Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b,
                          MeoTheme.disabledContainerOpacity)
                : control.resolvedContainerColor
-        layer.enabled: control.visible && control.resolvedElevation > 0
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: control.resolvedElevation * 0.12
-            shadowVerticalOffset: control.resolvedElevation * control.themeGlobalScale
-            shadowOpacity: 0.12
-            shadowColor: MeoTheme.shadow
-        }
-
         Behavior on radius {
             enabled: !MeoTheme.reduceMotion
             NumberAnimation { duration: MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate }
@@ -205,7 +199,7 @@ Button {
                 visible: reveal > 0
                 text: control.text
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontLabelLarge.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabelLarge.size * MeoTheme.textScale
                 font.weight: control.fontLabelLarge.weight
                 color: control.enabled ? control.resolvedContentColor : Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
                 lineHeightMode: Text.FixedHeight

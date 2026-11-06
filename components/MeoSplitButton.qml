@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 // A Material 3 Expressive split button: two separate, adjacent action
@@ -123,44 +122,48 @@ Control {
 
             readonly property real innerRadius: pressed || hovered || visualFocus
                                                 ? control.innerActiveCorner : control.innerCorner
-            background: Rectangle {
-                id: primaryBackground
-                objectName: "meoSplitButtonPrimaryBackground"
-                anchors.fill: parent
-                clip: true
-                color: control.containerColor
-                border.width: control.outlined ? MeoTheme.strokeWidthThin : 0
-                border.color: MeoTheme.outlineVariant
-                topLeftRadius: control.mirrored ? primaryAction.innerRadius : control.outerCorner
-                bottomLeftRadius: control.mirrored ? primaryAction.innerRadius : control.outerCorner
-                topRightRadius: control.mirrored ? control.outerCorner : primaryAction.innerRadius
-                bottomRightRadius: control.mirrored ? control.outerCorner : primaryAction.innerRadius
-                layer.enabled: control.effectiveType === "elevated" && control.enabled
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowBlur: MeoTheme.elevationLevel1 * 0.12
-                    shadowVerticalOffset: MeoTheme.elevationLevel1 * control.themeGlobalScale
-                    shadowOpacity: 0.12
-                    shadowColor: MeoTheme.shadow
+            background: Item {
+                MeoElevationShadow {
+                    target: primaryBackground
+                    elevation: control.effectiveType === "elevated" && control.enabled ? MeoTheme.elevationLevel1 : 0
+                    color: primaryBackground.color
+                    topLeftRadius: primaryBackground.topLeftRadius
+                    topRightRadius: primaryBackground.topRightRadius
+                    bottomLeftRadius: primaryBackground.bottomLeftRadius
+                    bottomRightRadius: primaryBackground.bottomRightRadius
                 }
 
-                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-
-                MeoStateLayer {
-                    id: primaryStateLayer
-                    objectName: "meoSplitButtonPrimaryStateLayer"
+                Rectangle {
+                    id: primaryBackground
+                    objectName: "meoSplitButtonPrimaryBackground"
                     anchors.fill: parent
-                    internalPointerTrackingEnabled: false
-                    radius: control.outerCorner
-                    pressed: primaryAction.pressed
-                    hovered: primaryAction.hovered
-                    focused: primaryAction.visualFocus
-                    pressX: primaryAction.pressX
-                    pressY: primaryAction.pressY
-                    color: control.contentColor
+                    clip: true
+                    color: control.containerColor
+                    border.width: control.outlined ? MeoTheme.strokeWidthThin : 0
+                    border.color: MeoTheme.outlineVariant
+                    topLeftRadius: control.mirrored ? primaryAction.innerRadius : control.outerCorner
+                    bottomLeftRadius: control.mirrored ? primaryAction.innerRadius : control.outerCorner
+                    topRightRadius: control.mirrored ? control.outerCorner : primaryAction.innerRadius
+                    bottomRightRadius: control.mirrored ? control.outerCorner : primaryAction.innerRadius
+
+                    Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+
+                    MeoStateLayer {
+                        id: primaryStateLayer
+                        objectName: "meoSplitButtonPrimaryStateLayer"
+                        anchors.fill: parent
+                        internalPointerTrackingEnabled: false
+                        radius: control.outerCorner
+                        pressed: primaryAction.pressed
+                        hovered: primaryAction.hovered
+                        focused: primaryAction.visualFocus
+                        pressX: primaryAction.pressX
+                        pressY: primaryAction.pressY
+                        color: control.contentColor
+                    }
                 }
             }
 
@@ -223,44 +226,48 @@ Control {
             readonly property real innerRadius: menuPopup.opened ? control.outerCorner
                                                 : pressed || hovered || visualFocus
                                                   ? control.innerActiveCorner : control.innerCorner
-            background: Rectangle {
-                id: trailingBackground
-                objectName: "meoSplitButtonMenuBackground"
-                anchors.fill: parent
-                clip: true
-                color: control.containerColor
-                border.width: control.outlined ? MeoTheme.strokeWidthThin : 0
-                border.color: MeoTheme.outlineVariant
-                topLeftRadius: control.mirrored ? control.outerCorner : menuAction.innerRadius
-                bottomLeftRadius: control.mirrored ? control.outerCorner : menuAction.innerRadius
-                topRightRadius: control.mirrored ? menuAction.innerRadius : control.outerCorner
-                bottomRightRadius: control.mirrored ? menuAction.innerRadius : control.outerCorner
-                layer.enabled: control.effectiveType === "elevated" && control.enabled
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowBlur: MeoTheme.elevationLevel1 * 0.12
-                    shadowVerticalOffset: MeoTheme.elevationLevel1 * control.themeGlobalScale
-                    shadowOpacity: 0.12
-                    shadowColor: MeoTheme.shadow
+            background: Item {
+                MeoElevationShadow {
+                    target: trailingBackground
+                    elevation: control.effectiveType === "elevated" && control.enabled ? MeoTheme.elevationLevel1 : 0
+                    color: trailingBackground.color
+                    topLeftRadius: trailingBackground.topLeftRadius
+                    topRightRadius: trailingBackground.topRightRadius
+                    bottomLeftRadius: trailingBackground.bottomLeftRadius
+                    bottomRightRadius: trailingBackground.bottomRightRadius
                 }
 
-                Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-                Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
-
-                MeoStateLayer {
-                    id: menuStateLayer
-                    objectName: "meoSplitButtonMenuStateLayer"
+                Rectangle {
+                    id: trailingBackground
+                    objectName: "meoSplitButtonMenuBackground"
                     anchors.fill: parent
-                    internalPointerTrackingEnabled: false
-                    radius: control.outerCorner
-                    pressed: menuAction.pressed
-                    hovered: menuAction.hovered
-                    focused: menuAction.visualFocus
-                    pressX: menuAction.pressX
-                    pressY: menuAction.pressY
-                    color: control.contentColor
+                    clip: true
+                    color: control.containerColor
+                    border.width: control.outlined ? MeoTheme.strokeWidthThin : 0
+                    border.color: MeoTheme.outlineVariant
+                    topLeftRadius: control.mirrored ? control.outerCorner : menuAction.innerRadius
+                    bottomLeftRadius: control.mirrored ? control.outerCorner : menuAction.innerRadius
+                    topRightRadius: control.mirrored ? menuAction.innerRadius : control.outerCorner
+                    bottomRightRadius: control.mirrored ? menuAction.innerRadius : control.outerCorner
+
+                    Behavior on topLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on topRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on bottomLeftRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+                    Behavior on bottomRightRadius { NumberAnimation { duration: MeoTheme.reduceMotion ? 0 : MeoTheme.motionDurationSelection; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedDecelerate } }
+
+                    MeoStateLayer {
+                        id: menuStateLayer
+                        objectName: "meoSplitButtonMenuStateLayer"
+                        anchors.fill: parent
+                        internalPointerTrackingEnabled: false
+                        radius: control.outerCorner
+                        pressed: menuAction.pressed
+                        hovered: menuAction.hovered
+                        focused: menuAction.visualFocus
+                        pressX: menuAction.pressX
+                        pressY: menuAction.pressY
+                        color: control.contentColor
+                    }
                 }
             }
 

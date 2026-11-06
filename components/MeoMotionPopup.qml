@@ -331,33 +331,25 @@ Popup {
     background: Item {
         clip: false
 
-        Rectangle {
-            visible: !control.isFullScreen
-            x: control.isSideSheet ? -4 * MeoTheme.globalScale : 0
-            y: control.isMenu ? 3 * MeoTheme.globalScale : 6 * MeoTheme.globalScale
-            width: parent.width
-            height: parent.height
-            radius: control.surfaceRadius
-            color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b,
-                           control.isMenu ? 0.10 : 0.08)
+        // Shared M3 elevation model (menus level 2, side sheets level 1,
+        // popovers/dialog surfaces level 3) instead of two hard-edged offset
+        // rectangles that only imitated a shadow.
+        MeoElevationShadow {
+            target: popupSurface
+            elevation: control.isFullScreen ? 0
+                       : control.isMenu ? MeoTheme.elevationLevel2
+                       : control.isSideSheet ? MeoTheme.elevationLevel1
+                       : MeoTheme.elevationLevel3
+            radius: popupSurface.radius
+            color: popupSurface.color
         }
 
         Rectangle {
-            visible: !control.isFullScreen
-            x: control.isSideSheet ? -2 * MeoTheme.globalScale : 0
-            y: control.isMenu ? 1 * MeoTheme.globalScale : 2 * MeoTheme.globalScale
-            width: parent.width
-            height: parent.height
-            radius: control.surfaceRadius
-            color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b,
-                           control.isMenu ? 0.08 : 0.06)
-        }
-
-        Rectangle {
+            id: popupSurface
             anchors.fill: parent
             radius: control.surfaceRadius
             color: control.surfaceColor
-            border.width: control.isFullScreen ? 0 : 1
+            border.width: control.isFullScreen ? 0 : MeoTheme.strokeWidthThin
             border.color: Qt.rgba(MeoTheme.outline.r, MeoTheme.outline.g, MeoTheme.outline.b, 0.22)
 
             Behavior on radius {

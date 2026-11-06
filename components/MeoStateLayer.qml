@@ -10,6 +10,9 @@ Item {
     property bool focused: false
     property bool dragged: false
     property bool focusRingEnabled: true
+    // Keyboard-modality gate for focus visuals; see MeoTheme.focusVisible.
+    property bool focusVisible: theme.focusVisible
+    readonly property bool _showsFocus: focused && focusVisible
     property bool rippleEnabled: true
     property bool internalPointerTrackingEnabled: true
     property string rippleOriginMode: "pointer" // pointer | center
@@ -87,10 +90,10 @@ Item {
         if (rippleActive && rippleEnabled) return 0
         if (pressed) return theme.stateOpacityPressed
         if (hovered) return theme.stateOpacityHover
-        if (focused) return theme.stateOpacityFocus
+        if (_showsFocus) return theme.stateOpacityFocus
         return 0
     }
-    readonly property real focusRingTargetOpacity: enabled && focused
+    readonly property real focusRingTargetOpacity: enabled && _showsFocus
                                                    && focusRingEnabled ? 0.78 : 0
     readonly property real _renderedBaseOpacity: stateLayerShader.baseOpacity
     readonly property real _renderedFocusOpacity: stateLayerShader.focusOpacity
@@ -98,6 +101,16 @@ Item {
     readonly property string renderBackend: softwareRendering
                                                 ? "software-fallback"
                                                 : "single-pass-shader"
+
+    // Keep the surface alive while an exit fade is still running. Gating only
+    // on the live input state hid the layer the instant hover/focus ended,
+    // so the tokenized exit transition never reached the screen and the tint
+    // popped off. Idle controls still render nothing.
+    readonly property bool _surfaceActive: enabled
+                                           && (hovered || _showsFocus || pressed || dragged
+                                               || rippleActive
+                                               || stateLayerShader.baseOpacity > 0
+                                               || stateLayerShader.focusOpacity > 0)
 
     function animateBaseState() {
         baseOpacityAnimation.stop()
@@ -229,7 +242,7 @@ Item {
     }
     onFocusedChanged: {
         if (!dragged && !pressed && !hovered)
-            _stateTransitionDuration = focused ? focusDuration : stateExitDuration
+            _stateTransitionDuration = _showsFocus ? focusDuration : stateExitDuration
     }
 
     // A drag is a continuous state, not another click.  Stop the expanding
@@ -263,10 +276,7 @@ Item {
     ShaderEffect {
         id: stateLayerShader
         anchors.fill: parent
-        visible: !control.softwareRendering
-                 && control.enabled
-                 && (control.hovered || control.focused || control.pressed
-                     || control.dragged || control.rippleActive)
+        visible: !control.softwareRendering && control._surfaceActive
         blending: true
         fragmentShader: "qrc:/qt/qml/MeoUI/shaders/state_layer.frag.qsb"
 
@@ -289,7 +299,7 @@ Item {
         property real rippleOpacity: control.rippleActive ? rippleLayer.opacity : 0
         property real focusOpacity: 0
         property real focusWidth: focusOpacity > 0
-                                  ? Math.max(2, 2 * control.themeGlobalScale) : 0
+                                  ? Math.max(2, control.theme.focusRingWidth) : 0
     }
 
     NumberAnimation {
@@ -305,7 +315,7 @@ Item {
         id: focusOpacityAnimation
         target: stateLayerShader
         property: "focusOpacity"
-        duration: control.focused ? control.focusDuration : control.stateExitDuration
+        duration: control._showsFocus ? control.focusDuration : control.stateExitDuration
         easing.type: Easing.BezierSpline
         easing.bezierCurve: Meo.MeoTheme.motionEasingLinear
     }
@@ -320,9 +330,7 @@ Item {
     Item {
         id: softwareFallback
         anchors.fill: parent
-        visible: control.softwareRendering && control.enabled
-                 && (control.hovered || control.focused || control.pressed
-                     || control.dragged || control.rippleActive)
+        visible: control.softwareRendering && control._surfaceActive
 
         Rectangle {
             id: fallbackBase
@@ -460,7 +468,7 @@ Item {
         if (dragged) return draggedOpacity
         if (pressed) return pressedOpacity
         if (hovered) return hoverOpacity
-        if (focused) return focusOpacity
+        if (_showsFocus) return focusOpacity
         return 0
     }
 }

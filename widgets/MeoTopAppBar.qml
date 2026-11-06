@@ -101,16 +101,16 @@ Rectangle {
                 if (control.flexible && (control.type === "medium" || control.type === "large")) {
                     return (control.fontTitleLarge.size
                             + (targetFontSize - control.fontTitleLarge.size) * control.scrollProgress)
-                           * control.themeGlobalScale;
+                           * MeoTheme.textScale;
                 }
-                return targetFontSize * control.themeGlobalScale;
+                return targetFontSize * MeoTheme.textScale;
             }
 
             font.weight: control.type === "large" ? control.fontHeadlineLarge.weight
                                                    : (control.type === "medium"
                                                       ? control.fontHeadlineMedium.weight
                                                       : control.fontTitleLarge.weight)
-            font.letterSpacing: (control.fontTitleLarge.letterSpacing || 0) * control.themeGlobalScale
+            font.letterSpacing: (control.fontTitleLarge.letterSpacing || 0) * MeoTheme.textScale
             lineHeight: control.fontTitleLarge.lineHeight
                         ? (control.fontTitleLarge.lineHeight / control.fontTitleLarge.size) : 28 / 22
             color: control.isContextual ? control.themeOnPrimaryContainer : control.themeOnSurface

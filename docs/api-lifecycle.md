@@ -25,13 +25,7 @@ Implementation details not intended as product-facing API.
 - established Material 3 Expressive controls, semantic tokens, motion and responsive layout primitives that are covered by the current Showcase.
 
 ### Deprecated compatibility
-- `MeoBottomAppBar.qml`: legacy baseline retained for compatibility. New work should use `MeoDockedToolbar` when the surface is a docked action toolbar. Do not mechanically replace it when a consumer actually needs navigation rather than actions.
-
-The migration notation is:
-
-`MeoBottomAppBar -> MeoDockedToolbar` for docked action surfaces.
-
-This is a product/API recommendation, not permission to delete the old type.
+- None at present. `MeoBottomAppBar` was removed in the 2026-11 cleanup below.
 
 ## Deprecation rules
 
@@ -52,6 +46,27 @@ Experimental APIs must be clearly marked in their source documentation and Showc
 ## Removal rules
 
 Removal requires a dedicated cleanup change that verifies repository consumers and known first-party consumers have migrated. Do not remove a type as incidental work during unrelated UI changes.
+
+## Removal record
+
+### 2026-11 library cleanup
+
+Removed after verifying that no first-party consumer imports them (OmniStore,
+MeoSettings, meo-kde, MeoArch-os-workspace, meo-ai; meo-login-manager does not
+import MeoUI) and that no other MeoUI component depends on them. Each one was
+either deprecated or a thin duplicate of a Current component, so keeping both
+made the catalog harder to choose from without adding capability.
+
+| Removed | Use instead | Migration note |
+| --- | --- | --- |
+| `MeoBottomAppBar` | `MeoDockedToolbar` | Docked action surfaces. If the surface is navigation, use `MeoNavigationBar`. |
+| `MeoExpressiveDialog` | `MeoDialog` | It was a wrapper: `content` becomes `supportingContent`; set `preferredDialogWidth: 400 * MeoTheme.globalScale` to keep the old width. |
+| `MeoActionSheet` | `MeoMenu` / `MeoContextMenu` (pointer), `MeoBottomSheet` (touch) | Desktop contextual choices are anchored menus; a modal sheet stays available for compact/touch hosts. |
+| `MeoSearchAppBar` | `MeoTopAppBar` + `MeoSearchBar`; results in `MeoSearchView` | Same `text`/`placeholder`/`leadingIcon`/`trailingIcon` on `MeoSearchBar`. |
+| `MeoSearchHeader` | `MeoTopAppBar` + `MeoSearchBar` | Constrain the bar with `Layout.maximumWidth` instead of `maxSearchWidth`. |
+| `MeoSearchFilterBar` | `MeoSearchBar` + `MeoFilterGroup` | `filterModel`/`selectedFilterIndices`/`multiSelectFilters` map to `MeoFilterGroup`'s model and selection. |
+| `MeoFeedLayout` | `MeoListView` (or `GridView`) inside `MeoAppLayout` | It only forwarded a model to a list. |
+| `MeoDashboardLayout` | `GridLayout` with `MeoWindowMetrics` columns | It only chose a column count. |
 
 ## Ownership
 

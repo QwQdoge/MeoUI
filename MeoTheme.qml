@@ -16,7 +16,46 @@ QtObject {
     property bool isExpressive: false
     property bool isBouncy: true
     property bool reduceMotion: false
+    // Accessibility: Reduce Transparency. When false, translucent surfaces
+    // (MeoTheme.surfaceAlpha) render opaque. Hosts bind it to the platform
+    // setting; blur-behind effects owned by the shell should follow it too.
     property bool transparencyEnabled: true
+    // Accessibility: Increase Contrast. Raises secondary text to the primary
+    // on-surface role, strengthens outlines/dividers and state layers, and
+    // widens focus rings. Hosts that install full M3 contrast-level color
+    // tables can keep this false and use applyDynamicColorSchemes().
+    property bool highContrast: false
+    function surfaceAlpha(translucentAlpha) {
+        return transparencyEnabled ? translucentAlpha : 1.0
+    }
+
+    // Desktop input contract (CSS :focus-visible / WinUI focus visuals).
+    // Focus indicators render only after keyboard navigation, so a mouse or
+    // touch press that moves focus does not leave a ring behind. Hosts may
+    // force it on (kiosk, TV) by assigning true.
+    property bool focusVisible: MeoInputModality.keyboard
+    // "mouse", "touch", "pen" or "" before the first pointer press.
+    readonly property string pointerType: MeoInputModality.pointerType
+    readonly property bool touchInput: MeoInputModality.touch
+    // Material density scale for pointer-driven UIs: 0 comfortable (default),
+    // -1 compact, -2 dense, -3 densest. Each step removes 4dp from the height
+    // of dense-capable components (buttons up to M, fields, list and settings
+    // rows, chips, menu items, tabs) and from minimum interactive targets,
+    // each clamped to a per-component floor. Touch input always resolves to 0
+    // so touch targets stay 48dp, as M3 requires.
+    property int density: 0
+    readonly property int effectiveDensity: touchInput ? 0 : Math.max(-3, Math.min(0, Math.round(density)))
+    readonly property real densityStep: 4 * globalScale
+    function densityAdjusted(size, minimumDp) {
+        const floor = (minimumDp === undefined ? 0 : minimumDp) * globalScale
+        return Math.max(Math.min(size, Math.max(floor, size + effectiveDensity * densityStep)), 0)
+    }
+    // Minimum interactive target: 48dp comfortable, 44/40/36dp when denser.
+    readonly property real minimumTargetSize: densityAdjusted(48 * globalScale, 32)
+
+    // Hover dwell before a tooltip appears (WinUI/macOS-style), so sweeping
+    // the pointer across a toolbar does not flash every label.
+    property int tooltipShowDelay: 500
 
     // Material 3 adaptive window classes, expressed in effective pixels.
     readonly property real windowBreakpointMedium: 600
@@ -386,8 +425,9 @@ QtObject {
     property color surfaceDim: dynamicOrFallback("surfaceDim")
     property color surfaceBright: dynamicOrFallback("surfaceBright")
     property color surfaceVariant: dynamicOrFallback("surfaceVariant")
-    property color contentOnSurfaceVariant: dynamicOrFallback("onSurfaceVariant")
-    property color outline: dynamicOrFallback("outline")
+    property color contentOnSurfaceVariant: highContrast ? dynamicOrFallback("onSurface")
+                                                         : dynamicOrFallback("onSurfaceVariant")
+    property color outline: highContrast ? dynamicOrFallback("onSurfaceVariant") : dynamicOrFallback("outline")
 
     // M3 Content color aliases
     property color onPrimary: contentOnPrimary
@@ -569,6 +609,9 @@ QtObject {
 
     // 🌟 字体全局缩放 (Font Scale Token)
     property real fontScale: 1.0
+    // Text sizing for components: layout scale times the accessibility text
+    // size (clamped 0.5-3). Icons and containers use globalScale only.
+    readonly property real textScale: globalScale * Math.max(0.5, Math.min(3, fontScale))
 
     // 🌟 动画时间与曲线全局倍率 (Motion Duration & Speed Scale)
     property real motionScale: 1.0
@@ -588,9 +631,48 @@ QtObject {
     readonly property real elevationLevel4: 8 * globalScale
     readonly property real elevationLevel5: 12 * globalScale
 
+    // One shadow model for every elevated surface. Inputs are elevation
+    // values in scaled pixels (the elevationLevelN tokens above, or a value
+    // interpolated between them). The table maps the six M3 levels
+    // (0/1/3/6/8/12dp) to a key-shadow offset and blur; values between levels
+    // interpolate so hover/press elevation changes animate smoothly.
+    // Elevation tokens are already scaled: never multiply by globalScale
+    // again (that made HiDPI offsets grow with scale²).
+    readonly property var _elevationDp: [0, 1, 3, 6, 8, 12]
+    readonly property var _shadowOffsetDp: [0, 1, 2, 4, 6, 8]
+    readonly property var _shadowBlur: [0, 0.14, 0.24, 0.38, 0.46, 0.56]
+
+    function _elevationLookup(elevation, table) {
+        const dp = Math.max(0, (Number(elevation) || 0) / Math.max(0.0001, globalScale))
+        const levels = _elevationDp
+        if (dp >= levels[levels.length - 1])
+            return table[table.length - 1]
+        for (let i = 1; i < levels.length; ++i) {
+            if (dp <= levels[i]) {
+                const t = (dp - levels[i - 1]) / (levels[i] - levels[i - 1])
+                return table[i - 1] + (table[i] - table[i - 1]) * t
+            }
+        }
+        return 0
+    }
+
+    function elevationShadowOffset(elevation) {
+        return _elevationLookup(elevation, _shadowOffsetDp) * globalScale
+    }
+
+    // MultiEffect.shadowBlur is a 0..1 fraction of blurMax (item pixels), so
+    // it is scaled with globalScale and saturates at 1.
+    function elevationShadowBlur(elevation) {
+        return Math.min(1, _elevationLookup(elevation, _shadowBlur) * globalScale)
+    }
+
+    // Shadows read weaker on dark surfaces; M3 compensates with tonal
+    // elevation, and the key shadow stays visible but subtle.
+    readonly property real elevationShadowOpacity: isDarkMode ? 0.32 : 0.16
+
     // MD3 state-layer opacity tokens.
-    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08)
-    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10)
+    readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08) + (highContrast ? 0.04 : 0)
+    readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10) + (highContrast ? 0.04 : 0)
     readonly property real stateOpacityPressed: metricToken("stateOpacityPressed", 0.10)
     readonly property real stateOpacityDragged: metricToken("stateOpacityDragged", 0.16)
     readonly property real rippleStartRadiusFactor: 0.30
@@ -612,7 +694,7 @@ QtObject {
     readonly property color warningContainer: semanticColorForRole("warningContainer")
     readonly property color contentOnWarningContainer: semanticColorForRole("onWarningContainer")
 
-    property color outlineVariant: dynamicOrFallback("outlineVariant")
+    property color outlineVariant: highContrast ? dynamicOrFallback("outline") : dynamicOrFallback("outlineVariant")
 
     // MD3 Fixed Colors remain stable across light/dark, but follow the active
     // HCT source when a dynamic scheme is installed.
@@ -663,7 +745,7 @@ QtObject {
     readonly property real cardRadius: metricToken("cardRadius", 20) * globalScale * cornerScale
     readonly property real dialogRadius: metricToken("dialogRadius", 28) * globalScale * cornerScale
     readonly property real windowRadius: metricToken("windowRadius", 16) * globalScale * cornerScale
-    readonly property real focusRingWidth: metricToken("focusRingWidth", 2) * globalScale
+    readonly property real focusRingWidth: (metricToken("focusRingWidth", 2) + (highContrast ? 1 : 0)) * globalScale
 
     readonly property real iconButtonSizeXS: metricToken("iconButtonSizeXS", 32) * globalScale
     readonly property real iconButtonSizeS: metricToken("iconButtonSizeS", 40) * globalScale
@@ -672,11 +754,12 @@ QtObject {
     readonly property real iconButtonSizeXL: metricToken("iconButtonSizeXL", 136) * globalScale
 
     function buttonHeightForSize(size) {
-        if (size === "xs") return buttonHeightXS
-        if (size === "s") return buttonHeightS
+        // Density applies to the everyday sizes; L/XL stay emphatic.
+        if (size === "xs") return densityAdjusted(buttonHeightXS, 24)
+        if (size === "s") return densityAdjusted(buttonHeightS, 28)
         if (size === "l") return buttonHeightL
         if (size === "xl") return buttonHeightXL
-        return buttonHeightM
+        return densityAdjusted(buttonHeightM, 40)
     }
 
     function iconButtonSizeForSize(size) {
@@ -802,7 +885,7 @@ QtObject {
     readonly property real settingsSidebarWidth: metricToken("settingsSidebarWidth", 360) * globalScale
     readonly property real settingsSidebarHorizontalMargin: metricToken("settingsSidebarHorizontalMargin", 8) * globalScale
     readonly property real settingsSidebarItemHeight: metricToken("settingsSidebarItemHeight", 56) * globalScale
-    readonly property real settingsRowHeight: metricToken("settingsRowHeight", 72) * globalScale
+    readonly property real settingsRowHeight: densityAdjusted(metricToken("settingsRowHeight", 72) * globalScale, 52)
     readonly property real settingsRowHorizontalPadding: metricToken("settingsRowHorizontalPadding", 16) * globalScale
     readonly property real settingsLeadingContainerSize: metricToken("settingsLeadingContainerSize", 40) * globalScale
     readonly property real settingsLeadingIconSize: metricToken("settingsLeadingIconSize", 24)
@@ -816,6 +899,17 @@ QtObject {
     // 🌟 Material Design 3 Typography (Type Scale)
     // Format: { size, weight, lineHeight, letterSpacing }
     readonly property string typefacePlain: fontFamily
+
+    // Icon font: one shared loader for every MeoIcon (previously each icon
+    // instance created its own FontLoader).
+    property FontLoader _iconFontLoader: FontLoader {
+        source: Qt.resolvedUrl("assets/fonts/MaterialSymbolsRounded.ttf")
+    }
+    readonly property string iconFontFamily: _iconFontLoader.status === FontLoader.Ready
+                                             ? _iconFontLoader.name : "Material Symbols Rounded"
+    // Material Symbols GRAD axis: -25 reduces glare on dark surfaces, 200
+    // gives high-contrast emphasis, 0 otherwise.
+    readonly property int iconGrade: highContrast ? 200 : (isDarkMode ? -25 : 0)
     readonly property string typefaceBrand: fontFamilyBrand
     readonly property string typefaceChineseFallback: "Noto Sans SC, Microsoft YaHei, Source Han Sans SC"
 

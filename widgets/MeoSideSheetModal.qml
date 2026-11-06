@@ -54,7 +54,7 @@ MeoMotionPopup {
                 Text {
                     text: control.title
                     visible: text !== ""
-                    font.pixelSize: fontTitleLarge.size * control.themeGlobalScale
+                    font.pixelSize: fontTitleLarge.size * MeoTheme.textScale
                     font.weight: fontTitleLarge.weight
                     color: control.themeOnSurface
                     verticalAlignment: Text.AlignVCenter

@@ -198,7 +198,8 @@ FocusScope {
     Timer {
         interval: 60000
         repeat: true
-        running: true
+        triggeredOnStart: true
+        running: control.visible
         onTriggered: control.previewTime = new Date()
     }
 
@@ -621,9 +622,9 @@ FocusScope {
                                                     text: Qt.formatTime(control.previewTime, "HH:mm")
                                                     color: previewCanvas.previewContent
                                                     font.family: MeoTheme.typefaceBrand
-                                                    font.pixelSize: Math.min(42 * MeoTheme.globalScale,
+                                                    font.pixelSize: Math.min(42 * MeoTheme.textScale,
                                                                             parent.height * 0.40)
-                                                    font.letterSpacing: -0.8 * MeoTheme.globalScale
+                                                    font.letterSpacing: -0.8 * MeoTheme.textScale
                                                     horizontalAlignment: Text.AlignHCenter
                                                 }
                                                 MeoShape {
@@ -702,7 +703,7 @@ FocusScope {
                                                                        ? MeoTheme.contentOnSecondary
                                                                        : MeoTheme.contentOnPrimaryContainer
                                                                 font.family: MeoTheme.typefaceBrand
-                                                                font.pixelSize: 24 * MeoTheme.globalScale
+                                                                font.pixelSize: 24 * MeoTheme.textScale
                                                             }
                                                         }
                                                     }
@@ -776,7 +777,7 @@ FocusScope {
                                                             text: qsTr("22°")
                                                             color: previewCanvas.previewContent
                                                             font.family: MeoTheme.typefaceBrand
-                                                            font.pixelSize: Math.min(34 * MeoTheme.globalScale,
+                                                            font.pixelSize: Math.min(34 * MeoTheme.textScale,
                                                                                     previewCanvas.height * 0.34)
                                                         }
                                                         MeoText {

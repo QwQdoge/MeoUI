@@ -22,8 +22,12 @@ const referenceRoot = path.join(output, "05-component-reference");
 const apiRoot = path.join(referenceRoot, "api");
 const clean = process.argv.includes("--clean");
 const cmake = fs.readFileSync(path.join(root, "CMakeLists.txt"), "utf8");
+const qmldirText = fs.readFileSync(path.join(root, "qmldir"), "utf8");
+// `internal` qmldir types are implementation primitives, not product API.
+const internalPaths = new Set([...qmldirText.matchAll(/^internal\s+\w+\s+(\S+)\s*$/gm)].map((match) => match[1]));
 const sourcePaths = [...cmake.matchAll(/^\s*((?:components|widgets|patterns)\/Meo[\w]+\.qml)\s*$/gm)]
-    .map((match) => match[1]);
+    .map((match) => match[1])
+    .filter((file) => !internalPaths.has(file));
 
 if (!sourcePaths.length) {
     throw new Error("No exported Meo QML types found in CMakeLists.txt.");
@@ -53,7 +57,6 @@ const special = {
     MeoNavigationSuite: ["布局与模式", "Layouts & patterns", "按可用空间选择导航模式的自适应组合。", "An adaptive navigation composition that selects a navigation pattern for available space.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
     MeoAppLayout: ["布局与模式", "Layouts & patterns", "应用级自适应布局组合。", "An application-level adaptive layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
     MeoListDetailLayout: ["布局与模式", "Layouts & patterns", "列表-详情规范布局组合。", "A list-detail canonical layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
-    MeoFeedLayout: ["布局与模式", "Layouts & patterns", "信息流规范布局组合。", "A feed canonical layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
 };
 
 function write(relative, contents) {

@@ -28,7 +28,7 @@ Keep Plasma/KWin/DBus/system/package-manager behavior in meo-kde or the owning a
 
 Use `MeoTheme` semantic tokens, `MeoTheme.globalScale`, `MeoWindowMetrics`, existing motion primitives, and the established icon system. Do not hard-code a visual value when a suitable semantic token or shared primitive already exists.
 
-Public components have a lifecycle classification. Deprecated compatibility APIs remain available for maintained consumers but are not preferred targets for new product work. In particular, `MeoBottomAppBar` is compatibility/legacy for docked action surfaces; use `MeoDockedToolbar` for new docked action-toolbar work unless the semantics differ. Follow `docs/api-lifecycle.md` rather than deleting compatibility types opportunistically.
+Public components have a lifecycle classification. Deprecated compatibility APIs remain available for maintained consumers but are not preferred targets for new product work. Use `MeoDockedToolbar` for docked action-toolbar work (`MeoBottomAppBar` was removed; see the removal record in `docs/api-lifecycle.md`). Follow `docs/api-lifecycle.md` rather than deleting compatibility types opportunistically.
 
 ## Validation matrix
 

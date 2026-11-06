@@ -517,9 +517,9 @@ Control {
                     width: parent.width
                     text: control.title
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.titleMedium.size * control.scale
+                    font.pixelSize: MeoTheme.titleMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.titleMedium.weight
-                    font.letterSpacing: (MeoTheme.titleMedium.letterSpacing || 0) * control.scale
+                    font.letterSpacing: (MeoTheme.titleMedium.letterSpacing || 0) * MeoTheme.textScale
                     lineHeightMode: Text.FixedHeight
                     lineHeight: 20 * control.scale
                     color: control.currentContentColor
@@ -532,9 +532,9 @@ Control {
                     text: control.subtitle
                     visible: text !== ""
                     font.family: MeoTheme.typefacePlain
-                    font.pixelSize: MeoTheme.bodyMedium.size * control.scale
+                    font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                     font.weight: MeoTheme.bodyMedium.weight
-                    font.letterSpacing: (MeoTheme.bodyMedium.letterSpacing || 0) * control.scale
+                    font.letterSpacing: (MeoTheme.bodyMedium.letterSpacing || 0) * MeoTheme.textScale
                     color: control.currentSupportingColor
                     wrapMode: Text.WordWrap
                     maximumLineCount: 2
@@ -587,7 +587,7 @@ Control {
                         visible: text !== ""
                         width: Math.min(implicitWidth, trailingSlot.textLimit)
                         font.family: MeoTheme.typefacePlain
-                        font.pixelSize: MeoTheme.bodyMedium.size * control.scale
+                        font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                         font.weight: MeoTheme.bodyMedium.weight
                         color: control.trailingContentColor
                         elide: Text.ElideRight

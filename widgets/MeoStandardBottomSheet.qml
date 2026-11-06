@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import MeoUI
 
 Item {
@@ -32,6 +31,19 @@ Item {
                                   ? Math.max(0, control.availableHeight - control.resolvedExpandedHeight)
                                   : Math.max(0, control.availableHeight - control.resolvedPeekHeight)
 
+    // M3 standard bottom sheet: elevation level 1, cast upward.
+    MeoElevationShadow {
+        target: sheetBackground
+        visible: control.visible && width > 0 && height > 0
+        elevation: MeoTheme.elevationLevel1
+        direction: -1
+        topLeftRadius: sheetBackground.radius
+        topRightRadius: sheetBackground.radius
+        bottomLeftRadius: 0
+        bottomRightRadius: 0
+        color: sheetBackground.color
+    }
+
     Rectangle {
         id: sheetBackground
         width: parent.width
@@ -47,15 +59,6 @@ Item {
             width: parent.width
             height: Math.min(MeoTheme.shapeExtraLarge, parent.height)
             color: parent.color
-        }
-
-        // MD3 Elevation Shadow
-        layer.enabled: control.visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: -2 * MeoTheme.globalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.10)
         }
 
         Behavior on y {

@@ -88,7 +88,7 @@ MeoMotionPopup {
                 anchors.verticalCenter: parent.verticalCenter
                 text: control.title
                 elide: Text.ElideRight
-                font.pixelSize: MeoTheme.titleLarge.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.titleLarge.size * MeoTheme.textScale
                 font.weight: MeoTheme.titleLarge.weight
                 color: MeoTheme.contentOnSurface
                 verticalAlignment: Text.AlignVCenter

@@ -113,12 +113,12 @@ qt_add_qml_module(meoui_module
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/MeoUI"
     SOURCES
         runtime/meotokens.h
+        runtime/meoinputmodality.h
+        runtime/meoinputmodality.cpp
     QML_FILES
                 widgets/MeoNavigationBar.qml
         widgets/MeoSidebarModal.qml
         patterns/MeoAppLayout.qml
-        patterns/MeoFeedLayout.qml
-        patterns/MeoDashboardLayout.qml
         showcase/pages/ButtonsPage.qml
         showcase/pages/InputsPage.qml
         showcase/pages/NavigationPage.qml
@@ -236,15 +236,12 @@ qt_add_qml_module(meoui_module
         widgets/MeoTimePicker.qml
         widgets/MeoNavigationRail.qml
         widgets/MeoBottomSheet.qml
-        widgets/MeoActionSheet.qml
         widgets/MeoToolbar.qml
         widgets/MeoAccountHeader.qml
         widgets/MeoAccountSwitcher.qml
         widgets/MeoSettingsAccountCard.qml
         widgets/MeoSearchBar.qml
-        widgets/MeoSearchAppBar.qml
         widgets/MeoDockedSearchBar.qml
-        widgets/MeoBottomAppBar.qml
         widgets/MeoSearchView.qml
         widgets/MeoTopAppBar.qml
         widgets/MeoSearchSuggestions.qml
@@ -265,15 +262,13 @@ qt_add_qml_module(meoui_module
         patterns/MeoSettingsTaskSheet.qml
         patterns/MeoAboutPage.qml
         patterns/MeoQuickSettingsEditor.qml
-        patterns/MeoSearchFilterBar.qml
         patterns/MeoPageLayout.qml
         patterns/MeoGroupedList.qml
         patterns/MeoNavigationSuite.qml
-        patterns/MeoSearchHeader.qml
-        patterns/MeoExpressiveDialog.qml
         patterns/MeoSegmentedList.qml
         patterns/MeoSupportingPaneLayout.qml
         components/MeoShape.qml
+        components/MeoElevationShadow.qml
         components/MeoShapeMorph.qml
         components/MeoMaterialShapes.js
         showcase/MeoShowcase.qml

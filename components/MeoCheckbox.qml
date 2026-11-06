@@ -60,7 +60,7 @@ Control {
     // M3 Checkbox specs: a visual 18dp control sits in a 48dp target with a
     // 40dp state layer. Keep custom indicator-size variants while preserving
     // the standard target at the default scale.
-    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real minimumTargetSize: MeoTheme.minimumTargetSize
     readonly property real stateLayerSize: 40 * themeGlobalScale
 
     Accessible.role: Accessible.CheckBox
@@ -285,7 +285,7 @@ Control {
                 id: labelText
                 text: control.label
                 font.family: MeoTheme.typefacePlain
-                font.pixelSize: control.fontLabel.size * control.themeGlobalScale
+                font.pixelSize: control.fontLabel.size * MeoTheme.textScale
                 font.weight: control.fontLabel.weight
                 color: {
                     if (!control.enabled) return Qt.rgba(control.themeOnSurface.r, control.themeOnSurface.g, control.themeOnSurface.b, MeoTheme.disabledContentOpacity)
@@ -302,7 +302,7 @@ Control {
             visible: (control.isError && control.errorText !== "") || control.helperText !== ""
             text: (control.isError && control.errorText !== "") ? control.errorText : control.helperText
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (control.fontLabel.size - 2) * control.themeGlobalScale
+            font.pixelSize: (control.fontLabel.size - 2) * MeoTheme.textScale
             color: control.isError ? control.themeError : control.themeOnSurfaceVariant
             leftPadding: control.checkboxSize + control.spacing
         }

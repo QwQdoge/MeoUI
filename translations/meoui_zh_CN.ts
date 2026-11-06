@@ -626,14 +626,6 @@
     </message>
 </context>
 <context>
-    <name>MeoActionSheet</name>
-    <message>
-        <location filename="../widgets/MeoActionSheet.qml" line="10"/>
-        <source>Actions</source>
-        <translation>操作</translation>
-    </message>
-</context>
-<context>
     <name>MeoAiMark</name>
     <message>
         <location filename="../components/MeoAiMark.qml" line="20"/>
@@ -1442,24 +1434,6 @@
     </message>
 </context>
 <context>
-    <name>MeoSearchAppBar</name>
-    <message>
-        <location filename="../widgets/MeoSearchAppBar.qml" line="27"/>
-        <source>Active search</source>
-        <translation>正在搜索</translation>
-    </message>
-    <message>
-        <location filename="../widgets/MeoSearchAppBar.qml" line="27"/>
-        <source>Search</source>
-        <translation>搜索</translation>
-    </message>
-    <message>
-        <location filename="../widgets/MeoSearchAppBar.qml" line="9"/>
-        <source>Search...</source>
-        <translation>搜索…</translation>
-    </message>
-</context>
-<context>
     <name>MeoSearchBar</name>
     <message>
         <location filename="../widgets/MeoSearchBar.qml" line="133"/>
@@ -1480,22 +1454,6 @@
         <location filename="../widgets/MeoSearchBar.qml" line="11"/>
         <source>Search...</source>
         <translation>搜索…</translation>
-    </message>
-</context>
-<context>
-    <name>MeoSearchFilterBar</name>
-    <message>
-        <location filename="../patterns/MeoSearchFilterBar.qml" line="10"/>
-        <source>Search...</source>
-        <translation>搜索…</translation>
-    </message>
-</context>
-<context>
-    <name>MeoSearchHeader</name>
-    <message>
-        <location filename="../patterns/MeoSearchHeader.qml" line="9"/>
-        <source>Search</source>
-        <translation>搜索</translation>
     </message>
 </context>
 <context>

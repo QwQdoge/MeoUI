@@ -36,7 +36,7 @@ Item {
                        : surfaceStyle === "tonal" ? MeoTheme.surfaceContainer
                        : color
         const opacity = surfaceStyle === "translucent"
-                        ? Math.max(0.7, Math.min(1, surfaceOpacity)) : 1
+                        ? MeoTheme.surfaceAlpha(Math.max(0.7, Math.min(1, surfaceOpacity))) : 1
         return Qt.rgba(semantic.r, semantic.g, semantic.b, opacity)
     }
 
@@ -86,30 +86,16 @@ Item {
         x: control.entranceAxis === "y" ? 0 : control.motionOffset
         y: control.entranceAxis === "y" ? control.motionOffset : 0
     }
-    Rectangle {
-        x: 0; y: control.elevation * 4
-        width: parent.width; height: parent.height
-        radius: control.radius
-        color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, control.elevation > 0 ? 0.055 : 0)
-        opacity: control.elevation > 0 ? 1 : 0
-        Behavior on color {
-            ColorAnimation {
-                duration: MeoTheme.motionDurationEffectSlow
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-            }
-        }
-    }
-    Rectangle {
-        x: 0; y: control.elevation * 2
-        width: parent.width; height: parent.height
-        radius: control.radius
-        color: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, control.elevation > 0 ? 0.065 : 0)
-        opacity: control.elevation > 0 ? 1 : 0
-        Behavior on color {
-            ColorAnimation {
-                duration: MeoTheme.motionDurationEffectSlow
-                easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard
-            }
+    // M3 elevation level (0-5) through the shared shadow model, replacing
+    // two hard-edged offset rectangles.
+    MeoElevationShadow {
+        target: surfaceContainer
+        elevation: [MeoTheme.elevationLevel0, MeoTheme.elevationLevel1, MeoTheme.elevationLevel2,
+                    MeoTheme.elevationLevel3, MeoTheme.elevationLevel4,
+                    MeoTheme.elevationLevel5][Math.max(0, Math.min(5, control.elevation))]
+        radius: surfaceContainer.radius
+        Behavior on elevation {
+            NumberAnimation { duration: MeoTheme.motionDurationEffectSlow; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
         }
     }
     Rectangle {
@@ -140,10 +126,9 @@ Item {
     Item { id: contentLayer; anchors.fill: parent }
 
     Component.onCompleted: if (animateOnCompleted) reveal(entranceDirection)
-    Timer {
+    // Sampled once per rendered frame (vsync-aligned) like MeoSpringValue.
+    FrameAnimation {
         id: entranceDriver
-        interval: 16
-        repeat: true
         onTriggered: control.advanceEntrance()
     }
 }

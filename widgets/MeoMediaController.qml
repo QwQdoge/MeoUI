@@ -251,7 +251,7 @@ Control {
             visible: lockArtworkBackground.opacity > 0.001
             radius: control.cornerRadius
             color: control.themeSurface
-            opacity: control.isDarkMode ? 0.66 : 0.72
+            opacity: MeoTheme.surfaceAlpha(control.isDarkMode ? 0.66 : 0.72)
         }
     }
 
@@ -401,7 +401,7 @@ Control {
             width: parent.width
             text: control.title
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (metadataRoot.large ? 28 : 16) * control.themeGlobalScale
+            font.pixelSize: (metadataRoot.large ? 28 : 16) * MeoTheme.textScale
             font.weight: Font.DemiBold
             color: control.themeOnSurface
             elide: Text.ElideRight
@@ -411,7 +411,7 @@ Control {
             width: parent.width
             text: control.artist
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (metadataRoot.large ? 16 : 14) * control.themeGlobalScale
+            font.pixelSize: (metadataRoot.large ? 16 : 14) * MeoTheme.textScale
             color: control.themeOnSurfaceVariant
             elide: Text.ElideRight
             horizontalAlignment: metadataRoot.centered ? Text.AlignHCenter : Text.AlignLeft
@@ -421,7 +421,7 @@ Control {
             text: control.album !== "" ? control.album : control.sourceName
             visible: metadataRoot.showAlbum && text !== ""
             font.family: MeoTheme.typefacePlain
-            font.pixelSize: (metadataRoot.large ? 13 : 12) * control.themeGlobalScale
+            font.pixelSize: (metadataRoot.large ? 13 : 12) * MeoTheme.textScale
             color: control.themeOnSurfaceVariant
             opacity: 0.78
             elide: Text.ElideRight
@@ -451,13 +451,13 @@ Control {
         Text {
             anchors.left: parent.left
             text: control.formatTime(control.position)
-            font.pixelSize: 11 * control.themeGlobalScale
+            font.pixelSize: 11 * MeoTheme.textScale
             color: control.themeOnSurfaceVariant
         }
         Text {
             anchors.right: parent.right
             text: control.formatTime(control.duration)
-            font.pixelSize: 11 * control.themeGlobalScale
+            font.pixelSize: 11 * MeoTheme.textScale
             color: control.themeOnSurfaceVariant
         }
     }
@@ -697,7 +697,7 @@ Control {
                             to: 360
                             duration: MeoTheme.motionDurationLoadingRotation * 7
                             loops: Animation.Infinite
-                            running: control.isPlaying && !control.reducedMotion
+                            running: control.isPlaying && !control.reducedMotion && control.visible
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: MeoTheme.motionEasingLinear
                         }
@@ -844,7 +844,7 @@ Control {
                                     id: sourceText
                                     text: control.sourceName
                                     font.family: MeoTheme.typefacePlain
-                                    font.pixelSize: 11 * control.themeGlobalScale
+                                    font.pixelSize: 11 * MeoTheme.textScale
                                     font.weight: Font.Medium
                                     color: control.themeOnSurfaceVariant
                                     elide: Text.ElideRight

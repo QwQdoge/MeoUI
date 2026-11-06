@@ -62,15 +62,25 @@ MeoMotionPopup {
             dismissed()
     }
 
-    background: Rectangle {
-        color: MeoTheme.surfaceContainerHigh
-        radius: MeoTheme.dialogRadius
-        layer.enabled: control.visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.55
-            shadowVerticalOffset: 8 * control.themeGlobalScale
-            shadowColor: MeoTheme.shadow
+    background: Item {
+        // Keep the former Rectangle-like background contract for hosts.
+        readonly property alias radius: dialogSurface.radius
+        readonly property alias color: dialogSurface.color
+        // AndroidX DialogTokens.ContainerElevation = Level3. The previous
+        // effect left shadowOpacity at MultiEffect's default of 1.0, which
+        // drew a fully opaque black shadow.
+        MeoElevationShadow {
+            target: dialogSurface
+            elevation: control.visible ? MeoTheme.elevationLevel3 : 0
+            radius: dialogSurface.radius
+            color: dialogSurface.color
+        }
+
+        Rectangle {
+            id: dialogSurface
+            anchors.fill: parent
+            color: MeoTheme.surfaceContainerHigh
+            radius: MeoTheme.dialogRadius
         }
     }
 
@@ -110,7 +120,7 @@ MeoMotionPopup {
                 width: parent.width
                 visible: text !== ""
                 text: control.title
-                font.pixelSize: MeoTheme.headlineSmall.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.headlineSmall.size * MeoTheme.textScale
                 font.weight: MeoTheme.headlineSmall.weight
                 color: MeoTheme.contentOnSurface
                 wrapMode: Text.WordWrap
@@ -126,7 +136,7 @@ MeoMotionPopup {
                 width: parent.width
                 visible: control.message !== ""
                 text: control.message
-                font.pixelSize: MeoTheme.bodyMedium.size * control.themeGlobalScale
+                font.pixelSize: MeoTheme.bodyMedium.size * MeoTheme.textScale
                 font.weight: MeoTheme.bodyMedium.weight
                 color: MeoTheme.contentOnSurfaceVariant
                 wrapMode: Text.WordWrap
