@@ -38,6 +38,7 @@ Button {
     signal cancelled()
 
     property int elapsed: 0
+    property double _holdStartedAt: 0
     property bool completed: false
 
     implicitWidth: Math.max(176 * MeoTheme.globalScale, contentRow.implicitWidth + 48 * MeoTheme.globalScale)
@@ -51,7 +52,9 @@ Button {
             return
         completed = false
         elapsed = 0
+        _holdStartedAt = Date.now()
         holdTimer.restart()
+        progressTimer.stop()
         progressTimer.start()
     }
 
@@ -80,11 +83,13 @@ Button {
         }
     }
 
-    Timer {
+    // Progress is sampled once per rendered frame against the hold start
+    // time. The former 40 ms Timer stepped the fill at 25 Hz and accumulated
+    // timer drift, so the bar visibly stuttered and lagged the real hold.
+    FrameAnimation {
         id: progressTimer
-        interval: 40
-        repeat: true
-        onTriggered: elapsed = Math.min(control.holdDuration, elapsed + interval)
+        onTriggered: control.elapsed = Math.min(control.holdDuration,
+                                                Date.now() - control._holdStartedAt)
     }
 
     Timer {

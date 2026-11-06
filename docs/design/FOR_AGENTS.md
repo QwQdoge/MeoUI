@@ -103,6 +103,20 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Rejected | Runtime widget-tree rewriting, full forks, literal tablet dimensions |
 | Exempt from App Shell | Installer (wizard), Quick Repair in recovery, shell surfaces; Meo AI changes go in its core view |
 
+## Decision table: rendering and motion performance
+
+| Question | Answer |
+| --- | --- |
+| Drive a per-frame sampled motion (spring, morph) | `FrameAnimation` (vsync-aligned) via `MeoSpringValue`; never a 16 ms `Timer`, which drops/doubles frames at 60 Hz and caps high-refresh panels at ~60 Hz |
+| Draw a rect / pill / circle surface | `MeoShape` (scene-graph `Rectangle` for `rect`, `round`, `squircle`, `circle`); `Canvas` only for the expressive shape catalog |
+| Draw an animated arc, spinner or morphing path | `QtQuick.Shapes` (`Shape.CurveRenderer`); never an animated `Canvas`, which re-rasterizes on the CPU and re-uploads a texture every frame |
+| Rotate a drawn shape | An item `rotation` transform, not a repaint |
+| Elevation shadow | `layer.enabled` + `MultiEffect` on a silhouette-only caster behind the surface; never on an item that contains a state layer, ripple, spinner or other animated content |
+| Shadow offset/blur from an elevation token | `MeoTheme.elevationShadowOffset()` / `MeoTheme.elevationShadowBlur()`; elevation tokens are already scaled, so do not multiply by `globalScale` again |
+| Fade an overlay out | Gate `visible` on the animated `opacity` (`visible: opacity > 0`), not on the condition that drives it; otherwise the exit transition never renders. Items inside a Row/Layout may hide immediately instead |
+| Infinite or decorative animation | `running` includes `visible` (and `!MeoTheme.reduceMotion` when it moves) |
+| Shape-pair results (topology alignment, interpolation tables) | Compute once per pair and cache; never per frame |
+
 ## Validation (MeoUI repository)
 
 Run the narrowest check that covers the change:
