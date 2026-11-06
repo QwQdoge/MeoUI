@@ -103,6 +103,15 @@ Rectangle {
         target: MeoTheme
         function onGlobalScaleChanged() { Qt.callLater(control.ensureSelectedRouteVisible) }
     }
+    // The deferred reveal can run before the route delegates have laid out
+    // (contentHeight still too small to scroll), and nothing retried it, so
+    // the selected route sometimes stayed off-screen. Retry once the content
+    // reaches its real height.
+    Connections {
+        target: routeScroll.contentItem
+        ignoreUnknownSignals: true
+        function onContentHeightChanged() { Qt.callLater(control.ensureSelectedRouteVisible) }
+    }
 
     implicitWidth: MeoTheme.settingsSidebarWidth
     implicitHeight: 720 * MeoTheme.globalScale
