@@ -41,15 +41,13 @@ Item {
     Accessible.role: Accessible.ToolBar
     Accessible.name: qsTr("Floating toolbar")
 
+    // Shadow caster: owns the blur layer so hover/ripple animation on the
+    // toolbar's actions never forces the blur to be recomputed.
     Rectangle {
-        id: toolbarSurface
-        width: control.surfaceWidth
-        height: control.surfaceHeight
-        anchors.left: parent.left
-        anchors.top: parent.top
-        radius: height / 2
-        color: control.containerColor
-
+        anchors.fill: toolbarSurface
+        visible: toolbarSurface.visible
+        radius: toolbarSurface.radius
+        color: toolbarSurface.color
         layer.enabled: visible
         layer.effect: MultiEffect {
             shadowEnabled: true
@@ -58,6 +56,16 @@ Item {
             shadowOpacity: 0.18
             shadowColor: MeoTheme.shadow
         }
+    }
+
+    Rectangle {
+        id: toolbarSurface
+        width: control.surfaceWidth
+        height: control.surfaceHeight
+        anchors.left: parent.left
+        anchors.top: parent.top
+        radius: height / 2
+        color: control.containerColor
 
         Row {
             id: horizontalActions

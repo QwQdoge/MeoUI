@@ -272,6 +272,26 @@ Button {
     }
 
     background: Item {
+        // Shadow caster: a silhouette-only twin owns the offscreen layer and blur, so
+        // ripple/hover/focus animations on the visible surface above never force
+        // the blur to be recomputed. Only geometry, color, and elevation do.
+        MeoShape {
+            anchors.fill: buttonShape
+            visible: control.visible && control.effectiveType === "elevated" && control.enabled
+            type: buttonShape.type
+            radius: buttonShape.radius
+            color: buttonShape.color
+            scale: buttonShape.scale
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: control.hovered ? 0.22 : 0.14
+                shadowVerticalOffset: (control.hovered ? 2 : 1) * control.themeGlobalScale
+                shadowOpacity: 0.12
+                shadowColor: MeoTheme.shadow
+            }
+        }
+
         MeoShape {
             id: buttonShape
             anchors.fill: parent
@@ -287,15 +307,6 @@ Button {
                                                 : control.size === "xl" ? 3 * control.themeGlobalScale
                                                                         : MeoTheme.strokeWidthThin)
                          : 0
-            layer.enabled: control.visible && control.effectiveType === "elevated" && control.enabled
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.hovered ? 0.22 : 0.14
-                shadowVerticalOffset: (control.hovered ? 2 : 1) * control.themeGlobalScale
-                shadowOpacity: 0.12
-                shadowColor: MeoTheme.shadow
-            }
-
             MeoStateLayer {
                 id: stateLayer
                 objectName: "meoButtonStateLayer"

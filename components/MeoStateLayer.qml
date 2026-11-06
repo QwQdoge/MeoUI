@@ -99,6 +99,16 @@ Item {
                                                 ? "software-fallback"
                                                 : "single-pass-shader"
 
+    // Keep the surface alive while an exit fade is still running. Gating only
+    // on the live input state hid the layer the instant hover/focus ended,
+    // so the tokenized exit transition never reached the screen and the tint
+    // popped off. Idle controls still render nothing.
+    readonly property bool _surfaceActive: enabled
+                                           && (hovered || focused || pressed || dragged
+                                               || rippleActive
+                                               || stateLayerShader.baseOpacity > 0
+                                               || stateLayerShader.focusOpacity > 0)
+
     function animateBaseState() {
         baseOpacityAnimation.stop()
         baseOpacityAnimation.from = stateLayerShader.baseOpacity
@@ -263,10 +273,7 @@ Item {
     ShaderEffect {
         id: stateLayerShader
         anchors.fill: parent
-        visible: !control.softwareRendering
-                 && control.enabled
-                 && (control.hovered || control.focused || control.pressed
-                     || control.dragged || control.rippleActive)
+        visible: !control.softwareRendering && control._surfaceActive
         blending: true
         fragmentShader: "qrc:/qt/qml/MeoUI/shaders/state_layer.frag.qsb"
 
@@ -320,9 +327,7 @@ Item {
     Item {
         id: softwareFallback
         anchors.fill: parent
-        visible: control.softwareRendering && control.enabled
-                 && (control.hovered || control.focused || control.pressed
-                     || control.dragged || control.rippleActive)
+        visible: control.softwareRendering && control._surfaceActive
 
         Rectangle {
             id: fallbackBase

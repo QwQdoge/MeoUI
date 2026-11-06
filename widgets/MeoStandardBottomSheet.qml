@@ -32,6 +32,29 @@ Item {
                                   ? Math.max(0, control.availableHeight - control.resolvedExpandedHeight)
                                   : Math.max(0, control.availableHeight - control.resolvedPeekHeight)
 
+    // MD3 elevation shadow. A silhouette-only caster owns the blur layer and
+    // tracks the sheet's position, so content animation inside the sheet
+    // never forces the blur to be recomputed.
+    Rectangle {
+        x: sheetBackground.x
+        y: sheetBackground.y
+        width: sheetBackground.width
+        height: sheetBackground.height
+        visible: control.visible
+        color: sheetBackground.color
+        topLeftRadius: sheetBackground.radius
+        topRightRadius: sheetBackground.radius
+        bottomLeftRadius: 0
+        bottomRightRadius: 0
+        layer.enabled: visible
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowBlur: 0.2
+            shadowVerticalOffset: -2 * MeoTheme.globalScale
+            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.10)
+        }
+    }
+
     Rectangle {
         id: sheetBackground
         width: parent.width
@@ -47,15 +70,6 @@ Item {
             width: parent.width
             height: Math.min(MeoTheme.shapeExtraLarge, parent.height)
             color: parent.color
-        }
-
-        // MD3 Elevation Shadow
-        layer.enabled: control.visible
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: -2 * MeoTheme.globalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.10)
         }
 
         Behavior on y {

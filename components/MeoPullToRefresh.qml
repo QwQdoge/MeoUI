@@ -38,108 +38,119 @@ Control {
     }
 
     // MD3 Pull-to-refresh container: circular elevated surface
-    background: Rectangle {
-        radius: width / 2
-        color: control.themeSurfaceContainerHigh
-
-        // Elevation Shadow (Standard MD3 Level 2 for pull-to-refresh)
-        layer.enabled: control.indicatorVisible && control.opacity > 0
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.2
-            shadowVerticalOffset: 2 * control.themeGlobalScale
-            shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
+    background: Item {
+        // Elevation Shadow (Standard MD3 Level 2 for pull-to-refresh). The
+        // caster owns the blur layer; the spinning indicator lives on the
+        // surface above it, so the blur is not recomputed every frame.
+        Rectangle {
+            anchors.fill: parent
+            radius: width / 2
+            color: control.themeSurfaceContainerHigh
+            visible: control.indicatorVisible && control.opacity > 0
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: 0.2
+                shadowVerticalOffset: 2 * control.themeGlobalScale
+                shadowColor: Qt.rgba(MeoTheme.shadow.r, MeoTheme.shadow.g, MeoTheme.shadow.b, 0.2)
+            }
         }
 
-        // Indeterminate Progress (using the logic from MeoProgressBar circular type)
-        Canvas {
-            id: indicatorCanvas
+        Rectangle {
             anchors.fill: parent
-            anchors.margins: 8 * control.themeGlobalScale
+            radius: width / 2
+            color: control.themeSurfaceContainerHigh
 
-            property real startAngle: 0
-            property real endAngle: control.refreshing ? 0.2 : (control.pullDistance * 0.8)
-            property real rotationAngle: 0
+            // Indeterminate Progress (using the logic from MeoProgressBar circular type)
+            Canvas {
+                id: indicatorCanvas
+                anchors.fill: parent
+                anchors.margins: 8 * control.themeGlobalScale
 
-            // Internal state to avoid binding destruction
-            property real animStartAngle: 0
-            property real animEndAngle: 0
-            property real animRotationAngle: 0
+                property real startAngle: 0
+                property real endAngle: control.refreshing ? 0.2 : (control.pullDistance * 0.8)
+                property real rotationAngle: 0
 
-            onPaint: {
-                var ctx = getContext("2d");
-                ctx.reset();
+                // Internal state to avoid binding destruction
+                property real animStartAngle: 0
+                property real animEndAngle: 0
+                property real animRotationAngle: 0
 
-                var centerX = width / 2;
-                var centerY = height / 2;
-                var strokeWidth = 2.5 * control.themeGlobalScale;
-                var radius = (width - strokeWidth) / 2;
+                onPaint: {
+                    var ctx = getContext("2d");
+                    ctx.reset();
 
-                ctx.beginPath();
-                ctx.strokeStyle = control.themeIndicatorColor;
-                ctx.lineWidth = strokeWidth;
-                ctx.lineCap = "round";
-                ctx.globalAlpha = control.refreshing ? 1 : Math.max(0.3, control.visibleFraction);
+                    var centerX = width / 2;
+                    var centerY = height / 2;
+                    var strokeWidth = 2.5 * control.themeGlobalScale;
+                    var radius = (width - strokeWidth) / 2;
 
-                var sA, eA, rA;
-                if (control.refreshing) {
-                    sA = animStartAngle;
-                    eA = animEndAngle;
-                    rA = animRotationAngle;
-                } else {
-                    sA = startAngle;
-                    eA = endAngle;
-                    rA = rotationAngle;
-                }
-
-                // Draw arc based on pull progress or rotation
-                var start = (sA + rA) * 2 * Math.PI - 0.5 * Math.PI;
-                var end = (eA + rA) * 2 * Math.PI - 0.5 * Math.PI;
-
-                ctx.arc(centerX, centerY, radius, start, end);
-                ctx.stroke();
-
-                // Draw arrowhead when pulling
-                if (!control.refreshing && control.distanceFraction > 0.4) {
-                    var arrowAngle = end;
-                    var arrowSize = 4 * control.themeGlobalScale;
-                    ctx.save();
-                    ctx.translate(centerX + radius * Math.cos(arrowAngle), centerY + radius * Math.sin(arrowAngle));
-                    ctx.rotate(arrowAngle);
                     ctx.beginPath();
-                    ctx.moveTo(-arrowSize, -arrowSize);
-                    ctx.lineTo(0, 0);
-                    ctx.lineTo(-arrowSize, arrowSize);
+                    ctx.strokeStyle = control.themeIndicatorColor;
+                    ctx.lineWidth = strokeWidth;
+                    ctx.lineCap = "round";
+                    ctx.globalAlpha = control.refreshing ? 1 : Math.max(0.3, control.visibleFraction);
+
+                    var sA, eA, rA;
+                    if (control.refreshing) {
+                        sA = animStartAngle;
+                        eA = animEndAngle;
+                        rA = animRotationAngle;
+                    } else {
+                        sA = startAngle;
+                        eA = endAngle;
+                        rA = rotationAngle;
+                    }
+
+                    // Draw arc based on pull progress or rotation
+                    var start = (sA + rA) * 2 * Math.PI - 0.5 * Math.PI;
+                    var end = (eA + rA) * 2 * Math.PI - 0.5 * Math.PI;
+
+                    ctx.arc(centerX, centerY, radius, start, end);
                     ctx.stroke();
-                    ctx.restore();
-                }
-            }
 
-            onStartAngleChanged: requestPaint()
-            onEndAngleChanged: requestPaint()
-            onRotationAngleChanged: requestPaint()
-            onAnimStartAngleChanged: requestPaint()
-            onAnimEndAngleChanged: requestPaint()
-            onAnimRotationAngleChanged: requestPaint()
-            onWidthChanged: requestPaint()
-            onHeightChanged: requestPaint()
-
-            // Indeterminate animation
-            SequentialAnimation {
-                running: control.animationActive
-                loops: Animation.Infinite
-
-                ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear }
+                    // Draw arrowhead when pulling
+                    if (!control.refreshing && control.distanceFraction > 0.4) {
+                        var arrowAngle = end;
+                        var arrowSize = 4 * control.themeGlobalScale;
+                        ctx.save();
+                        ctx.translate(centerX + radius * Math.cos(arrowAngle), centerY + radius * Math.sin(arrowAngle));
+                        ctx.rotate(arrowAngle);
+                        ctx.beginPath();
+                        ctx.moveTo(-arrowSize, -arrowSize);
+                        ctx.lineTo(0, 0);
+                        ctx.lineTo(-arrowSize, arrowSize);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
                 }
-                ParallelAnimation {
-                    NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
-                    NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
-                    NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear }
+
+                onStartAngleChanged: requestPaint()
+                onEndAngleChanged: requestPaint()
+                onRotationAngleChanged: requestPaint()
+                onAnimStartAngleChanged: requestPaint()
+                onAnimEndAngleChanged: requestPaint()
+                onAnimRotationAngleChanged: requestPaint()
+                onWidthChanged: requestPaint()
+                onHeightChanged: requestPaint()
+
+                // Indeterminate animation
+                SequentialAnimation {
+                    running: control.animationActive
+                    loops: Animation.Infinite
+
+                    ParallelAnimation {
+                        NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0; to: 0.75; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.2; to: 0.95; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0; to: 0.5; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear }
+                    }
+                    ParallelAnimation {
+                        NumberAnimation { target: indicatorCanvas; property: "animStartAngle"; from: 0.75; to: 1.5; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { target: indicatorCanvas; property: "animEndAngle"; from: 0.95; to: 1.7; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandard }
+                        NumberAnimation { target: indicatorCanvas; property: "animRotationAngle"; from: 0.5; to: 1.0; duration: control.indeterminateCycleDuration; easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingLinear }
+                    }
+                    ScriptAction { script: { indicatorCanvas.animStartAngle %= 1.0; indicatorCanvas.animEndAngle %= 1.0; indicatorCanvas.animRotationAngle %= 1.0; } }
                 }
-                ScriptAction { script: { indicatorCanvas.animStartAngle %= 1.0; indicatorCanvas.animEndAngle %= 1.0; indicatorCanvas.animRotationAngle %= 1.0; } }
             }
         }
     }

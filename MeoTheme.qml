@@ -588,6 +588,19 @@ QtObject {
     readonly property real elevationLevel4: 8 * globalScale
     readonly property real elevationLevel5: 12 * globalScale
 
+    // Elevation values above are already in scaled pixels. Shadow geometry
+    // must not multiply by globalScale again, or HiDPI/scaled shells get a
+    // shadow offset that grows with scale² instead of scale.
+    function elevationShadowOffset(elevation) {
+        return Math.max(0, Number(elevation) || 0)
+    }
+
+    // MultiEffect.shadowBlur is a 0..1 fraction of blurMax (in item pixels),
+    // so it scales with the elevation in pixels and saturates at 1.
+    function elevationShadowBlur(elevation) {
+        return Math.max(0, Math.min(1, (Number(elevation) || 0) * 0.12))
+    }
+
     // MD3 state-layer opacity tokens.
     readonly property real stateOpacityHover: metricToken("stateOpacityHover", 0.08)
     readonly property real stateOpacityFocus: metricToken("stateOpacityFocus", 0.10)

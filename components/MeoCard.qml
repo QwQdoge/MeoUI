@@ -123,6 +123,27 @@ Frame {
     }
 
     background: Item {
+        // Shadow caster: a silhouette-only twin owns the offscreen layer and blur, so
+        // ripple/hover/focus animations on the visible surface above never force
+        // the blur to be recomputed. Only geometry, color, and elevation do.
+        MeoShape {
+            id: cardShadowCaster
+            anchors.fill: shapeBg
+            visible: control.visible && control.elevation > 0
+            type: shapeBg.type
+            radius: shapeBg.radius
+            color: shapeBg.color
+            scale: shapeBg.scale
+            layer.enabled: visible
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                shadowBlur: MeoTheme.elevationShadowBlur(control.elevation)
+                shadowVerticalOffset: MeoTheme.elevationShadowOffset(control.elevation)
+                shadowOpacity: control.isDarkMode ? 0.18 : 0.12
+                shadowColor: control.themeShadow
+            }
+        }
+
         MeoShape {
             id: shapeBg
             objectName: "meoCardShape"
@@ -145,15 +166,6 @@ Frame {
                                           : control.type === "outlined" ? 1 * control.themeGlobalScale : 0
 
             scale: control.interactive && control.bouncy ? cardScaleSpring.value : 1
-
-            layer.enabled: control.visible && control.elevation > 0
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                shadowBlur: control.elevation * 0.12
-                shadowVerticalOffset: control.elevation * control.themeGlobalScale
-                shadowOpacity: control.isDarkMode ? 0.18 : 0.12
-                shadowColor: control.themeShadow
-            }
 
             MeoStateLayer {
                 id: cardStateLayer
