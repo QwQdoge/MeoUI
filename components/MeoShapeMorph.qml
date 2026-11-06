@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Shapes
 import MeoUI
 import "MeoMaterialShapes.js" as ShapesEngine
 
@@ -19,24 +20,40 @@ Item {
     readonly property bool reduceMotion: MeoTheme.reduceMotion
     // Morph topology is always clamped independently below.  Clamp the
     // optional raw spring too, so an unbounded animation value cannot invert
-    // the Canvas through a negative scale.
+    // the shape through a negative scale.
     readonly property real clampedRawSpringProgress: Math.max(-1, Math.min(2, rawSpringProgress))
 
-    onMorphProgressChanged: canvas.requestPaint()
-    onFromShapeChanged: canvas.requestPaint()
-    onToShapeChanged: canvas.requestPaint()
-    onColorChanged: canvas.requestPaint()
-    onStrokeColorChanged: canvas.requestPaint()
-    onStrokeWidthChanged: canvas.requestPaint()
-    onRotationAngleChanged: canvas.requestPaint()
-    onWidthChanged: canvas.requestPaint()
-    onHeightChanged: canvas.requestPaint()
+    // Normalized morph geometry; recomputed only when the topology inputs
+    // change. Rotation is a scene-graph transform on the Shape below, so a
+    // spinning indicator no longer rebuilds or re-rasterizes the path.
+    readonly property var _morphPoints: ShapesEngine.interpolateShapes(
+                                            fromShape, toShape,
+                                            Math.max(0.0, Math.min(1.0, morphProgress)))
+    readonly property bool _hasFill: color.a > 0
+    readonly property bool _hasStroke: strokeWidth > 0 && strokeColor.a > 0
 
-    Canvas {
+    function _pathPoints(inset, close) {
+        var pts = control._morphPoints
+        var out = []
+        if (!pts || pts.length === 0)
+            return out
+        var w = Math.max(0, width - inset * 2)
+        var h = Math.max(0, height - inset * 2)
+        for (var i = 0; i < pts.length; i++)
+            out.push(Qt.point(inset + pts[i].x * w, inset + pts[i].y * h))
+        if (close)
+            out.push(out[0])
+        return out
+    }
+
+    // GPU-tessellated path (QtQuick.Shapes curve renderer) instead of a
+    // Canvas raster that was re-uploaded as a texture on every frame.
+    Shape {
         id: canvas
         objectName: "meoShapeMorphCanvas"
         anchors.fill: parent
-        antialiasing: true
+        preferredRendererType: Shape.CurveRenderer
+        rotation: control.rotationAngle
 
         // Scale bounce is deliberately restrained and disabled with reduced
         // motion.  It is a visual flourish only; the path itself is never
@@ -52,48 +69,20 @@ Item {
             return 1.0;
         }
 
-        function tracePath(ctx, inset, interpolatedPts) {
-            var w = Math.max(0, width - inset * 2);
-            var h = Math.max(0, height - inset * 2);
-            var cx = inset + w / 2;
-            var cy = inset + h / 2;
-            var rad = (control.rotationAngle * Math.PI) / 180;
-
-            ctx.beginPath();
-            for (var i = 0; i < interpolatedPts.length; i++) {
-                var rawX = inset + interpolatedPts[i].x * w - cx;
-                var rawY = inset + interpolatedPts[i].y * h - cy;
-                var rx = cx + rawX * Math.cos(rad) - rawY * Math.sin(rad);
-                var ry = cy + rawX * Math.sin(rad) + rawY * Math.cos(rad);
-
-                if (i === 0) ctx.moveTo(rx, ry);
-                else ctx.lineTo(rx, ry);
-            }
-            ctx.closePath();
+        ShapePath {
+            fillColor: control._hasFill ? control.color : "transparent"
+            strokeColor: "transparent"
+            strokeWidth: -1
+            PathPolyline { path: control._hasFill ? control._pathPoints(0, false) : [] }
         }
 
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.reset();
-
-            // Clamped morph progress to prevent path self-intersection / folding
-            var clampedT = Math.max(0.0, Math.min(1.0, control.morphProgress));
-            var interpolatedPts = ShapesEngine.interpolateShapes(control.fromShape, control.toShape, clampedT);
-
-            if (!interpolatedPts || interpolatedPts.length === 0) return;
-
-            if (control.color !== "transparent" && control.color.a > 0) {
-                ctx.fillStyle = control.color;
-                tracePath(ctx, 0, interpolatedPts);
-                ctx.fill();
-            }
-
-            if (control.strokeColor !== "transparent" && control.strokeWidth > 0 && control.strokeColor.a > 0) {
-                ctx.strokeStyle = control.strokeColor;
-                ctx.lineWidth = control.strokeWidth;
-                tracePath(ctx, control.strokeWidth / 2, interpolatedPts);
-                ctx.stroke();
-            }
+        ShapePath {
+            fillColor: "transparent"
+            strokeColor: control._hasStroke ? control.strokeColor : "transparent"
+            strokeWidth: control._hasStroke ? control.strokeWidth : -1
+            joinStyle: ShapePath.MiterJoin
+            capStyle: ShapePath.FlatCap
+            PathPolyline { path: control._hasStroke ? control._pathPoints(control.strokeWidth / 2, true) : [] }
         }
     }
 }

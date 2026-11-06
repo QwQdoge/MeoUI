@@ -841,7 +841,16 @@ function interpolateShapes(shapeA, shapeB, progress) {
         return ptsA;
     if (clampedT === 1)
         return ptsB;
-    ptsB = alignClosedPathStart(ptsA, ptsB);
+    // The cyclic alignment is an O(n^2) search (~20k iterations for the
+    // 144-point topology) and depends only on the shape pair, never on
+    // progress. Animated morphs call this every frame, so cache it.
+    let topologyKey = canonicalShapeName(shapeA) + "\u0000" + canonicalShapeName(shapeB);
+    let aligned = morphTopologyCache[topologyKey];
+    if (!aligned || aligned.length !== ptsA.length) {
+        aligned = alignClosedPathStart(ptsA, ptsB);
+        morphTopologyCache[topologyKey] = aligned;
+    }
+    ptsB = aligned;
 
     let result = [];
     for (let i = 0; i < ptsA.length; i++) {
