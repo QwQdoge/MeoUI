@@ -15,21 +15,19 @@ Item {
 
     readonly property real themeGlobalScale: MeoTheme.globalScale
 
-    // Debounce repaint to avoid excessive canvas updates when many shapes change
-    Timer {
-        id: repaintTimer
-        interval: 16 // ~60fps
-        repeat: false
-        onTriggered: canvas.requestPaint()
-    }
-    onRadiusChanged: repaintTimer.restart()
-    onTypeChanged: repaintTimer.restart()
-    onColorChanged: repaintTimer.restart()
-    onStrokeColorChanged: repaintTimer.restart()
-    onStrokeWidthChanged: repaintTimer.restart()
-    onRotationAngleChanged: repaintTimer.restart()
-    onWidthChanged: repaintTimer.restart()
-    onHeightChanged: repaintTimer.restart()
+    // Canvas.requestPaint() already coalesces any number of property changes
+    // into one paint on the next frame. A separate 16 ms debounce timer only
+    // added a frame of latency, so the shape visibly trailed its content
+    // during resize/morph animations.
+    function _requestRepaint() { canvas.requestPaint() }
+    onRadiusChanged: _requestRepaint()
+    onTypeChanged: _requestRepaint()
+    onColorChanged: _requestRepaint()
+    onStrokeColorChanged: _requestRepaint()
+    onStrokeWidthChanged: _requestRepaint()
+    onRotationAngleChanged: _requestRepaint()
+    onWidthChanged: _requestRepaint()
+    onHeightChanged: _requestRepaint()
 
     Canvas {
         id: canvas

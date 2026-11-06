@@ -198,7 +198,8 @@ FocusScope {
     Timer {
         interval: 60000
         repeat: true
-        running: true
+        triggeredOnStart: true
+        running: control.visible
         onTriggered: control.previewTime = new Date()
     }
 

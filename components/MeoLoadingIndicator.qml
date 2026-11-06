@@ -142,10 +142,10 @@ Control {
                 // folding, but retains the raw spring for rotation/scale.
                 // Sample the shared unit-mass motion implementation instead
                 // of flattening this expressive spring into a Bezier curve.
-                Timer {
+                // Sampled once per rendered frame (vsync-aligned) rather than
+                // by a free-running 16 ms Timer.
+                FrameAnimation {
                     id: morphTimer
-                    interval: 16
-                    repeat: true
                     running: control.running && control.indeterminate
                              && control.visible && !control.reduceMotion
                     onRunningChanged: {

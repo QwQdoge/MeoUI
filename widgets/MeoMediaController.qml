@@ -697,7 +697,7 @@ Control {
                             to: 360
                             duration: MeoTheme.motionDurationLoadingRotation * 7
                             loops: Animation.Infinite
-                            running: control.isPlaying && !control.reducedMotion
+                            running: control.isPlaying && !control.reducedMotion && control.visible
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: MeoTheme.motionEasingLinear
                         }
