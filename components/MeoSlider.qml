@@ -550,8 +550,12 @@ Control {
                 height: MeoTheme.sliderValueIndicatorSize
                 radius: height / 2
                 color: control.themeInverseSurface
-                visible: control.valueLabelEnabled && (internalSlider.pressed || internalSlider.hovered)
-                opacity: visible ? 1.0 : 0.0
+                readonly property bool shown: control.valueLabelEnabled
+                                              && (internalSlider.pressed || internalSlider.hovered)
+                // Gate visibility on the animated opacity so the label fades
+                // out instead of vanishing the instant the pointer leaves.
+                visible: opacity > 0
+                opacity: shown ? 1.0 : 0.0
 
                 Text {
                     id: labelText

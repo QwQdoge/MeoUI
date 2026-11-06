@@ -252,7 +252,9 @@ Button {
 
         MeoLoadingIndicator {
             anchors.centerIn: parent
-            visible: control.loading
+            // Stay visible until the fade-out completes; gating on `loading`
+            // directly cut the exit transition off.
+            visible: opacity > 0
             opacity: control.loading ? 1 : 0
             scale: MeoTheme.reduceMotion ? 1 : (control.loading ? 1 : 0.86)
             width: (control.iconSize + 8) * control.themeGlobalScale

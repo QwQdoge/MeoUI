@@ -75,9 +75,10 @@ Item {
                 ]
             }]
             sidebar.selectedRoute = "five"
-            wait(0)
             const scroll = findChild(sidebar, "meoSidebarScroll")
-            verify(scroll.contentItem.contentY > 0)
+            // The reveal is deferred (Qt.callLater + delegate layout); a single
+            // wait(0) raced it under parallel CTest load.
+            tryVerify(function() { return scroll.contentItem.contentY > 0 }, 1000)
         }
 
         function test_localSearchFiltersRealRoutes() {
