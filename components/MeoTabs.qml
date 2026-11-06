@@ -29,8 +29,10 @@ Control {
                                       : 0
     // AndroidX TabBaselineLayout uses 72dp when a standard primary tab stacks
     // an icon above its label; 48dp remains the text-only/icon-only height.
-    readonly property real tabHeight: expressive ? (hasIcons ? 72 : 56) * MeoTheme.globalScale
-                                                 : (type === "primary" && hasIcons ? 72 : 48) * MeoTheme.globalScale
+    readonly property real tabHeight: MeoTheme.densityAdjusted(
+                                          expressive ? (hasIcons ? 72 : 56) * MeoTheme.globalScale
+                                                     : (type === "primary" && hasIcons ? 72 : 48) * MeoTheme.globalScale,
+                                          hasIcons ? 56 : 36)
 
     function tabLabel(item) {
         return item && typeof item === "object" ? (item.label || item.text || "") : String(item || "")

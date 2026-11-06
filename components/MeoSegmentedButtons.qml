@@ -37,11 +37,7 @@ Control {
     // The M3 outlined segmented-button token is 40dp. Keep the historical
     // non-default size options for compatibility, but make the default match
     // the source component rather than the general button height.
-    implicitHeight: size === "xs" ? MeoTheme.buttonHeightXS
-                  : size === "s" || size === "m" ? MeoTheme.buttonHeightS
-                  : size === "l" ? MeoTheme.buttonHeightL
-                  : size === "xl" ? MeoTheme.buttonHeightXL
-                  : MeoTheme.buttonHeightS
+    implicitHeight: MeoTheme.buttonHeightForSize(size === "m" || (size !== "xs" && size !== "l" && size !== "xl") ? "s" : size)
     implicitWidth: {
         let total = 0
         for (let i = 0; i < itemCount; ++i) {

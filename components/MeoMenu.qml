@@ -19,7 +19,7 @@ MeoMotionPopup {
     property real itemSpacing: 0
     property real menuPadding: 8 * themeGlobalScale
     property real menuHorizontalInset: 4 * themeGlobalScale
-    property real itemHeight: 48 * themeGlobalScale
+    property real itemHeight: MeoTheme.densityAdjusted(48 * themeGlobalScale, 32)
     property real supportingItemHeight: 64 * themeGlobalScale
     // Context menus use separated action cards while standard menus keep the
     // compact list treatment. These remain generic presentation metrics.

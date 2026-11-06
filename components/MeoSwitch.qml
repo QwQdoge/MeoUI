@@ -55,7 +55,7 @@ Control {
     // M3 Switch specs define a 40dp state layer and 48dp target around the
     // 52x32dp default track. Pressed handles grow to the track height minus
     // 4dp (28dp at the default size).
-    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real minimumTargetSize: MeoTheme.minimumTargetSize
     readonly property real stateLayerSize: 40 * themeGlobalScale
 
     readonly property real trackWidth: {

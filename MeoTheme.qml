@@ -26,6 +26,22 @@ QtObject {
     // "mouse", "touch", "pen" or "" before the first pointer press.
     readonly property string pointerType: MeoInputModality.pointerType
     readonly property bool touchInput: MeoInputModality.touch
+    // Material density scale for pointer-driven UIs: 0 comfortable (default),
+    // -1 compact, -2 dense, -3 densest. Each step removes 4dp from the height
+    // of dense-capable components (buttons up to M, fields, list and settings
+    // rows, chips, menu items, tabs) and from minimum interactive targets,
+    // each clamped to a per-component floor. Touch input always resolves to 0
+    // so touch targets stay 48dp, as M3 requires.
+    property int density: 0
+    readonly property int effectiveDensity: touchInput ? 0 : Math.max(-3, Math.min(0, Math.round(density)))
+    readonly property real densityStep: 4 * globalScale
+    function densityAdjusted(size, minimumDp) {
+        const floor = (minimumDp === undefined ? 0 : minimumDp) * globalScale
+        return Math.max(Math.min(size, Math.max(floor, size + effectiveDensity * densityStep)), 0)
+    }
+    // Minimum interactive target: 48dp comfortable, 44/40/36dp when denser.
+    readonly property real minimumTargetSize: densityAdjusted(48 * globalScale, 32)
+
     // Hover dwell before a tooltip appears (WinUI/macOS-style), so sweeping
     // the pointer across a toolbar does not flash every label.
     property int tooltipShowDelay: 500
@@ -723,11 +739,12 @@ QtObject {
     readonly property real iconButtonSizeXL: metricToken("iconButtonSizeXL", 136) * globalScale
 
     function buttonHeightForSize(size) {
-        if (size === "xs") return buttonHeightXS
-        if (size === "s") return buttonHeightS
+        // Density applies to the everyday sizes; L/XL stay emphatic.
+        if (size === "xs") return densityAdjusted(buttonHeightXS, 24)
+        if (size === "s") return densityAdjusted(buttonHeightS, 28)
         if (size === "l") return buttonHeightL
         if (size === "xl") return buttonHeightXL
-        return buttonHeightM
+        return densityAdjusted(buttonHeightM, 40)
     }
 
     function iconButtonSizeForSize(size) {
@@ -853,7 +870,7 @@ QtObject {
     readonly property real settingsSidebarWidth: metricToken("settingsSidebarWidth", 360) * globalScale
     readonly property real settingsSidebarHorizontalMargin: metricToken("settingsSidebarHorizontalMargin", 8) * globalScale
     readonly property real settingsSidebarItemHeight: metricToken("settingsSidebarItemHeight", 56) * globalScale
-    readonly property real settingsRowHeight: metricToken("settingsRowHeight", 72) * globalScale
+    readonly property real settingsRowHeight: densityAdjusted(metricToken("settingsRowHeight", 72) * globalScale, 52)
     readonly property real settingsRowHorizontalPadding: metricToken("settingsRowHorizontalPadding", 16) * globalScale
     readonly property real settingsLeadingContainerSize: metricToken("settingsLeadingContainerSize", 40) * globalScale
     readonly property real settingsLeadingIconSize: metricToken("settingsLeadingIconSize", 24)

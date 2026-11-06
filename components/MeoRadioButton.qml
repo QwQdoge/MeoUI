@@ -50,7 +50,7 @@ Control {
     // M3 Radio Button specs: a 20dp icon is hosted in a 48dp target with a
     // 40dp state layer. The public size variants keep their visual sizes, but
     // the default M3 target and interaction layer remain fixed.
-    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real minimumTargetSize: MeoTheme.minimumTargetSize
     readonly property real stateLayerSize: 40 * themeGlobalScale
 
     Accessible.role: Accessible.RadioButton

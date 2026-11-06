@@ -73,7 +73,8 @@ Control {
     // Elevated chips use their own filled surface treatment even when the
     // baseline wrapper defaults to the outlined variant.
     readonly property bool usesOutlinedContainer: visualStyle === "outlined" && !elevated
-    readonly property real chipHeight: {
+    readonly property real chipHeight: MeoTheme.densityAdjusted(_baseChipHeight, 24)
+    readonly property real _baseChipHeight: {
         if (size === "xs") return 32 * themeGlobalScale
         if (size === "s") return 36 * themeGlobalScale
         if (size === "l") return 44 * themeGlobalScale

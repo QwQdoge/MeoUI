@@ -66,7 +66,7 @@ Button {
                                   : (size === "l" ? 32 : size === "xl" ? 40 : 24)
     readonly property real containerWidth: MeoTheme.iconButtonWidthForSize(size, widthOption)
     readonly property real containerHeight: MeoTheme.iconButtonSizeForSize(size)
-    readonly property real minimumTouchTarget: 48 * themeGlobalScale
+    readonly property real minimumTouchTarget: MeoTheme.minimumTargetSize
     property bool _radiusSpringReady: false
 
     MeoSpringValue {

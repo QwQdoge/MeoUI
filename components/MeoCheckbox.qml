@@ -60,7 +60,7 @@ Control {
     // M3 Checkbox specs: a visual 18dp control sits in a 48dp target with a
     // 40dp state layer. Keep custom indicator-size variants while preserving
     // the standard target at the default scale.
-    readonly property real minimumTargetSize: 48 * themeGlobalScale
+    readonly property real minimumTargetSize: MeoTheme.minimumTargetSize
     readonly property real stateLayerSize: 40 * themeGlobalScale
 
     Accessible.role: Accessible.CheckBox

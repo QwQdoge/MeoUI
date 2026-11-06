@@ -60,7 +60,8 @@ TextField {
     }
     readonly property var fontLabel: MeoTheme.labelSmall
 
-    readonly property real containerHeight: {
+    readonly property real containerHeight: MeoTheme.densityAdjusted(_baseContainerHeight, 36)
+    readonly property real _baseContainerHeight: {
         if (size === "xs") return 40 * themeGlobalScale
         if (size === "s") return 48 * themeGlobalScale
         if (size === "l") return 64 * themeGlobalScale

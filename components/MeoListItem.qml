@@ -78,7 +78,7 @@ Control {
         }
         if (leadingImage !== "" && leadingImageSize > 40) h = Math.max(h, leadingImageSize + (isDense ? 8 : 16));
         if (isSegmented) h += 8;
-        return Math.max(h * themeGlobalScale,
+        return Math.max(MeoTheme.densityAdjusted(h * themeGlobalScale, 40),
                         contentRow.implicitHeight + topPadding + bottomPadding);
     }
 
