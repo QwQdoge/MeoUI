@@ -284,24 +284,38 @@ Popup {
             if (control.visible || control.opened) {
                 centerOnViewport()
                 control._spatialRevealActive = true
+                // Give focus on the first frame, not after the enter
+                // transition: keys typed while the surface animates in must
+                // reach the initial focus item instead of being dropped.
+                control._applyInitialFocus()
             }
         })
+    }
+    function _applyInitialFocus() {
+        if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
+            initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
+        else if (contentItem && !contentItem.activeFocus)
+            contentItem.forceActiveFocus(Qt.PopupFocusReason)
     }
     onOpened: {
         _openRequested = false
         Qt.callLater(function() {
             centerOnViewport()
-            if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
-                initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
-            else if (contentItem)
-                contentItem.forceActiveFocus(Qt.PopupFocusReason)
+            // Re-assert only if nothing inside the popup took focus yet.
+            if (contentItem && !contentItem.activeFocus)
+                control._applyInitialFocus()
         })
     }
     onAboutToHide: {
+        // A popup closed during its enter transition never emits opened().
+        // Clearing the request here keeps requestOpen() usable; otherwise the
+        // popup could never be opened again.
+        _openRequested = false
         _retainingExitContent = true
         _spatialRevealActive = false
     }
     onClosed: {
+        _openRequested = false
         _retainingExitContent = false
         if (_spatialPositioning) {
             _applyingSpatialPosition = true
