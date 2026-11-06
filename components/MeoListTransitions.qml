@@ -24,7 +24,9 @@ QtObject {
         id: addTransition
         SequentialAnimation {
             PropertyAction { property: "opacity"; value: 0 }
-            PropertyAction { property: "y"; value: ViewTransition.item.y - root.insertOffset }
+            // The attached ViewTransition belongs to the Transition, not to this action
+            // (the unqualified form was always null, so items never started offset).
+            PropertyAction { property: "y"; value: addTransition.ViewTransition.destination.y + root.insertOffset }
             PauseAnimation {
                 duration: Math.max(0, Math.min(addTransition.ViewTransition.index
                     - (addTransition.ViewTransition.targetIndexes[0] || 0), root.staggerCap)) * root.staggerDelay

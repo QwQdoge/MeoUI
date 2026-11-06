@@ -24,6 +24,8 @@ QtObject {
     property real _startValue: 0
     property real _startVelocity: 0
     property double _startedAt: 0
+    property double _lastTickAt: 0
+    property double _requestedAt: 0
     property bool _snapping: false
 
     signal settled(real value)
@@ -58,7 +60,12 @@ QtObject {
         }
         _startValue = value
         _startVelocity = velocity
-        _startedAt = Date.now()
+        // The timeline starts on the first rendered frame (see driver), not
+        // here: a retarget is often followed by window creation, a model
+        // refresh or a shader compile, and that stall must not consume the
+        // opening of the motion.
+        _startedAt = 0
+        _requestedAt = Date.now()
         driver.stop()
         driver.start()
     }
@@ -85,8 +92,23 @@ QtObject {
     // at ~60 updates per second.
     property FrameAnimation driver: FrameAnimation {
         onTriggered: {
-            const elapsed = Date.now() - control._startedAt
-            if (elapsed >= control.maximumRunDuration) {
+            const now = Date.now()
+            if (control._startedAt <= 0) {
+                control._startedAt = now - 16
+                control._lastTickAt = now - 16
+            }
+            // Pause the timeline over main-thread stalls longer than ~4
+            // frames, so motion continues from where it was instead of
+            // jumping ahead (a jump reads as a snap or as linear travel).
+            const gap = now - control._lastTickAt
+            if (gap > 64)
+                control._startedAt += gap - 16
+            control._lastTickAt = now
+            const elapsed = now - control._startedAt
+            // Stall compensation never extends the wall-clock contract: the
+            // motion always lands by maximumRunDuration after the request.
+            if (elapsed >= control.maximumRunDuration
+                    || now - control._requestedAt >= control.maximumRunDuration) {
                 stop()
                 control.value = control.targetValue
                 control.velocity = 0

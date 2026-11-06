@@ -25,6 +25,7 @@ Item {
     property int entranceDirection: 1
     property real motionOffset: 0
     property real entranceStartedAt: 0
+    property real _entranceLastTickAt: 0
     property real entranceOpacityStart: 1
     property real entranceScaleStart: 1
     property real entranceOffsetStart: 0
@@ -55,13 +56,24 @@ Item {
         entranceOpacityStart = opacity
         entranceScaleStart = scale
         entranceOffsetStart = motionOffset
-        entranceStartedAt = Date.now()
+        // Anchored on the first rendered frame in advanceEntrance().
+        entranceStartedAt = 0
         advanceEntrance()
         entranceDriver.start()
     }
 
     function advanceEntrance() {
-        const elapsed = Math.max(0, Date.now() - entranceStartedAt)
+        const now = Date.now()
+        if (entranceStartedAt <= 0) {
+            entranceStartedAt = now - 16
+            _entranceLastTickAt = now - 16
+        }
+        // Pause over stalls instead of skipping motion (see MeoSpringValue).
+        const gap = now - _entranceLastTickAt
+        if (gap > 64)
+            entranceStartedAt += gap - 16
+        _entranceLastTickAt = now
+        const elapsed = Math.max(0, now - entranceStartedAt)
         const opacityState = MeoMotion.stateAt(entranceEffectsSpec,
                                                entranceOpacityStart, 0, 1, elapsed)
         const scaleState = MeoMotion.stateAt(entranceSpatialSpec,
