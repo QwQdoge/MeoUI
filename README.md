@@ -1,3 +1,5 @@
+> 📚 [MeoArch 主文档 / Master Doc](https://github.com/QwQdoge/MeoArch-os-workspace/blob/main/docs/MEOARCH_MASTER.md)：全部仓库地图、操作手册、Cloudflare 清单、全部文档链接。<!-- meoarch-master -->
+
 # MeoUI
 
 MeoUI 是 MeoArch 共用的 Qt Quick / QML Material Design 3 设计系统。它拥有可复用的主题 token、组件、控件、模式和布局；Plasma/KDE 集成属于 `meo-kde`，具体应用流程属于各应用仓库。
