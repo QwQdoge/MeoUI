@@ -45,8 +45,8 @@ Index for agents: `https://meoarch.org/llms.txt`.
 - MUST NOT put a system-wide control inside an app; link to Meo Settings.
 - MUST NOT hard-code an open-source credit list in QML; read the installed
   `THIRD_PARTY_NOTICES.md`.
-- MUST NOT select a deprecated component (for example `MeoBottomAppBar`) for
-  new work.
+- MUST NOT select a deprecated component for new work; MUST NOT reintroduce a
+  type listed in the `docs/api-lifecycle.md` removal record.
 - MUST NOT claim a validation level you did not run.
 
 ## Decision table: app window

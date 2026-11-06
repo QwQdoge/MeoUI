@@ -49,7 +49,7 @@ This file records design/API coverage ideas observed from the reference project.
 - Snackbar showcase now separates plain message and action snackbar triggers.
 - Tooltip showcase now uses the MeoUI tooltip component with a hover target instead of a passive static label.
 - Card showcase now uses larger elevated, filled, and outlined card examples with trailing action affordances.
-- `MeoDialog` and `MeoExpressiveDialog` now route enter/exit animation durations through `MeoTheme` motion tokens instead of local raw duration values.
+- `MeoDialog` now routes enter/exit animation durations through `MeoTheme` motion tokens instead of local raw duration values.
 - `MeoButton` and `MeoIconButton` now accept `filledTonal` as an alias for MeoUI's existing `tonal` variant, so reference-style examples can be expressed without changing public MeoUI naming.
 - `MeoFAB` now accepts `standard` as an alias for MeoUI's existing `regular` FAB variant.
 - `MeoDialog` now supports `showAcceptButton` and `showRejectButton`, matching the reference demo behavior for icon/informational dialogs while preserving the existing confirm/cancel API.

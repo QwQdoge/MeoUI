@@ -53,7 +53,6 @@ const special = {
     MeoNavigationSuite: ["布局与模式", "Layouts & patterns", "按可用空间选择导航模式的自适应组合。", "An adaptive navigation composition that selects a navigation pattern for available space.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
     MeoAppLayout: ["布局与模式", "Layouts & patterns", "应用级自适应布局组合。", "An application-level adaptive layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
     MeoListDetailLayout: ["布局与模式", "Layouts & patterns", "列表-详情规范布局组合。", "A list-detail canonical layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
-    MeoFeedLayout: ["布局与模式", "Layouts & patterns", "信息流规范布局组合。", "A feed canonical layout composition.", "https://m3.material.io/foundations/layout/canonical-examples/overview"],
 };
 
 function write(relative, contents) {

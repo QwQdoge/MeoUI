@@ -112,7 +112,6 @@ Item {
         if (name === "MeoBreadcrumbs") return breadcrumbsSample
         if (name === "MeoTabs") return tabsSample
         if (name === "MeoTopAppBar") return topAppBarSample
-        if (name === "MeoBottomAppBar") return bottomAppBarSample
         if (name === "MeoMenu") return menuSample
         if (name === "MeoContextMenu") return contextMenuSample
         if (name === "MeoWidget") return meoWidgetSample
@@ -144,12 +143,10 @@ Item {
         if (name === "MeoDialog") return dialogSample
         if (name === "MeoHoldToConfirm") return holdToConfirmSample
         if (name === "MeoFullScreenDialog") return fullDialogSample
-        if (name === "MeoExpressiveDialog") return expressiveDialogSample
         if (name === "MeoBottomSheet") return bottomSheetSample
         if (name === "MeoStandardBottomSheet") return standardSheetSample
         if (name === "MeoSideSheet") return sideSheetSample
         if (name === "MeoSideSheetModal") return modalSideSheetSample
-        if (name === "MeoActionSheet") return actionSheetSample
         if (name === "MeoMotionPopup") return motionPopupSample
         if (name === "MeoBanner") return bannerSample
         if (name === "MeoSnackbar") return snackbarSample
@@ -162,11 +159,8 @@ Item {
         if (name === "MeoEmptyState") return emptyStateSample
         if (name === "MeoSearchBar") return searchBarSample
         if (name === "MeoDockedSearchBar") return dockedSearchSample
-        if (name === "MeoSearchAppBar") return searchAppBarSample
         if (name === "MeoSearchView") return searchViewSample
         if (name === "MeoSearchSuggestions") return searchSuggestionsSample
-        if (name === "MeoSearchHeader") return searchHeaderSample
-        if (name === "MeoSearchFilterBar") return searchFilterSample
         if (name === "MeoCarousel") return carouselSample
         if (name === "MeoPageIndicator") return pageIndicatorSample
         if (name === "MeoMediaCard") return mediaCardSample
@@ -189,8 +183,6 @@ Item {
         if (name === "MeoScaffold") return scaffoldSample
         if (name === "MeoAboutPage") return aboutPageSample
         if (name === "MeoAppLayout") return appLayoutSample
-        if (name === "MeoDashboardLayout") return dashboardSample
-        if (name === "MeoFeedLayout") return feedSample
         if (name === "MeoListDetailLayout") return listDetailSample
         if (name === "MeoPageHost") return pageHostSample
         if (name === "MeoSettingsLayout") return settingsSample
@@ -1434,14 +1426,6 @@ Item {
         }
     }
     Component {
-        id: bottomAppBarSample
-        MeoBottomAppBar {
-            width: 500 * MeoTheme.globalScale
-            navigationIcons: ["check_box", "edit", "search", "more_vert"]
-            fab: Component { MeoFAB { type: "regular"; icon.name: "add" } }
-        }
-    }
-    Component {
         id: menuSample
         Item {
             id: menuRoot
@@ -2125,13 +2109,14 @@ Item {
                 cancelText: qsTr("Dismiss")
             }
 
-            MeoExpressiveDialog {
+            MeoDialog {
                 id: singleSelectDialog
+                preferredDialogWidth: 400 * MeoTheme.globalScale
                 title: qsTr("Choose density")
                 message: qsTr("Selection dialogs keep choices in one focused surface.")
                 confirmText: qsTr("Apply")
                 cancelText: qsTr("Cancel")
-                content: Component {
+                supportingContent: Component {
                     Column {
                         spacing: MeoTheme.space8
                         MeoRadioButton { label: qsTr("Comfortable"); checked: true }
@@ -2141,13 +2126,14 @@ Item {
                 }
             }
 
-            MeoExpressiveDialog {
+            MeoDialog {
                 id: multiSelectDialog
+                preferredDialogWidth: 400 * MeoTheme.globalScale
                 title: qsTr("Visible columns")
                 message: qsTr("Use checkboxes when multiple items can stay selected.")
                 confirmText: qsTr("Save")
                 cancelText: qsTr("Cancel")
-                content: Component {
+                supportingContent: Component {
                     Column {
                         spacing: MeoTheme.space8
                         MeoCheckbox { label: qsTr("Name"); checked: true }
@@ -2268,12 +2254,10 @@ Item {
             }
         }
     }
-    Component { id: expressiveDialogSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open expressive dialog"); onClicked: dialog.open() } MeoExpressiveDialog { id: dialog; title: qsTr("Expressive"); message: qsTr("Custom content and shape."); icon: "auto_awesome" } } }
     Component { id: bottomSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open bottom sheet"); onClicked: sheet.open() } MeoBottomSheet { id: sheet; content: Component { MeoText { text: qsTr("Bottom sheet content"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
     Component { id: standardSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoStandardBottomSheet { anchors.fill: parent; isOpen: true; content: Component { MeoText { text: qsTr("Standard sheet"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
     Component { id: sideSheetSample; Item { width: 420 * MeoTheme.globalScale; height: 160 * MeoTheme.globalScale; MeoSideSheet { anchors.right: parent.right; width: 240 * MeoTheme.globalScale; height: parent.height; isOpen: true; content: Component { MeoText { text: qsTr("Details"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
     Component { id: modalSideSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open side sheet"); onClicked: sheet.open() } MeoSideSheetModal { id: sheet; content: Component { MeoText { text: qsTr("Modal side sheet"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: actionSheetSample; Column { spacing: MeoTheme.space8; MeoButton { text: qsTr("Open action sheet"); onClicked: sheet.open() } MeoActionSheet { id: sheet; title: qsTr("Share"); model: [{ "label": qsTr("Messages"), "icon": "chat" }, { "label": qsTr("Email"), "icon": "mail" }] } } }
     Component {
         id: bannerSample
         Column {
@@ -2570,17 +2554,6 @@ Item {
         }
     }
     Component {
-        id: searchAppBarSample
-        Column {
-            width: 460 * MeoTheme.globalScale
-            spacing: MeoTheme.space8
-            SampleLabel { label: qsTr("Default") }
-            MeoSearchAppBar { width: parent.width; placeholder: qsTr("Searchable page") }
-            SampleLabel { label: qsTr("Active input") }
-            MeoSearchAppBar { width: parent.width; placeholder: qsTr("Searchable page"); active: true; text: "MeoTheme" }
-        }
-    }
-    Component {
         id: searchViewSample
         Item {
             width: 560 * MeoTheme.globalScale
@@ -2614,8 +2587,6 @@ Item {
             MeoSearchSuggestions { width: parent.width; highlightText: "["; model: [{ "label": qsTr("Search [components]"), "icon": "search" }] }
         }
     }
-    Component { id: searchHeaderSample; MeoSearchHeader { width: 520 * MeoTheme.globalScale; title: qsTr("Library"); placeholder: qsTr("Search"); actions: [Component { MeoIconButton { icon.name: "help" } }] } }
-    Component { id: searchFilterSample; MeoSearchFilterBar { width: 520 * MeoTheme.globalScale; placeholder: qsTr("Search issues"); filterModel: control.chipItems; selectedFilterIndices: [0, 2] } }
     Component {
         id: carouselSample
         Column {
@@ -3079,8 +3050,6 @@ Item {
     Component { id: pageLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 170 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Column { anchors.fill: parent; anchors.margins: MeoTheme.space16; spacing: MeoTheme.space8; MeoText { text: qsTr("Page title"); typeRole: "title"; typeSize: "medium"; color: MeoTheme.contentOnSurface } MeoText { text: qsTr("Max width, padding and section spacing."); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; wrapMode: Text.WordWrap; width: parent.width } } } }
     Component { id: scaffoldSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainer; MeoText { anchors.centerIn: parent; text: qsTr("Top bar + content + bottom bar + FAB slots"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant } } }
     Component { id: appLayoutSample; Rectangle { width: 420 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; radius: MeoTheme.shapeLarge; color: MeoTheme.surfaceContainerLow; Row { anchors.fill: parent; Rectangle { width: 90 * MeoTheme.globalScale; height: parent.height; color: MeoTheme.secondaryContainer; radius: MeoTheme.shapeLarge } MeoText { anchors.verticalCenter: parent.verticalCenter; text: qsTr("Sidebar / compact navigation shell"); typeRole: "body"; typeSize: "medium"; color: MeoTheme.contentOnSurfaceVariant; width: 260 * MeoTheme.globalScale; wrapMode: Text.WordWrap } } } }
-    Component { id: dashboardSample; MeoDashboardLayout { width: 520 * MeoTheme.globalScale; height: 180 * MeoTheme.globalScale; columns: 3; model: [{ "title": qsTr("Tokens") }, { "title": qsTr("Controls") }, { "title": qsTr("Patterns") }]; delegate: Component { Rectangle { property var modelData: ({ "title": "" }); radius: MeoTheme.shapeMedium; color: MeoTheme.surfaceContainerLow; MeoText { anchors.centerIn: parent; text: modelData.title; typeRole: "label"; typeSize: "big"; color: MeoTheme.contentOnSurface } } } } }
-    Component { id: feedSample; MeoFeedLayout { width: 420 * MeoTheme.globalScale; height: 190 * MeoTheme.globalScale; model: [{ "title": qsTr("Release note") }, { "title": qsTr("Component update") }]; delegate: Component { MeoListItem { property var modelData: ({ "title": "" }); width: parent.width; headline: modelData.title; leadingIcon: "article" } } } }
     Component {
         id: listDetailSample
         MeoListDetailLayout {

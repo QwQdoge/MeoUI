@@ -54,8 +54,8 @@ site.
 ### Components
 
 - Every public component has a lifecycle class (`../api-lifecycle.md`). New
-  work uses Current components. `MeoBottomAppBar` is deprecated; use
-  `MeoDockedToolbar` for docked actions.
+  work uses Current components; docked actions use `MeoDockedToolbar`.
+  Removed types and their replacements are listed in `../api-lifecycle.md`.
 - Every public QML export has a Showcase sample; visible changes update it.
 
 ### Localization and accessibility
