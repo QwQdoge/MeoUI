@@ -115,7 +115,7 @@ Rectangle {
 
     implicitWidth: MeoTheme.settingsSidebarWidth
     implicitHeight: 720 * MeoTheme.globalScale
-    color: MeoTheme.surfaceContainerLow
+    color: MeoTheme.blurTint(MeoTheme.surfaceContainerLow, 0.72)
 
     ColumnLayout {
         anchors.fill: parent

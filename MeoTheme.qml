@@ -28,6 +28,19 @@ QtObject {
     function surfaceAlpha(translucentAlpha) {
         return transparencyEnabled ? translucentAlpha : 1.0
     }
+    // Optional frosted look. Off by default. A host that can ask the
+    // compositor to blur behind its windows (meo-kde, from the shell's
+    // SurfaceBlur setting) turns it on; large app surfaces then become a thin
+    // tint over the blurred backdrop instead of staying solid. MeoUI itself
+    // never blurs or captures anything.
+    property bool blurEnabled: false
+    // Tint for a window or pane background that sits directly on the blurred
+    // backdrop. Opaque unless blur-behind is on and transparency is allowed.
+    function blurTint(base, blurredAlpha) {
+        return Qt.rgba(base.r, base.g, base.b,
+                       blurEnabled ? surfaceAlpha(blurredAlpha) : 1.0)
+    }
+    readonly property color windowBackground: blurTint(surface, isDarkMode ? 0.80 : 0.84)
 
     // Desktop input contract (CSS :focus-visible / WinUI focus visuals).
     // Focus indicators render only after keyboard navigation, so a mouse or
