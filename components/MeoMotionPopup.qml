@@ -29,6 +29,11 @@ Popup {
     property string motionProfile: "pixel"
     property real entranceOffset: MeoMotion.popupOffset(motionProfile) * MeoTheme.globalScale
     property real entranceScale: MeoMotion.popupClosedScale(motionProfile)
+    // Frequently summoned surfaces (launchers, quick search) may use the
+    // "fast" spatial spring and shorter fades. Defaults keep M3 roles.
+    property string revealSpeed: isMenu ? "fast" : "default"
+    property int enterEffectsDuration: MeoTheme.motionDurationPopupEffectsEnter
+    property int exitEffectsDuration: MeoTheme.motionDurationPopupEffectsExit
     property real viewportMargin: 24 * MeoTheme.globalScale
     property bool centerInViewport: false
     property Item initialFocusItem: null
@@ -231,7 +236,7 @@ Popup {
         id: popupReveal
         active: control._spatialRevealActive
         motionProfile: control.motionProfile
-        speed: control.isMenu ? "fast" : "default"
+        speed: control.revealSpeed
         closedScale: control.entranceScale
         // Anchored transient surfaces grow from the trigger-facing edge.
         // Geometry stays fixed; the generic reveal transform supplies the
@@ -284,24 +289,38 @@ Popup {
             if (control.visible || control.opened) {
                 centerOnViewport()
                 control._spatialRevealActive = true
+                // Give focus on the first frame, not after the enter
+                // transition: keys typed while the surface animates in must
+                // reach the initial focus item instead of being dropped.
+                control._applyInitialFocus()
             }
         })
+    }
+    function _applyInitialFocus() {
+        if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
+            initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
+        else if (contentItem && !contentItem.activeFocus)
+            contentItem.forceActiveFocus(Qt.PopupFocusReason)
     }
     onOpened: {
         _openRequested = false
         Qt.callLater(function() {
             centerOnViewport()
-            if (initialFocusItem && initialFocusItem.visible && initialFocusItem.enabled)
-                initialFocusItem.forceActiveFocus(Qt.PopupFocusReason)
-            else if (contentItem)
-                contentItem.forceActiveFocus(Qt.PopupFocusReason)
+            // Re-assert only if nothing inside the popup took focus yet.
+            if (contentItem && !contentItem.activeFocus)
+                control._applyInitialFocus()
         })
     }
     onAboutToHide: {
+        // A popup closed during its enter transition never emits opened().
+        // Clearing the request here keeps requestOpen() usable; otherwise the
+        // popup could never be opened again.
+        _openRequested = false
         _retainingExitContent = true
         _spatialRevealActive = false
     }
     onClosed: {
+        _openRequested = false
         _retainingExitContent = false
         if (_spatialPositioning) {
             _applyingSpatialPosition = true
@@ -367,7 +386,7 @@ Popup {
                 property: "opacity"
                 from: 0
                 to: 1
-                duration: MeoTheme.motionDurationPopupEffectsEnter
+                duration: control.enterEffectsDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingStandardDecelerate
             }
             NumberAnimation {
@@ -404,7 +423,7 @@ Popup {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: MeoTheme.motionDurationPopupEffectsExit
+                duration: control.exitEffectsDuration
                 easing.type: Easing.BezierSpline; easing.bezierCurve: MeoTheme.motionEasingEmphasizedAccelerate
             }
             NumberAnimation {
