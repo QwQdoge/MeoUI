@@ -175,8 +175,8 @@ installing or updating, which do not depend on the account.
 ### AI error codes
 
 The Meo API reports AI failures by code (`{"error":{"code":"…"}}`); show the wording,
-never the code or the provider's text. Codes are from the `meo-api` source
-(OmniStore `docs/MEO_API_FACTS.md` §2.3).
+never the code or the provider's text. The full list is in the public
+[Meo Account API](https://meoarch.org/docs/guide/account-api.html) page, section "AI error codes".
 
 | Code | Wording (English source) | Action |
 | --- | --- | --- |
