@@ -20,13 +20,21 @@ QtObject {
     // (MeoTheme.surfaceAlpha) render opaque. Hosts bind it to the platform
     // setting; blur-behind effects owned by the shell should follow it too.
     property bool transparencyEnabled: true
+    // How see-through translucent surfaces are, relative to their designed
+    // alpha: 1 keeps the design, 0 is opaque, 2 doubles the see-through part.
+    // Hosts bind it to the platform preference (Meo: meo-shellrc
+    // TransparencyLevel).
+    property real transparencyLevel: 1.0
     // Accessibility: Increase Contrast. Raises secondary text to the primary
     // on-surface role, strengthens outlines/dividers and state layers, and
     // widens focus rings. Hosts that install full M3 contrast-level color
     // tables can keep this false and use applyDynamicColorSchemes().
     property bool highContrast: false
     function surfaceAlpha(translucentAlpha) {
-        return transparencyEnabled ? translucentAlpha : 1.0
+        if (!transparencyEnabled)
+            return 1.0
+        const level = Math.max(0, Math.min(2, transparencyLevel))
+        return Math.max(0, Math.min(1, 1 - (1 - translucentAlpha) * level))
     }
 
     // Desktop input contract (CSS :focus-visible / WinUI focus visuals).
