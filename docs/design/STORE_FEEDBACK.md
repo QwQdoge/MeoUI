@@ -163,15 +163,36 @@ is localized with `qsTr()`.
 | Source unavailable | Source row, source page | Reason from backend `error` | Settings |
 | Backend not running | Full-page error | "The store service isn't running." | Start service |
 | Account / AI sign-in needed | Inline, in the AI view only | "Sign in to Meo Account to use AI." | Open Meo Settings |
-| AI plan limit or rate limit | Inline, in the AI view only | Reason from the broker; "Limit reached" if no detail | Wait, or Open Meo Settings |
+| AI failure (provider limit, key, model, consent) | Inline, in the AI view only | See "AI error codes" below | Per code |
 | Stale data shown | Banner, tone `tonal` | "Last updated _time_." | Refresh |
 
 Account and AI failures stay in the AI view. They must not block browsing,
 installing or updating, which do not depend on the account.
 
-Quota, plan and model wording come from the Meo Account broker. Until the Meo
-API contract defines them (see OmniStore `docs/MEO_INTEGRATION.md`), show
-"unknown" instead of a number.
+### AI error codes
+
+The Meo API reports AI failures by code (`{"error":{"code":"…"}}`); show the wording,
+never the code or the provider's text. Codes are from the `meo-api` source
+(OmniStore `docs/MEO_API_FACTS.md` §2.3).
+
+| Code | Wording (English source) | Action |
+| --- | --- | --- |
+| `unauthenticated` | "Sign in to Meo Account to use AI." | Open Meo Settings |
+| `insufficient_scope`, `oauth_client_mismatch` | "This app isn't allowed to use AI on your account." | Open Meo Settings |
+| `ai_credential_unavailable`, `invalid_credential` | "That AI connection is no longer available." | Choose another |
+| `ai_provider_authentication_failed` | "Your AI provider rejected the saved key." | Open Meo Settings |
+| `ai_model_or_endpoint_not_found` | "That model isn't available from your provider." | Choose another model |
+| `ai_provider_rate_limited` | "Your AI provider is limiting requests. Try again later." | Retry later |
+| `ai_provider_unavailable`, `ai_provider_unreachable`, `ai_provider_timeout` | "Your AI provider isn't responding." | Retry |
+| `ai_provider_request_cancelled` | none (the user cancelled) | none |
+| `consent_invalid_or_used`, `fresh_explicit_consent_required`, `too_many_consent_requests` | "Please confirm again." | Show the consent prompt |
+| stream `truncated` event | "The answer was cut off." | Continue |
+| stream `error` event | "The answer stopped early." | Retry |
+| anything else | "Something went wrong. Try again." | Retry |
+
+`ai_provider_rate_limited` is the user's own provider, not a Meo quota: Meo enforces no
+plan quota today (all plans have empty entitlements). Do not show a remaining-quota number
+or a plan limit; omit them until the API defines them.
 
 ### Banner tones
 
