@@ -29,6 +29,7 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | --- | --- |
 | Window, toolbar, overflow menu, app settings, About, credits | `APP_SHELL.md` |
 | Any Settings-style page or row | `SETTINGS.md`, `PAGE_TYPES.md` |
+| Store pages, install buttons, progress bars, error/empty states | `STORE_FEEDBACK.md` |
 | Colors, theming | `DYNAMIC_COLOR.md` |
 | Adding, replacing, deprecating or deleting public QML | `../api-lifecycle.md` |
 | Strings, translations, accessible names | `../localization.md` |
@@ -93,6 +94,21 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Third-party record | `THIRD_PARTY_NOTICES.md` at repo root + `assets/licenses/` (or `LICENSES/`), installed to `/usr/share/licenses/<pkg>/` |
 | In-app list includes | Vendored/adapted code, bundled assets, runtime platform libraries (Qt, KDE Frameworks, MeoUI) |
 | Build/dev tools | README "Built with" only, not in the app |
+
+## Decision table: progress and errors
+
+| Question | Answer |
+| --- | --- |
+| Known fraction | `MeoProgressBar { indeterminate: false; value }`; unknown: `indeterminate: true`; never a guessed percentage |
+| Page loading, layout known | `MeoLoadingFeedback { placeholder }` with `MeoSkeleton`; unknown layout: default indicator (120 ms delay, 300 ms minimum) |
+| Failure, nothing blocked | `MeoSnackbar` with action |
+| Failure affecting the page | `MeoBanner { tone: "error"; title }` |
+| Failure of one item | Message in its row with Retry |
+| Empty result | Empty state, no error tone, no Retry |
+| Error text | What failed, why if known, one action; never raw backend text |
+| Missing store metadata | Omit the field; never invent rating, size, version or quota |
+
+Details and the standard error table: `STORE_FEEDBACK.md`.
 
 ## Decision table: KDE and Qt applications
 

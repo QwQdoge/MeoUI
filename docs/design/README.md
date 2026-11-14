@@ -19,6 +19,7 @@ site.
 | [APP_SHELL.md](APP_SHELL.md) | Window chrome and toolbar, where app settings live and how they are grouped, About, open-source credits, where specs live |
 | [SETTINGS.md](SETTINGS.md) | Settings building blocks: rows, groups, sidebar, task sheet, state layer and motion |
 | [PAGE_TYPES.md](PAGE_TYPES.md) | Page kinds, the two-level rule, registry metadata |
+| [STORE_FEEDBACK.md](STORE_FEEDBACK.md) | Store page structure, install button states, progress indicators, error and empty states |
 | [DYNAMIC_COLOR.md](DYNAMIC_COLOR.md) | The mandatory dynamic color role table and who generates it |
 | [../api-lifecycle.md](../api-lifecycle.md) | Current, deprecated, experimental and internal components |
 | [../localization.md](../localization.md) | Language precedence, translation catalogs, accessible names |
