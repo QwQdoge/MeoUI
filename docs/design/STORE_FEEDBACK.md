@@ -60,6 +60,9 @@ Label length changes with translation, so reserve the width of the longest label
 
 ## 3. Progress
 
+The general rules are in `PROGRESS.md`; `STATES.md` and `DIALOGS.md` cover errors and
+surfaces. This section only adds what is specific to a store.
+
 ### Choose the indicator
 
 | Situation | Component |

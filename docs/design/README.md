@@ -16,14 +16,37 @@ site.
 
 | Document | Covers |
 | --- | --- |
+| [FOUNDATIONS.md](FOUNDATIONS.md) | Page style, surfaces and tonal hierarchy, color roles, type scale, shape, spacing, elevation, icons, motion, accessibility floor |
+| [LAYOUT.md](LAYOUT.md) | Window size classes, page skeletons, columns, regions, scrolling, compact behavior |
+| [NAVIGATION.md](NAVIGATION.md) | Bottom bar, rail, sidebar, tabs, back, search, top app bar |
 | [APP_SHELL.md](APP_SHELL.md) | Window chrome and toolbar, where app settings live and how they are grouped, About, open-source credits, where specs live |
+| [CARDS.md](CARDS.md) | Card vs row vs group, card types, anatomy, sizes, states, grids |
+| [LISTS.md](LISTS.md) | List rows, connected groups, headers, tables, long lists |
+| [FORMS.md](FORMS.md) | Button hierarchy, text fields, selection controls, form layout, validation |
+| [DIALOGS.md](DIALOGS.md) | Choosing a surface, dialogs, destructive and hold-to-confirm, sheets, snackbars, banners, menus |
+| [PROGRESS.md](PROGRESS.md) | Determinate and indeterminate progress, skeletons, long tasks, task rows, timing |
+| [STATES.md](STATES.md) | Empty, error, offline, stale, no-access states and status indicators |
+| [DETAIL_PAGES.md](DETAIL_PAGES.md) | Entity/app detail page anatomy, adaptive layout, states, actions |
+| [STORE_FEEDBACK.md](STORE_FEEDBACK.md) | Store pages, install button states, store error states, AI error codes |
+| [WRITING.md](WRITING.md) | Voice, casing, buttons, messages, tooltips, localization-safe writing |
+| [EXAMPLES.md](EXAMPLES.md) | Worked compositions and a review procedure |
 | [SETTINGS.md](SETTINGS.md) | Settings building blocks: rows, groups, sidebar, task sheet, state layer and motion |
 | [PAGE_TYPES.md](PAGE_TYPES.md) | Page kinds, the two-level rule, registry metadata |
-| [STORE_FEEDBACK.md](STORE_FEEDBACK.md) | Store page structure, install button states, progress indicators, error and empty states |
 | [DYNAMIC_COLOR.md](DYNAMIC_COLOR.md) | The mandatory dynamic color role table and who generates it |
 | [../api-lifecycle.md](../api-lifecycle.md) | Current, deprecated, experimental and internal components |
 | [../localization.md](../localization.md) | Language precedence, translation catalogs, accessible names |
 | [FOR_AGENTS.md](FOR_AGENTS.md) | The same rules as an operational checklist for coding agents |
+
+### How to read the newer pages
+
+`FOUNDATIONS`, `LAYOUT`, `NAVIGATION`, `CARDS`, `LISTS`, `FORMS`, `DIALOGS`,
+`PROGRESS`, `STATES`, `DETAIL_PAGES`, `WRITING` and `EXAMPLES` combine two kinds
+of statement. Property names, defaults, sizes and token values were read from
+the component sources and `MeoTheme.qml`. Rules phrased as "Rule", "Recommended"
+or in a checklist are product design decisions for MeoUI apps; where a
+component does not enforce one, the page says so, and "Known gaps" sections list
+missing component features. QML snippets are structural examples that were not
+executed in the documentation pass.
 
 ## Core rules
 
