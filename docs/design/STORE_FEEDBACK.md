@@ -37,9 +37,21 @@ A store must not invent data. For every field the backend did not supply:
 ### Source and trust
 
 Each item shows its source (Meo repo, Flatpak, AUR, ...). A community or
-unreviewed source uses `MeoBadge` with the tertiary tone, text included, never
-color alone. A source that is `available: false` is not shown as an enabled
-source; it appears under advanced source management with its reason.
+unreviewed source shows a small label with the tertiary container tone, an icon
+and text, never color alone. `MeoBadge` is a notification-count control with no
+tone and an "N notifications" accessible name, so it is not used for this; the
+label stays a store-specific component. A source that is `available: false` is
+not shown as an enabled source; it appears under advanced source management with
+its reason.
+
+### Sources that are offered, wrapped or added by the user
+
+| Case | Rule |
+| --- | --- |
+| A source the machine supports but the user has not chosen | Listed once under "Available to add" in Settings; never enabled or shown in search until the user turns it on |
+| Enabling a source that needs a tool that is missing | The confirmation dialog says the tool is installed first and already-installed tools are skipped; a failure keeps the source off and shows the standard error |
+| An app that runs through a runtime (for example Windows apps through Wine) | Labelled in the installed list; its container (for example a Bottles bottle) is not an app, and its programs stay out of the installed list until the user lists that container |
+| A third-party source list | Added by https address, off until reviewed, labelled "Third-party" wherever its apps appear |
 
 ## 2. Install button states
 
