@@ -29,6 +29,19 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | --- | --- |
 | Window, toolbar, overflow menu, app settings, About, credits | `APP_SHELL.md` |
 | Any Settings-style page or row | `SETTINGS.md`, `PAGE_TYPES.md` |
+| Page style, tokens, spacing, type, shape, elevation | `FOUNDATIONS.md` |
+| Window classes, page skeletons, columns, scrolling | `LAYOUT.md` |
+| Bottom bar, rail, sidebar, tabs, back, search | `NAVIGATION.md` |
+| Cards and card grids | `CARDS.md` |
+| List rows, groups, tables | `LISTS.md` |
+| Buttons, fields, selection controls, forms | `FORMS.md` |
+| Dialogs, confirmations, sheets, snackbars, banners | `DIALOGS.md` |
+| Progress, skeletons, long-running tasks | `PROGRESS.md` |
+| Empty, error, offline, stale states | `STATES.md` |
+| An item/app detail page | `DETAIL_PAGES.md` |
+| Store pages, install buttons, store error states, AI error codes | `STORE_FEEDBACK.md` |
+| UI wording, error text, accessible names | `WRITING.md` |
+| Worked examples and the page review procedure | `EXAMPLES.md` |
 | Colors, theming | `DYNAMIC_COLOR.md` |
 | Adding, replacing, deprecating or deleting public QML | `../api-lifecycle.md` |
 | Strings, translations, accessible names | `../localization.md` |
@@ -93,6 +106,30 @@ Index for agents: `https://meoarch.org/llms.txt`.
 | Third-party record | `THIRD_PARTY_NOTICES.md` at repo root + `assets/licenses/` (or `LICENSES/`), installed to `/usr/share/licenses/<pkg>/` |
 | In-app list includes | Vendored/adapted code, bundled assets, runtime platform libraries (Qt, KDE Frameworks, MeoUI) |
 | Build/dev tools | README "Built with" only, not in the app |
+
+## Decision table: surfaces, progress and states
+
+| Question | Answer |
+| --- | --- |
+| Result of an action, nothing blocked | `MeoSnackbar` (one sentence, ≤1 action, Undo for reversible) |
+| Condition on the page until fixed | `MeoBanner { tone; title }` (one per page) |
+| Yes/no decision | `MeoDialog` with verb buttons; `dismissed()` is a cancel |
+| Destructive action | Dialog naming the object, specific verb, safe focus; session-ending: `MeoHoldToConfirm` |
+| Tall or multi-field task | `MeoFullScreenDialog` (compact) / `MeoSideSheet` (wide); Settings level 3: `MeoSettingsTaskSheet` |
+| Known fraction | `MeoProgressBar { indeterminate: false; value }`; unknown: `indeterminate: true`; never a guessed percentage |
+| Loading, layout known | `MeoLoadingFeedback { placeholder }` + `MeoSkeleton`; unknown: default indicator (120 ms delay, 300 ms minimum) |
+| Work longer than the page | Service-owned task row; one completion notice |
+| Empty list/page | `MeoEmptyState`: what is empty + one action; no error tone |
+| Failure of one item | Message in its row with Retry |
+| Page cannot load | Full-page `MeoEmptyState` with Retry |
+| Primary action | One `filled` `MeoButton` per view |
+| Switch vs checkbox | Switch applies immediately; checkbox is applied on Save |
+| Card vs row | Row unless the object has media + facts + action |
+| Layout decisions | `MeoWindowMetrics` size class, never platform or raw width |
+| Error text | What failed, why if known, one action; never raw backend text |
+| Missing store metadata | Omit the field; never invent rating, size, version or quota |
+
+Details: `DIALOGS.md`, `PROGRESS.md`, `STATES.md`, `STORE_FEEDBACK.md`.
 
 ## Decision table: KDE and Qt applications
 
