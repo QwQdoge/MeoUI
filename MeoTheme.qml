@@ -815,37 +815,43 @@ QtObject {
 
     // M3 Expressive Slider size tokens. The default is XS; larger sizes use
     // their own track and handle dimensions instead of proportional scaling.
-    readonly property real sliderTrackHeightXS: 16 * globalScale
-    readonly property real sliderTrackHeightS: 24 * globalScale
-    readonly property real sliderTrackHeightM: 40 * globalScale
-    readonly property real sliderTrackHeightL: 56 * globalScale
-    readonly property real sliderTrackHeightXL: 96 * globalScale
+    readonly property real sliderTrackHeightXS: metricToken("sliderTrackHeightXS", 16) * globalScale
+    readonly property real sliderTrackHeightS: metricToken("sliderTrackHeightS", 24) * globalScale
+    readonly property real sliderTrackHeightM: metricToken("sliderTrackHeightM", 40) * globalScale
+    readonly property real sliderTrackHeightL: metricToken("sliderTrackHeightL", 56) * globalScale
+    readonly property real sliderTrackHeightXL: metricToken("sliderTrackHeightXL", 96) * globalScale
 
     // External corners and trailing-stop insets for the five M3 Expressive
     // sizes. S-XL intentionally do not use half the track height.
-    readonly property real sliderTrackCornerRadiusXS: 8 * globalScale
-    readonly property real sliderTrackCornerRadiusS: 8 * globalScale
-    readonly property real sliderTrackCornerRadiusM: 12 * globalScale
-    readonly property real sliderTrackCornerRadiusL: 16 * globalScale
-    readonly property real sliderTrackCornerRadiusXL: 28 * globalScale
-    readonly property real sliderTrackInsideCornerRadius: 2 * globalScale
+    readonly property real sliderTrackCornerRadiusXS: metricToken("sliderTrackCornerRadiusXS", 8) * globalScale
+    readonly property real sliderTrackCornerRadiusS: metricToken("sliderTrackCornerRadiusS", 8) * globalScale
+    readonly property real sliderTrackCornerRadiusM: metricToken("sliderTrackCornerRadiusM", 12) * globalScale
+    readonly property real sliderTrackCornerRadiusL: metricToken("sliderTrackCornerRadiusL", 16) * globalScale
+    readonly property real sliderTrackCornerRadiusXL: metricToken("sliderTrackCornerRadiusXL", 28) * globalScale
+    readonly property real sliderTrackInsideCornerRadius: metricToken("sliderTrackInsideCornerRadius", 2) * globalScale
 
-    readonly property real sliderThumbWidthExpressive: 4 * globalScale
-    readonly property real sliderThumbPressedWidthExpressive: 2 * globalScale
-    readonly property real sliderThumbHeightXS: 44 * globalScale
-    readonly property real sliderThumbHeightS: 44 * globalScale
-    readonly property real sliderThumbHeightM: 52 * globalScale
-    readonly property real sliderThumbHeightL: 68 * globalScale
-    readonly property real sliderThumbHeightXL: 108 * globalScale
+    readonly property real sliderThumbWidthExpressive: metricToken("sliderThumbWidth", 4) * globalScale
+    readonly property real sliderThumbPressedWidthExpressive: metricToken("sliderThumbPressedWidth", 2) * globalScale
+    readonly property real sliderThumbHeightXS: metricToken("sliderThumbHeightXS", 44) * globalScale
+    readonly property real sliderThumbHeightS: metricToken("sliderThumbHeightS", 44) * globalScale
+    readonly property real sliderThumbHeightM: metricToken("sliderThumbHeightM", 52) * globalScale
+    readonly property real sliderThumbHeightL: metricToken("sliderThumbHeightL", 68) * globalScale
+    readonly property real sliderThumbHeightXL: metricToken("sliderThumbHeightXL", 108) * globalScale
     // Compatibility alias for callers that did not select an explicit size.
     readonly property real sliderThumbHeightExpressive: sliderThumbHeightXS
-    readonly property real sliderThumbGapExpressive: 6 * globalScale
-    readonly property real sliderStopSizeExpressive: 4 * globalScale
+    readonly property real sliderThumbGapExpressive: metricToken("sliderThumbGap", 6) * globalScale
+    readonly property real sliderStopSizeExpressive: metricToken("sliderStopSize", 4) * globalScale
     readonly property real sliderValueIndicatorSize: 40 * globalScale
     readonly property real sliderValueIndicatorGap: 12 * globalScale
     readonly property real sliderInsetIconSizeM: 24 * globalScale
     readonly property real sliderInsetIconSizeL: 24 * globalScale
     readonly property real sliderInsetIconSizeXL: 32 * globalScale
+
+    // Linear progress geometry shared with the native Qt style.
+    readonly property real progressTrackThickness: metricToken("progressTrackThickness", 4) * globalScale
+    readonly property real progressThickStrokeThickness: metricToken("progressThickStrokeThickness", 8) * globalScale
+    readonly property real progressTrackActiveGap: metricToken("progressTrackActiveGap", 4) * globalScale
+    readonly property real progressStopSize: metricToken("progressStopSize", 4) * globalScale
 
     function sliderTrackCornerRadiusForSize(size) {
         if (size === "s") return sliderTrackCornerRadiusS
