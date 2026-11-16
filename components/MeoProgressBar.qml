@@ -40,8 +40,10 @@ Control {
     readonly property var motionEasing: MeoTheme.motionEasingStandard
     // M3 keeps inactive tracks at 4dp while the active indicator may expand
     // to 8dp for the thick configurations.
-    readonly property real trackThickness: 4 * themeGlobalScale
-    readonly property real strokeThickness: (isThick ? 8 : 4) * themeGlobalScale
+    readonly property real trackThickness: MeoTheme.progressTrackThickness
+    readonly property real strokeThickness: isThick ? MeoTheme.progressThickStrokeThickness : MeoTheme.progressTrackThickness
+    // Space between an active segment and the track (TrackActiveSpace).
+    readonly property real activeGap: MeoTheme.progressTrackActiveGap
     readonly property real pillHeight: (isThick ? 28 : 24) * themeGlobalScale
     readonly property real pillGap: 6 * themeGlobalScale
     readonly property real pillMarkerWidth: 4 * themeGlobalScale
@@ -75,7 +77,7 @@ Control {
     // renderer's geometry independently testable.
     readonly property real wavyTrackStart: Math.min(wavyReferenceWidth,
                                                     wavyActiveWidth + Math.min(wavyActiveWidth,
-                                                                               4 * themeGlobalScale))
+                                                                               activeGap))
 
     // AndroidX uses a 1750ms two-line indeterminate cycle. A linear clock is
     // deliberately separated from the segment easing so each of the four
@@ -127,7 +129,7 @@ Control {
     function circularTrackGapSweepDegrees(diameter, stroke) {
         if (diameter <= 0)
             return 0
-        return ((4 * themeGlobalScale + stroke) / (Math.PI * diameter)) * 360
+        return ((activeGap + stroke) / (Math.PI * diameter)) * 360
     }
 
     function circularDeterminateTrackSweepDegrees(diameter, stroke) {
@@ -196,7 +198,7 @@ Control {
             if (control.type === "linear") {
                 const centerY = h / 2
                 const activeW = w * (control.indeterminate ? 0.42 : control.clampedValue)
-                const trackStart = Math.min(w, activeW + Math.min(activeW, 4 * control.themeGlobalScale))
+                const trackStart = Math.min(w, activeW + Math.min(activeW, control.activeGap))
                 const wavelength = control.indeterminate
                                  ? control.indeterminateLinearWavelength
                                  : control.linearWavelength
@@ -333,7 +335,7 @@ Control {
             // with the active segment, matching the AndroidX draw contract.
             readonly property real activeGap: !control.indeterminate
                                               ? Math.min(parent.width * control.clampedValue,
-                                                         4 * control.themeGlobalScale)
+                                                         control.activeGap)
                                               : 0
             width: Math.max(0, parent.width
                                   - parent.width * control.clampedValue
@@ -400,7 +402,7 @@ Control {
             visible: control.showTrack && control.indeterminate
             anchors.verticalCenter: parent.verticalCenter
             readonly property real startFraction: control.firstLineHead > 0
-                                                  ? Math.min(1, control.firstLineHead + 4 * control.themeGlobalScale / parent.width)
+                                                  ? Math.min(1, control.firstLineHead + control.activeGap / parent.width)
                                                   : 0
             width: Math.max(0, parent.width * (1 - startFraction))
             height: control.trackThickness
@@ -413,13 +415,13 @@ Control {
             id: indeterminateTrackBetween
             objectName: "meoProgressIndeterminateTrackBetween"
             visible: control.showTrack && control.indeterminate
-                     && control.firstLineTail > 4 * control.themeGlobalScale / parent.width
+                     && control.firstLineTail > control.activeGap / parent.width
             anchors.verticalCenter: parent.verticalCenter
             readonly property real startFraction: control.secondLineHead > 0
-                                                  ? Math.min(1, control.secondLineHead + 4 * control.themeGlobalScale / parent.width)
+                                                  ? Math.min(1, control.secondLineHead + control.activeGap / parent.width)
                                                   : 0
             readonly property real endFraction: control.firstLineTail < 1
-                                                ? Math.max(0, control.firstLineTail - 4 * control.themeGlobalScale / parent.width)
+                                                ? Math.max(0, control.firstLineTail - control.activeGap / parent.width)
                                                 : 1
             width: Math.max(0, parent.width * (endFraction - startFraction))
             x: control.mirrored ? parent.width - endFraction * parent.width
@@ -433,10 +435,10 @@ Control {
             id: indeterminateTrackBeforeSecond
             objectName: "meoProgressIndeterminateTrackBeforeSecond"
             visible: control.showTrack && control.indeterminate
-                     && control.secondLineTail > 4 * control.themeGlobalScale / parent.width
+                     && control.secondLineTail > control.activeGap / parent.width
             anchors.verticalCenter: parent.verticalCenter
             readonly property real endFraction: control.secondLineTail < 1
-                                                ? Math.max(0, control.secondLineTail - 4 * control.themeGlobalScale / parent.width)
+                                                ? Math.max(0, control.secondLineTail - control.activeGap / parent.width)
                                                 : 1
             width: Math.max(0, endFraction * parent.width)
             x: control.mirrored ? parent.width - width : 0
@@ -451,7 +453,7 @@ Control {
             id: linearEndStop
             objectName: "meoProgressLinearEndStop"
             visible: control.showTrack && !control.indeterminate
-            width: 4 * control.themeGlobalScale
+            width: MeoTheme.progressStopSize
             height: width
             radius: width / 2
             anchors.verticalCenter: parent.verticalCenter

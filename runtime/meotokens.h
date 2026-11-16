@@ -52,6 +52,30 @@ class MeoTokens : public QObject
     Q_PROPERTY(qreal iconButtonSizeM READ iconButtonSizeM CONSTANT)
     Q_PROPERTY(qreal iconButtonSizeL READ iconButtonSizeL CONSTANT)
     Q_PROPERTY(qreal iconButtonSizeXL READ iconButtonSizeXL CONSTANT)
+    Q_PROPERTY(qreal sliderTrackHeightXS READ sliderTrackHeightXS CONSTANT)
+    Q_PROPERTY(qreal sliderTrackHeightS READ sliderTrackHeightS CONSTANT)
+    Q_PROPERTY(qreal sliderTrackHeightM READ sliderTrackHeightM CONSTANT)
+    Q_PROPERTY(qreal sliderTrackHeightL READ sliderTrackHeightL CONSTANT)
+    Q_PROPERTY(qreal sliderTrackHeightXL READ sliderTrackHeightXL CONSTANT)
+    Q_PROPERTY(qreal sliderTrackCornerRadiusXS READ sliderTrackCornerRadiusXS CONSTANT)
+    Q_PROPERTY(qreal sliderTrackCornerRadiusS READ sliderTrackCornerRadiusS CONSTANT)
+    Q_PROPERTY(qreal sliderTrackCornerRadiusM READ sliderTrackCornerRadiusM CONSTANT)
+    Q_PROPERTY(qreal sliderTrackCornerRadiusL READ sliderTrackCornerRadiusL CONSTANT)
+    Q_PROPERTY(qreal sliderTrackCornerRadiusXL READ sliderTrackCornerRadiusXL CONSTANT)
+    Q_PROPERTY(qreal sliderTrackInsideCornerRadius READ sliderTrackInsideCornerRadius CONSTANT)
+    Q_PROPERTY(qreal sliderThumbWidth READ sliderThumbWidth CONSTANT)
+    Q_PROPERTY(qreal sliderThumbPressedWidth READ sliderThumbPressedWidth CONSTANT)
+    Q_PROPERTY(qreal sliderThumbHeightXS READ sliderThumbHeightXS CONSTANT)
+    Q_PROPERTY(qreal sliderThumbHeightS READ sliderThumbHeightS CONSTANT)
+    Q_PROPERTY(qreal sliderThumbHeightM READ sliderThumbHeightM CONSTANT)
+    Q_PROPERTY(qreal sliderThumbHeightL READ sliderThumbHeightL CONSTANT)
+    Q_PROPERTY(qreal sliderThumbHeightXL READ sliderThumbHeightXL CONSTANT)
+    Q_PROPERTY(qreal sliderThumbGap READ sliderThumbGap CONSTANT)
+    Q_PROPERTY(qreal sliderStopSize READ sliderStopSize CONSTANT)
+    Q_PROPERTY(qreal progressTrackThickness READ progressTrackThickness CONSTANT)
+    Q_PROPERTY(qreal progressThickStrokeThickness READ progressThickStrokeThickness CONSTANT)
+    Q_PROPERTY(qreal progressTrackActiveGap READ progressTrackActiveGap CONSTANT)
+    Q_PROPERTY(qreal progressStopSize READ progressStopSize CONSTANT)
     Q_PROPERTY(qreal stateOpacityHover READ stateOpacityHover CONSTANT)
     Q_PROPERTY(qreal stateOpacityFocus READ stateOpacityFocus CONSTANT)
     Q_PROPERTY(qreal stateOpacityPressed READ stateOpacityPressed CONSTANT)
@@ -105,6 +129,30 @@ public:
     qreal iconButtonSizeM() const;
     qreal iconButtonSizeL() const;
     qreal iconButtonSizeXL() const;
+    qreal sliderTrackHeightXS() const;
+    qreal sliderTrackHeightS() const;
+    qreal sliderTrackHeightM() const;
+    qreal sliderTrackHeightL() const;
+    qreal sliderTrackHeightXL() const;
+    qreal sliderTrackCornerRadiusXS() const;
+    qreal sliderTrackCornerRadiusS() const;
+    qreal sliderTrackCornerRadiusM() const;
+    qreal sliderTrackCornerRadiusL() const;
+    qreal sliderTrackCornerRadiusXL() const;
+    qreal sliderTrackInsideCornerRadius() const;
+    qreal sliderThumbWidth() const;
+    qreal sliderThumbPressedWidth() const;
+    qreal sliderThumbHeightXS() const;
+    qreal sliderThumbHeightS() const;
+    qreal sliderThumbHeightM() const;
+    qreal sliderThumbHeightL() const;
+    qreal sliderThumbHeightXL() const;
+    qreal sliderThumbGap() const;
+    qreal sliderStopSize() const;
+    qreal progressTrackThickness() const;
+    qreal progressThickStrokeThickness() const;
+    qreal progressTrackActiveGap() const;
+    qreal progressStopSize() const;
     qreal stateOpacityHover() const;
     qreal stateOpacityFocus() const;
     qreal stateOpacityPressed() const;

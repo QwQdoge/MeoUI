@@ -66,6 +66,42 @@ public:
     static constexpr qreal iconButtonSizeL() { return 96.0; }
     static constexpr qreal iconButtonSizeXL() { return 136.0; }
 
+    // Material 3 Expressive slider sizes (AndroidX Material 3 SliderTokens,
+    // XSmall..XLarge). MeoSlider and the native Qt style draw the same split
+    // track, bar thumb and stops from these values.
+    static constexpr qreal sliderTrackHeightXS() { return 16.0; }
+    static constexpr qreal sliderTrackHeightS() { return 24.0; }
+    static constexpr qreal sliderTrackHeightM() { return 40.0; }
+    static constexpr qreal sliderTrackHeightL() { return 56.0; }
+    static constexpr qreal sliderTrackHeightXL() { return 96.0; }
+    // External corners; S-XL intentionally do not use half the track height.
+    static constexpr qreal sliderTrackCornerRadiusXS() { return 8.0; }
+    static constexpr qreal sliderTrackCornerRadiusS() { return 8.0; }
+    static constexpr qreal sliderTrackCornerRadiusM() { return 12.0; }
+    static constexpr qreal sliderTrackCornerRadiusL() { return 16.0; }
+    static constexpr qreal sliderTrackCornerRadiusXL() { return 28.0; }
+    // Corners facing the thumb gap.
+    static constexpr qreal sliderTrackInsideCornerRadius() { return 2.0; }
+    static constexpr qreal sliderThumbWidth() { return 4.0; }
+    static constexpr qreal sliderThumbPressedWidth() { return 2.0; }
+    static constexpr qreal sliderThumbHeightXS() { return 44.0; }
+    static constexpr qreal sliderThumbHeightS() { return 44.0; }
+    static constexpr qreal sliderThumbHeightM() { return 52.0; }
+    static constexpr qreal sliderThumbHeightL() { return 68.0; }
+    static constexpr qreal sliderThumbHeightXL() { return 108.0; }
+    // Space between each track segment and the thumb centre line.
+    static constexpr qreal sliderThumbGap() { return 6.0; }
+    // Tick-mark stops and the trailing end stop.
+    static constexpr qreal sliderStopSize() { return 4.0; }
+
+    // Linear progress (AndroidX Material 3 ProgressIndicatorDefaults /
+    // LinearProgressIndicatorTokens): track, active stroke, the space between
+    // the active segment and the track, and the trailing end stop.
+    static constexpr qreal progressTrackThickness() { return 4.0; }
+    static constexpr qreal progressThickStrokeThickness() { return 8.0; }
+    static constexpr qreal progressTrackActiveGap() { return 4.0; }
+    static constexpr qreal progressStopSize() { return 4.0; }
+
     // AndroidX Material 3 StateTokens (v0_210, Apache-2.0):
     // Cross-renderer Material motion contract, matching MeoMotion's existing
     // default effects and expressive fast spatial springs (unit mass).
