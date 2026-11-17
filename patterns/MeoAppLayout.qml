@@ -25,6 +25,10 @@ Item {
     // behavior by default unless an app explicitly opts in.
     property list<Component> topAppBarActions
     property bool showTopAppBarOnExpanded: false
+    // A real parent route (for example Settings or About opened from a page):
+    // the top app bar's leading control becomes arrow_back (APP_SHELL.md).
+    property bool showBackButton: false
+    signal backRequested()
     // Overrides the top app bar title, e.g. for pages after navigationModel.
     property string pageTitle: ""
 
@@ -198,10 +202,13 @@ Item {
                 // Add a navigation icon for the hamburger menu
                 navigationIcon: Component {
                     MeoIconButton {
-                        icon.name: "menu"
-                        visible: !control.usesExpandedSidebar
+                        icon.name: control.showBackButton ? "arrow_back" : "menu"
+                        visible: control.showBackButton || !control.usesExpandedSidebar
                         enabled: visible
-                        onClicked: modalSidebar.openForNavigation()
+                        toolTipText: control.showBackButton ? qsTr("Back") : ""
+                        Accessible.name: control.showBackButton ? qsTr("Back") : qsTr("Open navigation")
+                        onClicked: control.showBackButton ? control.backRequested()
+                                                          : modalSidebar.openForNavigation()
                     }
                 }
             }
