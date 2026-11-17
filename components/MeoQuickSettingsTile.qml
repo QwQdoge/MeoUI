@@ -52,7 +52,10 @@ Control {
     // AOSP Android 16 QPR2 defines 80dp quick-settings tiles with 28dp corners.
     // The Pixel-like variant keeps those logical values without claiming that
     // its host-specific arrangement is a generic Material component.
-    readonly property real visualHeight: (pixelStyle ? 64 : (wide ? 72 : 56))
+    // A compact pixel tile with its label under the icon is taller (88dp:
+    // 48dp icon, 8dp gap, one label line and 8dp above and below).
+    readonly property bool labelledCompactPixel: pixelStyle && !wide && showCompactLabel
+    readonly property real visualHeight: (pixelStyle ? (labelledCompactPixel ? 88 : 64) : (wide ? 72 : 56))
                                        * MeoTheme.globalScale
     readonly property real focusStrokeWidth: pixelStyle
                                              ? MeoTheme.strokeWidthThick
@@ -97,7 +100,7 @@ Control {
 
     implicitWidth: (pixelStyle ? (wide ? 196 : 94) : (wide ? 176 : 84))
                    * MeoTheme.globalScale
-    implicitHeight: (pixelStyle ? 64 : (wide ? 72 : 96)) * MeoTheme.globalScale
+    implicitHeight: (pixelStyle ? (labelledCompactPixel ? 88 : 64) : (wide ? 72 : 96)) * MeoTheme.globalScale
     // Keep the tab-focus capability stable while entering edit mode. The
     // focused control is redirected before its visual action changes.
     activeFocusOnTab: enabled && !unavailable
@@ -405,7 +408,8 @@ Control {
         }
 
         MeoText {
-            visible: !control.wide && control.showCompactLabel
+            // The pixel style shows its compact label inside the icon column.
+            visible: !control.wide && !control.pixelStyle && control.showCompactLabel
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
@@ -500,7 +504,9 @@ Control {
     AbstractButton {
         id: detailsButton
         objectName: "quickSettingsDetailsButton"
-        visible: control.detailsEnabled && !control.editMode
+        // A labelled compact tile has no room for a chevron; its details
+        // stay on long press and right click.
+        visible: control.detailsEnabled && !control.editMode && !control.labelledCompactPixel
         anchors.right: parent.right
         anchors.rightMargin: control.wide
                             ? (control.pixelStyle ? MeoTheme.space12 : MeoTheme.space8)
