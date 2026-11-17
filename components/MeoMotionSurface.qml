@@ -38,7 +38,10 @@ Item {
                        : color
         const opacity = surfaceStyle === "translucent"
                         ? MeoTheme.surfaceAlpha(Math.max(0.7, Math.min(1, surfaceOpacity))) : 1
-        return Qt.rgba(semantic.r, semantic.g, semantic.b, opacity)
+        // Keep the colour's own alpha: a translucent `color` (for example a
+        // shell popup's tint) must stay translucent, and "transparent" must
+        // not turn into opaque black.
+        return Qt.rgba(semantic.r, semantic.g, semantic.b, semantic.a * opacity)
     }
 
     function reveal(direction) {
